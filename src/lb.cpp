@@ -2,7 +2,7 @@
 #include "utility.h"
 #include <cmath>
 
-LB::LB(int nThreads_, LevelData* levelData_, LB_t lbTarget_):levelPtr(NULL),zonePtr(NULL),levelData(levelData_),maxThreads(-1),nThreads(nThreads_), lbTarget(lbTarget_)
+LB::LB(int nThreads_, LevelData* levelData_, dist_t dist_, LB_t lbTarget_):levelPtr(NULL),zonePtr(NULL),levelData(levelData_),dist(dist_), maxThreads(-1),nThreads(nThreads_), lbTarget(lbTarget_)
 {
     if( (lbTarget == NNZ) && (levelData->levelNnz == NULL) )
     {
@@ -43,7 +43,7 @@ void LB::calcChunkSum(int *arr, bool forceRow)
     }
 }
 
-int LB::findNeighbour(const Stat &stats, neighbour_t type, dist_t dist)
+int LB::findNeighbour(const Stat &stats, neighbour_t type)
 {
     int *perm = new int[nBlocks];
     int neighbourIdx = -1;
@@ -76,6 +76,7 @@ int LB::findNeighbour(const Stat &stats, neighbour_t type, dist_t dist)
         neighbourIdx = perm[0];
     }
 
+    delete[] perm;
     return neighbourIdx;
 }
 
@@ -95,7 +96,7 @@ void LB::moveOneStep(int toIdx, int fromIdx)
     }
 }
 
-void LB::splitZones(dist_t dist)
+void LB::splitZones()
 {
     //First do NAIVE partititon
     int blockWidth = 0;
@@ -107,7 +108,7 @@ void LB::splitZones(dist_t dist)
             WARNING_PRINT("Requested threads(%d) cannot be used, limit to %d threads",nThreads,maxThreads);
             nThreads = maxThreads;
         }
-        blockWidth = int(totalLevel/((double) nThreads));//2 blocks for 1 thread of this width
+        blockWidth = int(totalLevel/(2.0*nThreads));//2 blocks for 1 thread of this width
         blockPerThread = 2;
     }
     else {
@@ -147,7 +148,6 @@ void LB::splitZones(dist_t dist)
         levelPtr[i+1] = levelPtr[i] + blockWidth;
     }
     levelPtr[levelPtrSize-1] = totalLevel;
-
 
     //Now do load balancing
     if(nThreads < maxThreads) 
@@ -198,7 +198,7 @@ void LB::splitZones(dist_t dist)
                 if(chunkSum[rankIdx] < myMean)
                 {
                     //try to acquire from my neighbours
-                    int acquireIdx = findNeighbour(meanVar, acquire, dist);
+                    int acquireIdx = findNeighbour(meanVar, acquire);
                     if(acquireIdx==-1)
                     {
                         fail = true;
@@ -209,7 +209,7 @@ void LB::splitZones(dist_t dist)
                 else if( (levelPtr[rankIdx+1] - levelPtr[rankIdx]) > dist)
                 {
                     //try to give to my neighbours
-                    int giveIdx = findNeighbour(meanVar, give, dist);
+                    int giveIdx = findNeighbour(meanVar, give);
                     if(giveIdx==-1)
                     {
                         fail = true;
@@ -239,7 +239,7 @@ void LB::splitZones(dist_t dist)
                 }
                 currRank += 1;
             }
-
+            delete[] rankPerm;
         }
         delete[] chunkSum;
         delete[] newChunkSum;
@@ -282,9 +282,9 @@ Stat::Stat(int* arr_, int len_, int numPartitions_):arr(arr_),len(len_),numParti
 }
 
 //TODO error handling
-NAME_error LB::D2LB()
+NAME_error LB::balance()
 {
-    splitZones(TWO);
+    splitZones();
     return NAME_SUCCESS;
 }
 

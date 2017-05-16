@@ -1,6 +1,6 @@
 #include "pin.h"
 
-Pin::Pin(ZoneTree* zoneTree_, bool SMT_, PinMethod method_):zoneTree(zoneTree_),machine(SMT_),SMT(SMT_),method(method_)
+Pin::Pin(ZoneTree* zoneTree_, int SMT_, PinMethod method_):zoneTree(zoneTree_),machine(SMT_),SMT(SMT_),method(method_)
 {
 
 }
@@ -102,7 +102,7 @@ void Pin::createPuNodeMapping()
         }
     }
 
-    if(totalThreads != pinMap.size())
+    if(totalThreads != static_cast<int>(pinMap.size()))
     {
         ERROR_PRINT("ERROR occured while creating thread pin map");
     }
@@ -122,32 +122,48 @@ void Pin::pinThread(int pinOrder)
     machine.pinThread(puId,nodeId);
 }
 
-//OMP nested pinning will not working
+void Pin::resetMaster()
+{
+    machine.resetMaster();
+}
+
+//OMP nested pinning will not work
 //just by pinning for the first time
+//This function is deprecated
+//refer pthreads pinning in level_pool.cpp
 void Pin::pinApplicationRecursive(int parent)
 {
     std::vector<int> *children = &(zoneTree->at(parent).childrenZ);
     int currNthreads = static_cast<int>(children->size()/2.0);
 
-    if(currNthreads > 1)
+    if(currNthreads <= 1)
+    {
+        int tid = omp_get_thread_num();
+        int pinOrder = zoneTree->at(parent).pinOrder;
+#pragma omp critical
+        {
+        printf("%d ,Pinning: tid=%d -> cpu=%d",parent,tid,pinOrder);
+        pinThread(pinOrder);
+        printf("pinned to %d\n",sched_getcpu());
+        }
+    }
+    else
     {
 #pragma omp parallel num_threads(currNthreads)
         {
             int tid = omp_get_thread_num();
-            int pinOrder = zoneTree->at(children->at(2*tid)).pinOrder;
-#pragma omp critical
+/*#pragma omp critical
             {
                 printf("Pinning: tid=%d -> cpu=%d",tid,pinOrder);
                 pinThread(pinOrder);
                 printf("pinned to %d\n",sched_getcpu());
-            }
+            }*/
             pinApplicationRecursive(children->at(2*tid));
 #pragma omp barrier
             pinApplicationRecursive(children->at(2*tid+1));
         }
     }
 }
-
 
 void Pin::pinApplication()
 {

@@ -19,18 +19,19 @@ class Machine{
     private:
         hwloc_topology_t topology;
         std::vector<std::vector<PUNode>> topTree;
-        std::vector<int> corePerNode;
+        //required to reset the affinity
+        hwloc_cpuset_t master_affinity;
 
-        bool SMT;
+        std::vector<int> corePerNode;
+        int SMT;
         int numNode;
         int numCore;
         int numPU;
-
         void initTopology();
         void sortSMT();
     public:
         //constructor
-        Machine(bool SMT_);
+        Machine(int SMT_);
         //Machine();
         ~Machine();
         int getNumNode();
@@ -38,6 +39,7 @@ class Machine{
         int getNumCore();
         int getNumPuInNode(int logicalNodeid);
         int getNumCoreInNode(int logicalNodeid);
+        void resetMaster();
         NAME_error pinThread(int logicalPUid, int logicalNodeId);
         void printTopTree();
 };

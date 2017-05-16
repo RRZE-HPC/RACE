@@ -125,7 +125,7 @@ void ZoneTree::updateTreeNThreads(int parentIdx)
     }
 }
 
-bool ZoneTree::spawnChild(int parentIdx, int requestNthreads, int startThread, LevelData* levelData)
+bool ZoneTree::spawnChild(int parentIdx, int requestNthreads, int startThread, LevelData* levelData, dist_t dist)
 {
     int bestNThreads = 1;
     int minEffRow = std::numeric_limits<int>::max();
@@ -133,6 +133,7 @@ bool ZoneTree::spawnChild(int parentIdx, int requestNthreads, int startThread, L
     int maxThreads = static_cast<int>(levelData->totalLevel/4.0);
     int scanTill = std::min(requestNthreads, maxThreads);
 
+    printf("maxThreads = %d\n",maxThreads);
     if( (startThread < maxThreads) && (scanTill > 1) )
     {
         tree->at(parentIdx).childrenZ.clear();
@@ -144,8 +145,8 @@ bool ZoneTree::spawnChild(int parentIdx, int requestNthreads, int startThread, L
 
         for (int nthreads=startThread; nthreads<=scanTill; ++nthreads)
         {
-            LB lb(nthreads, levelData);
-            lb.D2LB();
+            LB lb(nthreads, levelData, dist);
+            lb.balance();
             int *zonePtr = NULL;
             int len;
             int base = tree->at(parentIdx).valueZ[0];
@@ -162,6 +163,7 @@ bool ZoneTree::spawnChild(int parentIdx, int requestNthreads, int startThread, L
             updateTreeEffRow(parentIdx);
             updateTreeNThreads(parentIdx);
 
+            printf("eff Row = %d\n", tree->at(parentIdx).effRowZ);
             if(tree->at(parentIdx).effRowZ < minEffRow)
             {
                 minEffRow = tree->at(0).effRowZ;

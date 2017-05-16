@@ -1,7 +1,8 @@
 #include "interface.h"
 #include <algorithm>
 
-NAMEInterface::NAMEInterface(int nrow_,int nthreads_, dist_t dist_, int *rowPtr_, int *col_, bool SMT_, PinMethod pinMethod_, int *initPerm_, int *initInvPerm_):graph(NULL),nrow(nrow_),dist(dist_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pin(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL)
+
+NAMEInterface::NAMEInterface(int nrow_,int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int SMT_, PinMethod pinMethod_, int *initPerm_, int *initInvPerm_):graph(NULL),nrow(nrow_),dist(dist_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL)
 {
 
 }
@@ -16,18 +17,20 @@ NAMEInterface::~NAMEInterface()
         delete graph;
     }
 
-    if(pin) {
-        delete pin;
+    if(pool) {
+        delete pool;
     }
 }
 
+
 void NAMEInterface::NAMEColor()
 {
+
     //1. Construct Graph
     graph = new Graph(nrow, nrow, rowPtr, col, initPerm, initInvPerm);
 
     //2. Call level_recursion
-    LevelRecursion lr(graph, requestedThreads);
+    LevelRecursion lr(graph, requestedThreads, dist);
     lr.levelBalancing();
     availableThreads = lr.getAvailableThreads();
     int len;
@@ -35,20 +38,25 @@ void NAMEInterface::NAMEColor()
     lr.getInvPerm(&invPerm, &len);
     zoneTree = lr.getZoneTree();
 
-    pin = new Pin(zoneTree, SMT, pinMethod);
-    pin->pinInit();
+    pool = new LevelPool(zoneTree, SMT, pinMethod);
+
+#ifdef NAME_KERNEL_THREAD_OMP
+    pool->pin.pinApplication();
+#else
+    pool->createPool();//creates pinned thread pools
+#endif
 
     printZoneTree();
 
-   /* printf("Checking Coloring\n");
+    /* printf("Checking Coloring\n");
     if(D2Checker())
     {
         ERROR_PRINT("Conflict in coloring\n");
     }
     printf("Checking Finished\n");
     */
-
 }
+
 
 void NAMEInterface::printZoneTree()
 {
@@ -91,7 +99,7 @@ void NAMEInterface::getPerm(int **perm_, int *len_)
     {
         (*perm_) = perm;
     }
-    (*len_) = permLen;
+    (*len_) = nrow;
 }
 
 void NAMEInterface::getInvPerm(int **invPerm_, int *len_)
@@ -113,7 +121,7 @@ void NAMEInterface::getInvPerm(int **invPerm_, int *len_)
     {
         (*invPerm_) = invPerm;
     }
-    (*len_) = invPermLen;
+    (*len_) = nrow;
 }
 
 int NAMEInterface::getNumThreads()
@@ -124,7 +132,9 @@ int NAMEInterface::getNumThreads()
 
 int NAMEInterface::registerFunction(void (*f) (int,int,void *), void* args)
 {
-    FuncManager currFun(f, args, zoneTree, pin);
+//    pool->pin.pinApplication();
+
+    FuncManager currFun(f, args, zoneTree, pool);
     funMan.push_back(currFun);
 
     //TODO just pin for the first time; but now OpenMP does not work with this

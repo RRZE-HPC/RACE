@@ -55,7 +55,7 @@ class ZoneTree{
          * level to be partitioned
          * param[out] boolean indicating whether the request could be satisfied
          */
-        bool spawnChild(int parentIdx, int requestNthreads, int startThread, LevelData* levelData);
+        bool spawnChild(int parentIdx, int requestNthreads, int startThread, LevelData* levelData, dist_t dist);
         KeyChild findKeyChild(int parentIdx);
 };
 

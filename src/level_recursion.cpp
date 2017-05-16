@@ -1,7 +1,7 @@
 #include "level_recursion.h"
 #include "utility.h"
 
-LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_):graph(graph_), requestNThreads(requestNThreads_), perm(NULL), invPerm(NULL)
+LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, dist_t dist_):graph(graph_), dist(dist_), requestNThreads(requestNThreads_), perm(NULL), invPerm(NULL)
 {
     zoneTree = new ZoneTree;
     perm = new int[graph->NROW];
@@ -50,7 +50,7 @@ bool LevelRecursion::recursivePartition(int parentIdx, int subRequestNThreads)
         keyChild = zoneTree->findKeyChild(parentIdx);
 
         //TODO 3 block  method
-        int numBlockPerThread = 2;
+        const int numBlockPerThread = 2;
         bool glbBreakBlock[numBlockPerThread];
 
         for(int i=0; i<numBlockPerThread; ++i)
@@ -64,7 +64,7 @@ bool LevelRecursion::recursivePartition(int parentIdx, int subRequestNThreads)
                 std::vector<int> range = zoneTree->at(currIdx).valueZ;
 
                 //Traverse
-                Traverse traverse(graph, TWO, range[0], range[1]);
+                Traverse traverse(graph, dist, range[0], range[1]);
                 traverse.calculateDistance();
                 int *levelPerm = NULL;
                 int len;
@@ -74,7 +74,7 @@ bool LevelRecursion::recursivePartition(int parentIdx, int subRequestNThreads)
 
                 LevelData* levelData = traverse.getLevelData();
                 int currIdxNThreads = zoneTree->at(currIdx).nthreadsZ;
-                bool locFlag = zoneTree->spawnChild(currIdx, currIdxNThreads+1, currIdxNThreads, levelData);
+                bool locFlag = zoneTree->spawnChild(currIdx, currIdxNThreads+1, currIdxNThreads, levelData, dist);
                 delete levelData;
 
                 if(!locFlag){
@@ -122,7 +122,7 @@ void LevelRecursion::levelBalancing()
 
     //Step 2: Construct level 1
     //Traverse
-    Traverse traverse(graph, TWO);
+    Traverse traverse(graph, dist);
     traverse.calculateDistance();
     int *levelPerm = NULL;
     int len;
@@ -130,7 +130,7 @@ void LevelRecursion::levelBalancing()
     updatePerm(&perm, levelPerm, len);
     delete[] levelPerm;
     LevelData* levelData = traverse.getLevelData();
-    zoneTree->spawnChild(parentIdx, requestNThreads, 1, levelData);
+    zoneTree->spawnChild(parentIdx, requestNThreads, 1, levelData, dist);
     delete levelData;
 
     //Step 3: Recursive partition until nthreads satisfied

@@ -1,7 +1,7 @@
 #include "machine.h"
 #include <algorithm>
 
-Machine::Machine(bool SMT_):SMT(SMT_)
+Machine::Machine(int SMT_):SMT(SMT_)
 {
     initTopology();
 }
@@ -15,33 +15,33 @@ void Machine::initTopology()
 {
     hwloc_topology_init(&topology);
     hwloc_topology_load(topology);
-    numNode = hwloc_get_nbobjs_by_type(topology, HWLOC_OBJ_NUMANODE);
+    numNode = hwloc_get_nbobjs_by_type(topology, HWLOC_OBJ_PACKAGE);
+    numNode = std::max(1,numNode);
     topTree.resize(numNode);
     corePerNode.resize(numNode);
 
     numCore = 0;
     numPU = 0;
 
-    for(int i=0; i<numNode; ++i)
+   for(int i=0; i<numNode; ++i)
     {
         hwloc_cpuset_t totalCoreSet;
-        totalCoreSet = hwloc_get_obj_by_type(topology, HWLOC_OBJ_NUMANODE, i)->cpuset;
+
+        totalCoreSet = hwloc_get_obj_by_type(topology, HWLOC_OBJ_PACKAGE, i)->cpuset;
         //SMT considered
         int coreInNode = hwloc_get_nbobjs_inside_cpuset_by_type(topology, totalCoreSet, HWLOC_OBJ_CORE);
         numCore += coreInNode;
-        corePerNode[i] = numCore;
+        corePerNode[i] = coreInNode;
 
         for(int j=0; j<coreInNode; ++j)
         {
             hwloc_cpuset_t currCpuSet = (hwloc_get_obj_inside_cpuset_by_type(topology, totalCoreSet, HWLOC_OBJ_CORE, j)->cpuset);
 
             int puInNode = 0;
-            if(SMT)
-            {
-                puInNode = hwloc_get_nbobjs_inside_cpuset_by_type(topology, currCpuSet, HWLOC_OBJ_PU);
-            } else {
-                puInNode = 1;
-            }
+
+            puInNode = hwloc_get_nbobjs_inside_cpuset_by_type(topology, currCpuSet, HWLOC_OBJ_PU);
+            puInNode = std::min(SMT,puInNode);
+
             numPU += puInNode;
 
             for(int k=0; k<puInNode; ++k)
@@ -58,6 +58,9 @@ void Machine::initTopology()
     {
         sortSMT();
     }
+
+//    hwloc_get_cpubind(topology, master_affinity, HWLOC_CPUBIND_THREAD);
+//    INFO_PRINT("Node = %d Core = %d PU = %d", numNode, numCore, numPU);
 }
 
 //Sorts PU within a node such that 
@@ -96,6 +99,15 @@ int Machine::getNumCoreInNode(int logicalNodeId)
     return corePerNode[logicalNodeId];
 }
 
+//master should call it
+void Machine::resetMaster()
+{
+    int err = hwloc_set_cpubind(topology, master_affinity, HWLOC_CPUBIND_THREAD);
+    if(err == -1)
+    {
+        ERROR_PRINT("Master: thread binding could not be performed");
+    }
+}
 
 //logicalCPUid: first cores numbered from 1:numCoreInNode then SMT
 NAME_error Machine::pinThread(int logicalPUid, int logicalNodeid)

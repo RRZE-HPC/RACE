@@ -1,6 +1,7 @@
 #include "traverse.h"
 #include "utility.h"
 #include <set>
+#include <omp.h>
 
 Traverse::Traverse(Graph *graph_, dist_t dist_, int rangeLo_, int rangeHi_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),graphSize(graph_->graphData.size()),distFromRoot(NULL),perm(NULL),invPerm(NULL),levelData(NULL)
 {

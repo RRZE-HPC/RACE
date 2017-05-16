@@ -5,6 +5,7 @@
 #include "zone_tree.h"
 #include "error.h"
 #include "type.h"
+#include "thpool.h"
 #include <omp.h>
 
 class Pin{
@@ -12,7 +13,7 @@ class Pin{
         ZoneTree *zoneTree;
         std::vector<std::pair<int,int>> pinMap;
         Machine machine;
-        bool SMT;
+        int SMT;
         PinMethod method;
         void pinOrderRecursive(int parentIdx);
         void calcPinOrder();
@@ -23,10 +24,11 @@ class Pin{
         //For OMP: currently broken
         void pinApplicationRecursive(int parentIdx);
     public:
-        Pin(ZoneTree* zoneTree_, bool SMT_, PinMethod method_);
+        Pin(ZoneTree* zoneTree_, int SMT_, PinMethod method_);
         void pinInit();
         void pinThread(int pinOrder);
         void pinApplication();
+        void resetMaster();
 };
 
 #endif

@@ -31,6 +31,8 @@ set (SOURCES
     src/functionManager.cpp
     src/machine.cpp
     src/pin.cpp
+    src/level_pool.cpp
+    src/thpool.cpp
     )
 
 set (HEADERS
@@ -49,7 +51,14 @@ set (HEADERS
     include/functionManager.h
     include/machine.h
     include/pin.h
-    )
+    include/thpool.h
+    include/thpool.tpp
+    include/level_pool.h
+    include/timing.h
+    include/test.h
+    include/lock_less.h
+    include/fast_barrier.h
+   )
 
 
 set(HWLOC_INCLUDE_DIR HWLOC_INCLUDE_DIR-NOTFOUND CACHE PATH "Location of hwloc.h")
@@ -92,10 +101,10 @@ endif()
 
 set(HWLOC_LIBRARIES ${LIBHWLOC})
 
+set(NAME_THREAD_METHOD CACHE STRING "Which threading method should be used for
+the kernel: options are OpenMP or PThread")
 
-find_package(OpenMP)
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -std=c99 -Wall -Wextra -Werror -pedantic")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -std=c99 -Wall -Wextra -Werror -pedantic")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++0x -Wall -Wextra -Werror -pedantic")
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     set(CMAKE_INCLUDE_SYSTEM_FLAG_C "-isystem ") # Not present in Cmake 2.8.11.2
@@ -129,6 +138,8 @@ else()
     endif()
 endif()
 
+find_package(OpenMP)
+
 if (OPENMP_FOUND)
     set(NAME_USE_OPENMP 1 CACHE BOOL "Build with OpenMP")
     set(NAME_HAVE_OPENMP 1)
@@ -139,15 +150,24 @@ else ()
     set(NAME_HAVE_OPENMP 0)
 endif()
 
+if(NOT "${NAME_THREAD_METHOD}" STREQUAL "PThread")
+    set(NAME_KERNEL_THREAD_OMP 1)
+else ()
+    set(NAME_KERNEL_THREAD_OMP 0)
+endif()
+
+configure_file (
+    "${PROJECT_SOURCE_DIR}/include/config.h.in"
+    "${PROJECT_SOURCE_DIR}/include/config.h"
+)
+
+
 include_directories(${PROJECT_SOURCE_DIR}/include)
 add_library(NAME ${SOURCES})
 
-if (BUILTIN_HWLOC)
-    target_link_libraries(NAME "${PROJECT_BINARY_DIR}/hwloc-inst/lib/libhwloc.a")
-    include_directories(SYSTEM ${PROJECT_BINARY_DIR}/hwloc-inst/include)
-    add_dependencies(NAME hwloc)
-endif()
-
+target_link_libraries(NAME ${LIBHWLOC})
+include_directories(SYSTEM ${HWLOC_INCLUDE_DIR})
+add_dependencies(NAME hwloc)
 
 install(FILES ${HEADERS} DESTINATION include/NAME/)
 if (${BUILD_SHARED_LIBS})

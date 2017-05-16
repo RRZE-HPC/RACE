@@ -3,11 +3,13 @@
 #include "graph.h"
 #include "traverse.h"
 #include "zone_tree.h"
+#include "type.h"
 
 class LevelRecursion
 {
     private:
         Graph* graph;
+        dist_t dist;
         int requestNThreads;
         int availableNThreads;
         ZoneTree* zoneTree;
@@ -15,7 +17,7 @@ class LevelRecursion
         int* invPerm;
         bool recursivePartition(int parentIdx, int subRequestNThreads);
     public:
-        LevelRecursion(Graph* graph_, int requestNThreads_);
+        LevelRecursion(Graph* graph_, int requestNThreads_, dist_t dist_);
         ~LevelRecursion();
         void levelBalancing();
         void getPerm(int **perm_, int *len_);

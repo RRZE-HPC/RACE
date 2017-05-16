@@ -32,6 +32,7 @@ class LB{
         int* levelPtr;
         int* zonePtr;
         LevelData* levelData;
+        dist_t dist;
 
         int maxThreads;
         int nThreads;
@@ -43,19 +44,18 @@ class LB{
 
         void calcChunkSum(int *arr, bool forceRow=false);
         void calcZonePtr(int base);
-        int  findNeighbour(const Stat &stats, neighbour_t type, dist_t x);
+        int  findNeighbour(const Stat &stats, neighbour_t type);
         void moveOneStep(int toIdx, int fromIdx);
-        void splitZones(dist_t dist);
+        void splitZones();
 
     public:
-        LB(int nThreads_, LevelData* levelData_, LB_t lbTarget = NNZ); //constructor
+        LB(int nThreads_, LevelData* levelData_, dist_t dist_, LB_t lbTarget = NNZ); //constructor
         ~LB(); //destructor
 
         int getMaxThreads();
         int getNumThreads();
         void getZonePtr(int **zonePtr_, int *len, int base=0);
-        NAME_error D2LB();
-        NAME_error D1LB();
+        NAME_error balance();
 };
 
 

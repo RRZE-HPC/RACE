@@ -7,8 +7,9 @@
 #include "level_recursion.h"
 #include "functionManager.h"
 #include "machine.h"
-#include "pin.h"
 #include "type.h"
+#include "level_pool.h"
+#include "config.h"
 
 class NAMEInterface{
     private:
@@ -17,9 +18,9 @@ class NAMEInterface{
         dist_t dist;
         int requestedThreads;
         int availableThreads;
-        bool SMT;
+        int SMT;
         PinMethod pinMethod;
-        Pin *pin;
+        LevelPool* pool;
         int *initPerm;
         int *initInvPerm;
         int *rowPtr;
@@ -35,11 +36,9 @@ class NAMEInterface{
         bool detectConflict(std::vector<int> range1, std::vector<int> range2);
         bool recursiveChecker(int parent);
         bool D2Checker();
-
     public:
-        NAMEInterface(int nrow_, int nthreads_, dist_t dist_, int *rowPtr_, int *col_, bool SMT_=false, PinMethod method_=SCATTER, int *initPerm_=NULL, int *initInvPerm_=NULL);
+        NAMEInterface(int nrow_, int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int SMT_=1, PinMethod method_=SCATTER, int *initPerm_=NULL, int *initInvPerm_=NULL);
         ~NAMEInterface();
-
         //Pre-processing
         void NAMEColor();
         void printZoneTree();

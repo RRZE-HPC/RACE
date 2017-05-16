@@ -69,6 +69,8 @@
 #endif
 
 
+#define TIME_PRINT(...) {if (NAME_VERBOSITY) { PRINT(TIMING,ANSI_COLOR_GREEN,__VA_ARGS__); }}
+
 
 #ifdef NAME_PRINT_ONLYFIRST
     #define INFO_PRINT(...) {static int __printed = 0; if(!__printed && NAME_VERBOSITY) { PRINT(INFO,ANSI_COLOR_BLUE,__VA_ARGS__); __printed=1; }}
