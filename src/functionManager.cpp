@@ -82,6 +82,7 @@ void FuncManager::recursiveCall(int parentIdx)
         pool->tree[parentIdx].barrier();
     }
 }
+
 #endif
 
 void FuncManager::Run()

@@ -6,10 +6,10 @@
 #include "type.h"
 
 
-#define RECURSIVE_HELPER(this_fn, fn) \
+#define RECURSIVE_HELPER(this_fn, ...) \
     std::vector<int>* children = &(zoneTree->at(parentIdx).childrenZ);\
     int nthreads = children->size()/2;\
-    fn;\
+    __VA_ARGS__;\
     if(nthreads > 1)\
     {\
         for(int tid=0; tid<nthreads; ++tid)\
@@ -58,9 +58,11 @@ class LevelPool{
  //       Pin pin;
         LevelPool(ZoneTree *zoneTree_, int SMT, PinMethod pinMethod);
         ~LevelPool();
-          Pin pin;
-        //pool tree
-        thpool<int>* tree;
+        Pin pin;
+        //thread pool
+        thpool<int> pool;
+        //Team tree
+        team<int>* tree;
         //creates pinned pool
         void createPool();
         void pinPool();

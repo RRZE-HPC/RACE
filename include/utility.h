@@ -53,4 +53,6 @@ inline void updatePerm(int **mainPerm, int *currPerm, int len)
 
     delete[] totPerm;
 }
+
+void DUMMY(int ctr, bool flag);
 #endif

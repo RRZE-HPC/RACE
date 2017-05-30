@@ -1,9 +1,11 @@
 #include "level_pool.h"
 #include "functional"
 
-LevelPool::LevelPool(ZoneTree *zoneTree_, int SMT_, PinMethod pinMethod_):zoneTree(zoneTree_),pin(zoneTree_,SMT_, pinMethod_), tree(NULL)
+LevelPool::LevelPool(ZoneTree *zoneTree_, int SMT_, PinMethod pinMethod_):zoneTree(zoneTree_),pin(zoneTree_,SMT_, pinMethod_),tree(NULL)
 {
-    tree = new thpool<int> [zoneTree->size()];
+    int totThreads = zoneTree->at(0).nthreadsZ;
+    pool.init(totThreads);
+    tree = new team<int> [zoneTree->size()];
     pin.pinInit();
 }
 
@@ -16,7 +18,14 @@ LevelPool::~LevelPool()
 //Recursively spawn thread pools
 void LevelPool::createPoolRecursive(int parentIdx)
 {
-    RECURSIVE_HELPER(LevelPool::createPoolRecursive, tree[parentIdx].init(nthreads));
+    RECURSIVE_HELPER(LevelPool::createPoolRecursive,
+            std::vector<int> gid(static_cast<int>(children->size()/2.0));
+            for(unsigned i=0; i<gid.size(); ++i)
+            {
+                gid[i] = zoneTree->at(children->at(2*i)).pinOrder;
+            }
+            tree[parentIdx].init(gid, &pool)
+    );
 }
 
 void LevelPool::createPool()

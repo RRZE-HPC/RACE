@@ -32,7 +32,8 @@ set (SOURCES
     src/machine.cpp
     src/pin.cpp
     src/level_pool.cpp
-    src/thpool.cpp
+    src/dummy.cpp
+    src/signal.cpp
     )
 
 set (HEADERS
@@ -58,6 +59,8 @@ set (HEADERS
     include/test.h
     include/lock_less.h
     include/fast_barrier.h
+    include/spin_cond.h
+    include/signal.h
    )
 
 

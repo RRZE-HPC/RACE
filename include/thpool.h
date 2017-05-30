@@ -2,7 +2,6 @@
 #define NAME_THPOOL_H
 
 #include <unistd.h>
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -12,21 +11,11 @@
 #include <sys/prctl.h>
 #endif
 #include "error.h"
+#include "utility.h"
 #include <functional>
 #include <vector>
 
-#define PTHREAD_BARRIER
-
-//#define FAST_BARRIER
-
-#ifdef FAST_BARRIER
-#include "fast_barrier.h"
-#define pthread_barrier_t fast_barrier_t
-#define pthread_barrier_init(B, A, N) (fast_barrier_init((B),(A), (N)))
-#define pthread_barrier_destroy(B) (fast_barrier_destroy(B))
-#define pthread_barrier_wait fast_barrier_wait
-#endif
-
+#include "signal.h"
 
 /* Job */
 template<typename arg_t> struct job{
@@ -37,52 +26,71 @@ template<typename arg_t> struct job{
 template<typename arg_t>
 struct thpool;
 
+template<typename arg_t>
+struct team;
+
+
 /* Thread */
 template<typename arg_t>
 struct thread{
-    int id;                              /* friendly id               */
-    pthread_t *pthread;                  /* pointer to actual thread  */
+    int gid;                         /* friendly id               */
+    pthread_t *pthread;              /* pointer to actual thread  */
     job<arg_t> myJob;
     thpool<arg_t>* pool;
-    pthread_mutex_t*  jobLock;         /* used for thread count etc */
-    pthread_cond_t*   jobArrived;       /* signal to wake           */
+    team<arg_t>* workerTeam;      /*Current team in which the thread works*/
+    Signal* signal;                 /* Signal for job wake      */
+
     volatile bool jobPresent;
+    int NAME_BLOCKCTR;
     //constructor
     thread();
     ~thread();
+    void kill();
     void init(int id, thpool<arg_t>* pool_);
-    void addJob(std::function<void(arg_t)>, arg_t arg_);
+    void addJob(std::function<void(arg_t)>, arg_t arg_, team<arg_t> *currTeam_);
     void finishJob();
 };
 
 template<typename arg_t>
 void run(thread<arg_t>* thread);
 
-
 /* Threadpool */
 template<typename arg_t>
 struct thpool{
-    thread<arg_t>*   threads;            /* pointer to threads        */
+    thread<arg_t>*   threads;            /*threads in the pool        */
     int num_threads;                     /* threads currently alive   */
     int num_slaves;                      /* number of slave threads   */
     volatile int num_threads_alive;      /* threads currently working */
-    volatile int num_jobs;               /* jobs  currently done      */
     pthread_mutex_t*  thcount_lock;      /* used for thread count etc */
-    pthread_cond_t*  threads_all_idle;   /* signal to wait            */
-    pthread_mutex_t*  jobLock;        /* used for thread count etc */
-    pthread_cond_t*   jobArrived;        /* signal to wake           */
-    pthread_barrier_t* pool_barrier;
     volatile bool interrupt;
-    void init(int numThreads_);
-    bool initialized;
+    int NAME_BLOCKCTR;
 
     thpool();
+    void init(int numThreads_);
     ~thpool();
-    void addJob(int tid, std::function<void(arg_t)>, arg_t arg_);
-    void doJob();
-    void barrier();
+    //TODO sleep and wake functionality
+    bool initialized;
 };
 
+/* This is the team which executes a given job*/
+template<typename arg_t>
+struct team{
+    thread<arg_t>** taskForce;
+    int num_threads;
+    int num_slaves;
+    int NAME_BLOCKCTR;
+    bool initialized;
+    volatile int num_jobs;
+
+    Signal* barrierSignal;
+
+    team();
+    ~team();
+    //tid are global id referring which thrads belong to the team
+    void init(std::vector<int> tid, thpool<arg_t>* pool);
+    void addJob(int tid, std::function<void(arg_t)>, arg_t arg_);
+    void barrier();
+};
 
 #include "thpool.tpp"
 

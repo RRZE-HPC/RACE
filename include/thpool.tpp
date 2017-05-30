@@ -7,10 +7,9 @@
 #include<malloc.h>
 
 #define DEBUG 0
-//#define SIGNAL_JOB
 
     template< typename arg_t>
-thread<arg_t>::thread():pthread(NULL),jobPresent(false)//,myJob(NULL)
+thread<arg_t>::thread():pthread(NULL),workerTeam(NULL),jobPresent(false)
 {
     pthread = new pthread_t;
 }
@@ -19,27 +18,27 @@ thread<arg_t>::thread():pthread(NULL),jobPresent(false)//,myJob(NULL)
 thread<arg_t>::~thread()
 {
     delete pthread;
-    /*if(myJob)
-    {
-        delete myJob;
-    }*/
+    delete signal;
+}
 
-    delete jobLock;
-    delete jobArrived;
+/* interrupt has to be called before; coming to this*/
+    template<typename arg_t>
+void thread<arg_t>::kill()
+{
+    jobPresent=true;
+    //send signal to tell the thread to wake and destroy
+    sendSignal(signal);
 }
 
     template<typename arg_t>
-void thread<arg_t>::init (int id_, thpool<arg_t>* pool_)
+void thread<arg_t>::init (int gid_, thpool<arg_t>* pool_)
 {
-    id = id_;
+    gid = gid_;
     pool = pool_;
 
-    jobLock = new pthread_mutex_t;
-    pthread_mutex_init(jobLock, NULL);
-    jobArrived = new pthread_cond_t;
-    pthread_cond_init(jobArrived, NULL);
+    signal = new Signal(pool->NAME_BLOCKCTR);
 
-    if(id != 0)
+    if(gid != 0)
     {
         pthread_create(pthread, NULL, (void *(*)(void *)) run<arg_t>, this);
         pthread_detach(*pthread);
@@ -59,40 +58,12 @@ void run(thread<arg_t> * thread)
     pool->num_threads_alive++;
     pthread_mutex_unlock(pool->thcount_lock);
 
-    while(!(pool->interrupt))
+    while(!(__sync_fetch_and_add(&(pool->interrupt),0)))
     {
-        /*timeval signal_tym;
-          gettimeofday(&signal_tym, NULL);
-          printf("tid = %d(%u) waits at %f\n",thread->id, (unsigned) pthread_self(), signal_tym.tv_sec + signal_tym.tv_usec*1e-6);
-          */
-         /*gettimeofday(&signal_tym, NULL);
-           printf("tid = %d(%u) recieves signal at %f\n",thread->id, (unsigned) pthread_self(), signal_tym.tv_sec + signal_tym.tv_usec*1e-6);
-         */
+        //wait till jobPresent becomes true
+        waitSignal(thread->signal, thread->jobPresent, true);
 
-#ifdef SIGNAL_JOB
-        pthread_mutex_lock(thread->jobLock);
-        while((!thread->jobPresent) && (!pool->interrupt))
-        {
-            //wait till job arrives
-#if DEBUG
-            printf("tid = %d(%u) arrives to wait\n",thread->id, (unsigned) pthread_self());
-#endif
-            //   timeval signal_tym;
-            //   gettimeofday(&signal_tym, NULL);
-            //    printf("tid = %d(%u) waits at %f\n",thread->id, (unsigned) pthread_self(), signal_tym.tv_sec + signal_tym.tv_usec*1e-6);
-
-            pthread_cond_wait(thread->jobArrived, thread->jobLock);
-#if DEBUG
-            gettimeofday(&signal_tym, NULL);
-            printf("tid = %d(%u) recieves signal at %f\n",thread->id, (unsigned) pthread_self(), signal_tym.tv_sec + signal_tym.tv_usec*1e-6);
-#endif
-        }
-        pthread_mutex_unlock(thread->jobLock);
-#else
-        pthread_barrier_wait(pool->pool_barrier);
-#endif
-
-        if(thread->jobPresent)
+        if(thread->jobPresent && (!pool->interrupt))
         {
 #if DEBUG
             printf("tid = %u doing job\n",(unsigned) (* (thread->pthread)));
@@ -103,22 +74,7 @@ void run(thread<arg_t> * thread)
             //STOP_TIME(work);
             //finish job
             thread->finishJob();
-#if DEBUG
-            printf("tid = %u finished job\n",(unsigned) (* (thread->pthread)));
-#endif
-
-
-#ifdef PTHREAD_BARRIER
-            pthread_barrier_wait(pool->pool_barrier);
-#else
-            pthread_mutex_lock(pool->thcount_lock);
-            pool->num_jobs++;
-            if(pool->num_jobs == pool->num_slaves) {
-                pthread_cond_signal(pool->threads_all_idle);
-            }
-            pthread_mutex_unlock(pool->thcount_lock);
-#endif
-        }
+       }
     }
 
     pthread_mutex_lock(pool->thcount_lock);
@@ -127,69 +83,78 @@ void run(thread<arg_t> * thread)
 }
 
     template<typename arg_t>
-void thread<arg_t>::addJob(std::function<void(arg_t)> function_, arg_t arg_)
+void thread<arg_t>::addJob(std::function<void(arg_t)> function_, arg_t arg_, team<arg_t>* currTeam_)
 {
+    bool master = ( pthread_self() == (*pthread) );
     //START_TIME(add_job);
-   /* if(myJob)
+
+    if(jobPresent && !master)
     {
-        ERROR_PRINT("thread = %u, Previous job incomplete", (unsigned)pthread_self());
+        ERROR_PRINT("thread = %d(%u), Previous job incomplete", gid, (unsigned)pthread_self());
     }
-    else*/
+    else
     {
-        //        pthread_mutex_lock(pool->jobLock);
-    //    myJob = new job<arg_t>;
-       // myJob = (job<arg_t>*)memalign(128, sizeof(job<arg_t>));
         myJob.function = function_;
         myJob.arg = arg_;
+        pthread_mutex_lock(signal->lock);
         jobPresent = true;
+        pthread_mutex_unlock(signal->lock);
 
-        //master thread does not require this signal
-        /*  if(id > 0)
-            {
-        //START_TIME(signal_job_arrival);
-        //signal arrival of Job
-#if DEBUG
-printf("tid = %u sending signal to %u\n",(unsigned) pthread_self(), (unsigned) (*pthread));
-#endif
-pthread_cond_signal(jobArrived);
-#if DEBUG
-printf("tid = %u sent signal to %u\n",(unsigned) pthread_self(), (unsigned) (*pthread));
-#endif
-        //STOP_TIME(signal_job_arrival)
-        }*/
+        /*all the slaves belong to the current team,
+         * master belongs to the parent team, this
+         * is because master is a worker of previous
+         * team and here he is the master; so don't
+         * rewrite his team */
+        if(!master)
+        {
+            workerTeam = currTeam_;
+            sendSignal(signal);
+        }
 
-        //START_TIME(mutex_unlock);
-        //        pthread_mutex_unlock(pool->jobLock);
-        //STOP_TIME(mutex_unlock);
-#if DEBUG
-        printf("tid = %u mutex unlocked\n",(unsigned) pthread_self());
-#endif
-
-        //STOP_TIME(add_job)
     }
+    //STOP_TIME(add_job);
 }
 
     template<typename arg_t>
 void thread<arg_t>::finishJob()
 {
-    /*if(myJob==NULL)
+    bool master = ( pthread_self() == (*pthread) );
+
+    if(!jobPresent && !master)
     {
         ERROR_PRINT("Nothing to finish; job is already complete");
     }
-    else*/
+    else
     {
-        //pthread_mutex_init(jobMutex, NULL);
-        //pthread_cond_init(jobArrived, NULL);
-     //   delete myJob;
-       // free(myJob);
-       // myJob = NULL;
-         jobPresent = false;
+        jobPresent = false;
+#if DEBUG
+        printf("tid = %d(%u) finished job\n", gid, (unsigned) (* (pthread)));
+#endif
+
+        if(__sync_add_and_fetch(&(workerTeam->num_jobs), 1) == workerTeam->num_slaves)
+        {
+#if DEBUG
+            printf("tid = %d(%u) sending barrier signal\n", gid, (unsigned) (* (pthread)));
+#endif
+            sendSignal(workerTeam->barrierSignal);
+#if DEBUG
+            printf("tid = %d(%u) sent barrier signal\n", gid, (unsigned) (* (pthread)));
+#endif
+        }
     }
 }
 
     template<typename arg_t>
 thpool<arg_t>::thpool():initialized(false)
 {
+    char* NAME_BLOCKCTR_str = getenv("NAME_BLOCKCTR");
+    if(NAME_BLOCKCTR_str == NULL)
+    {
+        NAME_BLOCKCTR = 200000;
+    }
+    else {
+        NAME_BLOCKCTR = atoi(NAME_BLOCKCTR_str);
+    }
 }
 
     template<typename arg_t>
@@ -200,21 +165,11 @@ void thpool<arg_t>::init(int numThreads_)
         initialized = true;
         num_threads  = std::max(numThreads_,1);
         num_threads_alive = 0;
-        num_jobs = 0;
         interrupt = false;
-        num_slaves = num_threads-1; //except master
 
         thcount_lock = new pthread_mutex_t;
-        threads_all_idle = new pthread_cond_t;
-        jobArrived = new pthread_cond_t;
-        jobLock = new pthread_mutex_t;
-
-        pool_barrier = new pthread_barrier_t;
-        pthread_barrier_init(pool_barrier, NULL, num_threads);
         pthread_mutex_init(thcount_lock, NULL);
-        pthread_cond_init(threads_all_idle, NULL);
-        pthread_mutex_init(jobLock, NULL);
-        pthread_cond_init(jobArrived, NULL);
+
         //allocating threads
         threads = new thread<arg_t>[num_threads];
 
@@ -223,8 +178,9 @@ void thpool<arg_t>::init(int numThreads_)
             threads[tid].init(tid, this);
         }
 
-        while(num_threads_alive != (num_slaves)){/*wait till all spawned threads are initialized*/ }
+        while(__sync_fetch_and_add(&num_threads_alive,0) != (num_threads-1)){/*wait till all spawned threads are initialized*/ }
     }
+
 }
 
     template<typename arg_t>
@@ -235,105 +191,98 @@ thpool<arg_t>::~thpool()
     {
         interrupt = true;
 
-#ifdef SIGNAL_JOB
-        /*pthread_mutex_lock(jobLock);
-          pthread_cond_broadcast(jobArrived);
-          pthread_mutex_unlock(jobLock);*/
-
+        //give Signal
         for(int i=1; i<num_threads; ++i)
         {
-            pthread_mutex_lock(threads[i].jobLock);
-            pthread_cond_signal(threads[i].jobArrived);
-            pthread_mutex_unlock(threads[i].jobLock);
+            threads[i].kill();
         }
-#else
-        pthread_barrier_wait(pool_barrier);
-#endif
 
-        while(num_threads_alive != 0) { /*wait till all are destroyed*/ }
+        while(__sync_fetch_and_add(&num_threads_alive,0) != 0) {/*wait till all are destroyed*/ }
         delete thcount_lock;
-        delete threads_all_idle;
-        delete jobLock;
-        delete jobArrived;
-        pthread_barrier_destroy(pool_barrier);
-        delete pool_barrier;
         delete[] threads;
     }
 }
 
     template<typename arg_t>
-void thpool<arg_t>::addJob(int tid, std::function<void(arg_t)> function_, arg_t arg_)
+team<arg_t>::team():initialized(false)
+{
+}
+
+    template<typename arg_t>
+void team<arg_t>::init(std::vector<int> tid, thpool<arg_t>* pool)
+{
+    num_threads = tid.size();
+    if(num_threads > 0)
+    {
+        initialized = true;
+
+        num_slaves = num_threads-1;
+        num_jobs = 0;
+        //Construct task force
+        taskForce = new thread<arg_t>*[num_threads];
+
+        for(int i=0; i<num_threads; ++i)
+        {
+            taskForce[i] = &(pool->threads[tid[i]]);
+        }
+
+        NAME_BLOCKCTR = pool->NAME_BLOCKCTR;
+
+        barrierSignal = new Signal(NAME_BLOCKCTR);
+    }
+}
+
+    template<typename arg_t>
+team<arg_t>::~team()
+{
+    if(initialized)
+    {
+        delete[] taskForce;
+        delete barrierSignal;
+    }
+}
+    template<typename arg_t>
+void team<arg_t>::addJob(int tid, std::function<void(arg_t)> function_, arg_t arg_)
 {
     if(tid >= 0 && tid < num_threads)
     {
-        threads[tid].addJob(function_, arg_);
+#if DEBUG
+        printf("tid = %d(%u), job added\n",tid, (unsigned)*(taskForce[tid]->pthread));
+#endif
+        taskForce[tid]->addJob(function_, arg_, this);
     }
     else
     {
-        ERROR_PRINT("No job added; specified thread id does not exists");
+        ERROR_PRINT("No job added; specified thread gid does not exists");
     }
 }
 
+/* Master does his job and waits
+ * until all the submitted jobs have finished */
     template<typename arg_t>
-void thpool<arg_t>::doJob()
+void team<arg_t>::barrier()
 {
-#ifdef SIGNAL_JOB
-    for(int i=1; i<num_threads; ++i)
-    {
-        pthread_mutex_lock(threads[i].jobLock);
-        pthread_cond_signal(threads[i].jobArrived);
-        pthread_mutex_unlock(threads[i].jobLock);
-    }
-    /* timeval signal_tym;
-       gettimeofday(&signal_tym, NULL);
-       printf("tid = %d(%u) waits at %f\n",0, (unsigned) pthread_self(), signal_tym.tv_sec + signal_tym.tv_usec*1e-6);
-       */
-#else
-    pthread_barrier_wait(pool_barrier);
-#endif
-    /*
-       gettimeofday(&signal_tym, NULL);
-       printf("tid = %d(%u) recieves signal at %f\n",0, (unsigned) pthread_self(), signal_tym.tv_sec + signal_tym.tv_usec*1e-6);
-       */
-
-    //    if(threads[0].myJob)
-    {
-        //do master job
-        //START_TIME(work);
+    //current master does his job
 #if DEBUG
-        printf("tid = %u doing job\n",(unsigned)pthread_self());
+    printf("master: tid = %u doing job\n",(unsigned) (pthread_self()));
 #endif
-        threads[0].myJob.function(threads[0].myJob.arg);
+
+    taskForce[0]->myJob.function(taskForce[0]->myJob.arg);
+    taskForce[0]->jobPresent = false;
+
 #if DEBUG
-        printf("tid = %u finished job\n",(unsigned)pthread_self());
+    printf("master: tid = %u finished job\n",(unsigned) (pthread_self()));
 #endif
-        //STOP_TIME(work);
 
-        threads[0].finishJob();
-    }
-
-}
-
-/* Wait until all the submitted jobs have finished */
-
-    template<typename arg_t>
-void thpool<arg_t>::barrier()
-{
-    doJob();
 
     START_TIME(Barrier);
 
-#ifdef PTHREAD_BARRIER
-    pthread_barrier_wait(pool_barrier);
-#else
-    pthread_mutex_lock(thcount_lock);
-    while(num_jobs != num_slaves) {
-        pthread_cond_wait(threads_all_idle, thcount_lock);
-    }
-    num_jobs = 0;
-    pthread_cond_init(threads_all_idle, NULL);
-    pthread_mutex_unlock(thcount_lock);
+    waitSignal(barrierSignal, num_jobs, num_slaves, num_jobs=0);
+
+#if DEBUG
+    printf("master: tid = %u barrier done\n",(unsigned) (pthread_self()));
 #endif
+
 
     STOP_TIME(Barrier);
 }

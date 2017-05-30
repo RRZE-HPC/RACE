@@ -45,7 +45,6 @@ void NAMEInterface::NAMEColor()
 #else
     pool->createPool();//creates pinned thread pools
 #endif
-
     printZoneTree();
 
     /* printf("Checking Coloring\n");
