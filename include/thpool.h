@@ -83,7 +83,7 @@ struct team{
     volatile int num_jobs;
 
     Signal* barrierSignal;
-
+    double barrierTime;
     team();
     ~team();
     //tid are global id referring which thrads belong to the team

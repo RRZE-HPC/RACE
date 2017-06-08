@@ -22,6 +22,12 @@ enum PinMethod{
     SCATTER
 };
 
+/*Load balncing mode, based on efficiency or just minimise effRow*/
+enum LBMode{
+   MIN,
+   EFFICIENCY
+};
+
 struct ZoneLeaf;
 
 typedef std::vector<ZoneLeaf> tree_t;

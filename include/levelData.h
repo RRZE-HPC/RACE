@@ -9,6 +9,7 @@ struct LevelData{
     int totalLevel;
 
     LevelData();
+    LevelData& operator=(const LevelData& other);
     ~LevelData();
 };
 

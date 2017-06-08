@@ -32,7 +32,8 @@ class NAMEInterface{
         int *invPerm;
         int invPermLen;
         ZoneTree* zoneTree;
-        std::vector<FuncManager> funMan;
+        std::vector<FuncManager*> funMan;
+//	FuncManager *funMan;
         bool detectConflict(std::vector<int> range1, std::vector<int> range2);
         bool recursiveChecker(int parent);
         bool D2Checker();
@@ -50,6 +51,7 @@ class NAMEInterface{
         //Execution
         int registerFunction(void (*f) (int,int,void *), void* args);
         void executeFunction(int funcId);
+	void resetTime();
 };
 
 #endif

@@ -1,6 +1,7 @@
 #ifndef NAME_TRAVERSE_H
 #define NAME_TRAVERSE_H
 #include <vector>
+#include <map>
 #include "type.h"
 #include "error.h"
 #include "graph.h"
@@ -11,9 +12,11 @@ class Graph;
 class Traverse{
     private:
         Graph *graph;
+	static std::map<int, LevelData> cachedData;	
         dist_t dist;
         int rangeLo;
         int rangeHi;
+	int parentIdx;
         //Size without pure diagonal elements
         int graphSize;
 
@@ -30,7 +33,7 @@ class Traverse{
         void permuteGraph();
     public:
         //constructor
-        Traverse(Graph *graph_, dist_t dist, int rangeLo_=0, int rangeHi_=-1);
+        Traverse(Graph *graph_, dist_t dist, int rangeLo_=0, int rangeHi_=-1, int parentIdx=0);
         ~Traverse();
         void calculateDistance();
 

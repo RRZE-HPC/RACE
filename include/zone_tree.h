@@ -12,6 +12,7 @@ struct ZoneLeaf{
     int effRowZ;
     int pinOrder;
     bool reachedLimit;
+    double time;
     ZoneLeaf();
     ZoneLeaf(int rangeLo, int rangeHi, int parentIdx);
 };
@@ -35,6 +36,7 @@ class ZoneTree{
         ZoneLeaf& cachedAt(unsigned idx);
         void updateTreeEffRow(int parentIdx);
         void updateTreeNThreads(int parentIdx);
+        void updateTimeRecursive(int parentIdx);
 
     public:
         tree_t *tree;
@@ -55,8 +57,10 @@ class ZoneTree{
          * level to be partitioned
          * param[out] boolean indicating whether the request could be satisfied
          */
-        bool spawnChild(int parentIdx, int requestNthreads, int startThread, LevelData* levelData, dist_t dist);
+        bool spawnChild(int parentIdx, int requestNthreads, int startThread, LevelData* levelData, dist_t dist, LBMode mode=MIN, double eff=0);
         KeyChild findKeyChild(int parentIdx);
+	void resetTime();
+	void updateTime();
 };
 
 #endif

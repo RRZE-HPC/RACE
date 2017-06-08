@@ -15,7 +15,10 @@ class LevelRecursion
         ZoneTree* zoneTree;
         int* perm;
         int* invPerm;
-        bool recursivePartition(int parentIdx, int subRequestNThreads);
+        bool recursivePartition(int parentIdx, int subRequestNThreads, int currLevel);
+	//stores a vector of efficiency at different levels
+	std::vector<double> eff_vec;
+	double efficiency(unsigned levelNum);
     public:
         LevelRecursion(Graph* graph_, int requestNThreads_, dist_t dist_);
         ~LevelRecursion();

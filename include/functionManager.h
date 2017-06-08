@@ -8,6 +8,10 @@
 #include "level_pool.h"
 #include "timing.h"
 
+class FuncManager;
+
+void recursiveCall(FuncManager* funMan, int parent);
+
 class FuncManager
 {
     private:
@@ -16,13 +20,17 @@ class FuncManager
         void* args;
         ZoneTree* zoneTree;
         LevelPool* pool;
-        void recursiveCall(int parent);
-        double *a, *b, *c, *d;
-        int len;
+        friend void recursiveCall(FuncManager* funMan, int parent);
+	std::function<void(int)> recursiveFun;
+        //double *a, *b, *c, *d;
+        //int len;
     public:
         FuncManager(void (*f_) (int,int,void *), void* args_, ZoneTree *zoneTree_, LevelPool* pool_);
+	FuncManager(const FuncManager &obj);
         ~FuncManager();
         void Run();
+	void RunOMP();
+//	double barrierTime;
 };
 
 #endif

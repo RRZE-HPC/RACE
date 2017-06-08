@@ -1,19 +1,36 @@
 #include "functionManager.h"
 #include "test.h"
+#include <iostream>
+#include <typeinfo>
 
 FuncManager::FuncManager(void (*f_) (int,int,void*), void*args_, ZoneTree *zoneTree_, LevelPool* pool_):func(f_),args(args_),zoneTree(zoneTree_), pool(pool_)
 {
 //    func = std::bind(f_,*this,std::placeholders::_1,std::placeholders::_2,args);
-/*    len = 1024*1024;
+    /*len = 72*72*72;
     a = new double[len];
     b = new double[len];
     c = new double[len];
-    d = new double[len];*/
+    d = new double[len];
+	*/
+  //  barrierTime = 0;   
+    recursiveFun = std::bind(recursiveCall, this, std::placeholders::_1);	
 }
 
+FuncManager::FuncManager(const FuncManager &obj)
+{
+    printf("Copy constructor called\n");
+    func = obj.func;
+    std::cout<<"fn type = "<<typeid(obj.func).name() << std::endl;
+    printf("copied fn\n");
+    zoneTree = obj.zoneTree;
+    args = obj.args;
+    pool = obj.pool;
+    printf("finished copying\n");
+}
+    
 FuncManager::~FuncManager()
 {
-/*    delete[] a;
+  /*  delete[] a;
     delete[] b;
     delete[] c;
     delete[] d;
@@ -53,33 +70,47 @@ void FuncManager::recursiveCall(int parent)
 }
 #else
 //PTHREAD implementation
-void FuncManager::recursiveCall(int parentIdx)
+void recursiveCall(FuncManager* funMan, int parentIdx)
 {
-    std::vector<int>* children = &(zoneTree->at(parentIdx).childrenZ);
+    std::vector<int>* children = &(funMan->zoneTree->at(parentIdx).childrenZ);
     int nthreads = children->size()/2;
     if(nthreads <= 1)
     {
         //        int pinOrder = zoneTree->at(parentIdx).pinOrder;
         //        printf(" pinOrder = %d, cpu = %d\n",pinOrder,sched_getcpu());
-        std::vector<int>* range = &zoneTree->at(parentIdx).valueZ;
-        func(range->at(0),range->at(1),args);
+        std::vector<int>* range = &funMan->zoneTree->at(parentIdx).valueZ;
+	START_TIME(func);
+        funMan->func(range->at(0),range->at(1), funMan->args);
+	STOP_TIME(func);
+	funMan->zoneTree->at(parentIdx).time += GET_TIME(func);
+	//test(funMan->a,funMan->b,funMan->c,funMan->d,range->at(0), range->at(1),1);
         //  test(1);
         // sleep(1);
     }
     else
     {
+	for(int tid=0; tid<nthreads; ++tid)
+        {
+           //pool->tree[parentIdx].addJob(tid, std::bind(test,a,b,c,d, tid*len/2.0, (tid+1)*len/2.0, std::placeholders::_1), 1);
+            funMan->pool->tree[parentIdx].addJob(tid, funMan->recursiveFun, children->at(2*tid) );
+        }
+	funMan->pool->tree[parentIdx].barrier();
+	/*if(parentIdx == 0)
+	{
+		funMan->barrierTime=funMan->pool->tree[parentIdx].barrierTime;
+	}*/
+
         for(int tid=0; tid<nthreads; ++tid)
         {
-            //pool->tree[parentIdx].addJob(tid, std::bind(test,a,b,c,d, tid*len/2.0, (tid+1)*len/2.0, std::placeholders::_1), 1);
-            pool->tree[parentIdx].addJob(tid, std::bind(&FuncManager::recursiveCall,this, std::placeholders::_1), children->at(2*tid) );
+           //pool->tree[parentIdx].addJob(tid, std::bind(test,a,b,c,d, tid*len/2.0, (tid+1)*len/2.0, std::placeholders::_1), 1);
+            funMan->pool->tree[parentIdx].addJob(tid, funMan->recursiveFun,  children->at(2*tid+1));
         }
-        pool->tree[parentIdx].barrier();
-        for(int tid=0; tid<nthreads; ++tid)
-        {
-            //pool->tree[parentIdx].addJob(tid, std::bind(test,a,b,c,d, tid*len/2.0, (tid+1)*len/2.0, std::placeholders::_1), 1);
-            pool->tree[parentIdx].addJob(tid, std::bind(&FuncManager::recursiveCall,this, std::placeholders::_1), children->at(2*tid+1));
-        }
-        pool->tree[parentIdx].barrier();
+	 funMan->pool->tree[parentIdx].barrier();
+	 /*if(parentIdx == 0)
+	 {
+		funMan->barrierTime+=funMan->pool->tree[parentIdx].barrierTime;
+	 }*/
+
     }
 }
 
@@ -99,16 +130,22 @@ void FuncManager::Run()
     //set nested parallelism
     omp_set_nested(1);
     omp_set_dynamic(0);
-
-    recursiveCall(root);
+    recursiveCall(this, root);
 
     //reset states
     omp_set_nested(resetNestedState);
     omp_set_dynamic(resetDynamicState);
 #else
-    START_TIME(main_fn_call);
-    recursiveCall(root);
-    STOP_TIME(main_fn_call)
+
+   // START_TIME(main_fn_call);
+    /*recursiveCall(this, root);*/
+    recursiveFun(root);
+    //STOP_TIME(main_fn_call)
 #endif
+}
+
+void FuncManager::RunOMP()
+{
+	//test_omp(a,b,c,d,0,len,1);
 }
 

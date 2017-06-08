@@ -12,6 +12,27 @@ LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, dist_t dist_
         perm[i] = i;
         invPerm[i] = i;
     }
+
+    double default_eff = 40;
+    char *lvlEff = getenv("NAME_EFFICIENCY");
+    if(lvlEff == NULL)
+    {
+	eff_vec.push_back(default_eff);
+    } else {
+        eff_vec.push_back(default_eff);
+        char* token = strtok(lvlEff, ",");
+    	while(token != NULL)
+	{
+	    eff_vec.push_back(atof(token));
+	    token = strtok(NULL, ",");
+	}
+   }
+
+    printf("Efficiency Vector = \n");
+    for(unsigned i=0; i<eff_vec.size(); ++i)
+    {
+	printf("%f\n",eff_vec[i]);
+    }
 }
 
 LevelRecursion::~LevelRecursion()
@@ -32,6 +53,17 @@ LevelRecursion::~LevelRecursion()
     }
 }
 
+//returns efficiency of each level
+double LevelRecursion::efficiency(unsigned levelNum)
+{
+    if(levelNum < eff_vec.size())
+    {
+	return eff_vec[levelNum];
+    } else {
+	return eff_vec[0];
+    }
+}
+
 ZoneTree* LevelRecursion::getZoneTree()
 {
     ZoneTree* toRet = zoneTree;
@@ -39,11 +71,11 @@ ZoneTree* LevelRecursion::getZoneTree()
     return toRet;
 }
 
-bool LevelRecursion::recursivePartition(int parentIdx, int subRequestNThreads)
+bool LevelRecursion::recursivePartition(int parentIdx, int subRequestNThreads, int currLevel)
 {
     int obtainedNThreads = zoneTree->at(parentIdx).nthreadsZ;
     bool glbBreak = false;
-
+   
     while(obtainedNThreads < subRequestNThreads)
     {
         KeyChild keyChild;
@@ -64,7 +96,7 @@ bool LevelRecursion::recursivePartition(int parentIdx, int subRequestNThreads)
                 std::vector<int> range = zoneTree->at(currIdx).valueZ;
 
                 //Traverse
-                Traverse traverse(graph, dist, range[0], range[1]);
+                Traverse traverse(graph, dist, range[0], range[1], currIdx);
                 traverse.calculateDistance();
                 int *levelPerm = NULL;
                 int len;
@@ -74,7 +106,7 @@ bool LevelRecursion::recursivePartition(int parentIdx, int subRequestNThreads)
 
                 LevelData* levelData = traverse.getLevelData();
                 int currIdxNThreads = zoneTree->at(currIdx).nthreadsZ;
-                bool locFlag = zoneTree->spawnChild(currIdx, currIdxNThreads+1, currIdxNThreads, levelData, dist);
+                bool locFlag = zoneTree->spawnChild(currIdx, currIdxNThreads+1, currIdxNThreads, levelData, dist, EFFICIENCY, efficiency(currLevel));
                 delete levelData;
 
                 if(!locFlag){
@@ -84,7 +116,7 @@ bool LevelRecursion::recursivePartition(int parentIdx, int subRequestNThreads)
                         glbBreakBlock[i] = true;
                     }
                     if(subAvailableNThreads > 1) {
-                        glbBreakBlock[i] = recursivePartition(currIdx, currIdxNThreads+1);
+                        glbBreakBlock[i] = recursivePartition(currIdx, currIdxNThreads+1, currLevel+1);
                     }
                 }
             } else {
@@ -130,11 +162,12 @@ void LevelRecursion::levelBalancing()
     updatePerm(&perm, levelPerm, len);
     delete[] levelPerm;
     LevelData* levelData = traverse.getLevelData();
-    zoneTree->spawnChild(parentIdx, requestNThreads, 1, levelData, dist);
+    int currLevel = 1;
+    zoneTree->spawnChild(parentIdx, requestNThreads, 1, levelData, dist, EFFICIENCY, efficiency(currLevel));
     delete levelData;
 
     //Step 3: Recursive partition until nthreads satisfied
-    bool glbBreak = recursivePartition(parentIdx, requestNThreads);
+    bool glbBreak = recursivePartition(parentIdx, requestNThreads, currLevel+1);
 
     availableNThreads = zoneTree->at(0).nthreadsZ;
 

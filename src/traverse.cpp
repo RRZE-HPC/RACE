@@ -3,7 +3,8 @@
 #include <set>
 #include <omp.h>
 
-Traverse::Traverse(Graph *graph_, dist_t dist_, int rangeLo_, int rangeHi_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),graphSize(graph_->graphData.size()),distFromRoot(NULL),perm(NULL),invPerm(NULL),levelData(NULL)
+std::map<int, LevelData> Traverse::cachedData;
+Traverse::Traverse(Graph *graph_, dist_t dist_, int rangeLo_, int rangeHi_, int parentIdx_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_),graphSize(graph_->graphData.size()),distFromRoot(NULL),perm(NULL),invPerm(NULL),levelData(NULL)
 {
     if(rangeHi == -1)
     {
@@ -84,6 +85,7 @@ int Counter::val = 0;
 
 void Counter::add()
 {
+#pragma omp atomic update
     val++;
 }
 
@@ -94,6 +96,15 @@ void Counter::reset()
 
 void Traverse::calculateDistance()
 {
+    printf("parentIdx = %d\n",parentIdx);
+    //traverse only if level has not been cached
+    if(cachedData.find(parentIdx) != cachedData.end())	
+    {
+	printf("Retrieving from cache\n");
+	(*levelData) = cachedData[parentIdx];
+    }
+    else
+    {
     bool marked_all = false;
     int root = rangeLo;
     std::vector<int> currChildren;
@@ -107,18 +118,24 @@ void Traverse::calculateDistance()
         marked_all = true;
         std::set<int> children;
         //in parallel
+	#pragma omp parallel for  shared(marked_all)
         for(unsigned i=0; i<currChildren.size(); ++i) {
             std::vector<int> nxtChildren = markChildren(currChildren[i],currLvl);
             //atomic needed
-            if(!(nxtChildren.empty()))
-            {
-                marked_all = false;
-                for(unsigned j=0; j<nxtChildren.size(); ++j) {
-                    children.insert(nxtChildren[j]);
-                }
-            }
+           
+	    if(!(nxtChildren.empty()))
+	    {
+		#pragma omp critical 
+		{
+		    marked_all = false;
+		    for(unsigned j=0; j<nxtChildren.size(); ++j) {
+			    children.insert(nxtChildren[j]);
+		    }
+		}
+	    }
+	    
             //now assign current children as parent
-        }
+	}
 
         currChildren.assign(children.begin(),children.end());
         currLvl += 1;
@@ -144,6 +161,7 @@ void Traverse::calculateDistance()
 
     createLevelData();
     permuteGraph();
+    } 
 }
 
 NAME_error Traverse::createLevelData()
@@ -173,6 +191,8 @@ NAME_error Traverse::createLevelData()
     levelData->levelRow = levelRow_;
     levelData->levelNnz = levelNnz_;
 
+    //cache this data for later use
+    cachedData[parentIdx] = (*levelData);
     return NAME_SUCCESS;
 }
 

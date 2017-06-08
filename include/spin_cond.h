@@ -22,7 +22,8 @@ inline void spin_cond_init(spin_cond_t *obj, int maxCtr)
 //ends the current spinning
 inline void spin_cond_signal(spin_cond_t *obj)
 {
-    __sync_lock_release(&(obj->spinner));
+   __sync_lock_release(&(obj->spinner));
+   
 
 #ifdef DEBUG_SPIN
     timeval signal_time;
@@ -44,8 +45,8 @@ inline void spin_cond_signal(spin_cond_t *obj)
 inline void spin_cond_wait(spin_cond_t *obj)
 {
     //reset value in any case; don't consider signals issued before
-    __sync_lock_test_and_set(&(obj->spinner),1);
-
+//    if(__sync_lock_test_and_set(&(obj->spinner),1))
+//	{
 #ifdef DEBUG_SPIN
     printf("%u cpu=%d started spinning\n", (unsigned) pthread_self(), sched_getcpu());
 #endif
@@ -61,6 +62,8 @@ inline void spin_cond_wait(spin_cond_t *obj)
             break;
         }
     }
+//}
+
 #ifdef DEBUG_SPIN
     printf("%u cpu=%d stopped spinning\n", (unsigned) pthread_self(), sched_getcpu());
 #endif

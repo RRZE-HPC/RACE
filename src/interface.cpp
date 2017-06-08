@@ -20,6 +20,11 @@ NAMEInterface::~NAMEInterface()
     if(pool) {
         delete pool;
     }
+
+    for(unsigned i=0; i<funMan.size(); ++i)
+    {
+	delete funMan[i];
+    }
 }
 
 
@@ -40,6 +45,7 @@ void NAMEInterface::NAMEColor()
 
     pool = new LevelPool(zoneTree, SMT, pinMethod);
 
+    
 #ifdef NAME_KERNEL_THREAD_OMP
     pool->pin.pinApplication();
 #else
@@ -59,6 +65,7 @@ void NAMEInterface::NAMEColor()
 
 void NAMEInterface::printZoneTree()
 {
+    zoneTree->updateTime();
     for(unsigned i=0; i<zoneTree->tree->size(); ++i)
     {
         ZoneLeaf* currLeaf = &(zoneTree->at(i));
@@ -76,7 +83,7 @@ void NAMEInterface::printZoneTree()
         {
             printf("%d, ",currLeaf->childrenZ[j]);
         }
-        printf("], Parent: %d, nthreads: %d, effRow: %d reachedLimit: %s, pinOrder = %d\n", currLeaf->parentZ, currLeaf->nthreadsZ, currLeaf->effRowZ, (currLeaf->reachedLimit)?"true":"false", currLeaf->pinOrder);
+        printf("], Parent: %d, nthreads: %d, effRow: %d reachedLimit: %s, pinOrder = %d funTime = %f\n", currLeaf->parentZ, currLeaf->nthreadsZ, currLeaf->effRowZ, (currLeaf->reachedLimit)?"true":"false", currLeaf->pinOrder, currLeaf->time);
     }
 }
 
@@ -133,22 +140,37 @@ int NAMEInterface::registerFunction(void (*f) (int,int,void *), void* args)
 {
 //    pool->pin.pinApplication();
 
-    FuncManager currFun(f, args, zoneTree, pool);
-    funMan.push_back(currFun);
+      FuncManager* currFun = new FuncManager(f, args, zoneTree, pool);
+      funMan.push_back(currFun);
 
-    //TODO just pin for the first time; but now OpenMP does not work with this
-    //model
-    //Pin threads
-    //Pin pin(zoneTree, true);
-    //pin.pinApplication();
+//     funMan = new FuncManager(f, args, zoneTree, pool);
 
-   return (funMan.size()-1);
+    /* for(int i=0; i<10; ++i) {
+	     START_TIME(omp_fn);
+	     funMan->RunOMP();
+	     STOP_TIME(omp_fn);
+     }*/
+     //TODO just pin for the first time; but now OpenMP does not work with this
+     //model
+     //Pin threads
+     //Pin pin(zoneTree, true);
+     //pin.pinApplication();
+
+     return (funMan.size()-1);
 }
 
 void NAMEInterface::executeFunction(int funcId)
 {
-    funMan[funcId].Run();
+     funMan[funcId]->Run();
+    //  funMan->Run();
 }
+
+
+void NAMEInterface::resetTime()
+{
+	zoneTree->resetTime();
+}
+
 
 bool NAMEInterface::detectConflict(std::vector<int> range1, std::vector<int> range2)
 {
