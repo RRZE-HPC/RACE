@@ -15,7 +15,26 @@ LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, dist_t dist_
 
     double default_eff = 40;
     char *lvlEff = getenv("NAME_EFFICIENCY");
-    if(lvlEff == NULL)
+    char *lvlThreads = getenv("NAME_THREADS");
+
+    if(lvlThreads != NULL)
+    {
+	char* token = strtok(lvlThreads, ",");
+    	while(token != NULL)
+	{
+	    lvl_threads.push_back(atoi(token));
+	    token = strtok(NULL, ",");
+	}
+    }
+
+    printf("NAME_THREADS = \n");
+    for(unsigned i=0; i<lvl_threads.size(); ++i)
+    {
+	printf("%d\n",lvl_threads[i]);
+    }
+
+  
+   if(lvlEff == NULL)
     {
 	eff_vec.push_back(default_eff);
     } else {
@@ -33,6 +52,14 @@ LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, dist_t dist_
     {
 	printf("%f\n",eff_vec[i]);
     }
+
+   //manipulate efficiency vector so threads are explicitly created 
+   for(unsigned lvl=1; lvl<lvl_threads.size()+1; ++lvl)
+   {
+	   printf("Efficiency at lvl %d dropped due to THREAD specification\n", lvl);
+	   eff_vec[lvl] = 0;
+   }
+   
 }
 
 LevelRecursion::~LevelRecursion()
@@ -64,6 +91,17 @@ double LevelRecursion::efficiency(unsigned levelNum)
     }
 }
 
+//returns threads of each level
+int LevelRecursion::lvlThreads(unsigned levelNum)
+{
+    if((levelNum-1) < lvl_threads.size())
+    {
+     	return lvl_threads[levelNum-1];
+    } else {
+	return -1;
+    }
+}
+
 ZoneTree* LevelRecursion::getZoneTree()
 {
     ZoneTree* toRet = zoneTree;
@@ -71,84 +109,113 @@ ZoneTree* LevelRecursion::getZoneTree()
     return toRet;
 }
 
-bool LevelRecursion::recursivePartition(int parentIdx, int subRequestNThreads, int currLevel)
+void LevelRecursion::calculateIdealNthreads(int parentIdx, int currLvl)
 {
-    int obtainedNThreads = zoneTree->at(parentIdx).nthreadsZ;
-    bool glbBreak = false;
-   
-    while(obtainedNThreads < subRequestNThreads)
+    std::vector<int>* children = &(zoneTree->at(parentIdx).childrenZ);
+    unsigned nBlocks = children->size()/2;
+    if(lvlThreads(currLvl)==-1)
     {
-        KeyChild keyChild;
-        keyChild = zoneTree->findKeyChild(parentIdx);
-
-        //TODO 3 block  method
-        const int numBlockPerThread = 2;
-        bool glbBreakBlock[numBlockPerThread];
-
-        for(int i=0; i<numBlockPerThread; ++i)
-        {
-            glbBreakBlock[i] = false;
-
-            int currIdx = keyChild.indices[i];
-            //spawn from currIdx
-            if(zoneTree->at(currIdx).reachedLimit == false)
-            {
-                std::vector<int> range = zoneTree->at(currIdx).valueZ;
-
-                //Traverse
-                Traverse traverse(graph, dist, range[0], range[1], currIdx);
-                traverse.calculateDistance();
-                int *levelPerm = NULL;
-                int len;
-                traverse.getPerm(&levelPerm, &len);
-                updatePerm(&perm, levelPerm, len);
-                delete[] levelPerm;
-
-                LevelData* levelData = traverse.getLevelData();
-                int currIdxNThreads = zoneTree->at(currIdx).nthreadsZ;
-                bool locFlag = zoneTree->spawnChild(currIdx, currIdxNThreads+1, currIdxNThreads, levelData, dist, EFFICIENCY, efficiency(currLevel));
-                delete levelData;
-
-                if(!locFlag){
-                    int subAvailableNThreads = zoneTree->at(currIdx).nthreadsZ;
-                    if(subAvailableNThreads == 1) {
-                        zoneTree->at(currIdx).reachedLimit = true;
-                        glbBreakBlock[i] = true;
-                    }
-                    if(subAvailableNThreads > 1) {
-                        glbBreakBlock[i] = recursivePartition(currIdx, currIdxNThreads+1, currLevel+1);
-                    }
-                }
-            } else {
-                glbBreakBlock[i] = true;
-            }
-        }
-        int glbBreakCtr = 0;
-        //check whether all glbBreakBlock is true
-        for(int i=0; i<numBlockPerThread; ++i)
-        {
-            if(glbBreakBlock[i] == true)
-            {
-                ++glbBreakCtr;
-            }
-        }
-
-        if(glbBreakCtr == numBlockPerThread)
-        {
-            glbBreak = true;
-            break;
-        }
-
-        obtainedNThreads = zoneTree->at(0).nthreadsZ;
+	    int parentThreads = zoneTree->at(parentIdx).idealNthreadsZ;
+	    int parentRow = zoneTree->at(parentIdx).valueZ[1] - zoneTree->at(parentIdx).valueZ[0];
+	    double* remainder = new double[nBlocks];
+	    int remainingThreads = parentThreads;
+	    //One could individually treat red and black, but this would lead to less locality
+	    //TODO : To try the method of treating red and black individually.
+	    for(unsigned i=0; i<nBlocks; ++i)
+	    {
+		    std::vector<int>* redRange = &(zoneTree->at(children->at(2*i)).valueZ);
+		    std::vector<int>* blackRange = &(zoneTree->at(children->at(2*i+1)).valueZ);
+		    int totalRow = blackRange->at(1)-redRange->at(0);
+		    double myWeight = totalRow/(static_cast<double>(parentRow));
+		    double myThreads_d = myWeight*parentThreads;
+		    //atleast 1 thread, but not greater than remainingThreads
+		    int myThreads = static_cast<int>(myThreads_d);
+		    zoneTree->at(children->at(2*i)).idealNthreadsZ = myThreads;
+		    zoneTree->at(children->at(2*i+1)).idealNthreadsZ = myThreads;
+		    //Give high priority for 0 assigned regions
+		    remainder[i] = (myThreads!=0)?(myThreads_d - myThreads):1;
+		    remainingThreads -= myThreads;
+	    }
+	    if(remainingThreads>0)
+	    {
+		    int* rankPerm = new int[nBlocks];
+		    for(unsigned i=0; i<nBlocks; ++i)
+		    {
+			    rankPerm[i] = i;
+		    }
+		    sortPerm(remainder, rankPerm, 0, nBlocks, true);
+		    int currRank = 0;
+		    while(remainingThreads != 0)
+		    {
+			    int target = rankPerm[currRank];
+			    zoneTree->at(children->at(2*target)).idealNthreadsZ += 1;
+			    zoneTree->at(children->at(2*target+1)).idealNthreadsZ += 1;
+			    remainingThreads -= 1;
+			    currRank++;
+		    }
+	    }
+	    else if(remainingThreads<0)
+	    {
+		    ERROR_PRINT("Thread assignment error");
+	    }
+	    delete[] remainder;
     }
+    else
+    {   
+	int myThreads = lvlThreads(currLvl);
+   	for(unsigned i=0; i<nBlocks; ++i)
+	{
+		zoneTree->at(children->at(2*i)).idealNthreadsZ = myThreads;
+		zoneTree->at(children->at(2*i+1)).idealNthreadsZ = myThreads;
+	}
+    }		
+}
+			
+	
+void LevelRecursion::recursivePartition(int parentIdx, int currLevel)
+{
+    calculateIdealNthreads(parentIdx, currLevel);
+    std::vector<int> children = zoneTree->at(parentIdx).childrenZ;
+    unsigned numChildren = children.size();
+    for(unsigned i=0; i< numChildren; ++i)
+    {
+	 int currIdx = children[i];
+	 std::vector<int> range = zoneTree->at(currIdx).valueZ;
 
-    return glbBreak;
+         //Traverse
+         Traverse traverse(graph, dist, range[0], range[1], currIdx);
+         traverse.calculateDistance();
+         int *levelPerm = NULL;
+         int len;
+         traverse.getPerm(&levelPerm, &len);
+         updatePerm(&perm, levelPerm, len);
+         delete[] levelPerm;
+	 
+	 LevelData* levelData = traverse.getLevelData();
+	 int currIdxNThreads = zoneTree->at(currIdx).idealNthreadsZ;
+         //Try to spawn all the threads required
+	 bool locFlag = zoneTree->spawnChild(currIdx, currIdxNThreads, 1, levelData, dist, EFFICIENCY, efficiency(currLevel));
+	 delete levelData;
+
+	 //if failed to obtain threads, try going down the tree recursively
+	 if(!locFlag)
+	 {
+		 int subAvailableNThreads = zoneTree->at(currIdx).nthreadsZ;
+		 if(subAvailableNThreads == 1) {
+			 zoneTree->at(currIdx).reachedLimit = true;
+		 }
+		 if(subAvailableNThreads > 1) {
+			 recursivePartition(currIdx, currLevel+1);
+		 }
+         }
+    }
 }
 
 void LevelRecursion::levelBalancing()
 {
     //Step 1: Construct Root
     ZoneLeaf root(0,graph->NROW,-1);
+    root.idealNthreadsZ = requestNThreads;
     zoneTree->push_back(root);
     int parentIdx = 0;
 
@@ -163,15 +230,23 @@ void LevelRecursion::levelBalancing()
     delete[] levelPerm;
     LevelData* levelData = traverse.getLevelData();
     int currLevel = 1;
-    zoneTree->spawnChild(parentIdx, requestNThreads, 1, levelData, dist, EFFICIENCY, efficiency(currLevel));
+    int lvlOneThreads = requestNThreads;
+    if(lvlThreads(1)!=-1)
+    {
+	lvlOneThreads = lvlThreads(1);
+    }
+    zoneTree->spawnChild(parentIdx, lvlOneThreads, 1, levelData, dist, EFFICIENCY, efficiency(currLevel));
     delete levelData;
 
-    //Step 3: Recursive partition until nthreads satisfied
-    bool glbBreak = recursivePartition(parentIdx, requestNThreads, currLevel+1);
+    if( zoneTree->at(0).nthreadsZ != requestNThreads)
+    {
+    	//Step 3: Recursive partition until nthreads satisfied
+    	recursivePartition(parentIdx, currLevel+1);
+    }
 
     availableNThreads = zoneTree->at(0).nthreadsZ;
 
-    if(glbBreak == true)
+    if(availableNThreads != requestNThreads)
     {
         WARNING_PRINT("Could not spawn requested threads = %d. Threads limited to %d", requestNThreads, availableNThreads);
     }

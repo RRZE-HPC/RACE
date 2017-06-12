@@ -8,6 +8,7 @@ struct ZoneLeaf{
     std::vector<int> valueZ;
     std::vector<int> childrenZ;
     int nthreadsZ;
+    int idealNthreadsZ;
     int parentZ;
     int effRowZ;
     int pinOrder;

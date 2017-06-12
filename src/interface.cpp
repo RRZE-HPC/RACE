@@ -1,6 +1,6 @@
 #include "interface.h"
 #include <algorithm>
-
+#include <iostream>
 
 NAMEInterface::NAMEInterface(int nrow_,int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int SMT_, PinMethod pinMethod_, int *initPerm_, int *initInvPerm_):graph(NULL),nrow(nrow_),dist(dist_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL)
 {
@@ -53,13 +53,13 @@ void NAMEInterface::NAMEColor()
 #endif
     printZoneTree();
 
-    /* printf("Checking Coloring\n");
+/*    printf("Checking Coloring\n");
     if(D2Checker())
     {
         ERROR_PRINT("Conflict in coloring\n");
     }
     printf("Checking Finished\n");
-    */
+*/    
 }
 
 
@@ -83,7 +83,7 @@ void NAMEInterface::printZoneTree()
         {
             printf("%d, ",currLeaf->childrenZ[j]);
         }
-        printf("], Parent: %d, nthreads: %d, effRow: %d reachedLimit: %s, pinOrder = %d funTime = %f\n", currLeaf->parentZ, currLeaf->nthreadsZ, currLeaf->effRowZ, (currLeaf->reachedLimit)?"true":"false", currLeaf->pinOrder, currLeaf->time);
+        printf("], Parent: %d, nthreads: %d, idealNThreads:%d, effRow: %d reachedLimit: %s, pinOrder = %d funTime = %f\n", currLeaf->parentZ, currLeaf->nthreadsZ, currLeaf->idealNthreadsZ, currLeaf->effRowZ, (currLeaf->reachedLimit)?"true":"false", currLeaf->pinOrder, currLeaf->time);
     }
 }
 
@@ -182,7 +182,7 @@ bool NAMEInterface::detectConflict(std::vector<int> range1, std::vector<int> ran
         {
             std::vector<int>* children_j = &(graph->at(j).children);
             conflict = (std::find_first_of(children_i->begin(), children_i->end(), children_j->begin(), children_j->end()) != children_i->end());
-            if(conflict)
+	    if(conflict)
             {
                 ERROR_PRINT("Conflict at row: %d %d\nCheck i: [",i,j);
                 for(unsigned child_i=0; child_i<children_i->size(); ++child_i)
@@ -195,7 +195,10 @@ bool NAMEInterface::detectConflict(std::vector<int> range1, std::vector<int> ran
                     printf("%d, ",children_j->at(child_j));
                 }
                 printf("]\n");
- 
+
+		auto result = std::find_first_of(children_i->begin(), children_i->end(), children_j->begin(), children_j->end());
+		std::cout<<"conflicted values = " << std::distance(children_i->begin(),result)<< "and "<< std::distance(children_j->begin(),result)<<std::endl;
+		
                 break;
             }
         }
@@ -213,16 +216,15 @@ bool NAMEInterface::recursiveChecker(int parent)
     std::vector<int> *children = &(zoneTree->at(parent).childrenZ);
     int currNThreads = static_cast<int>(children->size()/2.0);
     bool conflict = false;
-
+    printf("checking idx = %d\n",parent);
     if(currNThreads > 1)
     {
         for(int start=0; start<2; ++start)
         {
-            for(int i=start; i<currNThreads; i+=2)
+            for(int i=start; i<=currNThreads; i+=2)
             {
                 std::vector<int> rangeOuter = zoneTree->at(children->at(i)).valueZ;
-
-                for(int j=start; j<currNThreads; j+=2)
+	        for(int j=start; j<=currNThreads; j+=2)
                 {
                     if(i!=j)
                     {
@@ -251,7 +253,7 @@ bool NAMEInterface::recursiveChecker(int parent)
 bool NAMEInterface::D2Checker()
 {
     bool conflict = false;
-    conflict = recursiveChecker(0);
+    conflict = recursiveChecker(5);
 
     return conflict;
 }

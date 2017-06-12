@@ -3,11 +3,11 @@
 #include "lb.h"
 #include <limits>
 
-ZoneLeaf::ZoneLeaf():valueZ(2),nthreadsZ(-1),parentZ(-2),effRowZ(-1),reachedLimit(false), time(0)
+ZoneLeaf::ZoneLeaf():valueZ(2),nthreadsZ(-1),idealNthreadsZ(-1),parentZ(-2),effRowZ(-1),reachedLimit(false), time(0)
 {
 }
 
-ZoneLeaf::ZoneLeaf(int rangeLo_, int rangeHi_, int parent_):valueZ(2),nthreadsZ(1),parentZ(parent_),effRowZ(rangeHi_-rangeLo_),pinOrder(-1),reachedLimit(false), time(0)
+ZoneLeaf::ZoneLeaf(int rangeLo_, int rangeHi_, int parent_):valueZ(2),nthreadsZ(1),idealNthreadsZ(1),parentZ(parent_),effRowZ(rangeHi_-rangeLo_),pinOrder(-1),reachedLimit(false), time(0)
 {
     valueZ[0] = rangeLo_;
     valueZ[1] = rangeHi_;
@@ -195,7 +195,6 @@ bool ZoneTree::spawnChild(int parentIdx, int requestNthreads, int startThread, L
     //TODO for D1 and three block
     int maxThreads = static_cast<int>(levelData->totalLevel/4.0);
     int scanTill = std::min(requestNthreads, maxThreads);
-
     printf("maxThreads = %d\n",maxThreads);
     if( (startThread < maxThreads) && (scanTill > 1) )
     {
