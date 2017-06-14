@@ -65,28 +65,28 @@ std::vector<int> Traverse::markChildren(int currChild, int currLvl)
                 int grandChild = grandChildren->at(childIdx);
                 if(distFromRoot[grandChild] == -1) {
                     nxtChildren.push_back(grandChildren->at(childIdx));
-	        }
+                }
             }
-	
-	/* if(currChild == 45289 || currChild == 49424)
-	 {
-		printf("Check children of %d, dist = %d\n",currChild, distFromRoot[currChild]);
-		for(unsigned i=0; i<grandChildren->size(); ++i)
-		{
-			printf("%d\n",grandChildren->at(i));
-		}
-	 }*/
 
-/*	 if(currChild == 45221 || currChild == 46443)
-	 {
-		printf("Check children of %d, dist = %d\n",currChild, distFromRoot[currChild]);
-		for(unsigned i=0; i<grandChildren->size(); ++i)
-		{
-			printf("%d\n",grandChildren->at(i));
-		}
-	 }
-*/
-        
+            /* if(currChild == 45289 || currChild == 49424)
+               {
+               printf("Check children of %d, dist = %d\n",currChild, distFromRoot[currChild]);
+               for(unsigned i=0; i<grandChildren->size(); ++i)
+               {
+               printf("%d\n",grandChildren->at(i));
+               }
+               }*/
+
+            /*	 if(currChild == 45221 || currChild == 46443)
+                 {
+                 printf("Check children of %d, dist = %d\n",currChild, distFromRoot[currChild]);
+                 for(unsigned i=0; i<grandChildren->size(); ++i)
+                 {
+                 printf("%d\n",grandChildren->at(i));
+                 }
+                 }
+                 */
+
         }
     } else if(dist==TWO) {
         std::vector<int> *grandChildren = &(graph->graphData[currChild].children);
@@ -120,93 +120,93 @@ void Traverse::calculateDistance()
     //traverse only if level has not been cached
     if(cachedData.find(parentIdx) != cachedData.end())	
     {
-	printf("Retrieving from cache\n");
-	(*levelData) = cachedData[parentIdx];
+        printf("Retrieving from cache\n");
+        (*levelData) = cachedData[parentIdx];
     }
     else
     {
-    bool marked_all = false;
-    int root = rangeLo;
-    std::vector<int> currChildren;
-    currChildren.push_back(root); //The root
+        bool marked_all = false;
+        int root = rangeLo;
+        std::vector<int> currChildren;
+        currChildren.push_back(root); //The root
 
-    int currLvl = 0;
-    Counter::reset();
+        int currLvl = 0;
+        Counter::reset();
 
-    while(!marked_all)
-    {
-        marked_all = true;
-        std::set<int> children;
-        //in parallel
-//	#pragma omp parallel for  shared(marked_all)
-        for(unsigned i=0; i<currChildren.size(); ++i) {
-            std::vector<int> nxtChildren = markChildren(currChildren[i],currLvl);
-            //atomic needed
-           
-	    if(!(nxtChildren.empty()))
-	    {
-//		#pragma omp critical 
-		{
-		    marked_all = false;
-		    for(unsigned j=0; j<nxtChildren.size(); ++j) {
-			    children.insert(nxtChildren[j]);
-		    }
-		}
-	    }
-	    
-            //now assign current children as parent
-	}
+        while(!marked_all)
+        {
+            marked_all = true;
+            std::set<int> children;
+            //in parallel
+            //	#pragma omp parallel for  shared(marked_all)
+            for(unsigned i=0; i<currChildren.size(); ++i) {
+                std::vector<int> nxtChildren = markChildren(currChildren[i],currLvl);
+                //atomic needed
 
-        currChildren.assign(children.begin(),children.end());
-        currLvl += 1;
+                if(!(nxtChildren.empty()))
+                {
+                    //		#pragma omp critical 
+                    {
+                        marked_all = false;
+                        for(unsigned j=0; j<nxtChildren.size(); ++j) {
+                            children.insert(nxtChildren[j]);
+                        }
+                    }
+                }
 
-        if( marked_all==true && (Counter::val != (rangeHi-rangeLo)) ) {
-	    printf("counter = %d\n",Counter::val);
-            printf("We have islands in range [%d - %d]\n",rangeLo,rangeHi);
-            //now process islands
-            for(int i=rangeLo; i<rangeHi; ++i) {
-                if(distFromRoot[i] == -1) {
-                    //Found him, mark him as distance 2 apart
-                    currLvl += 1;
-                    printf("Found %d\n",i);
-                    currChildren.push_back(i);
-                    marked_all = false;
-                    break;
+                //now assign current children as parent
+            }
+
+            currChildren.assign(children.begin(),children.end());
+            currLvl += 1;
+
+            if( marked_all==true && (Counter::val != (rangeHi-rangeLo)) ) {
+                printf("counter = %d\n",Counter::val);
+                printf("We have islands in range [%d - %d]\n",rangeLo,rangeHi);
+                //now process islands
+                for(int i=rangeLo; i<rangeHi; ++i) {
+                    if(distFromRoot[i] == -1) {
+                        //Found him, mark him as distance 2 apart
+                        currLvl += 1;
+                        printf("Found %d\n",i);
+                        currChildren.push_back(i);
+                        marked_all = false;
+                        break;
+                    }
                 }
             }
         }
-    }
 
-    levelData->totalLevel = currLvl;
-    printf("Total Level = %d\n",levelData->totalLevel);
+        levelData->totalLevel = currLvl;
+        printf("Total Level = %d\n",levelData->totalLevel);
 
-    createLevelData();
-    permuteGraph();
+        createLevelData();
+        permuteGraph();
 
-    /*if(parentIdx==5)
-    {
-	    int check_i = 45221, check_j=46443, check_k=45434;
-	    printf("perm[%d] = %d, dist = %d\n",check_i, perm[check_i], distFromRoot[perm[check_i]]);
-	    printf("perm[%d] = %d, dist = %d\n",check_j, perm[check_j], distFromRoot[perm[check_j]]);
-	    printf("perm[%d] = %d, dist = %d\n",check_k, perm[check_k], distFromRoot[perm[check_k]]);
+        /*if(parentIdx==5)
+          {
+          int check_i = 45221, check_j=46443, check_k=45434;
+          printf("perm[%d] = %d, dist = %d\n",check_i, perm[check_i], distFromRoot[perm[check_i]]);
+          printf("perm[%d] = %d, dist = %d\n",check_j, perm[check_j], distFromRoot[perm[check_j]]);
+          printf("perm[%d] = %d, dist = %d\n",check_k, perm[check_k], distFromRoot[perm[check_k]]);
 
-	    printf("After perm\n");
-	    int currChild = check_i;   
-	    printf("Check children of %d\n",currChild);
-	    std::vector<int> *grandChildren = &(graph->graphData[currChild].children);   
-	    for(unsigned i=0; i<grandChildren->size(); ++i)
-	    {
-		    printf("%d\n",grandChildren->at(i));
-	    }
+          printf("After perm\n");
+          int currChild = check_i;   
+          printf("Check children of %d\n",currChild);
+          std::vector<int> *grandChildren = &(graph->graphData[currChild].children);   
+          for(unsigned i=0; i<grandChildren->size(); ++i)
+          {
+          printf("%d\n",grandChildren->at(i));
+          }
 
-	    currChild = check_j;   
-	    grandChildren = &(graph->graphData[currChild].children);
-            printf("Check children of %d\n",currChild);
-	    for(unsigned i=0; i<grandChildren->size(); ++i)
-	    {
-		    printf("%d\n",grandChildren->at(i));
-	    }
-    }*/	   
+          currChild = check_j;   
+          grandChildren = &(graph->graphData[currChild].children);
+          printf("Check children of %d\n",currChild);
+          for(unsigned i=0; i<grandChildren->size(); ++i)
+          {
+          printf("%d\n",grandChildren->at(i));
+          }
+          }*/	   
     } 
 }
 
@@ -271,7 +271,7 @@ void Traverse::permuteGraph()
             int child = children->at(j);
             if( (child>=rangeLo) && (child<rangeHi) ) {
                 children->at(j) = invPerm[child];
-           }
+            }
         }
     }
 

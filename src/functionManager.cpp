@@ -5,14 +5,14 @@
 
 FuncManager::FuncManager(void (*f_) (int,int,void*), void*args_, ZoneTree *zoneTree_, LevelPool* pool_):func(f_),args(args_),zoneTree(zoneTree_), pool(pool_)
 {
-//    func = std::bind(f_,*this,std::placeholders::_1,std::placeholders::_2,args);
+    //    func = std::bind(f_,*this,std::placeholders::_1,std::placeholders::_2,args);
     /*len = 72*72*72;
-    a = new double[len];
-    b = new double[len];
-    c = new double[len];
-    d = new double[len];
-	*/
-  //  barrierTime = 0;   
+      a = new double[len];
+      b = new double[len];
+      c = new double[len];
+      d = new double[len];
+      */
+    //  barrierTime = 0;   
     recursiveFun = std::bind(recursiveCall, this, std::placeholders::_1);	
 }
 
@@ -27,27 +27,27 @@ FuncManager::FuncManager(const FuncManager &obj)
     pool = obj.pool;
     printf("finished copying\n");
 }
-    
+
 FuncManager::~FuncManager()
 {
-  /*  delete[] a;
-    delete[] b;
-    delete[] c;
-    delete[] d;
-    */
+    /*  delete[] a;
+        delete[] b;
+        delete[] c;
+        delete[] d;
+        */
 }
 
 
 #ifdef NAME_KERNEL_THREAD_OMP
 //OMP version nested pinning not working
-void FuncManager::recursiveCall(int parent)
+void recursiveCall(FuncManager* funMan, int parent)
 {
-    std::vector<int> *children = &(zoneTree->at(parent).childrenZ);
+    std::vector<int> *children = &(funMan->zoneTree->at(parent).childrenZ);
     int currNthreads = static_cast<int>(children->size()/2.0);
     if(currNthreads <= 1)
     {
-        std::vector<int> range = zoneTree->at(parent).valueZ;
-        func(range[0],range[1],args);
+        std::vector<int> range = funMan->zoneTree->at(parent).valueZ;
+        funMan->func(range[0],range[1],funMan->args);
     }
     else
     {
@@ -60,11 +60,11 @@ void FuncManager::recursiveCall(int parent)
             //pool->pin.pinThread(pinOrder);
             //printf("child = %d, Red: tid = %d, pinOrder = %d, cpu = %d\n",children->at(2*tid),tid,pinOrder,sched_getcpu());
             //do Red
-            recursiveCall(children->at(2*tid));
+            recursiveCall(funMan, children->at(2*tid));
 #pragma omp barrier
             //printf("Black: tid = %d, pinOrder = %d, cpu = %d\n",tid,pinOrder,sched_getcpu());
             //do Black
-            recursiveCall(children->at(2*tid+1));
+            recursiveCall(funMan, children->at(2*tid+1));
         }
     }
 }
@@ -79,37 +79,37 @@ void recursiveCall(FuncManager* funMan, int parentIdx)
         //        int pinOrder = zoneTree->at(parentIdx).pinOrder;
         //        printf(" pinOrder = %d, cpu = %d\n",pinOrder,sched_getcpu());
         std::vector<int>* range = &funMan->zoneTree->at(parentIdx).valueZ;
-	START_TIME(func);
+        START_TIME(func);
         funMan->func(range->at(0),range->at(1), funMan->args);
-	STOP_TIME(func);
-	funMan->zoneTree->at(parentIdx).time += GET_TIME(func);
-	//test(funMan->a,funMan->b,funMan->c,funMan->d,range->at(0), range->at(1),1);
+        STOP_TIME(func);
+        funMan->zoneTree->at(parentIdx).time += GET_TIME(func);
+        //test(funMan->a,funMan->b,funMan->c,funMan->d,range->at(0), range->at(1),1);
         //  test(1);
         // sleep(1);
     }
     else
     {
-	for(int tid=0; tid<nthreads; ++tid)
+        for(int tid=0; tid<nthreads; ++tid)
         {
-           //pool->tree[parentIdx].addJob(tid, std::bind(test,a,b,c,d, tid*len/2.0, (tid+1)*len/2.0, std::placeholders::_1), 1);
+            //pool->tree[parentIdx].addJob(tid, std::bind(test,a,b,c,d, tid*len/2.0, (tid+1)*len/2.0, std::placeholders::_1), 1);
             funMan->pool->tree[parentIdx].addJob(tid, funMan->recursiveFun, children->at(2*tid) );
         }
-	funMan->pool->tree[parentIdx].barrier();
-	/*if(parentIdx == 0)
-	{
-		funMan->barrierTime=funMan->pool->tree[parentIdx].barrierTime;
-	}*/
+        funMan->pool->tree[parentIdx].barrier();
+        /*if(parentIdx == 0)
+          {
+          funMan->barrierTime=funMan->pool->tree[parentIdx].barrierTime;
+          }*/
 
         for(int tid=0; tid<nthreads; ++tid)
         {
-           //pool->tree[parentIdx].addJob(tid, std::bind(test,a,b,c,d, tid*len/2.0, (tid+1)*len/2.0, std::placeholders::_1), 1);
+            //pool->tree[parentIdx].addJob(tid, std::bind(test,a,b,c,d, tid*len/2.0, (tid+1)*len/2.0, std::placeholders::_1), 1);
             funMan->pool->tree[parentIdx].addJob(tid, funMan->recursiveFun,  children->at(2*tid+1));
         }
-	 funMan->pool->tree[parentIdx].barrier();
-	 /*if(parentIdx == 0)
-	 {
-		funMan->barrierTime+=funMan->pool->tree[parentIdx].barrierTime;
-	 }*/
+        funMan->pool->tree[parentIdx].barrier();
+        /*if(parentIdx == 0)
+          {
+          funMan->barrierTime+=funMan->pool->tree[parentIdx].barrierTime;
+          }*/
 
     }
 }
@@ -137,7 +137,7 @@ void FuncManager::Run()
     omp_set_dynamic(resetDynamicState);
 #else
 
-   // START_TIME(main_fn_call);
+    // START_TIME(main_fn_call);
     /*recursiveCall(this, root);*/
     recursiveFun(root);
     //STOP_TIME(main_fn_call)
@@ -146,6 +146,6 @@ void FuncManager::Run()
 
 void FuncManager::RunOMP()
 {
-	//test_omp(a,b,c,d,0,len,1);
+    //test_omp(a,b,c,d,0,len,1);
 }
 
