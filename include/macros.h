@@ -1,0 +1,18 @@
+#ifndef NAME_MACRO_H
+#define NAME_MACRO_H
+
+#include "type.h"
+
+#define getBlockPerThread(dist, d2Type)\
+   ( (dist==ONE)?2:(d2Type==TWO_BLOCK)?2:3 )
+
+
+#define getMinGap(dist, d2Type)\
+   ( (dist==ONE)?1:(d2Type==TWO_BLOCK)?2:1 )
+
+#define getPossibleThreads(totalLevel, dist, d2Type)\
+    ( (dist==ONE)?static_cast<int>( (totalLevel) / 2.0):(d2Type==TWO_BLOCK)?static_cast<int>( (totalLevel) / 4.0): static_cast<int>( (totalLevel) /3.0) )
+
+
+
+#endif
