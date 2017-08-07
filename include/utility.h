@@ -3,6 +3,8 @@
 
 #include <algorithm>
 #include <iterator>
+
+
 template <typename T> inline void sort(T *arr, int range_lo, int range_hi, bool rev=false)
 {
     if(rev == false) {
@@ -21,6 +23,31 @@ template <typename T> inline void sortPerm(T *arr, int *perm, int range_lo, int 
         std::stable_sort(perm+range_lo, perm+range_hi, [&](const int& a, const int& b) {return (arr[a] > arr[b]); });
     }
 }
+
+template <typename T> inline T sumArr(T *arr, int len)
+{
+    T sumVal = 0;
+    for(int i=0; i<len; ++i)
+    {
+        sumVal += arr[i];
+    }
+    return sumVal;
+}
+
+template <typename T> inline T maxArr(T *arr, int len)
+{
+    T maxVal = 0;
+    for(int i=0; i<len; ++i)
+    {
+        if(arr[i]>maxVal)
+        {
+            maxVal = arr[i];
+        }
+    }
+
+    return maxVal;
+}
+
 
 //updates first prmutation array based on the current permutation
 inline void updatePerm(int **mainPerm, int *currPerm, int len)
@@ -55,4 +82,6 @@ inline void updatePerm(int **mainPerm, int *currPerm, int len)
 }
 
 void DUMMY(int ctr, bool flag);
+
+
 #endif

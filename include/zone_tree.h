@@ -3,6 +3,7 @@
 
 #include "levelData.h"
 #include "type.h"
+#include "macros.h"
 
 struct ZoneLeaf{
     std::vector<int> valueZ;
@@ -18,10 +19,10 @@ struct ZoneLeaf{
     ZoneLeaf(int rangeLo, int rangeHi, int parentIdx);
 };
 
-struct KeyChild{
+struct KeyChild {
     std::vector<int> indices;//Red, Black Now for time-being; TODO for 3 block
     int effRow;
-    KeyChild():indices(2)
+    KeyChild(int numIndex):indices(numIndex)
     {
     };
 };
@@ -33,16 +34,17 @@ class ZoneTree{
          * @brief cachedTree enables efficient rewinding
          */
         tree_t *cachedTree;
-
         ZoneLeaf& cachedAt(unsigned idx);
         void updateTreeEffRow(int parentIdx);
         void updateTreeNThreads(int parentIdx);
         void updateTimeRecursive(int parentIdx);
 
     public:
+        dist_t dist;
+        d2Method d2Type;
         tree_t *tree;
 
-        ZoneTree();
+        ZoneTree(dist_t dist, d2Method d2Type);
         ~ZoneTree();
 
         ZoneLeaf& at(unsigned idx);
@@ -58,10 +60,10 @@ class ZoneTree{
          * level to be partitioned
          * param[out] boolean indicating whether the request could be satisfied
          */
-        bool spawnChild(int parentIdx, int requestNthreads, int startThread, LevelData* levelData, dist_t dist, LBMode mode=MIN, double eff=0);
+        bool spawnChild(int parentIdx, int requestNthreads, int startThread, LevelData* levelData, LBMode mode=MIN, double eff=0);
         KeyChild findKeyChild(int parentIdx);
-	void resetTime();
-	void updateTime();
+        void resetTime();
+        void updateTime();
 };
 
 #endif

@@ -23,7 +23,7 @@ inline void spin_cond_init(spin_cond_t *obj, int maxCtr)
 inline void spin_cond_signal(spin_cond_t *obj)
 {
    __sync_lock_release(&(obj->spinner));
-   
+
 
 #ifdef DEBUG_SPIN
     timeval signal_time;
@@ -53,7 +53,7 @@ inline void spin_cond_wait(spin_cond_t *obj)
 
     while(__sync_fetch_and_add(&(obj->spinner), 1))
     {
-        DUMMY(obj->spinner, true);
+        //DUMMY(obj->spinner, true);
         if(obj->spinner > obj->ctrLimit)
         {
 #ifdef DEBUG_SPIN

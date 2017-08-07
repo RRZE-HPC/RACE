@@ -10,20 +10,21 @@ class LevelRecursion
     private:
         Graph* graph;
         dist_t dist;
+        d2Method d2Type;
         int requestNThreads;
         int availableNThreads;
         ZoneTree* zoneTree;
         int* perm;
         int* invPerm;
-	void calculateIdealNthreads(int parentIdx, int currLvl);
+        void calculateIdealNthreads(int parentIdx, int currLvl);
         void recursivePartition(int parentIdx, int currLevel);
-	//stores a vector of efficiency at different levels
-	std::vector<double> eff_vec;
-	std::vector<int> lvl_threads;
-	double efficiency(unsigned levelNum);
-	int lvlThreads(unsigned levelNum);
+        //stores a vector of efficiency at different levels
+        std::vector<double> eff_vec;
+        std::vector<int> lvl_threads;
+        double efficiency(unsigned levelNum);
+        int lvlThreads(unsigned levelNum);
     public:
-        LevelRecursion(Graph* graph_, int requestNThreads_, dist_t dist_);
+        LevelRecursion(Graph* graph_, int requestNThreads_, dist_t dist_, d2Method d2Type_=TWO_BLOCK);
         ~LevelRecursion();
         void levelBalancing();
         void getPerm(int **perm_, int *len_);

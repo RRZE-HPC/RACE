@@ -5,24 +5,44 @@
 #include "pin.h"
 #include "type.h"
 
-
+/*
 #define RECURSIVE_HELPER(this_fn, ...) \
     std::vector<int>* children = &(zoneTree->at(parentIdx).childrenZ);\
-    int nthreads = children->size()/2;\
+    int blockPerThread=2;\
+    int nThreads = children->size()/blockPerThread;\
     __VA_ARGS__;\
-    if(nthreads > 1)\
+    if(nThreads > 1)\
     {\
-        for(int tid=0; tid<nthreads; ++tid)\
+        for(int tid=0; tid<nThreads; ++tid)\
         {\
             tree[parentIdx].addJob(tid, std::bind(&this_fn,this, std::placeholders::_1), children->at(2*tid));\
         }\
         tree[parentIdx].barrier();\
-        for(int tid=0; tid<nthreads; ++tid)\
+        for(int tid=0; tid<nThreads; ++tid)\
         {\
             tree[parentIdx].addJob(tid, std::bind(&this_fn,this, std::placeholders::_1), children->at(2*tid+1));\
         }\
         tree[parentIdx].barrier();\
     }\
+*/
+
+#define RECURSIVE_HELPER(this_fn, ...) \
+    std::vector<int>* children = &(zoneTree->at(parentIdx).childrenZ);\
+    int blockPerThread = getBlockPerThread(zoneTree->dist, zoneTree->d2Type);\
+    int nThreads = children->size()/blockPerThread;\
+    __VA_ARGS__;\
+    if(nThreads > 1)\
+    {\
+        for(int block=0; block<blockPerThread; ++block)\
+        {\
+            for(int tid=0; tid<nThreads; ++tid)\
+            {\
+                tree[parentIdx].addJob(tid, std::bind(&this_fn,this, std::placeholders::_1), children->at(blockPerThread*tid+block));\
+            }\
+            tree[parentIdx].barrier();\
+        }\
+   }\
+
 
 
 /*

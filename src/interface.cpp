@@ -23,7 +23,7 @@ NAMEInterface::~NAMEInterface()
 
     for(unsigned i=0; i<funMan.size(); ++i)
     {
-	delete funMan[i];
+        delete funMan[i];
     }
 }
 
@@ -35,7 +35,7 @@ void NAMEInterface::NAMEColor()
     graph = new Graph(nrow, nrow, rowPtr, col, initPerm, initInvPerm);
 
     //2. Call level_recursion
-    LevelRecursion lr(graph, requestedThreads, dist);
+    LevelRecursion lr(graph, requestedThreads, dist, TWO_BLOCK);
     lr.levelBalancing();
     availableThreads = lr.getAvailableThreads();
     int len;
@@ -45,7 +45,6 @@ void NAMEInterface::NAMEColor()
 
     pool = new LevelPool(zoneTree, SMT, pinMethod);
 
-    
 #ifdef NAME_KERNEL_THREAD_OMP
     pool->pin.pinApplication();
 #else
@@ -53,13 +52,13 @@ void NAMEInterface::NAMEColor()
 #endif
     printZoneTree();
 
-/*    printf("Checking Coloring\n");
-    if(D2Checker())
-    {
-        ERROR_PRINT("Conflict in coloring\n");
-    }
-    printf("Checking Finished\n");
-*/    
+    /*    printf("Checking Coloring\n");
+          if(D2Checker())
+          {
+          ERROR_PRINT("Conflict in coloring\n");
+          }
+          printf("Checking Finished\n");
+          */    
 }
 
 
@@ -138,37 +137,37 @@ int NAMEInterface::getNumThreads()
 
 int NAMEInterface::registerFunction(void (*f) (int,int,void *), void* args)
 {
-//    pool->pin.pinApplication();
+    //    pool->pin.pinApplication();
 
-      FuncManager* currFun = new FuncManager(f, args, zoneTree, pool);
-      funMan.push_back(currFun);
+    FuncManager* currFun = new FuncManager(f, args, zoneTree, pool);
+    funMan.push_back(currFun);
 
-//     funMan = new FuncManager(f, args, zoneTree, pool);
+    //     funMan = new FuncManager(f, args, zoneTree, pool);
 
     /* for(int i=0; i<10; ++i) {
-	     START_TIME(omp_fn);
-	     funMan->RunOMP();
-	     STOP_TIME(omp_fn);
-     }*/
-     //TODO just pin for the first time; but now OpenMP does not work with this
-     //model
-     //Pin threads
-     //Pin pin(zoneTree, true);
-     //pin.pinApplication();
+       START_TIME(omp_fn);
+       funMan->RunOMP();
+       STOP_TIME(omp_fn);
+       }*/
+    //TODO just pin for the first time; but now OpenMP does not work with this
+    //model
+    //Pin threads
+    //Pin pin(zoneTree, true);
+    //pin.pinApplication();
 
-     return (funMan.size()-1);
+    return (funMan.size()-1);
 }
 
 void NAMEInterface::executeFunction(int funcId)
 {
-     funMan[funcId]->Run();
+    funMan[funcId]->Run();
     //  funMan->Run();
 }
 
 
 void NAMEInterface::resetTime()
 {
-	zoneTree->resetTime();
+    zoneTree->resetTime();
 }
 
 
@@ -182,7 +181,7 @@ bool NAMEInterface::detectConflict(std::vector<int> range1, std::vector<int> ran
         {
             std::vector<int>* children_j = &(graph->at(j).children);
             conflict = (std::find_first_of(children_i->begin(), children_i->end(), children_j->begin(), children_j->end()) != children_i->end());
-	    if(conflict)
+            if(conflict)
             {
                 ERROR_PRINT("Conflict at row: %d %d\nCheck i: [",i,j);
                 for(unsigned child_i=0; child_i<children_i->size(); ++child_i)
@@ -196,9 +195,9 @@ bool NAMEInterface::detectConflict(std::vector<int> range1, std::vector<int> ran
                 }
                 printf("]\n");
 
-		auto result = std::find_first_of(children_i->begin(), children_i->end(), children_j->begin(), children_j->end());
-		std::cout<<"conflicted values = " << std::distance(children_i->begin(),result)<< "and "<< std::distance(children_j->begin(),result)<<std::endl;
-		
+                auto result = std::find_first_of(children_i->begin(), children_i->end(), children_j->begin(), children_j->end());
+                std::cout<<"conflicted values = " << std::distance(children_i->begin(),result)<< "and "<< std::distance(children_j->begin(),result)<<std::endl;
+
                 break;
             }
         }
@@ -224,7 +223,7 @@ bool NAMEInterface::recursiveChecker(int parent)
             for(int i=start; i<=currNThreads; i+=2)
             {
                 std::vector<int> rangeOuter = zoneTree->at(children->at(i)).valueZ;
-	        for(int j=start; j<=currNThreads; j+=2)
+                for(int j=start; j<=currNThreads; j+=2)
                 {
                     if(i!=j)
                     {

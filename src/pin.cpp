@@ -1,10 +1,13 @@
 #include "pin.h"
+#include "zone_tree.h"
+#include "macros.h"
 
 Pin::Pin(ZoneTree* zoneTree_, int SMT_, PinMethod method_):zoneTree(zoneTree_),machine(SMT_),SMT(SMT_),method(method_)
 {
 
 }
 
+/*
 void Pin::pinOrderRecursive(int parentIdx)
 {
     ZoneLeaf* parentNode = &(zoneTree->at(parentIdx));
@@ -26,6 +29,39 @@ void Pin::pinOrderRecursive(int parentIdx)
         }
     }
 }
+*/
+
+void Pin::pinOrderRecursive(int parentIdx)
+{
+    ZoneLeaf* parentNode = &(zoneTree->at(parentIdx));
+    std::vector<int> *children = &(parentNode->childrenZ);
+
+    int blockPerThread = getBlockPerThread(zoneTree->dist, zoneTree->d2Type);
+    int nThread = children->size()/blockPerThread;
+    int pinCtr = parentNode->pinOrder;
+
+    //TODO for 3 block scheme
+    for(int i = 0; i<nThread; ++i)
+    {
+        int maxNThread = 0;
+
+        //find max. of all siblings
+        for(int block=0; block<blockPerThread; ++block)
+        {
+            ZoneLeaf* childNode = &(zoneTree->at(children->at(blockPerThread*i+block)));
+            maxNThread = std::max(maxNThread, childNode->nthreadsZ);
+        }
+
+        for(int block=0; block<blockPerThread; ++block)
+        {
+            ZoneLeaf* childNode = &(zoneTree->at(children->at(blockPerThread*i+block)));
+            childNode->pinOrder = pinCtr;
+            pinOrderRecursive(children->at(blockPerThread*i+block));
+        }
+        pinCtr =  pinCtr + maxNThread;
+    }
+}
+
 
 void Pin::calcPinOrder()
 {
@@ -134,7 +170,9 @@ void Pin::resetMaster()
 void Pin::pinApplicationRecursive(int parent)
 {
     std::vector<int> *children = &(zoneTree->at(parent).childrenZ);
-    int currNthreads = static_cast<int>(children->size()/2.0);
+
+    int blockPerThread = getBlockPerThread(zoneTree->dist, zoneTree->d2Type);
+    int currNthreads = static_cast<int>(children->size()/blockPerThread);
 
     if(currNthreads <= 1)
     {
@@ -158,10 +196,12 @@ void Pin::pinApplicationRecursive(int parent)
                 pinThread(pinOrder);
                 printf("pinned to %d\n",sched_getcpu());
             }*/
-            pinApplicationRecursive(children->at(2*tid));
-#pragma omp barrier
-            pinApplicationRecursive(children->at(2*tid+1));
-        }
+            for(int block=0; block<blockPerThread; ++block)
+            {
+                pinApplicationRecursive(children->at(2*tid+block));
+                #pragma omp barrier
+            }
+       }
     }
 }
 

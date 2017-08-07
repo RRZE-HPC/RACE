@@ -1,9 +1,11 @@
 #include "lb.h"
 #include "utility.h"
 #include <cmath>
+#include "macros.h"
 
-LB::LB(int nThreads_, LevelData* levelData_, dist_t dist_, LB_t lbTarget_):levelPtr(NULL),zonePtr(NULL),levelData(levelData_),dist(dist_), maxThreads(-1),nThreads(nThreads_), lbTarget(lbTarget_)
+LB::LB(int nThreads_, LevelData* levelData_, dist_t dist_, d2Method d2Type_, LB_t lbTarget_):levelPtr(NULL),zonePtr(NULL),levelData(levelData_), dist(dist_), d2Type(d2Type_), maxThreads(-1),nThreads(nThreads_), lbTarget(lbTarget_)
 {
+    printf("dist = %d\n",dist);
     if( (lbTarget == NNZ) && (levelData->levelNnz == NULL) )
     {
         WARNING_PRINT("levelDataNnz not recieved, Load balancing target will fallback to ROW");
@@ -66,7 +68,7 @@ int LB::findNeighbour(const Stat &stats, neighbour_t type)
         while(rankIdx<nBlocks)
         {
             int currIdx = perm[rankIdx];
-            if((levelPtr[currIdx+1] - levelPtr[currIdx]) > dist) {
+            if((levelPtr[currIdx+1] - levelPtr[currIdx]) > minGap) {
                 neighbourIdx = currIdx;
                 break;
             }
@@ -102,43 +104,17 @@ void LB::splitZones()
     int blockWidth = 0;
     int totalLevel = levelData->totalLevel;
 
-    if(dist==ONE) {
-        maxThreads = (int)(totalLevel/2.0);
-        if( (totalLevel/((double)nThreads)) < 2) {
-            WARNING_PRINT("Requested threads(%d) cannot be used, limit to %d threads",nThreads,maxThreads);
-            nThreads = maxThreads;
-        }
-        blockWidth = int(totalLevel/(2.0*nThreads));//2 blocks for 1 thread of this width
-        blockPerThread = 2;
-    }
-    else {
-        // maxThreads = (int)(totalLevel/3.0);
-        maxThreads = (int)(totalLevel/4.0);
-        if( (totalLevel/((double)nThreads)) >= 4) {
-            d2Type = TWO_BLOCK;
-            blockWidth = int(totalLevel/(2.0*nThreads)); //2 blocks for 1 thread of this width
-            blockPerThread = 2;
-        }/* TODO uncomment once 3 block type is ready
-            else if( (totalLevel/((double)nThreads)) >= 3) {
-            d2Type = THREE_BLOCK;
-            blockWidth = (int)(totalLevel/(1.0*nThreads)); //3 blocks for 1 thread of this width
-            blockPerThread = 3;
-            } else {
-            WARNING_PRINT("Requested threads(%d) cannot be used, limit to %d threads",nThreads,maxThreads);
-            d2Type = THREE_BLOCK;
-            nThreads = maxThreads;
-            blockWidth = (int)(totalLevel/(1.0*nThreads)); //3 blocks for 1 thread of this width
-            blockPerThread = 3;
-            } */
-        else {
-            WARNING_PRINT("Requested threads(%d) cannot be used, limit to %d threads",nThreads,maxThreads);
-            d2Type = TWO_BLOCK;
-            nThreads = maxThreads;
-            blockWidth = (int)(totalLevel/(2.0*nThreads)); //2 blocks for 1 thread of this width
-            blockPerThread = 2;
-        }
+    maxThreads = getPossibleThreads(totalLevel, dist, d2Type);
+    blockPerThread = getBlockPerThread(dist, d2Type);
+    minGap = getMinGap(dist, d2Type);
+
+    if(nThreads > maxThreads)
+    {
+        WARNING_PRINT("Requested threads(%d) cannot be used, limit to %d threads",nThreads,maxThreads);
+        nThreads = maxThreads;
     }
 
+    blockWidth = int(totalLevel/(blockPerThread*nThreads));//2 blocks for 1 thread of this width
     nBlocks = blockPerThread*nThreads;
     int levelPtrSize = nBlocks+1;
     levelPtr = new int[levelPtrSize];
@@ -150,7 +126,7 @@ void LB::splitZones()
     levelPtr[levelPtrSize-1] = totalLevel;
 
     //Now do load balancing
-    if(nThreads < maxThreads) 
+    if(nThreads < maxThreads)
     {
         int *chunkSum = new int[nBlocks];
         int *newChunkSum = new int[nBlocks];
@@ -191,7 +167,7 @@ void LB::splitZones()
                     levelPtr[i] = oldLevelPtr[i];
                 }
                 //determine the mean of the rank: TODO: for 3 block case
-                double myMean = meanVar.mean[rankIdx%2];
+                double myMean = meanVar.mean[rankIdx%blockPerThread];
                 bool fail = false;
 
                 //If I am less than mean
@@ -206,7 +182,7 @@ void LB::splitZones()
                     moveOneStep(rankIdx, acquireIdx);
                 }
                 // If I am greater than mean
-                else if( (levelPtr[rankIdx+1] - levelPtr[rankIdx]) > dist)
+                else if( (levelPtr[rankIdx+1] - levelPtr[rankIdx]) > minGap)
                 {
                     //try to give to my neighbours
                     int giveIdx = findNeighbour(meanVar, give);

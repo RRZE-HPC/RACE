@@ -25,6 +25,7 @@ NAME_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *
     int nnz = 0;
 #pragma omp parallel for schedule(runtime) reduction(+:nodeWithChildren) reduction(+:nnz)
     for(int row=0; row<NROW; ++row) {
+        graphData[row].upperNnz=0;
         int permRow = row;
         if(initPerm)
         {
@@ -39,18 +40,26 @@ NAME_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *
                     permCol = initInvPerm[col[idx]];
                 }
                 graphData[row].children.push_back(permCol);
+                if(permCol >= row)
+                {
+                    ++graphData[row].upperNnz;
+                }
                 ++nnz;
             }
             nodeWithChildren++;
         } else {
 #pragma omp critical
-            pureDiag.push_back(row);
+            {
+                pureDiag.push_back(row);
+            }
         }
     }
 
     NNZ = nnz;
     //resize Graph to the small size
     if(nodeWithChildren != NROW) {
+        ERROR_PRINT("Currently Graph has to be connected and irreducible");
+        return NAME_ERR_NOT_IMPLEMENTED;
         int ctr = 0;
         for(intIter iter=pureDiag.begin(); iter!=pureDiag.end(); ++iter) {
             graphData.erase(graphData.begin()+(*iter)-ctr);

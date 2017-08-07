@@ -32,8 +32,9 @@ set (SOURCES
     src/machine.cpp
     src/pin.cpp
     src/level_pool.cpp
-    src/dummy.cpp
+    #src/dummy.cpp
     src/signal.cpp
+    src/simdify.cpp
     )
 
 set (HEADERS
@@ -61,7 +62,9 @@ set (HEADERS
     include/fast_barrier.h
     include/spin_cond.h
     include/signal.h
-   )
+    include/macros.h
+    include/simdify.h
+    )
 
 
 set(HWLOC_INCLUDE_DIR HWLOC_INCLUDE_DIR-NOTFOUND CACHE PATH "Location of hwloc.h")

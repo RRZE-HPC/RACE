@@ -61,7 +61,7 @@ void run(thread<arg_t> * thread)
     {
         //wait till jobPresent becomes true
         waitSignal(thread->signal, thread->jobPresent, true);
-       
+
         if(thread->jobPresent && (!pool->interrupt))
         {
 #if DEBUG
@@ -73,7 +73,7 @@ void run(thread<arg_t> * thread)
             //STOP_TIME(work);
             //finish job
             thread->finishJob();
-       }
+        }
     }
 
     pthread_mutex_lock(pool->thcount_lock);
@@ -96,11 +96,12 @@ void thread<arg_t>::addJob(std::function<void(arg_t)> function_, arg_t arg_, tea
         myJob.function = function_;
         myJob.arg = arg_;
 
-       /* pthread_mutex_lock(signal->lock);
-        jobPresent = true;
-        pthread_mutex_unlock(signal->lock);
-	*/
-	__sync_lock_test_and_set(&jobPresent, 1);
+        /* pthread_mutex_lock(signal->lock);
+           jobPresent = true;
+           pthread_mutex_unlock(signal->lock);
+           */
+        //casted to void to avoid warning/error "value computed is not used"
+        (void) __sync_lock_test_and_set(&jobPresent, 1);
         /*all the slaves belong to the current team,
          * master belongs to the parent team, this
          * is because master is a worker of previous
@@ -110,7 +111,7 @@ void thread<arg_t>::addJob(std::function<void(arg_t)> function_, arg_t arg_, tea
         {
             workerTeam = currTeam_;
             sendSignal(signal);
-	}
+        }
 
     }
     //STOP_TIME(add_job);
@@ -277,24 +278,24 @@ void team<arg_t>::barrier()
 #endif
 
     /*timeval start, end;
-    double startTime, endTime;
- 
-    gettimeofday(&start, NULL);		
-    startTime = start.tv_sec + start.tv_usec*1e-6;*/
+      double startTime, endTime;
+
+      gettimeofday(&start, NULL);		
+      startTime = start.tv_sec + start.tv_usec*1e-6;*/
     //START_TIME(Barrier);
- 
+
     waitSignal(barrierSignal, num_jobs, num_slaves);
     __sync_lock_test_and_set(&num_jobs, 0);
 
     /*gettimeofday(&end, NULL);		
-    endTime = end.tv_sec + end.tv_usec*1e-6;
-    barrierTime = endTime - startTime;*/
+      endTime = end.tv_sec + end.tv_usec*1e-6;
+      barrierTime = endTime - startTime;*/
 
 #if DEBUG
     printf("master: tid = %u barrier done\n",(unsigned) (pthread_self()));
 #endif
 
 
-   // STOP_TIME(Barrier);
+    // STOP_TIME(Barrier);
 }
 

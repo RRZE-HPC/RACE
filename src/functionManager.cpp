@@ -43,7 +43,8 @@ FuncManager::~FuncManager()
 void recursiveCall(FuncManager* funMan, int parent)
 {
     std::vector<int> *children = &(funMan->zoneTree->at(parent).childrenZ);
-    int currNthreads = static_cast<int>(children->size()/2.0);
+    int blockPerThread = getBlockPerThread(funMan->zoneTree->dist, funMan->zoneTree->d2Type);
+    int currNthreads = static_cast<int>(children->size()/blockPerThread);
     if(currNthreads <= 1)
     {
         std::vector<int> range = funMan->zoneTree->at(parent).valueZ;
@@ -60,11 +61,14 @@ void recursiveCall(FuncManager* funMan, int parent)
             //pool->pin.pinThread(pinOrder);
             //printf("child = %d, Red: tid = %d, pinOrder = %d, cpu = %d\n",children->at(2*tid),tid,pinOrder,sched_getcpu());
             //do Red
-            recursiveCall(funMan, children->at(2*tid));
-#pragma omp barrier
+            for(int block=0; block<blockPerThread-1; ++block)
+            {
+                recursiveCall(funMan, children->at(blockPerThread*tid+block));
+                #pragma omp barrier
+            }
             //printf("Black: tid = %d, pinOrder = %d, cpu = %d\n",tid,pinOrder,sched_getcpu());
             //do Black
-            recursiveCall(funMan, children->at(2*tid+1));
+            recursiveCall(funMan, children->at(blockPerThread*(tid+1)-1));
         }
     }
 }
@@ -73,7 +77,8 @@ void recursiveCall(FuncManager* funMan, int parent)
 void recursiveCall(FuncManager* funMan, int parentIdx)
 {
     std::vector<int>* children = &(funMan->zoneTree->at(parentIdx).childrenZ);
-    int nthreads = children->size()/2;
+    int blockPerThread = getBlockPerThread(funMan->zoneTree->dist, funMan->zoneTree->d2Type);
+    int nthreads = children->size()/blockPerThread;
     if(nthreads <= 1)
     {
         //        int pinOrder = zoneTree->at(parentIdx).pinOrder;
@@ -89,28 +94,19 @@ void recursiveCall(FuncManager* funMan, int parentIdx)
     }
     else
     {
-        for(int tid=0; tid<nthreads; ++tid)
+        for(int block=0; block<blockPerThread; ++block)
         {
-            //pool->tree[parentIdx].addJob(tid, std::bind(test,a,b,c,d, tid*len/2.0, (tid+1)*len/2.0, std::placeholders::_1), 1);
-            funMan->pool->tree[parentIdx].addJob(tid, funMan->recursiveFun, children->at(2*tid) );
+            for(int tid=0; tid<nthreads; ++tid)
+            {
+                //pool->tree[parentIdx].addJob(tid, std::bind(test,a,b,c,d, tid*len/2.0, (tid+1)*len/2.0, std::placeholders::_1), 1);
+                funMan->pool->tree[parentIdx].addJob(tid, funMan->recursiveFun, children->at(blockPerThread*tid+block) );
+            }
+            funMan->pool->tree[parentIdx].barrier();
+            /*if(parentIdx == 0)
+              {
+              funMan->barrierTime=funMan->pool->tree[parentIdx].barrierTime;
+              }*/
         }
-        funMan->pool->tree[parentIdx].barrier();
-        /*if(parentIdx == 0)
-          {
-          funMan->barrierTime=funMan->pool->tree[parentIdx].barrierTime;
-          }*/
-
-        for(int tid=0; tid<nthreads; ++tid)
-        {
-            //pool->tree[parentIdx].addJob(tid, std::bind(test,a,b,c,d, tid*len/2.0, (tid+1)*len/2.0, std::placeholders::_1), 1);
-            funMan->pool->tree[parentIdx].addJob(tid, funMan->recursiveFun,  children->at(2*tid+1));
-        }
-        funMan->pool->tree[parentIdx].barrier();
-        /*if(parentIdx == 0)
-          {
-          funMan->barrierTime+=funMan->pool->tree[parentIdx].barrierTime;
-          }*/
-
     }
 }
 

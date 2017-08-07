@@ -9,6 +9,8 @@ typedef std::vector<int>::iterator intIter;
 
 struct Node{
     std::vector<int> children;
+    //number of elements in upper part
+    int upperNnz;
 };
 
 
