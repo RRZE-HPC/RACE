@@ -4,6 +4,22 @@
 #include "print.h"
 #include <vector>
 #include <algorithm>
+
+//print column entry corresponding to the row in arg (for debugging purposes)
+/*static void print_row(int row, int C,  int *chunkStart, int *col, int* clp)
+{
+    printf("col in row-%d :", row);
+    int chunk = row/C;
+    int rowinchunk = row%C;
+    int idx = chunkStart[chunk] + rowinchunk;
+    for(int j=0; j<clp[chunk]; ++j)
+    {
+        printf("%d ",col[idx]);
+        idx+=32;
+    }
+    printf("\n");
+}*/
+
 /*@brief: This function re-arranges column indices within a row to enable
  * simd operations. This is applicable only for SELL-C-sigma formats.
  * After construction of the matrix call this function in order to make
@@ -19,7 +35,6 @@
  * @param[in/out] val non zeros of the matrix
  *
 */
-
 template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int* col, int* chunkStart, int* rl, int *clp, T *val)
 {
     if(C%simdWidth)
@@ -51,6 +66,8 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
     bool wrapped = false;
 
     //for debugging
+    //right now, it  just checks whether  every previous
+    //column entries are still present; TODO
     bool checkCorrectness = false;
 
     //col indices that a simd register would
@@ -116,7 +133,7 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
                             //it's there, requires rearrangement
                             if( (*currCol) == simdCol[k] )
                             {
-                                repeat = true;
+                               repeat = true;
                                 collisionCtr[row] = true;
                                 break;
                             }
@@ -125,15 +142,18 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
                         //need to check for counterpart also
                         if(wrapped == true)
                         {
-                            for(int k=0; k<i; ++k)
+                            for(int k=0; k<simdWidth; ++k)
                             {
-                                //form exchange Column indices
-                                int exchangeCol = col[chunkStart[chunk]+C*exchangeIdx+simdIdx*simdWidth+k];
-                                //check if the exchange is compatible
-                                if(col[col_idx] == exchangeCol )
+                                if(k!=i)
                                 {
-                                    repeat = true;
-                                    break;
+                                    //form exchange Column indices
+                                    int exchangeCol = col[chunkStart[chunk]+C*exchangeIdx+simdIdx*simdWidth+k];
+                                    //check if the exchange is compatible
+                                    if(col[col_idx] == exchangeCol )
+                                    {
+                                        repeat = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
