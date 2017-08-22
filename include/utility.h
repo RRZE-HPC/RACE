@@ -83,5 +83,13 @@ inline void updatePerm(int **mainPerm, int *currPerm, int len)
 
 void DUMMY(int ctr, bool flag);
 
+void DUMMY_spin(volatile unsigned int *a);
+
+inline int roundDouble(double val)
+{
+    int val_i = static_cast<int>(val);
+    return ( (((val - val_i))<0.5)?val_i:(val_i+1) );
+}
+
 
 #endif

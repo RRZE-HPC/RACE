@@ -2,7 +2,8 @@
 
 LevelData::LevelData():levelRow(NULL),levelNnz(NULL),totalLevel(0)
 {
-
+    nrow = 0;
+    nnz = 0;
 }
 
 //assignment operator
@@ -22,6 +23,9 @@ LevelData& LevelData::operator=(const LevelData& other)
             levelRow[i] = other.levelRow[i];
             levelNnz[i] = other.levelNnz[i];
         }
+
+        nrow = other.nrow;
+        nnz  = other.nnz;
     }
 
     return *this;
@@ -38,5 +42,3 @@ LevelData::~LevelData()
         delete[] levelNnz;
     }
 }
-
-

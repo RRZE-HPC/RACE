@@ -58,10 +58,13 @@ class ZoneTree{
          * spawn the request, actual value stored in nthreadsZ of the Leaf)
          * @param[in] levelData ptr to LevelData that stores information of the
          * level to be partitioned
+         * @param[in] eff The minimum efficiency with which the current Lvl has
+         * to be created
          * param[out] boolean indicating whether the request could be satisfied
          */
-        bool spawnChild(int parentIdx, int requestNthreads, int startThread, LevelData* levelData, LBMode mode=MIN, double eff=0);
+        bool spawnChild(int parentIdx, int requestNthreads, LevelData* levelData, double eff=0);
         KeyChild findKeyChild(int parentIdx);
+        void printTree();
         void resetTime();
         void updateTime();
 };

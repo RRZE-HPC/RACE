@@ -2,8 +2,12 @@
 #define NAME_SIMDIFY_H
 
 #include "print.h"
+#include "interface.h"
+#include "sell_c_sigmize.h"
 #include <vector>
 #include <algorithm>
+
+
 
 //print column entry corresponding to the row in arg (for debugging purposes)
 /*static void print_row(int row, int C,  int *chunkStart, int *col, int* clp)
@@ -35,12 +39,15 @@
  * @param[in/out] val non zeros of the matrix
  *
 */
-template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int* col, int* chunkStart, int* rl, int *clp, T *val)
+template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int* col, int* chunkStart, int* rl, int *clp, T *val, NAMEInterface *ce)
 {
     if(C%simdWidth)
     {
         ERROR_PRINT("Chunk length(C) of the  matrix not a multiple of simd width, this should not have happened");
     }
+
+    //sell-C-sigmize the kernel
+    sell_c_sigmize(simdWidth, C, col, chunkStart, rl, clp, ce);
 
     int nChunk = static_cast<int>(nrows/(static_cast<double>(C)));
     //int remChunk = nrows%C;
@@ -48,7 +55,7 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
     int simdInChunk = C/simdWidth;
 
     int row = 0, col_idx = 0;
-    int negativeNum = -1;
+    //int negativeNum = -1;
 
     int *currCol = NULL;
     bool repeat = false;
@@ -56,7 +63,7 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
 
     bool *collisionCtr = new bool[nrows];
 
-    std::vector<int> dummyCol;
+    //std::vector<int> dummyCol;
 
     for(int i=0; i<nrows; ++i)
     {
@@ -76,6 +83,7 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
 
     std::vector<int> col_duplicate;
 
+
     for(int row=0; row<nrows; ++row)
     {
         int chunk = row/C;
@@ -91,6 +99,16 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
     {
         for(int simdIdx=0; simdIdx<simdInChunk; ++simdIdx)
         {
+
+#if 0
+            //this technique need not be done
+            //and would cause problems; since
+            //we can't distinguish real and dummy
+            //entries; therefore now the dummy has
+            //to be distinctive in successive simdWidth
+            //rows; and we directly apply the rest of the
+            //method on it
+
             negativeNum = -1;
             dummyCol.clear();
 
@@ -108,6 +126,7 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
                     --negativeNum;
                 }
             }
+#endif
 
             //re-arrange simdWidth rows here, in a fashion to enable SIMD
             for(int j=0; j<clp[chunk]; ++j)
@@ -203,8 +222,9 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
                // printf("\n");
             }
 
+#if 0
             int dummy_ctr = 0;
-            //re-assign negative values to 0
+            //re-assign negative values
             for(int j=0; j<clp[chunk]; ++j)
             {
                 row = chunk*simdInChunk*simdWidth + simdIdx*simdWidth;
@@ -234,6 +254,7 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
             {
                 ERROR_PRINT("Internal Error: mismatch in dummy columns");
             }
+#endif
 
         }
     }
@@ -292,6 +313,7 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
     }
 
     INFO_PRINT("SIMDIFY: resolved %d row conflicts for simdWidth = %d", totalCollision, simdWidth);
+
 
     delete[] collisionCtr;
     delete[] simdCol;

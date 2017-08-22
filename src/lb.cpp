@@ -3,7 +3,7 @@
 #include <cmath>
 #include "macros.h"
 
-LB::LB(int nThreads_, LevelData* levelData_, dist_t dist_, d2Method d2Type_, LB_t lbTarget_):levelPtr(NULL),zonePtr(NULL),levelData(levelData_), dist(dist_), d2Type(d2Type_), maxThreads(-1),nThreads(nThreads_), lbTarget(lbTarget_)
+LB::LB(int nThreads_, double efficiency_, LevelData* levelData_, dist_t dist_, d2Method d2Type_, LB_t lbTarget_):levelPtr(NULL),zonePtr(NULL),levelData(levelData_), dist(dist_), d2Type(d2Type_), maxThreads(-1), nThreads(nThreads_), efficiency(efficiency_), lbTarget(lbTarget_)
 {
     printf("dist = %d\n",dist);
     if( (lbTarget == NNZ) && (levelData->levelNnz == NULL) )
@@ -24,6 +24,12 @@ LB::~LB()
     {
         delete[] zonePtr;
     }
+
+    if(effRatio)
+    {
+        delete[] effRatio;
+    }
+
 }
 
 void LB::calcChunkSum(int *arr, bool forceRow)
@@ -44,6 +50,26 @@ void LB::calcChunkSum(int *arr, bool forceRow)
         }
     }
 }
+
+void LB::calcEffectiveRatio()
+{
+    effRatio = new double[levelData->totalLevel];
+    int *targetLevelData = NULL;
+    int targetNElements = 0;
+    if(lbTarget == ROW) {
+        targetLevelData = levelData->levelRow;
+        targetNElements = levelData->nrow;
+    } else {
+        targetLevelData = levelData->levelNnz;
+        targetNElements = levelData->nnz;
+    }
+
+    for(int i=0; i<levelData->totalLevel; ++i)
+    {
+        effRatio[i] = (targetLevelData[i]*nThreads)/((double)targetNElements);
+    }
+}
+
 
 int LB::findNeighbour(const Stat &stats, neighbour_t type)
 {
@@ -98,13 +124,12 @@ void LB::moveOneStep(int toIdx, int fromIdx)
     }
 }
 
+
 void LB::splitZones()
 {
-    //First do NAIVE partititon
-    int blockWidth = 0;
     int totalLevel = levelData->totalLevel;
 
-    maxThreads = getPossibleThreads(totalLevel, dist, d2Type);
+/*    maxThreads = getPossibleThreads(totalLevel, dist, d2Type);
     blockPerThread = getBlockPerThread(dist, d2Type);
     minGap = getMinGap(dist, d2Type);
 
@@ -113,112 +138,302 @@ void LB::splitZones()
         WARNING_PRINT("Requested threads(%d) cannot be used, limit to %d threads",nThreads,maxThreads);
         nThreads = maxThreads;
     }
+*/
+    calcEffectiveRatio();
 
-    blockWidth = int(totalLevel/(blockPerThread*nThreads));//2 blocks for 1 thread of this width
-    nBlocks = blockPerThread*nThreads;
+    minGap = getMinGap(dist, d2Type);
+    blockPerThread = getBlockPerThread(dist, d2Type);
+
+    int minGapPerThread = minGap*blockPerThread;
+    double accumulator = 0;
+    int minGapCtr = 0;
+
+    double currRem = 0;
+    double localRem = 0;
+    double newLocalRem = 0;
+    double minLocalRem = 0;
+    int bestIdx = 0;
+    std::vector<int> initialLvlPtr;
+    initialLvlPtr.push_back(0);
+
+    //calculate scale values
+    for(int i=0; i<totalLevel; ++i)
+    {
+        accumulator += effRatio[i];
+        ++minGapCtr;
+
+        if(minGapCtr >= minGapPerThread)
+        {
+            if(roundDouble(accumulator) != 0)
+            {
+                if( ((1-std::fabs(accumulator-roundDouble(accumulator))) *100) > efficiency )
+                {
+                    //the criteria is accepted; but we can check to get more
+                    //efficiency and if possible  to reduce reminder
+                    localRem =  (accumulator-roundDouble(accumulator));
+                    newLocalRem = localRem;
+                    minLocalRem = localRem;
+                    int roundedVal = roundDouble(accumulator);
+
+                    double tempAccumulator = accumulator;
+                    double minTempAccumulator = accumulator;
+                    int j = i+1;
+
+                    bestIdx = i;
+                    //check for other nearest point close to rounded value
+                    while( (j<totalLevel) && (std::fabs(newLocalRem)<=std::fabs(localRem)) )
+                    {
+                        tempAccumulator += effRatio[j];
+                        newLocalRem = (tempAccumulator-roundedVal);
+                        if(std::fabs(minLocalRem) > std::fabs(newLocalRem))
+                        {
+                            minLocalRem = newLocalRem;
+                            minTempAccumulator = tempAccumulator;
+                            bestIdx = j;
+                        }
+                        //if sufficiently close
+                        else if( (std::fabs(minLocalRem) - std::fabs(newLocalRem)) < 1e-6)
+                        {
+                            double lhsCurrRem = minLocalRem + currRem;
+                            double rhsCurrRem = newLocalRem + currRem;
+
+                            if(lhsCurrRem > rhsCurrRem)
+                            {
+                                minLocalRem = newLocalRem;
+                                minTempAccumulator = tempAccumulator;
+                                bestIdx = j;
+                            }
+                        }
+                        ++j;
+                    }
+
+                    //retrieve bestIdx
+                    minGapCtr += (bestIdx-i);
+                    i = bestIdx;
+                    accumulator = minTempAccumulator;
+
+                    printf("i=%d accumulator = %f\n", i, accumulator);
+
+                    currRem = currRem + (accumulator-roundDouble(accumulator));
+                    scale.push_back(roundDouble(accumulator));
+                    initialLvlPtr.push_back(i+1);
+                    //to compensate for reminder
+                    accumulator = 0;
+                    minGapCtr = 0;
+                }
+            }
+        }
+
+        if(i>=(totalLevel-5))
+        {
+            //push everything to the last scale value
+            //else last thread won't get min. levels
+            double lastThreadAccumulator = accumulator;
+
+            for(int j=i+1; j<totalLevel; ++j)
+            {
+                lastThreadAccumulator += effRatio[j];
+            }
+/*          int currThreads = 0;
+            for(int k=0; k<scale.size(); ++k)
+            {
+                currThreads += scale[k];
+            }*/
+            if(roundDouble(lastThreadAccumulator)!=0)
+            {
+                scale.push_back(roundDouble(lastThreadAccumulator));
+                initialLvlPtr.push_back(totalLevel);
+            }
+            else
+            {
+                initialLvlPtr.back() = totalLevel;
+            }
+            break;
+        }
+    }
+
+    //do a check to ensure correct number of threads are produced
+    //for initial estimate
+    int threadCtr = 0;
+    for(int i=0; i!=scale.size(); ++i)
+    {
+        if(scale[i]==0)
+        {
+            scale[i] = 1;
+        }
+        threadCtr+=scale[i];
+    }
+
+    if(threadCtr != nThreads)
+    {
+        WARNING_PRINT("This message will be switched off: Diff. in Initial estimate spawned threads = %d, required = %d",threadCtr,nThreads );
+        int diff = nThreads - threadCtr;
+        //adjust this difference; this might 
+        //have occured due to rounding
+        if(std::abs(diff)==1)
+        {
+            if(diff==1)
+            {
+                scale[scale.size()-1] += 1;
+            }
+            else
+            {
+                if(scale[scale.size()-1] == 1)
+                {
+                    scale.pop_back();
+                    initialLvlPtr.pop_back();
+                    initialLvlPtr[initialLvlPtr.size()-1] = totalLevel;
+                }
+                else
+                {
+                    scale[scale.size()-1] -= 1;
+                }
+            }
+        }
+        else
+        {
+            WARNING_PRINT("Given number of threads would not be spawned; please reduce efficiency if more threads are needed");
+        }
+    }
+
+    currLvlThreads = scale.size();
+
+    for(int i=0; i<currLvlThreads; ++i)
+    {
+        printf("scale[%d] = %d\n", i, scale[i]);
+    }
+
+    for(int i=0; i<currLvlThreads+1; ++i)
+    {
+        printf("initLvlPtr[%d] = %d\n", i, initialLvlPtr[i]);
+    }
+
+
+    nBlocks = blockPerThread*currLvlThreads;
     int levelPtrSize = nBlocks+1;
     levelPtr = new int[levelPtrSize];
 
     levelPtr[0] = 0;
-    for(int i=0; i<levelPtrSize-1; ++i) {
-        levelPtr[i+1] = levelPtr[i] + blockWidth;
-    }
-    levelPtr[levelPtrSize-1] = totalLevel;
-
-    //Now do load balancing
-    if(nThreads < maxThreads)
+    for(int i=0; i<currLvlThreads; ++i)
     {
-        int *chunkSum = new int[nBlocks];
-        int *newChunkSum = new int[nBlocks];
-
-        bool exitFlag = false;
-        int *oldLevelPtr = new int[nBlocks+1];
-
-        while(!exitFlag)
+        for(int j=1; j<=blockPerThread; ++j)
         {
-            calcChunkSum(chunkSum);
-            Stat meanVar(chunkSum, nBlocks, blockPerThread);
-            double var = 0;
-            for(int i=0; i<meanVar.numPartitions; ++i)
-            {
-                var += meanVar.var[i];
-            }
-            double newVar = var;
+            levelPtr[i*blockPerThread+j] = initialLvlPtr[i] + roundDouble(j*(initialLvlPtr[i+1]-initialLvlPtr[i])/((double)blockPerThread));
+        }
+    }
 
-            int *rankPerm = new int[nBlocks];
-            for(int i=0; i<nBlocks; ++i)
-            {
-                rankPerm[i] = i;
-            }
+    for(int i=0; i<levelPtrSize; ++i)
+    {
+        printf("levelPtr[%d] = %d\n",i,levelPtr[i]);
+    }
 
-            sortPerm(meanVar.weight, rankPerm, 0, nBlocks, true);
-            int currRank = 0;
+    //Now do load balancing; with scale values
+    //therefore we reserve for nested threads
+    //here itself
+    int *chunkSum = new int[nBlocks];
+    int *newChunkSum = new int[nBlocks];
 
+    bool exitFlag = false;
+    int *oldLevelPtr = new int[nBlocks+1];
+
+    while(!exitFlag)
+    {
+        calcChunkSum(chunkSum);
+        Stat meanVar(chunkSum, nBlocks, blockPerThread, scale);
+        double var = 0;
+        for(int i=0; i<meanVar.numPartitions; ++i)
+        {
+            var += meanVar.var[i];
+        }
+        double newVar = var;
+
+        int *rankPerm = new int[nBlocks];
+        for(int i=0; i<nBlocks; ++i)
+        {
+            rankPerm[i] = i;
+        }
+
+        sortPerm(meanVar.weight, rankPerm, 0, nBlocks, true);
+        int currRank = 0;
+
+        for(int i=0; i<nBlocks+1; ++i)
+        {
+            oldLevelPtr[i] = levelPtr[i];
+        }
+
+        while(newVar>=var)
+        {
+            int rankIdx = rankPerm[currRank];
             for(int i=0; i<nBlocks+1; ++i)
             {
-                oldLevelPtr[i] = levelPtr[i];
+                levelPtr[i] = oldLevelPtr[i];
             }
+            //determine the mean of the rank: TODO: for 3 block case
+            double myMean = meanVar.mean[rankIdx%blockPerThread];
+            bool fail = false;
 
-            while(newVar>=var)
+            //If I am less than mean
+            if(chunkSum[rankIdx] < myMean)
             {
-                int rankIdx = rankPerm[currRank];
-                for(int i=0; i<nBlocks+1; ++i)
+                //try to acquire from my neighbours
+                int acquireIdx = findNeighbour(meanVar, acquire);
+                if(acquireIdx==-1)
                 {
-                    levelPtr[i] = oldLevelPtr[i];
+                    fail = true;
                 }
-                //determine the mean of the rank: TODO: for 3 block case
-                double myMean = meanVar.mean[rankIdx%blockPerThread];
-                bool fail = false;
-
-                //If I am less than mean
-                if(chunkSum[rankIdx] < myMean)
-                {
-                    //try to acquire from my neighbours
-                    int acquireIdx = findNeighbour(meanVar, acquire);
-                    if(acquireIdx==-1)
-                    {
-                        fail = true;
-                    }
-                    moveOneStep(rankIdx, acquireIdx);
-                }
-                // If I am greater than mean
-                else if( (levelPtr[rankIdx+1] - levelPtr[rankIdx]) > minGap)
-                {
-                    //try to give to my neighbours
-                    int giveIdx = findNeighbour(meanVar, give);
-                    if(giveIdx==-1)
-                    {
-                        fail = true;
-                    }
-                    moveOneStep(giveIdx, rankIdx);
-                }
-
-                if(!fail)
-                {
-                    calcChunkSum(newChunkSum);
-                    Stat newMeanVar(newChunkSum, nBlocks, blockPerThread);
-                    //newMeanVar.calculate();
-
-                    newVar = 0;
-                    for(int i=0; i<newMeanVar.numPartitions; ++i)
-                    {
-                        newVar += newMeanVar.var[i];
-                    }
-                }
-
-                if( (currRank == (nBlocks-1)) && (newVar>=var) )
-                {
-                    exitFlag = true;
-                    delete[] levelPtr;
-                    levelPtr = oldLevelPtr;
-                    break;
-                }
-                currRank += 1;
+                moveOneStep(rankIdx, acquireIdx);
             }
-            delete[] rankPerm;
+            // If I am greater than mean
+            else if( (levelPtr[rankIdx+1] - levelPtr[rankIdx]) > minGap)
+            {
+                //try to give to my neighbours
+                int giveIdx = findNeighbour(meanVar, give);
+                if(giveIdx==-1)
+                {
+                    fail = true;
+                }
+                moveOneStep(giveIdx, rankIdx);
+            }
+
+            if(!fail)
+            {
+                calcChunkSum(newChunkSum);
+                Stat newMeanVar(newChunkSum, nBlocks, blockPerThread, scale);
+                //newMeanVar.calculate();
+
+                newVar = 0;
+                for(int i=0; i<newMeanVar.numPartitions; ++i)
+                {
+                    newVar += newMeanVar.var[i];
+                }
+            }
+
+            if( (currRank == (nBlocks-1)) && (newVar>=var) )
+            {
+                exitFlag = true;
+                delete[] levelPtr;
+                levelPtr = oldLevelPtr;
+                break;
+            }
+            currRank += 1;
         }
-        delete[] chunkSum;
-        delete[] newChunkSum;
+        delete[] rankPerm;
+    }
+    delete[] chunkSum;
+    delete[] newChunkSum;
+
+
+    printf("Final lvl ptr\n");
+    for(int i=0; i<levelPtrSize; ++i)
+    {
+        printf("levelPtr[%d] = %d\n",i,levelPtr[i]);
+    }
+
+    calcZonePtr(0);
+
+    for(int i=0; i<nBlocks; ++i)
+    {
+        printf("%d (%f)\n", (zonePtr[i+1]-zonePtr[i]), (zonePtr[i+1]-zonePtr[i])*100.0/((double)levelData->nrow));
     }
 }
 
@@ -246,7 +461,30 @@ void LB::getZonePtr(int **zonePtr_, int *len, int base)
     (*len) = nBlocks+1;
 }
 
-Stat::Stat(int* arr_, int len_, int numPartitions_):arr(arr_),len(len_),numPartitions(numPartitions_),mean(NULL),var(NULL),acquireWeight(NULL),giveWeight(NULL),weight(NULL)
+/*The scale value can be used
+ * to get next level number of threads.
+ * It's an array since each thread in current
+ * Lvl can spawn different amount of threads
+ * in nxtLvl.
+ */
+void LB::getNxtLvlThreads(int **nxtLvlThreads, int *len)
+{
+    (*len) = scale.size();
+    (*nxtLvlThreads) = new int[(*len)];
+
+    for(int i=0; i<(*len); ++i)
+    {
+        (*nxtLvlThreads)[i] = scale[i];
+    }
+}
+
+/*returns thread in current lvl*/
+int LB::getCurrLvlNThreads()
+{
+    return scale.size();
+}
+
+Stat::Stat(int* arr_, int len_, int numPartitions_, std::vector<int> scale_):arr(arr_),len(len_),numPartitions(numPartitions_),scale(scale_),mean(NULL),var(NULL),acquireWeight(NULL),giveWeight(NULL),weight(NULL)
 {
     mean = new double[numPartitions];
     var = new double[numPartitions];
@@ -269,17 +507,21 @@ void Stat::calculate()
     for(int partition=0; partition<numPartitions; ++partition) {
         mean[partition] = 0;
         var[partition] = 0;
+        int ctr = 0;
         for(int i=partition; i<len; i+=numPartitions) {
-            mean[partition] = mean[partition] + arr[i];
+            mean[partition] = mean[partition] + arr[i]/((double)scale[ctr]);
+            ++ctr;
         }
         mean[partition] = (numPartitions*mean[partition])/(len);
 
+        ctr = 0;
         for(int i=partition; i<len; i+=numPartitions) {
-            double diff = (arr[i]-mean[partition]);
+            double diff = ( (arr[i]/((double)scale[ctr]))-mean[partition]);
             var[partition] = var[partition] + diff*diff;
             acquireWeight[i] = diff;
             giveWeight[i] = -diff;
             weight[i] = std::fabs(diff);
+            ++ctr;
         }
     }
 }

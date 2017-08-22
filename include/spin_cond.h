@@ -10,11 +10,13 @@
 struct spin_cond_t
 {
     volatile unsigned int spinner;
+    unsigned int maxCtr;
     unsigned int ctrLimit;
 };
 
 inline void spin_cond_init(spin_cond_t *obj, int maxCtr)
 {
+    obj->maxCtr = maxCtr;
     obj->spinner = 1;
     obj->ctrLimit = maxCtr;
 }
@@ -47,23 +49,24 @@ inline void spin_cond_wait(spin_cond_t *obj)
     //reset value in any case; don't consider signals issued before
 //    if(__sync_lock_test_and_set(&(obj->spinner),1))
 //	{
+
 #ifdef DEBUG_SPIN
     printf("%u cpu=%d started spinning\n", (unsigned) pthread_self(), sched_getcpu());
 #endif
-
     while(__sync_fetch_and_add(&(obj->spinner), 1))
     {
+        DUMMY_spin(&(obj->spinner));
         //DUMMY(obj->spinner, true);
         if(obj->spinner > obj->ctrLimit)
         {
 #ifdef DEBUG_SPIN
             printf("%u cpu=%d broke from loop\n", (unsigned) pthread_self(), sched_getcpu());
 #endif
+            //increase counter if it breaks
             break;
         }
     }
 //}
-
 #ifdef DEBUG_SPIN
     printf("%u cpu=%d stopped spinning\n", (unsigned) pthread_self(), sched_getcpu());
 #endif

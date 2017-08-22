@@ -13,6 +13,7 @@
 #define getPossibleThreads(totalLevel, dist, d2Type)\
     ( (dist==ONE)?static_cast<int>( (totalLevel) / 2.0):(d2Type==TWO_BLOCK)?static_cast<int>( (totalLevel) / 4.0): static_cast<int>( (totalLevel) /3.0) )
 
+#define UNUSED(x) (void)(x)
 
 
 #endif

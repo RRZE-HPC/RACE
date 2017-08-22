@@ -194,6 +194,14 @@ NAME_error Traverse::createLevelData()
     levelData->levelRow = levelRow_;
     levelData->levelNnz = levelNnz_;
 
+    levelData->nrow=0;
+    levelData->nnz=0;
+    for(int i=0; i<totalLevel; ++i)
+    {
+        levelData->nrow += levelRow_[i];
+        levelData->nnz += levelNnz_[i];
+    }
+
     //cache this data for later use
     cachedData[parentIdx] = (*levelData);
     return NAME_SUCCESS;

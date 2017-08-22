@@ -267,7 +267,7 @@ void LevelRecursion::recursivePartition(int parentIdx, int currLevel)
 
             LevelData* levelData = traverse.getLevelData();
             //Try to spawn all the threads required
-            bool locFlag = zoneTree->spawnChild(currIdx, currIdxNThreads, 1, levelData, EFFICIENCY, efficiency(currLevel));
+            bool locFlag = zoneTree->spawnChild(currIdx, currIdxNThreads, levelData, efficiency(currLevel));
             delete levelData;
 
             //if failed to obtain threads, try going down the tree recursively
@@ -309,7 +309,7 @@ void LevelRecursion::levelBalancing()
     {
         lvlOneThreads = lvlThreads(1);
     }
-    zoneTree->spawnChild(parentIdx, lvlOneThreads, 1, levelData, EFFICIENCY, efficiency(currLevel));
+    zoneTree->spawnChild(parentIdx, lvlOneThreads, levelData, efficiency(currLevel));
     delete levelData;
 
     if( zoneTree->at(0).nthreadsZ != requestNThreads)

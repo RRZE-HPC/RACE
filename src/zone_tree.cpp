@@ -246,79 +246,41 @@ void ZoneTree::updateTimeRecursive(int currChild)
     free(maxTime);
 }
 
-bool ZoneTree::spawnChild(int parentIdx, int requestNthreads, int startThread, LevelData* levelData, LBMode mode, double eff)
+bool ZoneTree::spawnChild(int parentIdx, int requestNthreads, LevelData* levelData, double eff)
 {
-    int bestNThreads = 1;
-    int minEffRow = std::numeric_limits<int>::max();
+//    int bestNThreads = 1;
+//    int minEffRow = std::numeric_limits<int>::max();
     //TODO for three block
-    int maxThreads = 1;
+//    int maxThreads = 1;
 
-    maxThreads = getPossibleThreads(levelData->totalLevel, dist, d2Type);
+    printf("requesting %d threads\n", requestNthreads);
+    LB lb(requestNthreads, eff, levelData, dist, d2Type);
+    lb.balance();
 
-    int scanTill = std::min(requestNthreads, maxThreads);
-    printf("maxThreads = %d\n",maxThreads);
-    if( (startThread < maxThreads) && (scanTill > 1) )
+    int baseLen = tree->size();
+    int *zonePtr = NULL;
+    int len;
+    int base = tree->at(parentIdx).valueZ[0];
+    lb.getZonePtr(&zonePtr, &len, base);
+
+    for(int block=0; block<len-1; ++block)
     {
-        ZoneLeaf bestParent = tree->at(parentIdx);
-        tree->at(parentIdx).childrenZ.clear();
-        ZoneLeaf resetParent = tree->at(parentIdx);
+        ZoneLeaf currLeaf(zonePtr[block], zonePtr[block+1], parentIdx);
 
-        tree_t* bestParentSubTree = new tree_t;
-        int baseLen = tree->size();
-
-        for (int nthreads=startThread; nthreads<=scanTill; ++nthreads)
-        {
-            LB lb(nthreads, levelData, dist, d2Type);
-            lb.balance();
-            int *zonePtr = NULL;
-            int len;
-            int base = tree->at(parentIdx).valueZ[0];
-            lb.getZonePtr(&zonePtr, &len, base);
-
-            for(int block=0; block<len-1; ++block)
-            {
-                ZoneLeaf currLeaf(zonePtr[block], zonePtr[block+1], parentIdx);
-
-                cachedTree->push_back(currLeaf);
-                tree->at(parentIdx).childrenZ.push_back(baseLen+block);
-            }
-
-            updateTreeEffRow(parentIdx);
-            updateTreeNThreads(parentIdx);
-
-            printf("eff Row = %d\n", tree->at(parentIdx).effRowZ);
-
-            if(tree->at(parentIdx).effRowZ < minEffRow)
-            {
-                std::vector<int>* range = &(tree->at(parentIdx).valueZ);
-                int currNrow = range->at(1) - range->at(0);
-                double effNThread = currNrow/static_cast<double>(tree->at(parentIdx).effRowZ);
-                printf("effNThreads = %f\n",effNThread);
-                if((mode != EFFICIENCY) || (effNThread >= (eff/100.0)*nthreads) )
-                {
-                    minEffRow = tree->at(0).effRowZ;
-                    bestNThreads = nthreads;
-                    //swap trees
-                    tree_t* tempTree;
-                    tempTree = bestParentSubTree;
-                    bestParentSubTree = cachedTree;
-                    cachedTree = tempTree;
-
-                    //correct parent
-                    bestParent = tree->at(parentIdx);
-                }
-            }
-            //clear parent
-            tree->at(parentIdx) = resetParent;
-            cachedTree->clear();
-        }
-        printf("chosen bestNThreads = %d\n",bestNThreads);
-        //insert bestSubTree into the main tree
-        tree->at(parentIdx) = bestParent;
-        tree->insert(tree->end(), bestParentSubTree->begin(), bestParentSubTree->end());
+        tree->push_back(currLeaf);
+        tree->at(parentIdx).childrenZ.push_back(baseLen+block);
     }
 
-    if(requestNthreads != bestNThreads)
+    updateTreeEffRow(parentIdx);
+    updateTreeNThreads(parentIdx);
+
+    printf("eff Row = %d\n", tree->at(parentIdx).effRowZ);
+
+    int currNThreads = lb.getCurrLvlNThreads();
+
+    printf("currNThreads = %d\n", currNThreads);
+
+    if(currNThreads != requestNthreads)
     {
         return false;
     }
@@ -326,7 +288,33 @@ bool ZoneTree::spawnChild(int parentIdx, int requestNthreads, int startThread, L
     {
         return true;
     }
+
 }
+
+void ZoneTree::printTree()
+{
+    updateTime();
+    for(unsigned i=0; i<tree->size(); ++i)
+    {
+        ZoneLeaf* currLeaf = &(at(i));
+        printf("%d. Range:[", i);
+
+        for(unsigned j=0; j<currLeaf->valueZ.size(); ++j)
+        {
+            printf("%d, ",currLeaf->valueZ[j]);
+        }
+
+        printf("] Children:[");
+
+
+        for(unsigned j=0; j<currLeaf->childrenZ.size(); ++j)
+        {
+            printf("%d, ",currLeaf->childrenZ[j]);
+        }
+        printf("], Parent: %d, nthreads: %d, idealNThreads:%d, effRow: %d reachedLimit: %s, pinOrder = %d funTime = %f\n", currLeaf->parentZ, currLeaf->nthreadsZ, currLeaf->idealNthreadsZ, currLeaf->effRowZ, (currLeaf->reachedLimit)?"true":"false", currLeaf->pinOrder, currLeaf->time);
+    }
+}
+
 
 void ZoneTree::resetTime()
 {

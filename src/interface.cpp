@@ -1,4 +1,5 @@
 #include "interface.h"
+#include "simdify.h"
 #include <algorithm>
 #include <iostream>
 
@@ -64,26 +65,7 @@ void NAMEInterface::NAMEColor()
 
 void NAMEInterface::printZoneTree()
 {
-    zoneTree->updateTime();
-    for(unsigned i=0; i<zoneTree->tree->size(); ++i)
-    {
-        ZoneLeaf* currLeaf = &(zoneTree->at(i));
-        printf("%d. Range:[", i);
-
-        for(unsigned j=0; j<currLeaf->valueZ.size(); ++j)
-        {
-            printf("%d, ",currLeaf->valueZ[j]);
-        }
-
-        printf("] Children:[");
-
-
-        for(unsigned j=0; j<currLeaf->childrenZ.size(); ++j)
-        {
-            printf("%d, ",currLeaf->childrenZ[j]);
-        }
-        printf("], Parent: %d, nthreads: %d, idealNThreads:%d, effRow: %d reachedLimit: %s, pinOrder = %d funTime = %f\n", currLeaf->parentZ, currLeaf->nthreadsZ, currLeaf->idealNthreadsZ, currLeaf->effRowZ, (currLeaf->reachedLimit)?"true":"false", currLeaf->pinOrder, currLeaf->time);
-    }
+   zoneTree->printTree();
 }
 
 void NAMEInterface::getPerm(int **perm_, int *len_)
@@ -255,4 +237,19 @@ bool NAMEInterface::D2Checker()
     conflict = recursiveChecker(5);
 
     return conflict;
+}
+
+void NAMEInterface::sleep()
+{
+    pool->sleepPool();
+}
+
+bool NAMEInterface::simdify(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* clp, double* val)
+{
+    return simdifyTemplate<double> (simdWidth, C, nrows, col_new, chunkStart, rl, clp, val, this);
+}
+
+bool NAMEInterface::simdify(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* clp, float* val)
+{
+    return simdifyTemplate<float> (simdWidth, C, nrows, col_new, chunkStart, rl, clp, val, this);
 }

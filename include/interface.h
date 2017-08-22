@@ -11,6 +11,7 @@
 #include "level_pool.h"
 #include "config.h"
 
+
 class NAMEInterface{
     private:
         Graph* graph;
@@ -33,7 +34,7 @@ class NAMEInterface{
         int invPermLen;
         ZoneTree* zoneTree;
         std::vector<FuncManager*> funMan;
-//	FuncManager *funMan;
+        //	FuncManager *funMan;
         bool detectConflict(std::vector<int> range1, std::vector<int> range2);
         bool recursiveChecker(int parent);
         bool D2Checker();
@@ -48,10 +49,18 @@ class NAMEInterface{
         void getInvPerm(int **invPerm_, int *len_);
         int getNumThreads();
 
+        //sleep all threads
+        void sleep();
+
         //Execution
         int registerFunction(void (*f) (int,int,void *), void* args);
         void executeFunction(int funcId);
-	void resetTime();
+        void resetTime();
+
+        bool simdify(int simdWidth, int C, int nrows, int*col, int* chunkStart, int* rl, int* clp, double* val);
+
+        bool simdify(int simdWidth, int C, int nrows, int*col, int* chunkStart, int* rl, int* clp, float* val);
+
 };
 
 #endif

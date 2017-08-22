@@ -24,7 +24,7 @@ void LevelPool::createPoolRecursive(int parentIdx)
             {
                 gid[i] = zoneTree->at(children->at(blockPerThread*i)).pinOrder;
             }
-            tree[parentIdx].init(gid, &pool)
+            tree[parentIdx].init(gid, &pool);
     );
 }
 
@@ -35,6 +35,7 @@ void LevelPool::createPool()
     printf("created pool\n");
     pinPool();
 }
+
 
 //Recursively pin pools
 void LevelPool::pinPoolRecursive(int parentIdx)
@@ -53,3 +54,19 @@ void LevelPool::resetMaster()
 {
     pin.resetMaster();
 }
+
+void LevelPool::sleepPoolRecursive(int parentIdx)
+{
+    RECURSIVE_HELPER(LevelPool::sleepPoolRecursive,
+           tree[parentIdx].sleep();
+    );
+}
+
+
+void LevelPool::sleepPool()
+{
+    int root = 0;
+    sleepPoolRecursive(root);
+}
+
+

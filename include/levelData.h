@@ -7,6 +7,8 @@ struct LevelData{
     int *levelRow;
     int *levelNnz;
     int totalLevel;
+    int nrow;
+    int nnz;
 
     LevelData();
     LevelData& operator=(const LevelData& other);

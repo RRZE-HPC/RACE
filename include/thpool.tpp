@@ -5,6 +5,7 @@
 #include "timing.h"
 #include "test.h"
 #include<malloc.h>
+#include <unistd.h>
 
 #define DEBUG 0
     template< typename arg_t>
@@ -117,7 +118,7 @@ void thread<arg_t>::addJob(std::function<void(arg_t)> function_, arg_t arg_, tea
     //STOP_TIME(add_job);
 }
 
-    template<typename arg_t>
+   template<typename arg_t>
 void thread<arg_t>::finishJob()
 {
     bool master = ( pthread_self() == (*pthread) );
@@ -128,7 +129,8 @@ void thread<arg_t>::finishJob()
     }
     else
     {
-        jobPresent = false;
+        //jobPresent = false;
+        __sync_lock_release(&jobPresent);
 #if DEBUG
         printf("tid = %d(%u) finished job\n", gid, (unsigned) (* (pthread)));
 #endif
@@ -184,6 +186,7 @@ void thpool<arg_t>::init(int numThreads_)
     }
 
 }
+
 
     template<typename arg_t>
 thpool<arg_t>::~thpool()
@@ -299,3 +302,27 @@ void team<arg_t>::barrier()
     // STOP_TIME(Barrier);
 }
 
+/*Make all threads in team to switch from
+ * active to idle waiting*/
+    template<typename arg_t>
+void team<arg_t>::sleep()
+{
+    for(int tid=1; tid<num_threads; ++tid)
+    {
+        if(__sync_fetch_and_add(&(taskForce[tid]->signal->mode),0)!=idle)
+        {
+            //wait till it starts spinning;
+            //i.e its job is finished
+            while(__sync_fetch_and_add(&(taskForce[tid]->signal->mode),0)==released)
+            {
+            }
+            sleepSignal(taskForce[tid]->signal);
+            //wait  till thread is idle
+            while(__sync_fetch_and_add(&(taskForce[tid]->signal->mode),0)!=idle)
+            {
+            }
+        }
+
+    }
+//    __sync_synchronize();
+}

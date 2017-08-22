@@ -76,6 +76,11 @@ void recursiveCall(FuncManager* funMan, int parent)
 //PTHREAD implementation
 void recursiveCall(FuncManager* funMan, int parentIdx)
 {
+    /*if(funMan->zoneTree->at(parentIdx).pinOrder != ((int) sched_getcpu()))
+    {
+        printf("Pinning Error: parentIdx=%dto %d; really pinned to cpu = %d\n", parentIdx, funMan->zoneTree->at(parentIdx).pinOrder, sched_getcpu());
+    }*/
+
     std::vector<int>* children = &(funMan->zoneTree->at(parentIdx).childrenZ);
     int blockPerThread = getBlockPerThread(funMan->zoneTree->dist, funMan->zoneTree->d2Type);
     int nthreads = children->size()/blockPerThread;
@@ -96,7 +101,7 @@ void recursiveCall(FuncManager* funMan, int parentIdx)
     {
         for(int block=0; block<blockPerThread; ++block)
         {
-            for(int tid=0; tid<nthreads; ++tid)
+           for(int tid=0; tid<nthreads; ++tid)
             {
                 //pool->tree[parentIdx].addJob(tid, std::bind(test,a,b,c,d, tid*len/2.0, (tid+1)*len/2.0, std::placeholders::_1), 1);
                 funMan->pool->tree[parentIdx].addJob(tid, funMan->recursiveFun, children->at(blockPerThread*tid+block) );

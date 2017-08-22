@@ -74,6 +74,7 @@ class LevelPool{
 //        Pin pin;
         void createPoolRecursive(int parentIdx);
         void pinPoolRecursive(int parentIdx);
+        void sleepPoolRecursive(int parentIdx);
     public:
  //       Pin pin;
         LevelPool(ZoneTree *zoneTree_, int SMT, PinMethod pinMethod);
@@ -86,7 +87,7 @@ class LevelPool{
         //creates pinned pool
         void createPool();
         void pinPool();
-        void sleep();
+        void sleepPool();
         void wake();
         void resetMaster();
 };

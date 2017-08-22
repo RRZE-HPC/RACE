@@ -32,9 +32,10 @@ set (SOURCES
     src/machine.cpp
     src/pin.cpp
     src/level_pool.cpp
-    #src/dummy.cpp
+    src/dummy.cpp
     src/signal.cpp
-    src/simdify.cpp
+    #src/simdify.cpp
+    src/sell_c_sigmize.cpp
     )
 
 set (HEADERS
@@ -64,6 +65,7 @@ set (HEADERS
     include/signal.h
     include/macros.h
     include/simdify.h
+    include/sell_c_sigmize.h
     )
 
 

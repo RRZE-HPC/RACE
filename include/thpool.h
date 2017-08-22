@@ -90,6 +90,7 @@ struct team{
     void init(std::vector<int> tid, thpool<arg_t>* pool);
     void addJob(int tid, std::function<void(arg_t)>, arg_t arg_);
     void barrier();
+    void sleep();
 };
 
 #include "thpool.tpp"
