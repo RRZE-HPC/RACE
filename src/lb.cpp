@@ -3,13 +3,22 @@
 #include <cmath>
 #include "macros.h"
 
-LB::LB(int nThreads_, double efficiency_, LevelData* levelData_, dist_t dist_, d2Method d2Type_, LB_t lbTarget_):levelPtr(NULL),zonePtr(NULL),levelData(levelData_), dist(dist_), d2Type(d2Type_), maxThreads(-1), nThreads(nThreads_), efficiency(efficiency_), lbTarget(lbTarget_)
+LB::LB(int nThreads_, double efficiency_, LevelData* levelData_, dist_t dist_, d2Method d2Type_, LB_t lbTarget_):levelPtr(NULL),subZonePtr(NULL),numBlocks(NULL),zonePtr(NULL),levelData(levelData_), dist(dist_), d2Type(d2Type_), maxThreads(-1), nThreads(nThreads_), efficiency(efficiency_), lbTarget(lbTarget_)
 {
     printf("dist = %d\n",dist);
     if( (lbTarget == NNZ) && (levelData->levelNnz == NULL) )
     {
         WARNING_PRINT("levelDataNnz not recieved, Load balancing target will fallback to ROW");
         lbTarget = ROW;
+    }
+
+    if(lbTarget == ROW)
+    {
+        targetData = levelData->levelRow;
+    }
+    else
+    {
+        targetData = levelData->levelNnz;
     }
 }
 
@@ -18,6 +27,22 @@ LB::~LB()
     if(levelPtr)
     {
         delete[] levelPtr;
+    }
+
+    if(subLevelPtr)
+    {
+        delete[] subLevelPtr;
+    }
+
+
+    if(subZonePtr)
+    {
+        delete[] subZonePtr;
+    }
+
+    if(numBlocks)
+    {
+        delete[] numBlocks;
     }
 
     if(zonePtr)
@@ -32,7 +57,7 @@ LB::~LB()
 
 }
 
-void LB::calcChunkSum(int *arr, bool forceRow)
+void LB::calcChunkSum_general(int *arr, int *levelPtr_, int len, bool forceRow)
 {
     int *targetLevelData = NULL;
     if( (lbTarget == ROW) || forceRow) {
@@ -41,15 +66,26 @@ void LB::calcChunkSum(int *arr, bool forceRow)
         targetLevelData = levelData->levelNnz;
     }
 
-    for(int i=0; i<nBlocks; ++i)
+    for(int i=0; i<len; ++i)
     {
         arr[i] = 0;
-        for(int j=levelPtr[i]; j<levelPtr[i+1]; ++j)
+        for(int j=levelPtr_[i]; j<levelPtr_[i+1]; ++j)
         {
             arr[i] += targetLevelData[j];
         }
     }
 }
+
+void LB::calcChunkSum(int *arr, bool forceRow)
+{
+    calcChunkSum_general(arr, levelPtr, totalBlocks, forceRow);
+}
+
+void LB::calcSubChunkSum(int *arr, bool forceRow)
+{
+    calcChunkSum_general(arr, subLevelPtr, totalSubBlocks, forceRow);
+}
+
 
 void LB::calcEffectiveRatio()
 {
@@ -73,25 +109,25 @@ void LB::calcEffectiveRatio()
 
 int LB::findNeighbour(const Stat &stats, neighbour_t type)
 {
-    int *perm = new int[nBlocks];
+    int *perm = new int[totalBlocks];
     int neighbourIdx = -1;
 
-    for(int i=0; i<nBlocks; ++i)
+    for(int i=0; i<totalBlocks; ++i)
     {
         perm[i] = i;
     }
 
     if(type == acquire) {
-        sortPerm(stats.acquireWeight, perm, 0, nBlocks, true);
+        sortPerm(stats.acquireWeight, perm, 0, totalBlocks, true);
     } else {
-        sortPerm(stats.giveWeight, perm, 0, nBlocks, true);
+        sortPerm(stats.giveWeight, perm, 0, totalBlocks, true);
     }
 
     int rankIdx = 0;
 
     if(type == acquire)
     {
-        while(rankIdx<nBlocks)
+        while(rankIdx<totalBlocks)
         {
             int currIdx = perm[rankIdx];
             if((levelPtr[currIdx+1] - levelPtr[currIdx]) > minGap) {
@@ -309,8 +345,8 @@ void LB::splitZones()
     }
 
 
-    nBlocks = blockPerThread*currLvlThreads;
-    int levelPtrSize = nBlocks+1;
+    totalBlocks = blockPerThread*currLvlThreads;
+    int levelPtrSize = totalBlocks+1;
     levelPtr = new int[levelPtrSize];
 
     levelPtr[0] = 0;
@@ -330,16 +366,16 @@ void LB::splitZones()
     //Now do load balancing; with scale values
     //therefore we reserve for nested threads
     //here itself
-    int *chunkSum = new int[nBlocks];
-    int *newChunkSum = new int[nBlocks];
+    int *chunkSum = new int[totalBlocks];
+    int *newChunkSum = new int[totalBlocks];
 
     bool exitFlag = false;
-    int *oldLevelPtr = new int[nBlocks+1];
+    int *oldLevelPtr = new int[totalBlocks+1];
 
     while(!exitFlag)
     {
         calcChunkSum(chunkSum);
-        Stat meanVar(chunkSum, nBlocks, blockPerThread, scale);
+        Stat meanVar(chunkSum, totalBlocks, blockPerThread, scale);
         double var = 0;
         for(int i=0; i<meanVar.numPartitions; ++i)
         {
@@ -347,16 +383,16 @@ void LB::splitZones()
         }
         double newVar = var;
 
-        int *rankPerm = new int[nBlocks];
-        for(int i=0; i<nBlocks; ++i)
+        int *rankPerm = new int[totalBlocks];
+        for(int i=0; i<totalBlocks; ++i)
         {
             rankPerm[i] = i;
         }
 
-        sortPerm(meanVar.weight, rankPerm, 0, nBlocks, true);
+        sortPerm(meanVar.weight, rankPerm, 0, totalBlocks, true);
         int currRank = 0;
 
-        for(int i=0; i<nBlocks+1; ++i)
+        for(int i=0; i<totalBlocks+1; ++i)
         {
             oldLevelPtr[i] = levelPtr[i];
         }
@@ -364,7 +400,7 @@ void LB::splitZones()
         while(newVar>=var)
         {
             int rankIdx = rankPerm[currRank];
-            for(int i=0; i<nBlocks+1; ++i)
+            for(int i=0; i<totalBlocks+1; ++i)
             {
                 levelPtr[i] = oldLevelPtr[i];
             }
@@ -398,7 +434,7 @@ void LB::splitZones()
             if(!fail)
             {
                 calcChunkSum(newChunkSum);
-                Stat newMeanVar(newChunkSum, nBlocks, blockPerThread, scale);
+                Stat newMeanVar(newChunkSum, totalBlocks, blockPerThread, scale);
                 //newMeanVar.calculate();
 
                 newVar = 0;
@@ -408,7 +444,7 @@ void LB::splitZones()
                 }
             }
 
-            if( (currRank == (nBlocks-1)) && (newVar>=var) )
+            if( (currRank == (totalBlocks-1)) && (newVar>=var) )
             {
                 exitFlag = true;
                 delete[] levelPtr;
@@ -431,25 +467,143 @@ void LB::splitZones()
 
     calcZonePtr(0);
 
-    for(int i=0; i<nBlocks; ++i)
+    //TODO: for block vectors
+    // (blockedSize*8*2 + blockedSize*nnzr*12) < (LLC cache size)
+    //TODO: get LLC cache size automaticallly
+    //TODO: Simulate LLC cache here
+    int cacheSize = 100*1024*1024;
+    int nnzr = 27;
+    int blockedSize = cacheSize/(8*2 + nnzr*12);
+
+    int maxLvlNrow = 0;
+    //blockedSize has to be greater than a single level size
+    for(int lev=0; lev<levelData->totalLevel; ++lev)
+    {
+        maxLvlNrow = std::max(maxLvlNrow, levelData->levelRow[lev]);
+    }
+    blockedSize = std::max(blockedSize, maxLvlNrow);
+
+    printf("blockedSize = %d\n", blockedSize);
+    //do some blocking
+    int ctr=0;
+
+    numBlocks = new int[totalBlocks];
+    for(int i=0; i<totalBlocks; ++i)
+    {
+        numBlocks[i] = 0;
+    }
+
+    std::vector<int> subLevelPtr_vec;
+    for(int i=0; i<totalBlocks; ++i)
+    {
+        numBlocks[i] += 1;
+        subLevelPtr_vec.push_back(levelPtr[i]);
+        ++ctr;
+
+        int currThread = static_cast<int>(i/(double)(blockPerThread));
+        //check current size
+        if( (zonePtr[i+1]-zonePtr[i]) > blockedSize )
+        {
+            //matters only if there is nesting
+            if(scale[currThread] > 1)
+            {
+                //now split this zone
+                if( (levelPtr[i+1]-levelPtr[i])>1 )
+                {
+                    int currSize=levelData->levelRow[levelPtr[i]];
+                    for(int j=levelPtr[i]+1; j<levelPtr[i+1]; ++j)
+                    {
+                        if(levelData->levelRow[j] > blockedSize)
+                        {
+                            PERFWARNING_PRINT("Expect some degradation of alpha factor");
+                        }
+                        currSize += levelData->levelRow[j];
+                        if(currSize > blockedSize)
+                        {
+                            numBlocks[i] += 1;
+                            subLevelPtr_vec.push_back(j);
+                            ++ctr;
+                            //reset currSize
+                            currSize = levelData->levelRow[j];
+                        }
+                    }
+                }
+                else
+                {
+                    PERFWARNING_PRINT("Expect some degradation of alpha factor");
+                }
+            }
+        }
+    }
+
+//    subLevelPtr_vec.push_back(levelPtr[totalBlocks]);
+    subLevelPtr_vec.push_back(levelPtr[totalBlocks]);
+
+    totalSubBlocks = ctr;
+
+    subLevelPtr = new int [totalSubBlocks+1];
+    //copy vector into array
+    for(int i=0; i<totalSubBlocks+1; ++i)
+    {
+        subLevelPtr[i] = subLevelPtr_vec[i];
+    }
+
+    /*
+    printf("Level Ptr");
+    for(int i=0; i<totalBlocks+1; ++i)
+    {
+        printf("%d\n", levelPtr[i]);
+    }
+
+    printf("Sub Level  Ptr\n");
+    for(int i=0; i<totalSubBlocks+1; ++i)
+    {
+        printf("%d\n",subLevelPtr[i]);
+    }*/
+
+    for(int i=0; i<totalBlocks; ++i)
     {
         printf("%d (%f)\n", (zonePtr[i+1]-zonePtr[i]), (zonePtr[i+1]-zonePtr[i])*100.0/((double)levelData->nrow));
     }
 }
 
+void LB::calcSubZonePtr(int base)
+{
+    int *chunkSum = new int [totalSubBlocks];
+    calcSubChunkSum(chunkSum, true);
+
+    subZonePtr = new int [totalSubBlocks+1];
+
+    subZonePtr[0] = base;
+
+    for(int i=0; i<totalSubBlocks; ++i)
+    {
+        subZonePtr[i+1] = subZonePtr[i] + chunkSum[i];
+    }
+
+    /*
+    printf("Sub Zone Ptr\n");
+    for(int i=0; i<totalSubBlocks; ++i)
+    {
+        printf("%d\n",subZonePtr[i]);
+    }*/
+
+    delete[] chunkSum;
+}
+
+
 void LB::calcZonePtr(int base)
 {
-    int *chunkSum = new int [nBlocks];
+    int *chunkSum = new int [totalBlocks];
     calcChunkSum(chunkSum, true);
 
-    zonePtr = new int [nBlocks+1];
+    zonePtr = new int [totalBlocks+1];
 
     zonePtr[0] = base;
-    for(int i=0; i<nBlocks; ++i)
+    for(int i=0; i<totalBlocks; ++i)
     {
         zonePtr[i+1] = zonePtr[i] + chunkSum[i];
     }
-
     delete[] chunkSum;
 }
 
@@ -458,7 +612,27 @@ void LB::getZonePtr(int **zonePtr_, int *len, int base)
     calcZonePtr(base);
     (*zonePtr_) = zonePtr;
     zonePtr = NULL;
-    (*len) = nBlocks+1;
+    (*len) = totalBlocks+1;
+}
+
+void LB::getSubZonePtr(int **subZonePtr_, int *len, int base)
+{
+    calcSubZonePtr(base);
+    (*subZonePtr_) = subZonePtr;
+    subZonePtr = NULL;
+    (*len) = totalSubBlocks+1;
+}
+
+void LB::getNumBlocks(int **numBlocks_, int* len)
+{
+    printf("NumBlocks = \n");
+    for(int i=0; i<totalBlocks; ++i)
+    {
+        printf("%d\n", numBlocks[i]);
+    }
+    (*numBlocks_) = numBlocks;
+    numBlocks = NULL;
+    (*len) = totalBlocks;
 }
 
 /*The scale value can be used

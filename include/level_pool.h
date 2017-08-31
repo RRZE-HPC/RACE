@@ -27,19 +27,31 @@
 */
 
 #define RECURSIVE_HELPER(this_fn, ...) \
-    std::vector<int>* children = &(zoneTree->at(parentIdx).childrenZ);\
+    std::vector<int>* subPointer = &(zoneTree->at(parentIdx).subPointer);\
     int blockPerThread = getBlockPerThread(zoneTree->dist, zoneTree->d2Type);\
-    int nThreads = children->size()/blockPerThread;\
-    __VA_ARGS__;\
-    if(nThreads > 1)\
+    int totalSubBlocks = zoneTree->at(parentIdx).totalSubBlocks;\
+    for(int parentSubIdx=0; parentSubIdx<totalSubBlocks; ++parentSubIdx)\
     {\
-        for(int block=0; block<blockPerThread; ++block)\
+        int nThreads;\
+        if(!subPointer->empty())\
         {\
-            for(int tid=0; tid<nThreads; ++tid)\
+            nThreads = (subPointer->at(2*parentSubIdx+1) - subPointer->at(2*parentSubIdx))/blockPerThread;\
+        }\
+        else\
+        {\
+            nThreads = 0;\
+        }\
+        __VA_ARGS__;\
+        if(nThreads > 1)\
+        {\
+            for(int block=0; block<blockPerThread; ++block)\
             {\
-                tree[parentIdx].addJob(tid, std::bind(&this_fn,this, std::placeholders::_1), children->at(blockPerThread*tid+block));\
+                for(int tid=0; tid<nThreads; ++tid)\
+                {\
+                    tree[poolTreeIdx(parentIdx, parentSubIdx)].addJob(tid, std::bind(&this_fn,this, std::placeholders::_1), subPointer->at(2*parentSubIdx) + blockPerThread*tid + block);\
+                }\
+                tree[poolTreeIdx(parentIdx, parentSubIdx)].barrier();\
             }\
-            tree[parentIdx].barrier();\
         }\
    }\
 
@@ -84,6 +96,13 @@ class LevelPool{
         thpool<int> pool;
         //Team tree
         team<int>* tree;
+        //to map between (parentIdx, parentSubIdx) to poolTreeIdx
+        //see macro poolTreeIdx
+        std::vector<int> mappedIdx;
+        inline int poolTreeIdx(int parentIdx, int parentSubIdx)
+        {
+            return (mappedIdx[parentIdx]+parentSubIdx);
+        }
         //creates pinned pool
         void createPool();
         void pinPool();

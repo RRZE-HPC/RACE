@@ -99,12 +99,12 @@ void Traverse::calculateDistance()
 {
     printf("parentIdx = %d\n",parentIdx);
     //traverse only if level has not been cached
-    if(cachedData.find(parentIdx) != cachedData.end())	
+/*    if(cachedData.find(parentIdx) != cachedData.end())	
     {
         printf("Retrieving from cache\n");
         (*levelData) = cachedData[parentIdx];
     }
-    else
+    else*/
     {
         bool marked_all = false;
         int root = rangeLo;
@@ -203,7 +203,9 @@ NAME_error Traverse::createLevelData()
     }
 
     //cache this data for later use
-    cachedData[parentIdx] = (*levelData);
+    //Don't cache this won't happen in 
+    //the current strategy
+    //cachedData[parentIdx] = (*levelData);
     return NAME_SUCCESS;
 }
 

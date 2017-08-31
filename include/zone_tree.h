@@ -8,8 +8,12 @@
 struct ZoneLeaf{
     std::vector<int> valueZ;
     std::vector<int> childrenZ;
+    std::vector<int> subPointer;
     int nthreadsZ;
     int idealNthreadsZ;
+    //total number of cache-blocked subBlocks
+    //the leaf has to handle
+    int totalSubBlocks;
     int parentZ;
     int effRowZ;
     int pinOrder;
@@ -62,7 +66,7 @@ class ZoneTree{
          * to be created
          * param[out] boolean indicating whether the request could be satisfied
          */
-        bool spawnChild(int parentIdx, int requestNthreads, LevelData* levelData, double eff=0);
+        bool spawnChild(int parentIdx, int parentSubIdx, int requestNthreads, LevelData* levelData, double eff=0);
         KeyChild findKeyChild(int parentIdx);
         void printTree();
         void resetTime();

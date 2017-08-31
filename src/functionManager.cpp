@@ -18,14 +18,10 @@ FuncManager::FuncManager(void (*f_) (int,int,void*), void*args_, ZoneTree *zoneT
 
 FuncManager::FuncManager(const FuncManager &obj)
 {
-    printf("Copy constructor called\n");
     func = obj.func;
-    std::cout<<"fn type = "<<typeid(obj.func).name() << std::endl;
-    printf("copied fn\n");
     zoneTree = obj.zoneTree;
     args = obj.args;
     pool = obj.pool;
-    printf("finished copying\n");
 }
 
 FuncManager::~FuncManager()
@@ -81,32 +77,45 @@ void recursiveCall(FuncManager* funMan, int parentIdx)
         printf("Pinning Error: parentIdx=%dto %d; really pinned to cpu = %d\n", parentIdx, funMan->zoneTree->at(parentIdx).pinOrder, sched_getcpu());
     }*/
 
-    std::vector<int>* children = &(funMan->zoneTree->at(parentIdx).childrenZ);
+    std::vector<int>* subPointer = &(funMan->zoneTree->at(parentIdx).subPointer);
     int blockPerThread = getBlockPerThread(funMan->zoneTree->dist, funMan->zoneTree->d2Type);
-    int nthreads = children->size()/blockPerThread;
-    if(nthreads <= 1)
+    int totalSubBlocks = funMan->zoneTree->at(parentIdx).totalSubBlocks;
+
+    for(int subBlock=0; subBlock<totalSubBlocks; ++subBlock)
     {
-        //        int pinOrder = zoneTree->at(parentIdx).pinOrder;
-        //        printf(" pinOrder = %d, cpu = %d\n",pinOrder,sched_getcpu());
-        std::vector<int>* range = &funMan->zoneTree->at(parentIdx).valueZ;
-        START_TIME(func);
-        funMan->func(range->at(0),range->at(1), funMan->args);
-        STOP_TIME(func);
-        funMan->zoneTree->at(parentIdx).time += GET_TIME(func);
-        //test(funMan->a,funMan->b,funMan->c,funMan->d,range->at(0), range->at(1),1);
-        //  test(1);
-        // sleep(1);
-    }
-    else
-    {
-        for(int block=0; block<blockPerThread; ++block)
+        int nthreads;
+        if(!subPointer->empty())
         {
-           for(int tid=0; tid<nthreads; ++tid)
+            nthreads = (subPointer->at(2*subBlock+1) - subPointer->at(2*subBlock))/blockPerThread;
+        }
+        else
+        {
+            nthreads = 0;
+        }
+        if(nthreads <= 1)
+        {
+            //        int pinOrder = zoneTree->at(parentIdx).pinOrder;
+            //        printf(" pinOrder = %d, cpu = %d\n",pinOrder,sched_getcpu());
+            std::vector<int>* range = &funMan->zoneTree->at(parentIdx).valueZ;
+            START_TIME(func);
+            funMan->func(range->front(),range->back(), funMan->args);
+            STOP_TIME(func);
+            funMan->zoneTree->at(parentIdx).time += GET_TIME(func);
+            //test(funMan->a,funMan->b,funMan->c,funMan->d,range->at(0), range->at(1),1);
+            //  test(1);
+            // sleep(1);
+        }
+        else
+        {
+            for(int block=0; block<blockPerThread; ++block)
             {
-                //pool->tree[parentIdx].addJob(tid, std::bind(test,a,b,c,d, tid*len/2.0, (tid+1)*len/2.0, std::placeholders::_1), 1);
-                funMan->pool->tree[parentIdx].addJob(tid, funMan->recursiveFun, children->at(blockPerThread*tid+block) );
+                for(int tid=0; tid<nthreads; ++tid)
+                {
+                    //pool->tree[parentIdx].addJob(tid, std::bind(test,a,b,c,d, tid*len/2.0, (tid+1)*len/2.0, std::placeholders::_1), 1);
+                    funMan->pool->tree[funMan->pool->poolTreeIdx(parentIdx, subBlock)].addJob(tid, funMan->recursiveFun, subPointer->at(2*subBlock)+blockPerThread*tid+block) ;
+                }
+                funMan->pool->tree[funMan->pool->poolTreeIdx(parentIdx, subBlock)].barrier();
             }
-            funMan->pool->tree[parentIdx].barrier();
             /*if(parentIdx == 0)
               {
               funMan->barrierTime=funMan->pool->tree[parentIdx].barrierTime;

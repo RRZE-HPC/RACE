@@ -4,11 +4,11 @@
 #include "utility.h"
 #include <limits>
 
-ZoneLeaf::ZoneLeaf():valueZ(2),nthreadsZ(-1),idealNthreadsZ(-1),parentZ(-2),effRowZ(-1),reachedLimit(false), time(0)
+ZoneLeaf::ZoneLeaf():valueZ(2),nthreadsZ(-1),idealNthreadsZ(-1),totalSubBlocks(-1), parentZ(-2),effRowZ(-1),reachedLimit(false), time(0)
 {
 }
 
-ZoneLeaf::ZoneLeaf(int rangeLo_, int rangeHi_, int parent_):valueZ(2),nthreadsZ(1),idealNthreadsZ(1),parentZ(parent_),effRowZ(rangeHi_-rangeLo_),pinOrder(-1),reachedLimit(false), time(0)
+ZoneLeaf::ZoneLeaf(int rangeLo_, int rangeHi_, int parent_):valueZ(2),nthreadsZ(1),idealNthreadsZ(1),totalSubBlocks(1), parentZ(parent_),  effRowZ(rangeHi_-rangeLo_),pinOrder(-1),reachedLimit(false), time(0)
 {
     valueZ[0] = rangeLo_;
     valueZ[1] = rangeHi_;
@@ -139,9 +139,10 @@ KeyChild ZoneTree::findKeyChild(int parentIdx)
 KeyChild ZoneTree::findKeyChild(int parentIdx)
 {
     int maxEffRow = 0;
-    std::vector<int>* children = &(tree->at(parentIdx).childrenZ);
+    std::vector<int>* subPointer = &(tree->at(parentIdx).subPointer);
+    //only till where children have been spawned
+    int totalSubBlock = subPointer->size()/2;
     int blockPerThread = getBlockPerThread(dist, d2Type);
-    int numThreads = static_cast<int>(children->size()/blockPerThread);//TODO for 3 block case
     int maxTotIdx = 0;
     int *maxRow = new int[blockPerThread];
     int *maxIdx = new int[blockPerThread];
@@ -152,31 +153,54 @@ KeyChild ZoneTree::findKeyChild(int parentIdx)
         maxIdx[block] = 0;
     }
 
-    for(int block=0; block<blockPerThread; ++block)
+    for(int subBlock=0; subBlock<totalSubBlock; ++subBlock)
     {
-        for(int i=0; i<numThreads; ++i)
-        {
-            int nrow = cachedAt(children->at(blockPerThread*i+block)).effRowZ;
+        int *tempMaxRow = new int[blockPerThread];
+        int *tempMaxIdx = new int[blockPerThread];
 
-            if(nrow > maxRow[block])
+        for(int block=0; block<blockPerThread; ++block)
+        {
+            tempMaxRow[block] = 0;
+            tempMaxIdx[block] = 0;
+        }
+
+        for(int block=0; block<blockPerThread; ++block)
+        {
+            for(int i=(subPointer->at(2*subBlock)+block); i<subPointer->at(2*subBlock+1); i+=blockPerThread)
             {
-                maxRow[block] = nrow;
-                maxIdx[block] = i;
+                int nrow = cachedAt(i).effRowZ;
+
+                if(nrow > tempMaxRow[block])
+                {
+                    tempMaxRow[block] = nrow;
+                    tempMaxIdx[block] = i;
+                }
             }
         }
+
+        for(int block=0; block<blockPerThread; ++block)
+        {
+            maxRow[block] += tempMaxRow[block];
+            maxIdx[block] = tempMaxIdx[block]; //TODO
+        }
+
+        delete[] tempMaxRow;
+        delete[] tempMaxIdx;
     }
 
+    printf("finished\n");
     maxEffRow = sumArr(maxRow, blockPerThread);
     maxTotIdx = maxArr(maxIdx, blockPerThread);
     KeyChild keyChild(blockPerThread);
     for(int block=0; block<blockPerThread; ++block)
     {
-        keyChild.indices[block] = (children->at(blockPerThread*maxTotIdx)+block);
+        keyChild.indices[block] = maxTotIdx;
     }
 
     keyChild.effRow = maxEffRow;
     delete[] maxRow;
     delete[] maxIdx;
+    printf("finished\n");
     return keyChild;
 }
 
@@ -191,28 +215,44 @@ void ZoneTree::updateTreeEffRow(int parentIdx)
     {
         updateTreeEffRow(nxtParent);
     }
+
 }
 
 void ZoneTree::updateTreeNThreads(int parentIdx)
 {
-    std::vector<int>* children = &(tree->at(parentIdx).childrenZ);
+    std::vector<int>* subPointer = &(tree->at(parentIdx).subPointer);
+
+    //Only till where children have been spawned
+    int totalSubBlocks = (subPointer->size()/2);
 
     int nThreads = 0;
     int blockPerThread = getBlockPerThread(dist, d2Type);
-    int numThreads = static_cast<int>(children->size()/blockPerThread);//TODO for 3 block case
 
-    for(int i=0; i<numThreads; ++i)
+    for(int subBlock=0; subBlock<totalSubBlocks; ++subBlock)
     {
-       int maxNThreads = 0;
-       for(int block=0; block<blockPerThread; ++block)
-       {
-           maxNThreads = std::max(cachedAt(children->at(blockPerThread*i+block)).nthreadsZ, maxNThreads);
-       }
-       nThreads += maxNThreads;
-    }
-    tree->at(parentIdx).nthreadsZ = nThreads;
+        //threads of subBlock
+        int subNThreads = 0;
+        int numThreads = (subPointer->at(2*subBlock+1)-subPointer->at(2*subBlock))/blockPerThread;//TODO for 3 block case
 
+        for(int i=0; i<numThreads; ++i)
+        {
+            int maxNThreads = 0;
+            for(int block=0; block<blockPerThread; ++block)
+            {
+                maxNThreads = std::max(cachedAt(subPointer->at(2*subBlock)+blockPerThread*i+block).nthreadsZ, maxNThreads);
+            }
+            subNThreads += maxNThreads;
+        }
+
+        printf("subBlock = %d, numThreads = %d subNThreads = %d\n", subBlock, numThreads, subNThreads);
+
+        nThreads = std::max(nThreads, subNThreads);
+    }
+
+    printf("ParentIdx = %d, nThreads = %d\n", parentIdx, nThreads);
+    tree->at(parentIdx).nthreadsZ = nThreads;
     int nxtParent = tree->at(parentIdx).parentZ;
+
     if(nxtParent!=-1)
     {
         updateTreeNThreads(nxtParent);
@@ -246,39 +286,59 @@ void ZoneTree::updateTimeRecursive(int currChild)
     free(maxTime);
 }
 
-bool ZoneTree::spawnChild(int parentIdx, int requestNthreads, LevelData* levelData, double eff)
+bool ZoneTree::spawnChild(int parentIdx, int parentSubIdx, int requestNthreads, LevelData* levelData, double eff)
 {
 //    int bestNThreads = 1;
 //    int minEffRow = std::numeric_limits<int>::max();
     //TODO for three block
 //    int maxThreads = 1;
-
     printf("requesting %d threads\n", requestNthreads);
     LB lb(requestNthreads, eff, levelData, dist, d2Type);
     lb.balance();
 
     int baseLen = tree->size();
-    int *zonePtr = NULL;
-    int len;
-    int base = tree->at(parentIdx).valueZ[0];
-    lb.getZonePtr(&zonePtr, &len, base);
+    int *zonePtr = NULL, *subZonePtr = NULL, *numBlocks = NULL;
+    int totalBlocks, totalSubBlocks;
+    int base = tree->at(parentIdx).valueZ[parentSubIdx];
 
-    for(int block=0; block<len-1; ++block)
+    int len;
+    lb.getZonePtr(&zonePtr, &len, base);
+    //This gets a blocked version of zonePtr
+    lb.getSubZonePtr(&subZonePtr, &totalSubBlocks, base);
+    totalSubBlocks -= 1; //Since zonePtr would have one extra
+    lb.getNumBlocks(&numBlocks, &totalBlocks);
+
+    printf("totalBlocks = %d, totalSubBlocks = %d\n", totalBlocks, totalSubBlocks);
+    int ctr=0;
+
+    tree->at(parentIdx).subPointer.push_back(baseLen);
+
+    for(int block=0; block<totalBlocks; ++block)
     {
         ZoneLeaf currLeaf(zonePtr[block], zonePtr[block+1], parentIdx);
+        currLeaf.valueZ.resize(numBlocks[block]+1);
+        for(int subBlock=0; subBlock<numBlocks[block]; ++subBlock)
+        {
+            currLeaf.valueZ[subBlock] = (subZonePtr[ctr]);
+            ++ctr;
+        }
+        currLeaf.valueZ[numBlocks[block]] = (subZonePtr[ctr]);
+        currLeaf.totalSubBlocks = numBlocks[block];
 
         tree->push_back(currLeaf);
         tree->at(parentIdx).childrenZ.push_back(baseLen+block);
     }
 
-    updateTreeEffRow(parentIdx);
-    updateTreeNThreads(parentIdx);
+    tree->at(parentIdx).subPointer.push_back(baseLen+totalBlocks);
 
-    printf("eff Row = %d\n", tree->at(parentIdx).effRowZ);
+
+    if(parentSubIdx == (tree->at(parentIdx).totalSubBlocks-1))
+    {
+        updateTreeEffRow(parentIdx);
+        updateTreeNThreads(parentIdx);
+    }
 
     int currNThreads = lb.getCurrLvlNThreads();
-
-    printf("currNThreads = %d\n", currNThreads);
 
     if(currNThreads != requestNthreads)
     {
@@ -288,7 +348,6 @@ bool ZoneTree::spawnChild(int parentIdx, int requestNthreads, LevelData* levelDa
     {
         return true;
     }
-
 }
 
 void ZoneTree::printTree()
@@ -306,12 +365,20 @@ void ZoneTree::printTree()
 
         printf("] Children:[");
 
-
         for(unsigned j=0; j<currLeaf->childrenZ.size(); ++j)
         {
             printf("%d, ",currLeaf->childrenZ[j]);
         }
-        printf("], Parent: %d, nthreads: %d, idealNThreads:%d, effRow: %d reachedLimit: %s, pinOrder = %d funTime = %f\n", currLeaf->parentZ, currLeaf->nthreadsZ, currLeaf->idealNthreadsZ, currLeaf->effRowZ, (currLeaf->reachedLimit)?"true":"false", currLeaf->pinOrder, currLeaf->time);
+
+        printf("] SubPointer:[");
+
+
+        for(unsigned j=0; j<currLeaf->subPointer.size(); ++j)
+        {
+            printf("%d, ",currLeaf->subPointer[j]);
+        }
+
+        printf("], Parent: %d, nthreads: %d, idealNThreads:%d, subBLocks:%d, effRow: %d, reachedLimit: %s, pinOrder = %d funTime = %f\n", currLeaf->parentZ, currLeaf->nthreadsZ, currLeaf->idealNthreadsZ, currLeaf->totalSubBlocks, currLeaf->effRowZ, (currLeaf->reachedLimit)?"true":"false", currLeaf->pinOrder, currLeaf->time);
     }
 }
 

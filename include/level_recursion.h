@@ -16,8 +16,8 @@ class LevelRecursion
         ZoneTree* zoneTree;
         int* perm;
         int* invPerm;
-        void calculateIdealNthreads(int parentIdx, int currLvl);
-        void recursivePartition(int parentIdx, int currLevel);
+        void calculateIdealNthreads(int parentIdx, int parentSubIdx, int currLvl);
+        void recursivePartition(int parentIdx, int parentSubIdx, int currLevel);
         //stores a vector of efficiency at different levels
         std::vector<double> eff_vec;
         std::vector<int> lvl_threads;

@@ -5,7 +5,16 @@ LevelPool::LevelPool(ZoneTree *zoneTree_, int SMT_, PinMethod pinMethod_):zoneTr
 {
     int totThreads = zoneTree->at(0).nthreadsZ;
     pool.init(totThreads);
-    tree = new team<int> [zoneTree->size()];
+
+    int ctr = 0;
+    //create mappedIdx
+    for(int i=0; i<zoneTree->size(); ++i)
+    {
+        mappedIdx.push_back(ctr);
+        ctr += zoneTree->at(i).totalSubBlocks;
+    }
+
+    tree = new team<int> [ctr];
     pin.pinInit();
 }
 
@@ -14,7 +23,6 @@ LevelPool::~LevelPool()
     delete[] tree;
 }
 
-
 //Recursively spawn thread pools
 void LevelPool::createPoolRecursive(int parentIdx)
 {
@@ -22,9 +30,9 @@ void LevelPool::createPoolRecursive(int parentIdx)
             std::vector<int> gid(nThreads);
             for(unsigned i=0; i<gid.size(); ++i)
             {
-                gid[i] = zoneTree->at(children->at(blockPerThread*i)).pinOrder;
+                gid[i] = zoneTree->at(subPointer->at(2*parentSubIdx)+blockPerThread*i).pinOrder;
             }
-            tree[parentIdx].init(gid, &pool);
+            tree[poolTreeIdx(parentIdx, parentSubIdx)].init(gid, &pool);
     );
 }
 
@@ -32,7 +40,6 @@ void LevelPool::createPool()
 {
     int root = 0;
     createPoolRecursive(root);
-    printf("created pool\n");
     pinPool();
 }
 
@@ -58,7 +65,7 @@ void LevelPool::resetMaster()
 void LevelPool::sleepPoolRecursive(int parentIdx)
 {
     RECURSIVE_HELPER(LevelPool::sleepPoolRecursive,
-           tree[parentIdx].sleep();
+           tree[poolTreeIdx(parentIdx,parentSubIdx)].sleep();
     );
 }
 
