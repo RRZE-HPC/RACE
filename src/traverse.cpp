@@ -97,14 +97,13 @@ void Counter::reset()
 
 void Traverse::calculateDistance()
 {
-    printf("parentIdx = %d\n",parentIdx);
     //traverse only if level has not been cached
-/*    if(cachedData.find(parentIdx) != cachedData.end())	
-    {
-        printf("Retrieving from cache\n");
-        (*levelData) = cachedData[parentIdx];
-    }
-    else*/
+    /*    if(cachedData.find(parentIdx) != cachedData.end())	
+          {
+          printf("Retrieving from cache\n");
+          (*levelData) = cachedData[parentIdx];
+          }
+          else*/
     {
         bool marked_all = false;
         int root = rangeLo;
@@ -142,14 +141,12 @@ void Traverse::calculateDistance()
             currLvl += 1;
 
             if( marked_all==true && (Counter::val != (rangeHi-rangeLo)) ) {
-                printf("counter = %d\n",Counter::val);
                 printf("We have islands in range [%d - %d]\n",rangeLo,rangeHi);
                 //now process islands
                 for(int i=rangeLo; i<rangeHi; ++i) {
                     if(distFromRoot[i] == -1) {
                         //Found him, mark him as distance 2 apart
                         currLvl += 1;
-                        printf("Found %d\n",i);
                         currChildren.push_back(i);
                         marked_all = false;
                         break;

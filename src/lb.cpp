@@ -248,7 +248,7 @@ void LB::splitZones()
                     i = bestIdx;
                     accumulator = minTempAccumulator;
 
-                    printf("i=%d accumulator = %f\n", i, accumulator);
+                    //printf("i=%d accumulator = %f\n", i, accumulator);
 
                     currRem = currRem + (accumulator-roundDouble(accumulator));
                     scale.push_back(roundDouble(accumulator));
@@ -334,6 +334,7 @@ void LB::splitZones()
 
     currLvlThreads = scale.size();
 
+    /*
     for(int i=0; i<currLvlThreads; ++i)
     {
         printf("scale[%d] = %d\n", i, scale[i]);
@@ -342,7 +343,7 @@ void LB::splitZones()
     for(int i=0; i<currLvlThreads+1; ++i)
     {
         printf("initLvlPtr[%d] = %d\n", i, initialLvlPtr[i]);
-    }
+    }*/
 
 
     totalBlocks = blockPerThread*currLvlThreads;
@@ -358,10 +359,11 @@ void LB::splitZones()
         }
     }
 
+    /*
     for(int i=0; i<levelPtrSize; ++i)
     {
         printf("levelPtr[%d] = %d\n",i,levelPtr[i]);
-    }
+    }*/
 
     //Now do load balancing; with scale values
     //therefore we reserve for nested threads
@@ -458,12 +460,12 @@ void LB::splitZones()
     delete[] chunkSum;
     delete[] newChunkSum;
 
-
+    /*
     printf("Final lvl ptr\n");
     for(int i=0; i<levelPtrSize; ++i)
     {
         printf("levelPtr[%d] = %d\n",i,levelPtr[i]);
-    }
+    }*/
 
     calcZonePtr(0);
 
@@ -483,7 +485,7 @@ void LB::splitZones()
     }
     blockedSize = std::max(blockedSize, maxLvlNrow);
 
-    printf("blockedSize = %d\n", blockedSize);
+    //printf("blockedSize = %d\n", blockedSize);
     //do some blocking
     int ctr=0;
 
@@ -549,22 +551,10 @@ void LB::splitZones()
     }
 
     /*
-    printf("Level Ptr");
-    for(int i=0; i<totalBlocks+1; ++i)
-    {
-        printf("%d\n", levelPtr[i]);
-    }
-
-    printf("Sub Level  Ptr\n");
-    for(int i=0; i<totalSubBlocks+1; ++i)
-    {
-        printf("%d\n",subLevelPtr[i]);
-    }*/
-
     for(int i=0; i<totalBlocks; ++i)
     {
         printf("%d (%f)\n", (zonePtr[i+1]-zonePtr[i]), (zonePtr[i+1]-zonePtr[i])*100.0/((double)levelData->nrow));
-    }
+    }*/
 }
 
 void LB::calcSubZonePtr(int base)
@@ -625,11 +615,6 @@ void LB::getSubZonePtr(int **subZonePtr_, int *len, int base)
 
 void LB::getNumBlocks(int **numBlocks_, int* len)
 {
-    printf("NumBlocks = \n");
-    for(int i=0; i<totalBlocks; ++i)
-    {
-        printf("%d\n", numBlocks[i]);
-    }
     (*numBlocks_) = numBlocks;
     numBlocks = NULL;
     (*len) = totalBlocks;
@@ -658,7 +643,7 @@ int LB::getCurrLvlNThreads()
     return scale.size();
 }
 
-Stat::Stat(int* arr_, int len_, int numPartitions_, std::vector<int> scale_):arr(arr_),len(len_),numPartitions(numPartitions_),scale(scale_),mean(NULL),var(NULL),acquireWeight(NULL),giveWeight(NULL),weight(NULL)
+Stat::Stat(int* arr_, int len_, int numPartitions_, std::vector<int> scale_):arr(arr_),len(len_), scale(scale_), numPartitions(numPartitions_),mean(NULL),var(NULL),acquireWeight(NULL),giveWeight(NULL),weight(NULL)
 {
     mean = new double[numPartitions];
     var = new double[numPartitions];
