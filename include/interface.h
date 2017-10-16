@@ -17,6 +17,7 @@ class NAMEInterface{
         Graph* graph;
         int nrow;
         dist_t dist;
+        d2Method d2Type;
         int requestedThreads;
         int availableThreads;
         int SMT;
@@ -39,7 +40,7 @@ class NAMEInterface{
         bool recursiveChecker(int parent);
         bool D2Checker();
     public:
-        NAMEInterface(int nrow_, int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int SMT_=1, PinMethod method_=SCATTER, int *initPerm_=NULL, int *initInvPerm_=NULL);
+        NAMEInterface(int nrow_, int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int SMT_=1, PinMethod method_=SCATTER, int *initPerm_=NULL, int *initInvPerm_=NULL, d2Method d2Type_=TWO_BLOCK);
         ~NAMEInterface();
         //Pre-processing
         void NAMEColor();
