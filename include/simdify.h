@@ -54,7 +54,6 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
 
     int simdInChunk = C/simdWidth;
 
-    int row = 0, col_idx = 0;
     //int negativeNum = -1;
 
     int *currCol = NULL;
@@ -128,6 +127,7 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
             }
 #endif
 
+            int row=0, col_idx=0;
             //re-arrange simdWidth rows here, in a fashion to enable SIMD
             for(int j=0; j<clp[chunk]; ++j)
             {
@@ -293,14 +293,14 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
                 {
                     ERROR_PRINT("\nNon-compatible permutations in simdify, Check row = %d could not find col = %d rowLen = %d chunkLen = %d", row, col[col_idx], rl[row], clp[chunk]);
                     printf("old col =\n");
-                    for(int j=0; j<clp[chunk]; ++j)
+                    for(int k=0; k<clp[chunk]; ++k)
                     {
-                        printf("%d ",col_duplicate[start_nnz+j]);
+                        printf("%d ",col_duplicate[start_nnz+k]);
                     }
                     printf("\n\nnew col =\n");
-                    for(int j=0; j<clp[chunk]; ++j)
+                    for(int k=0; k<clp[chunk]; ++k)
                     {
-                        int idx = chunkStart[chunk] + rowinchunk + j*C;
+                        int idx = chunkStart[chunk] + rowinchunk + k*C;
                         printf("%d ",col[idx]);
                     }
                     printf("\n");

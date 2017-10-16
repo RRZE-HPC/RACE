@@ -18,7 +18,7 @@ inline void sell_c_sigmize_Kernel(int start, int end, void *args)
             //false sharing within a simd lane;
             //now each 4 row gets different values
             //avoiding such false sharing
-            mat->col[idx] = start + (row%simdWidth);
+            mat->col[idx] = start + ((row-start)%simdWidth);
         }
     }
 }
