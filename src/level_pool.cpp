@@ -30,7 +30,7 @@ void LevelPool::createPoolRecursive(int parentIdx)
             std::vector<int> gid(nThreads);
             for(unsigned i=0; i<gid.size(); ++i)
             {
-                gid[i] = zoneTree->at(subPointer->at(2*parentSubIdx)+blockPerThread*i).pinOrder;
+                gid[i] = zoneTree->at(children->at(2*parentSubIdx)+blockPerThread*i).pinOrder;
             }
             tree[poolTreeIdx(parentIdx, parentSubIdx)].init(gid, &pool);
     );

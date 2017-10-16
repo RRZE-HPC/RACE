@@ -27,15 +27,15 @@
 */
 
 #define RECURSIVE_HELPER(this_fn, ...) \
-    std::vector<int>* subPointer = &(zoneTree->at(parentIdx).subPointer);\
+    std::vector<int>* children = &(zoneTree->at(parentIdx).children);\
     int blockPerThread = getBlockPerThread(zoneTree->dist, zoneTree->d2Type);\
     int totalSubBlocks = zoneTree->at(parentIdx).totalSubBlocks;\
     for(int parentSubIdx=0; parentSubIdx<totalSubBlocks; ++parentSubIdx)\
     {\
         int nThreads;\
-        if(!subPointer->empty())\
+        if(!children->empty())\
         {\
-            nThreads = (subPointer->at(2*parentSubIdx+1) - subPointer->at(2*parentSubIdx))/blockPerThread;\
+            nThreads = (children->at(2*parentSubIdx+1) - children->at(2*parentSubIdx))/blockPerThread;\
         }\
         else\
         {\
@@ -48,7 +48,7 @@
             {\
                 for(int tid=0; tid<nThreads; ++tid)\
                 {\
-                    tree[poolTreeIdx(parentIdx, parentSubIdx)].addJob(tid, std::bind(&this_fn,this, std::placeholders::_1), subPointer->at(2*parentSubIdx) + blockPerThread*tid + block);\
+                    tree[poolTreeIdx(parentIdx, parentSubIdx)].addJob(tid, std::bind(&this_fn,this, std::placeholders::_1), children->at(2*parentSubIdx) + blockPerThread*tid + block);\
                 }\
                 tree[poolTreeIdx(parentIdx, parentSubIdx)].barrier();\
             }\

@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <iostream>
 
-NAMEInterface::NAMEInterface(int nrow_,int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int SMT_, PinMethod pinMethod_, int *initPerm_, int *initInvPerm_):graph(NULL),nrow(nrow_),dist(dist_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL)
+NAMEInterface::NAMEInterface(int nrow_,int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int SMT_, PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, d2Method d2Type_):graph(NULL),nrow(nrow_),dist(dist_),d2Type(d2Type_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL)
 {
 
 }
@@ -36,7 +36,7 @@ void NAMEInterface::NAMEColor()
     graph = new Graph(nrow, nrow, rowPtr, col, initPerm, initInvPerm);
 
     //2. Call level_recursion
-    LevelRecursion lr(graph, requestedThreads, dist, TWO_BLOCK);
+    LevelRecursion lr(graph, requestedThreads, dist, d2Type);
     lr.levelBalancing();
     availableThreads = lr.getAvailableThreads();
     int len;
@@ -194,38 +194,44 @@ bool NAMEInterface::detectConflict(std::vector<int> range1, std::vector<int> ran
 
 bool NAMEInterface::recursiveChecker(int parent)
 {
-    std::vector<int> *children = &(zoneTree->at(parent).childrenZ);
-    int currNThreads = static_cast<int>(children->size()/2.0);
+    std::vector<int> *children = &(zoneTree->at(parent).children);
+    int totalSubBlocks = zoneTree->at(parent).totalSubBlocks;
+    int blockPerThread = getBlockPerThread(dist, d2Type);
     bool conflict = false;
-    printf("checking idx = %d\n",parent);
-    if(currNThreads > 1)
+
+    for(int subBlock=0; subBlock<totalSubBlocks; ++subBlock)
     {
-        for(int start=0; start<2; ++start)
+        int currNThreads = (children->at(2*subBlock+1)-children->at(2*subBlock))/blockPerThread;
+        printf("checking idx = %d\n",parent);
+        if(currNThreads > 1)
         {
-            for(int i=start; i<=currNThreads; i+=2)
+            for(int start=0; start<blockPerThread; ++start)
             {
-                std::vector<int> rangeOuter = zoneTree->at(children->at(i)).valueZ;
-                for(int j=start; j<=currNThreads; j+=2)
+                for(int i=start; i<currNThreads; i+=blockPerThread)
                 {
-                    if(i!=j)
+                    std::vector<int> rangeOuter = zoneTree->at(children->at(2*subBlock)+i).valueZ;
+                    for(int j=start; j<=currNThreads; j+=2)
                     {
-                        std::vector<int> rangeInner = zoneTree->at(children->at(j)).valueZ;
-                        conflict = detectConflict(rangeOuter, rangeInner);
-                        if(conflict)
+                        if(i!=j)
                         {
-                            break;
+                            std::vector<int> rangeInner = zoneTree->at(children->at(2*subBlock)+j).valueZ;
+                            conflict = detectConflict(rangeOuter, rangeInner);
+                            if(conflict)
+                            {
+                                break;
+                            }
                         }
                     }
-                }
-                if(conflict)
-                {
-                    break;
+                    if(conflict)
+                    {
+                        break;
+                    }
                 }
             }
-        }
-        for(unsigned child=0; child< children->size(); ++child)
-        {
-            recursiveChecker(children->at(child));
+            for(int child=0; child< blockPerThread*currNThreads; ++child)
+            {
+                recursiveChecker(children->at(2*subBlock)+child);
+            }
         }
     }
     return conflict;

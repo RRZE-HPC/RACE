@@ -7,8 +7,7 @@
 
 struct ZoneLeaf{
     std::vector<int> valueZ;
-    std::vector<int> childrenZ;
-    std::vector<int> subPointer;
+    std::vector<int> children;
     int nthreadsZ;
     int idealNthreadsZ;
     //total number of cache-blocked subBlocks

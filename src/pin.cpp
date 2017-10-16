@@ -7,34 +7,10 @@ Pin::Pin(ZoneTree* zoneTree_, int SMT_, PinMethod method_):zoneTree(zoneTree_),m
 
 }
 
-/*
 void Pin::pinOrderRecursive(int parentIdx)
 {
     ZoneLeaf* parentNode = &(zoneTree->at(parentIdx));
-    std::vector<int> *children = &(parentNode->childrenZ);
-
-    //TODO for 3 block scheme
-    for(int block = 0; block<2; ++block)
-    {
-        int pinCtr = parentNode->pinOrder;
-        int siblingInc = (block==0)?1:-1;
-        for(unsigned i=block; i<children->size(); i+=2)
-        {
-            ZoneLeaf* childNode = &(zoneTree->at(children->at(i)));
-            ZoneLeaf* siblingNode = &(zoneTree->at(children->at(i+siblingInc)));
-            childNode->pinOrder = pinCtr;
-            //Taking max since it might happen red and black have uneven threads
-            pinCtr = pinCtr + std::max(childNode->nthreadsZ,siblingNode->nthreadsZ);
-            pinOrderRecursive(children->at(i));
-        }
-    }
-}
-*/
-
-void Pin::pinOrderRecursive(int parentIdx)
-{
-    ZoneLeaf* parentNode = &(zoneTree->at(parentIdx));
-    std::vector<int> *subPointer = &(parentNode->subPointer);
+    std::vector<int> *children = &(parentNode->children);
 
     int blockPerThread = getBlockPerThread(zoneTree->dist, zoneTree->d2Type);
     int totalSubBlocks = parentNode->totalSubBlocks;
@@ -44,9 +20,9 @@ void Pin::pinOrderRecursive(int parentIdx)
         int pinCtr = parentNode->pinOrder;
 
         int nThread;
-        if(!subPointer->empty())
+        if(!children->empty())
         {
-            nThread = (subPointer->at(2*subBlock+1) - subPointer->at(2*subBlock))/blockPerThread;
+            nThread = (children->at(2*subBlock+1) - children->at(2*subBlock))/blockPerThread;
         }
         else
         {
@@ -59,15 +35,15 @@ void Pin::pinOrderRecursive(int parentIdx)
             //find max. of all siblings
             for(int block=0; block<blockPerThread; ++block)
             {
-                ZoneLeaf* childNode = &(zoneTree->at(subPointer->at(2*subBlock)+blockPerThread*i+block));
+                ZoneLeaf* childNode = &(zoneTree->at(children->at(2*subBlock)+blockPerThread*i+block));
                 maxNThread = std::max(maxNThread, childNode->nthreadsZ);
             }
 
             for(int block=0; block<blockPerThread; ++block)
             {
-                ZoneLeaf* childNode = &(zoneTree->at(subPointer->at(2*subBlock)+blockPerThread*i+block));
+                ZoneLeaf* childNode = &(zoneTree->at(children->at(2*subBlock)+blockPerThread*i+block));
                 childNode->pinOrder = pinCtr;
-                pinOrderRecursive(subPointer->at(2*subBlock) + blockPerThread*i + block);
+                pinOrderRecursive(children->at(2*subBlock) + blockPerThread*i + block);
             }
 
             pinCtr =  pinCtr + maxNThread;
@@ -81,7 +57,6 @@ void Pin::calcPinOrder()
     int root = 0;
     (zoneTree->at(root)).pinOrder = 0;
     pinOrderRecursive(root);
-    zoneTree->printTree();
 }
 
 void Pin::createPuNodeMapping()
@@ -183,39 +158,31 @@ void Pin::resetMaster()
 //refer pthreads pinning in level_pool.cpp
 void Pin::pinApplicationRecursive(int parent)
 {
-    std::vector<int> *children = &(zoneTree->at(parent).childrenZ);
-
+    std::vector<int> *children = &(zoneTree->at(parent).children);
+    int totalSubBlocks = zoneTree->at(parent).totalSubBlocks;
     int blockPerThread = getBlockPerThread(zoneTree->dist, zoneTree->d2Type);
-    int currNthreads = static_cast<int>(children->size()/blockPerThread);
 
-    if(currNthreads <= 1)
+    for(int subBlock=0; subBlock<totalSubBlocks; ++subBlock)
     {
+        int currNthreads = (children->at(2*subBlock+1) - children->at(2*subBlock))/blockPerThread;
+
         int tid = omp_get_thread_num();
         int pinOrder = zoneTree->at(parent).pinOrder;
-#pragma omp critical
-        {
-            printf("%d ,Pinning: tid=%d -> cpu=%d",parent,tid,pinOrder);
-            pinThread(pinOrder);
-            printf("pinned to %d\n",sched_getcpu());
-        }
-    }
-    else
-    {
+
+        printf("%d ,Pinning: tid=%d -> cpu=%d",parent,tid,pinOrder);
+        pinThread(pinOrder);
+        printf("pinned to %d\n",sched_getcpu());
+
+
 #pragma omp parallel num_threads(currNthreads)
         {
-            int tid = omp_get_thread_num();
-/*#pragma omp critical
-            {
-                printf("Pinning: tid=%d -> cpu=%d",tid,pinOrder);
-                pinThread(pinOrder);
-                printf("pinned to %d\n",sched_getcpu());
-            }*/
+            int child_tid = omp_get_thread_num();
             for(int block=0; block<blockPerThread; ++block)
             {
-                pinApplicationRecursive(children->at(2*tid+block));
-                #pragma omp barrier
+                pinApplicationRecursive(children->at(2*subBlock)+2*child_tid+block);
+#pragma omp barrier
             }
-       }
+        }
     }
 }
 
