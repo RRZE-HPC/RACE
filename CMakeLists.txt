@@ -92,8 +92,8 @@ if (NOT HWLOC_INCLUDE_DIR)
         PREFIX ${PROJECT_BINARY_DIR}/hwloc
         URL https://www.open-mpi.org/software/hwloc/v1.11/downloads/hwloc-1.11.6.tar.gz
         SOURCE_DIR ${PROJECT_BINARY_DIR}/hwloc/src/hwloc
-        CONFIGURE_COMMAND ./configure --enable-static --disable-shared --prefix=${PROJECT_BINARY_DIR}/hwloc-inst
-        BUILD_COMMAND make 
+        CONFIGURE_COMMAND CXXFLAGS=-fPIC CFLAGS=-fPIC ./configure --enable-static --disable-shared --prefix=${PROJECT_BINARY_DIR}/hwloc-inst
+        BUILD_COMMAND make
         BUILD_IN_SOURCE 1
         INSTALL_COMMAND make install
         )
@@ -109,7 +109,7 @@ endif()
 
 set(HWLOC_LIBRARIES ${LIBHWLOC})
 
-set(RACE_THREAD_METHOD CACHE STRING "Which threading method should be used for the kernel: options are OpenMP or PThread")
+set(RACE_THREAD_METHOD PThread CACHE STRING "Which threading method should be used for the kernel: options are OpenMP or PThread")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -std=c99 -Wall -Wextra -Werror -pedantic")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++0x -Wall -Wextra -Werror -pedantic")
