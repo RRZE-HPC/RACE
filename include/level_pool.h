@@ -83,12 +83,10 @@
 class LevelPool{
     private:
         ZoneTree* zoneTree;
-//        Pin pin;
         void createPoolRecursive(int parentIdx);
         void pinPoolRecursive(int parentIdx);
         void sleepPoolRecursive(int parentIdx);
     public:
- //       Pin pin;
         LevelPool(ZoneTree *zoneTree_, int SMT, PinMethod pinMethod);
         ~LevelPool();
         Pin pin;

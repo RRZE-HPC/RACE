@@ -1,10 +1,12 @@
 #include "pin.h"
 #include "zone_tree.h"
 #include "macros.h"
+#include "machine.h"
 
-Pin::Pin(ZoneTree* zoneTree_, int SMT_, PinMethod method_):zoneTree(zoneTree_),machine(SMT_),SMT(SMT_),method(method_)
+Pin::Pin(ZoneTree* zoneTree_, int SMT_, PinMethod method_):zoneTree(zoneTree_),machine(NULL),SMT(SMT_),method(method_)
 {
-
+    Machine *mc = new Machine(SMT);
+    machine = (void*) mc;
 }
 
 void Pin::pinOrderRecursive(int parentIdx)
@@ -61,8 +63,9 @@ void Pin::calcPinOrder()
 
 void Pin::createPuNodeMapping()
 {
+    Machine* mc = (Machine*) machine;
     int totalThreads = zoneTree->at(0).nthreadsZ;
-    int numNode = machine.getNumNode();
+    int numNode = mc->getNumNode();
 
     std::vector<int> puPerNode(numNode,0);
 
@@ -76,7 +79,7 @@ void Pin::createPuNodeMapping()
         for(int i=0;  i<restPU; ++i)
         {
             puPerNode[i] = currPuPerNode+1;
-            if(puPerNode[i] > machine.getNumPuInNode(i))
+            if(puPerNode[i] > mc->getNumPuInNode(i))
             {
                 insufficientResource = true;
             }
@@ -86,7 +89,7 @@ void Pin::createPuNodeMapping()
         for(int i=restPU;  i<numNode; ++i)
         {
             puPerNode[i] = currPuPerNode;
-            if(puPerNode[i] > machine.getNumPuInNode(i))
+            if(puPerNode[i] > mc->getNumPuInNode(i))
             {
                 insufficientResource = true;
             }
@@ -104,7 +107,7 @@ void Pin::createPuNodeMapping()
 
         while( (restThread != 0) && (nodeId != numNode) )
         {
-            int currPuPerNode = std::min(machine.getNumPuInNode(nodeId), restThread);
+            int currPuPerNode = std::min(mc->getNumPuInNode(nodeId), restThread);
 
             puPerNode[nodeId] = currPuPerNode;
             restThread = (restThread - currPuPerNode);
@@ -141,15 +144,17 @@ void Pin::pinInit()
 
 void Pin::pinThread(int pinOrder)
 {
+    Machine* mc = (Machine*) machine;
     int puId = pinMap[pinOrder].first;
     int nodeId = pinMap[pinOrder].second;
 
-    machine.pinThread(puId,nodeId);
+    mc->pinThread(puId,nodeId);
 }
 
 void Pin::resetMaster()
 {
-    machine.resetMaster();
+    Machine* mc = (Machine*) machine;
+    mc->resetMaster();
 }
 
 //OMP nested pinning will not work

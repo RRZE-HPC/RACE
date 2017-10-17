@@ -6,7 +6,6 @@
 #include "zone_tree.h"
 #include "level_recursion.h"
 #include "functionManager.h"
-#include "machine.h"
 #include "type.h"
 #include "level_pool.h"
 #include "config.h"

@@ -92,14 +92,15 @@ if (NOT HWLOC_INCLUDE_DIR)
         PREFIX ${PROJECT_BINARY_DIR}/hwloc
         URL https://www.open-mpi.org/software/hwloc/v1.11/downloads/hwloc-1.11.6.tar.gz
         SOURCE_DIR ${PROJECT_BINARY_DIR}/hwloc/src/hwloc
-        CONFIGURE_COMMAND CXXFLAGS=-fPIC CFLAGS=-fPIC ./configure --enable-static --disable-shared --prefix=${PROJECT_BINARY_DIR}/hwloc-inst
+        #CONFIGURE_COMMAND ./configure --enable-static --disable-shared --prefix=${PROJECT_BINARY_DIR}/hwloc-inst
+        CONFIGURE_COMMAND CXXFLAGS=-fPIC CFLAGS=-fPIC ./configure --prefix=${PROJECT_BINARY_DIR}/hwloc-inst
         BUILD_COMMAND make
         BUILD_IN_SOURCE 1
         INSTALL_COMMAND make install
         )
     set(BUILTIN_HWLOC 1)
     set(HWLOC_INCLUDE_DIR "${PROJECT_BINARY_DIR}/hwloc-inst/include")
-    set(LIBHWLOC "${PROJECT_BINARY_DIR}/hwloc-inst/lib/libhwloc.a")
+    set(LIBHWLOC "${PROJECT_BINARY_DIR}/hwloc-inst/lib/libhwloc.so")
 endif()
 
 if (NOT LIBHWLOC)
@@ -167,16 +168,20 @@ configure_file (
     "${PROJECT_SOURCE_DIR}/include/config.h.in"
     "${PROJECT_SOURCE_DIR}/include/config.h"
 )
-
-
 include_directories(${PROJECT_SOURCE_DIR}/include)
 add_library(RACE ${SOURCES})
 
-target_link_libraries(RACE ${LIBHWLOC})
-include_directories(SYSTEM ${HWLOC_INCLUDE_DIR})
+include_directories(SYSTEM "${HWLOC_INCLUDE_DIR}")
 add_dependencies(RACE hwloc)
 
+if (NOT BUILD_SHARED_LIBS)
+        add_custom_target(combined ALL COMMAND ${CMAKE_AR} rc libRACE.a libRACE.a ${LIBHWLOC} DEPENDS RACE hwloc)
+else ()
+    target_link_libraries(RACE "${LIBHWLOC}")
+endif()
+
 install(FILES ${HEADERS} DESTINATION include/RACE/)
+
 if (${BUILD_SHARED_LIBS})
     install(TARGETS RACE EXPORT RACE-targets LIBRARY DESTINATION lib/RACE)
 else ()

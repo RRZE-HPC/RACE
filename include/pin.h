@@ -1,7 +1,6 @@
 #ifndef RACE_PIN_H
 #define RACE_PIN_H
 
-#include "machine.h"
 #include "zone_tree.h"
 #include "error.h"
 #include "type.h"
@@ -12,7 +11,7 @@ class Pin{
     private:
         ZoneTree *zoneTree;
         std::vector<std::pair<int,int>> pinMap;
-        Machine machine;
+        void* machine; //this is of type Machine, but casting to void to avoid external library dependency
         int SMT;
         PinMethod method;
         void pinOrderRecursive(int parentIdx);
