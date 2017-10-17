@@ -1,5 +1,5 @@
-#ifndef NAME_MACRO_H
-#define NAME_MACRO_H
+#ifndef RACE_MACRO_H
+#define RACE_MACRO_H
 
 #include "type.h"
 

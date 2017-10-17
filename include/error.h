@@ -1,27 +1,27 @@
-#ifndef NAME_ERROR_H
-#define NAME_ERROR_H
+#ifndef RACE_ERROR_H
+#define RACE_ERROR_H
 
 #include "print.h"
 
-enum NAME_error{
-    NAME_SUCCESS,
-    NAME_ERR_INVALID_ARG,
-    NAME_ERR_MATRIX_SYMM,
-    NAME_ERR_D2_COLOR,
-    NAME_ERR_D1_COLOR,
-    NAME_ERR_GRAPH_TRAVERSAL,
-    NAME_ERR_INCOMPATIBILITY,
-    NAME_ERR_HWLOC,
-    NAME_ERR_NOT_IMPLEMENTED
+enum RACE_error{
+    RACE_SUCCESS,
+    RACE_ERR_INVALID_ARG,
+    RACE_ERR_MATRIX_SYMM,
+    RACE_ERR_D2_COLOR,
+    RACE_ERR_D1_COLOR,
+    RACE_ERR_GRAPH_TRAVERSAL,
+    RACE_ERR_INCOMPATIBILITY,
+    RACE_ERR_HWLOC,
+    RACE_ERR_NOT_IMPLEMENTED
 };
 
-char const* NAME_error_string(NAME_error e);
+char const* RACE_error_string(RACE_error e);
 
-#define NAME_FN(call) {\
-    NAME_error ret = NAME_SUCCESS;\
+#define RACE_FN(call) {\
+    RACE_error ret = RACE_SUCCESS;\
     ret = call;\
-    if (ret != NAME_SUCCESS) {\
-        PRINT(NAME_ERROR,ANSI_COLOR_RED,"%s",NAME_error_string((NAME_error)ret));\
+    if (ret != RACE_SUCCESS) {\
+        PRINT(RACE_ERROR,ANSI_COLOR_RED,"%s",RACE_error_string((RACE_error)ret));\
     }\
 }\
 

@@ -36,7 +36,7 @@ void thread<arg_t>::init (int gid_, thpool<arg_t>* pool_)
     gid = gid_;
     pool = pool_;
 
-    signal = new Signal(pool->NAME_BLOCKCTR);
+    signal = new Signal(pool->RACE_BLOCKCTR);
 
     if(gid != 0)
     {
@@ -151,13 +151,13 @@ void thread<arg_t>::finishJob()
     template<typename arg_t>
 thpool<arg_t>::thpool():initialized(false)
 {
-    char* NAME_BLOCKCTR_str = getenv("NAME_BLOCKCTR");
-    if(NAME_BLOCKCTR_str == NULL)
+    char* RACE_BLOCKCTR_str = getenv("RACE_BLOCKCTR");
+    if(RACE_BLOCKCTR_str == NULL)
     {
-        NAME_BLOCKCTR = 200000;
+        RACE_BLOCKCTR = 200000;
     }
     else {
-        NAME_BLOCKCTR = atoi(NAME_BLOCKCTR_str);
+        RACE_BLOCKCTR = atoi(RACE_BLOCKCTR_str);
     }
 }
 
@@ -231,9 +231,9 @@ void team<arg_t>::init(std::vector<int> tid, thpool<arg_t>* pool)
             taskForce[i] = &(pool->threads[tid[i]]);
         }
 
-        NAME_BLOCKCTR = pool->NAME_BLOCKCTR;
+        RACE_BLOCKCTR = pool->RACE_BLOCKCTR;
 
-        barrierSignal = new Signal(NAME_BLOCKCTR);
+        barrierSignal = new Signal(RACE_BLOCKCTR);
     }
 }
 

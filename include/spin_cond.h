@@ -1,5 +1,5 @@
-#ifndef NAME_SPIN_BARRIER
-#define NAME_SPIN_BARRIER
+#ifndef RACE_SPIN_BARRIER
+#define RACE_SPIN_BARRIER
 
 #include "utility.h"
 #include <algorithm>

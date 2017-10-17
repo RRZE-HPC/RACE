@@ -1,8 +1,8 @@
-#ifndef NAME_CONFIG_H
-#define NAME_CONFIG_H
+#ifndef RACE_CONFIG_H
+#define RACE_CONFIG_H
 
-#define NAME_VERBOSITY "1"
-/* #undef NAME_KERNEL_THREAD_OMP */
+#define RACE_VERBOSITY "1"
+/* #undef RACE_KERNEL_THREAD_OMP */
 
 
 #endif

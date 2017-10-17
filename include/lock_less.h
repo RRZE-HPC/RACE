@@ -1,5 +1,5 @@
-#ifndef NAME_LOCK_LESS_H
-#define NAME_LOCK_LESS_H
+#ifndef RACE_LOCK_LESS_H
+#define RACE_LOCK_LESS_H
 
 #include <pthread.h>
 #include <linux/futex.h>

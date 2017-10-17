@@ -655,10 +655,10 @@ Stat::Stat(int* arr_, int len_, int numPartitions_, std::vector<int> scale_):arr
 }
 
 //TODO error handling
-NAME_error LB::balance()
+RACE_error LB::balance()
 {
     splitZones();
-    return NAME_SUCCESS;
+    return RACE_SUCCESS;
 }
 
 void Stat::calculate()

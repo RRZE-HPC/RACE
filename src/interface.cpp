@@ -3,12 +3,12 @@
 #include <algorithm>
 #include <iostream>
 
-NAMEInterface::NAMEInterface(int nrow_,int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int SMT_, PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, d2Method d2Type_):graph(NULL),nrow(nrow_),dist(dist_),d2Type(d2Type_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL)
+RACEInterface::RACEInterface(int nrow_,int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int SMT_, PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, d2Method d2Type_):graph(NULL),nrow(nrow_),dist(dist_),d2Type(d2Type_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL)
 {
 
 }
 
-NAMEInterface::~NAMEInterface()
+RACEInterface::~RACEInterface()
 {
     if(zoneTree) {
         delete zoneTree;
@@ -29,7 +29,7 @@ NAMEInterface::~NAMEInterface()
 }
 
 
-void NAMEInterface::NAMEColor()
+void RACEInterface::RACEColor()
 {
 
     //1. Construct Graph
@@ -46,7 +46,7 @@ void NAMEInterface::NAMEColor()
 
     pool = new LevelPool(zoneTree, SMT, pinMethod);
 
-#ifdef NAME_KERNEL_THREAD_OMP
+#ifdef RACE_KERNEL_THREAD_OMP
     pool->pin.pinApplication();
 #else
     pool->createPool();//creates pinned thread pools
@@ -63,12 +63,12 @@ void NAMEInterface::NAMEColor()
 }
 
 
-void NAMEInterface::printZoneTree()
+void RACEInterface::printZoneTree()
 {
    zoneTree->printTree();
 }
 
-void NAMEInterface::getPerm(int **perm_, int *len_)
+void RACEInterface::getPerm(int **perm_, int *len_)
 {
     if(initPerm)
     {
@@ -89,7 +89,7 @@ void NAMEInterface::getPerm(int **perm_, int *len_)
     (*len_) = nrow;
 }
 
-void NAMEInterface::getInvPerm(int **invPerm_, int *len_)
+void RACEInterface::getInvPerm(int **invPerm_, int *len_)
 {
     if(initInvPerm)
     {
@@ -111,13 +111,13 @@ void NAMEInterface::getInvPerm(int **invPerm_, int *len_)
     (*len_) = nrow;
 }
 
-int NAMEInterface::getNumThreads()
+int RACEInterface::getNumThreads()
 {
     return availableThreads;
 }
 
 
-int NAMEInterface::registerFunction(void (*f) (int,int,void *), void* args)
+int RACEInterface::registerFunction(void (*f) (int,int,void *), void* args)
 {
     //    pool->pin.pinApplication();
 
@@ -140,20 +140,20 @@ int NAMEInterface::registerFunction(void (*f) (int,int,void *), void* args)
     return (funMan.size()-1);
 }
 
-void NAMEInterface::executeFunction(int funcId)
+void RACEInterface::executeFunction(int funcId)
 {
     funMan[funcId]->Run();
     //  funMan->Run();
 }
 
 
-void NAMEInterface::resetTime()
+void RACEInterface::resetTime()
 {
     zoneTree->resetTime();
 }
 
 
-bool NAMEInterface::detectConflict(std::vector<int> range1, std::vector<int> range2)
+bool RACEInterface::detectConflict(std::vector<int> range1, std::vector<int> range2)
 {
     bool conflict = false;
     for(int i=range1[0]; i<range1[1]; ++i)
@@ -192,7 +192,7 @@ bool NAMEInterface::detectConflict(std::vector<int> range1, std::vector<int> ran
     return conflict;
 }
 
-bool NAMEInterface::recursiveChecker(int parent)
+bool RACEInterface::recursiveChecker(int parent)
 {
     std::vector<int> *children = &(zoneTree->at(parent).children);
     int totalSubBlocks = zoneTree->at(parent).totalSubBlocks;
@@ -237,7 +237,7 @@ bool NAMEInterface::recursiveChecker(int parent)
     return conflict;
 }
 
-bool NAMEInterface::D2Checker()
+bool RACEInterface::D2Checker()
 {
     bool conflict = false;
     conflict = recursiveChecker(5);
@@ -245,17 +245,17 @@ bool NAMEInterface::D2Checker()
     return conflict;
 }
 
-void NAMEInterface::sleep()
+void RACEInterface::sleep()
 {
     pool->sleepPool();
 }
 
-bool NAMEInterface::simdify(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* clp, double* val)
+bool RACEInterface::simdify(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* clp, double* val)
 {
     return simdifyTemplate<double> (simdWidth, C, nrows, col_new, chunkStart, rl, clp, val, this);
 }
 
-bool NAMEInterface::simdify(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* clp, float* val)
+bool RACEInterface::simdify(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* clp, float* val)
 {
     return simdifyTemplate<float> (simdWidth, C, nrows, col_new, chunkStart, rl, clp, val, this);
 }

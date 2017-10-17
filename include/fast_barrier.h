@@ -1,5 +1,5 @@
-#ifndef NAME_FAST_BARRIER
-#define NAME_FAST_BARRIER
+#ifndef RACE_FAST_BARRIER
+#define RACE_FAST_BARRIER
 
 #include "lock_less.h"
 

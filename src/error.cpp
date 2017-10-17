@@ -1,28 +1,28 @@
 #include "error.h"
 
-char const * NAME_error_string(NAME_error e)
+char const * RACE_error_string(RACE_error e)
 {
     char const *ret;
     switch (e) {
-        case NAME_ERR_INVALID_ARG:
+        case RACE_ERR_INVALID_ARG:
             ret = "Invalid argument";
             break;
-        case NAME_ERR_MATRIX_SYMM:
+        case RACE_ERR_MATRIX_SYMM:
             ret = "Matrix not symmetric";
             break;
-        case NAME_ERR_D2_COLOR:
+        case RACE_ERR_D2_COLOR:
             ret = "Conflict in D2 coloring";
             break;
-        case NAME_ERR_D1_COLOR:
+        case RACE_ERR_D1_COLOR:
             ret = "Conflict in D1 coloring";
             break;
-        case NAME_ERR_INCOMPATIBILITY:
+        case RACE_ERR_INCOMPATIBILITY:
             ret = "INCOMPATIBILITY ERROR";
             break;
-        case NAME_ERR_HWLOC:
+        case RACE_ERR_HWLOC:
             ret = "HWLOC ERROR";
             break;
-        case NAME_ERR_NOT_IMPLEMENTED:
+        case RACE_ERR_NOT_IMPLEMENTED:
             ret = "NOT IMPLEMENTED";
             break;
         default:

@@ -1,5 +1,5 @@
-#ifndef NAME_ZONE_TREE_H
-#define NAME_ZONE_TREE_H
+#ifndef RACE_ZONE_TREE_H
+#define RACE_ZONE_TREE_H
 
 #include "levelData.h"
 #include "type.h"

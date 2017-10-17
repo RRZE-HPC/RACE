@@ -1,5 +1,5 @@
-#ifndef NAME_INTERFACE_H
-#define NAME_INTERFACE_H
+#ifndef RACE_INTERFACE_H
+#define RACE_INTERFACE_H
 #include "graph.h"
 #include "type.h"
 #include "levelData.h"
@@ -12,7 +12,7 @@
 #include "config.h"
 
 
-class NAMEInterface{
+class RACEInterface{
     private:
         Graph* graph;
         int nrow;
@@ -40,10 +40,10 @@ class NAMEInterface{
         bool recursiveChecker(int parent);
         bool D2Checker();
     public:
-        NAMEInterface(int nrow_, int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int SMT_=1, PinMethod method_=SCATTER, int *initPerm_=NULL, int *initInvPerm_=NULL, d2Method d2Type_=TWO_BLOCK);
-        ~NAMEInterface();
+        RACEInterface(int nrow_, int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int SMT_=1, PinMethod method_=SCATTER, int *initPerm_=NULL, int *initInvPerm_=NULL, d2Method d2Type_=TWO_BLOCK);
+        ~RACEInterface();
         //Pre-processing
-        void NAMEColor();
+        void RACEColor();
         void printZoneTree();
         //void getZoneTree(int **zoneTree_, int *len);
         void getPerm(int **perm_, int *len_);

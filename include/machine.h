@@ -1,5 +1,5 @@
-#ifndef NAME_MACHINE_H
-#define NAME_MACHINE_H
+#ifndef RACE_MACHINE_H
+#define RACE_MACHINE_H
 
 #include <hwloc.h>
 #include "error.h"
@@ -40,7 +40,7 @@ class Machine{
         int getNumPuInNode(int logicalNodeid);
         int getNumCoreInNode(int logicalNodeid);
         void resetMaster();
-        NAME_error pinThread(int logicalPUid, int logicalNodeId);
+        RACE_error pinThread(int logicalPUid, int logicalNodeId);
         void printTopTree();
 };
 

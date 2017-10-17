@@ -163,7 +163,7 @@ void Traverse::calculateDistance()
     }
 }
 
-NAME_error Traverse::createLevelData()
+RACE_error Traverse::createLevelData()
 {
     int totalLevel = levelData->totalLevel;
     int* levelRow_ = new int[totalLevel];
@@ -179,7 +179,7 @@ NAME_error Traverse::createLevelData()
         if(curr_dist == -1)
         {
             ERROR_PRINT("There are orphan nodes; I thought this wouldn't happen");
-            return NAME_ERR_GRAPH_TRAVERSAL;
+            return RACE_ERR_GRAPH_TRAVERSAL;
 
         }
 
@@ -203,7 +203,7 @@ NAME_error Traverse::createLevelData()
     //Don't cache this won't happen in 
     //the current strategy
     //cachedData[parentIdx] = (*levelData);
-    return NAME_SUCCESS;
+    return RACE_SUCCESS;
 }
 
 void Traverse::permuteGraph()

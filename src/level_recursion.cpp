@@ -14,8 +14,8 @@ LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, dist_t dist_
     }
 
     double default_eff = 40;
-    char *lvlEff = getenv("NAME_EFFICIENCY");
-    char *lvlThreads = getenv("NAME_THREADS");
+    char *lvlEff = getenv("RACE_EFFICIENCY");
+    char *lvlThreads = getenv("RACE_THREADS");
 
     if(lvlThreads != NULL)
     {
@@ -27,7 +27,7 @@ LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, dist_t dist_
         }
     }
 
-    //printf("NAME_THREADS = \n");
+    //printf("RACE_THREADS = \n");
     for(unsigned i=0; i<lvl_threads.size(); ++i)
     {
         printf("%d\n",lvl_threads[i]);

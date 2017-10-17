@@ -1,5 +1,5 @@
-#ifndef NAME_TYPE_H
-#define NAME_TYPE_H
+#ifndef RACE_TYPE_H
+#define RACE_TYPE_H
 #include <vector>
 
 enum dist_t{

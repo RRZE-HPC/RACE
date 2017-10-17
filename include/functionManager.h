@@ -1,5 +1,5 @@
-#ifndef NAME_FUNCTION_MANAGER_H
-#define NAME_FUNCTION_MANAGER_H
+#ifndef RACE_FUNCTION_MANAGER_H
+#define RACE_FUNCTION_MANAGER_H
 
 #include <functional>
 #include "zone_tree.h"

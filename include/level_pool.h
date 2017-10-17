@@ -1,5 +1,5 @@
-#ifndef NAME_LEVEL_POOL_H
-#define NAME_LEVEL_POOL_H
+#ifndef RACE_LEVEL_POOL_H
+#define RACE_LEVEL_POOL_H
 
 #include "thpool.h"
 #include "pin.h"

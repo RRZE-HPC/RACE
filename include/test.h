@@ -1,5 +1,5 @@
-#ifndef NAME_TEST_H
-#define NAME_TEST_H
+#ifndef RACE_TEST_H
+#define RACE_TEST_H
 
 inline void test(double *a, double *b, double *c, double *d, int start, int end, int ctr)
 {

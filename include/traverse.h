@@ -1,5 +1,5 @@
-#ifndef NAME_TRAVERSE_H
-#define NAME_TRAVERSE_H
+#ifndef RACE_TRAVERSE_H
+#define RACE_TRAVERSE_H
 #include <vector>
 #include <map>
 #include "type.h"
@@ -29,7 +29,7 @@ class Traverse{
         LevelData* levelData;
 
         std::vector<int> markChildren(int currChild, int currLvl);
-        NAME_error createLevelData();
+        RACE_error createLevelData();
         void permuteGraph();
     public:
         //constructor

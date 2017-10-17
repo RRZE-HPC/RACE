@@ -1,5 +1,5 @@
-#ifndef NAME_LB_H
-#define NAME_LB_H
+#ifndef RACE_LB_H
+#define RACE_LB_H
 
 #include "type.h"
 #include "levelData.h"
@@ -90,7 +90,7 @@ class LB{
         void getNumBlocks(int **numBlocks_, int *len);
         void getNxtLvlThreads(int **nxtLvlThreads, int *len);
         int getCurrLvlNThreads();
-        NAME_error balance();
+        RACE_error balance();
 };
 
 

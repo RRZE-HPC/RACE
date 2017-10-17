@@ -110,14 +110,14 @@ void Machine::resetMaster()
 }
 
 //logicalCPUid: first cores numbered from 1:numCoreInNode then SMT
-NAME_error Machine::pinThread(int logicalPUid, int logicalNodeid)
+RACE_error Machine::pinThread(int logicalPUid, int logicalNodeid)
 {
-    NAME_error ret = NAME_SUCCESS;
+    RACE_error ret = RACE_SUCCESS;
 
     if( (logicalNodeid >= numNode) && (logicalPUid >= getNumPuInNode(logicalNodeid)) )
     {
         ERROR_PRINT("Node/PU requested to bind does not exist");
-        ret = NAME_ERR_HWLOC;
+        ret = RACE_ERR_HWLOC;
         return ret;
     }
 
@@ -129,7 +129,7 @@ NAME_error Machine::pinThread(int logicalPUid, int logicalNodeid)
    if(err == -1)
     {
         ERROR_PRINT("Thread binding could not be performed");
-        ret = NAME_ERR_HWLOC;
+        ret = RACE_ERR_HWLOC;
     }
 
     return ret;

@@ -34,7 +34,7 @@ FuncManager::~FuncManager()
 }
 
 
-#ifdef NAME_KERNEL_THREAD_OMP
+#ifdef RACE_KERNEL_THREAD_OMP
 //OMP version nested pinning not working
 void recursiveCall(FuncManager* funMan, int parent)
 {
@@ -135,7 +135,7 @@ void FuncManager::Run()
     }
 
     int root = 0;
-#ifdef NAME_KERNEL_THREAD_OMP
+#ifdef RACE_KERNEL_THREAD_OMP
     int resetNestedState = omp_get_nested();
     int resetDynamicState = omp_get_dynamic();
     //set nested parallelism

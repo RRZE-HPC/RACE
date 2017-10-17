@@ -1,5 +1,5 @@
-#ifndef NAME_LEVEL_RECURSION_H
-#define NAME_LEVEL_RECURSION_H
+#ifndef RACE_LEVEL_RECURSION_H
+#define RACE_LEVEL_RECURSION_H
 #include "graph.h"
 #include "traverse.h"
 #include "zone_tree.h"

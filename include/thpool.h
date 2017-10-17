@@ -1,5 +1,5 @@
-#ifndef NAME_THPOOL_H
-#define NAME_THPOOL_H
+#ifndef RACE_THPOOL_H
+#define RACE_THPOOL_H
 
 #include <unistd.h>
 #include <stdio.h>
@@ -41,7 +41,7 @@ struct thread{
     Signal* signal;                 /* Signal for job wake      */
 
     volatile bool jobPresent;
-    int NAME_BLOCKCTR;
+    int RACE_BLOCKCTR;
     //constructor
     thread();
     ~thread();
@@ -63,7 +63,7 @@ struct thpool{
     volatile int num_threads_alive;      /* threads currently working */
     pthread_mutex_t*  thcount_lock;      /* used for thread count etc */
     volatile bool interrupt;
-    int NAME_BLOCKCTR;
+    int RACE_BLOCKCTR;
 
     thpool();
     void init(int numThreads_);
@@ -78,7 +78,7 @@ struct team{
     thread<arg_t>** taskForce;
     int num_threads;
     int num_slaves;
-    int NAME_BLOCKCTR;
+    int RACE_BLOCKCTR;
     bool initialized;
     volatile int num_jobs;
 

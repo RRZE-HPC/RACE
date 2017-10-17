@@ -1,7 +1,7 @@
-//Taken from NAME
+//Taken from RACE
 
-#ifndef NAME_PRINT_H
-#define NAME_PRINT_H
+#ifndef RACE_PRINT_H
+#define RACE_PRINT_H
 
 #ifdef __cplusplus
 #include <cstdio>
@@ -20,7 +20,7 @@
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-#define FILE_BASENAME (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#define FILE_BASERACE (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
 
 /* taken from http://stackoverflow.com/a/11172679 */
@@ -46,7 +46,7 @@
 
 
 
-#ifdef NAME_HAVE_MPI
+#ifdef RACE_HAVE_MPI
 
 #define PRINT(type,color,...) {\
     int logmacrome;\
@@ -54,8 +54,8 @@
     if (logmacroerr != MPI_SUCCESS) {\
         logmacrome = -1;\
     }\
-    if (logmacrome == NAME_PRINT_RANK || -1 == NAME_PRINT_RANK) {\
-        fprintf(stderr, color "[NAME] PE%d " #type " at %s() <%s:%d>: " FIRST(__VA_ARGS__) ANSI_COLOR_RESET "\n", logmacrome, __func__, FILE_BASENAME, __LINE__ REST(__VA_ARGS__)); \
+    if (logmacrome == RACE_PRINT_RANK || -1 == RACE_PRINT_RANK) {\
+        fprintf(stderr, color "[RACE] PE%d " #type " at %s() <%s:%d>: " FIRST(__VA_ARGS__) ANSI_COLOR_RESET "\n", logmacrome, __func__, FILE_BASERACE, __LINE__ REST(__VA_ARGS__)); \
         fflush(stderr);\
     }\
 }\
@@ -63,25 +63,25 @@
 #else
 
 #define PRINT(type,color,...) {\
-    fprintf(stderr, color "[NAME] " #type " at %s() <%s:%d>: " FIRST(__VA_ARGS__) ANSI_COLOR_RESET "\n", __func__, FILE_BASENAME, __LINE__ REST(__VA_ARGS__));\
+    fprintf(stderr, color "[RACE] " #type " at %s() <%s:%d>: " FIRST(__VA_ARGS__) ANSI_COLOR_RESET "\n", __func__, FILE_BASERACE, __LINE__ REST(__VA_ARGS__));\
 }\
 
 #endif
 
 
-#define TIME_PRINT(...) {if (NAME_VERBOSITY) { PRINT(TIMING,ANSI_COLOR_GREEN,__VA_ARGS__); }}
+#define TIME_PRINT(...) {if (RACE_VERBOSITY) { PRINT(TIMING,ANSI_COLOR_GREEN,__VA_ARGS__); }}
 
 
-#ifdef NAME_PRINT_ONLYFIRST
-    #define INFO_PRINT(...) {static int __printed = 0; if(!__printed && NAME_VERBOSITY) { PRINT(INFO,ANSI_COLOR_BLUE,__VA_ARGS__); __printed=1; }}
-    #define WARNING_PRINT(...) {static int __printed = 0; if(!__printed && NAME_VERBOSITY) { PRINT(WARNING,ANSI_COLOR_YELLOW,__VA_ARGS__); __printed=1; }}
-    #define PERFWARNING_PRINT(...) {static int __printed = 0; if(!__printed && NAME_VERBOSITY) { PRINT(PERFWARNING,ANSI_COLOR_MAGENTA,__VA_ARGS__); __printed=1; }}
-    #define ERROR_PRINT(...) {static int __printed = 0; if(!__printed && NAME_VERBOSITY) { PRINT(ERROR,ANSI_COLOR_RED,__VA_ARGS__); __printed=1; }}
+#ifdef RACE_PRINT_ONLYFIRST
+    #define INFO_PRINT(...) {static int __printed = 0; if(!__printed && RACE_VERBOSITY) { PRINT(INFO,ANSI_COLOR_BLUE,__VA_ARGS__); __printed=1; }}
+    #define WARNING_PRINT(...) {static int __printed = 0; if(!__printed && RACE_VERBOSITY) { PRINT(WARNING,ANSI_COLOR_YELLOW,__VA_ARGS__); __printed=1; }}
+    #define PERFWARNING_PRINT(...) {static int __printed = 0; if(!__printed && RACE_VERBOSITY) { PRINT(PERFWARNING,ANSI_COLOR_MAGENTA,__VA_ARGS__); __printed=1; }}
+    #define ERROR_PRINT(...) {static int __printed = 0; if(!__printed && RACE_VERBOSITY) { PRINT(ERROR,ANSI_COLOR_RED,__VA_ARGS__); __printed=1; }}
 #else
-    #define INFO_PRINT(...) {if (NAME_VERBOSITY) { PRINT(INFO,ANSI_COLOR_BLUE,__VA_ARGS__); }}
-    #define WARNING_PRINT(...) {if (NAME_VERBOSITY) { PRINT(WARNING,ANSI_COLOR_YELLOW,__VA_ARGS__); }}
-    #define PERFWARNING_PRINT(...) {if (NAME_VERBOSITY) { PRINT(PERFWARNING,ANSI_COLOR_MAGENTA,__VA_ARGS__); }}
-    #define ERROR_PRINT(...) {if (NAME_VERBOSITY) { PRINT(ERROR,ANSI_COLOR_RED,__VA_ARGS__); }}
+    #define INFO_PRINT(...) {if (RACE_VERBOSITY) { PRINT(INFO,ANSI_COLOR_BLUE,__VA_ARGS__); }}
+    #define WARNING_PRINT(...) {if (RACE_VERBOSITY) { PRINT(WARNING,ANSI_COLOR_YELLOW,__VA_ARGS__); }}
+    #define PERFWARNING_PRINT(...) {if (RACE_VERBOSITY) { PRINT(PERFWARNING,ANSI_COLOR_MAGENTA,__VA_ARGS__); }}
+    #define ERROR_PRINT(...) {if (RACE_VERBOSITY) { PRINT(ERROR,ANSI_COLOR_RED,__VA_ARGS__); }}
 #endif
 
 #endif

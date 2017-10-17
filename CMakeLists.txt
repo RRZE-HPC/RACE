@@ -1,17 +1,17 @@
 cmake_minimum_required (VERSION 2.8)
-project (NAME)
+project (RACE)
 
-set(NAME_VERSION_MAJOR 0)
-set(NAME_VERSION_MINOR 0)
-set(NAME_VERSION_REVISION 0)
-set(NAME_VERSION_IDENTIFIER)
-set(NAME_VERSION "${NAME_VERSION_MAJOR}.${NAME_VERSION_MINOR}.${NAME_VERSION_REVISION}")
+set(RACE_VERSION_MAJOR 0)
+set(RACE_VERSION_MINOR 0)
+set(RACE_VERSION_REVISION 0)
+set(RACE_VERSION_IDENTIFIER)
+set(RACE_VERSION "${RACE_VERSION_MAJOR}.${RACE_VERSION_MINOR}.${RACE_VERSION_REVISION}")
 
 include(ExternalProject)
 include(${PROJECT_SOURCE_DIR}/cmake/OptimizeForArchitecture.cmake)
 
-set(NAME_VERBOSITY 1 CACHE STRING "Level of verbosity information. Valid values: 0 (be totally silent), 1 (print warnings, errors and further important information)")
-set(NAME_PRINT_ONLYFIRST 1 CACHE BOOL "Print all errors, warnings and info only once for each occurence")
+set(RACE_VERBOSITY 1 CACHE STRING "Level of verbosity information. Valid values: 0 (be totally silent), 1 (print warnings, errors and further important information)")
+set(RACE_PRINT_ONLYFIRST 1 CACHE BOOL "Print all errors, warnings and info only once for each occurence")
 
 if (NOT BUILD_SHARED_LIBS)
     message(STATUS "No library type specified. Setting it to shared.")
@@ -109,8 +109,7 @@ endif()
 
 set(HWLOC_LIBRARIES ${LIBHWLOC})
 
-set(NAME_THREAD_METHOD CACHE STRING "Which threading method should be used for
-the kernel: options are OpenMP or PThread")
+set(RACE_THREAD_METHOD CACHE STRING "Which threading method should be used for the kernel: options are OpenMP or PThread")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -std=c99 -Wall -Wextra -Werror -pedantic")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++0x -Wall -Wextra -Werror -pedantic")
@@ -149,19 +148,19 @@ endif()
 find_package(OpenMP)
 
 if (OPENMP_FOUND)
-    set(NAME_USE_OPENMP 1 CACHE BOOL "Build with OpenMP")
-    set(NAME_HAVE_OPENMP 1)
+    set(RACE_USE_OPENMP 1 CACHE BOOL "Build with OpenMP")
+    set(RACE_HAVE_OPENMP 1)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 else ()
-    set(NAME_USE_OPENMP 0 CACHE BOOL "Build with OpenMP")
-    set(NAME_HAVE_OPENMP 0)
+    set(RACE_USE_OPENMP 0 CACHE BOOL "Build with OpenMP")
+    set(RACE_HAVE_OPENMP 0)
 endif()
 
-if(NOT "${NAME_THREAD_METHOD}" STREQUAL "PThread")
-    set(NAME_KERNEL_THREAD_OMP 1)
+if(NOT "${RACE_THREAD_METHOD}" STREQUAL "PThread")
+    set(RACE_KERNEL_THREAD_OMP 1)
 else ()
-    set(NAME_KERNEL_THREAD_OMP 0)
+    set(RACE_KERNEL_THREAD_OMP 0)
 endif()
 
 configure_file (
@@ -171,16 +170,16 @@ configure_file (
 
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
-add_library(NAME ${SOURCES})
+add_library(RACE ${SOURCES})
 
-target_link_libraries(NAME ${LIBHWLOC})
+target_link_libraries(RACE ${LIBHWLOC})
 include_directories(SYSTEM ${HWLOC_INCLUDE_DIR})
-add_dependencies(NAME hwloc)
+add_dependencies(RACE hwloc)
 
-install(FILES ${HEADERS} DESTINATION include/NAME/)
+install(FILES ${HEADERS} DESTINATION include/RACE/)
 if (${BUILD_SHARED_LIBS})
-    install(TARGETS NAME EXPORT NAME-targets LIBRARY DESTINATION lib/NAME)
+    install(TARGETS RACE EXPORT RACE-targets LIBRARY DESTINATION lib/RACE)
 else ()
-    install(TARGETS NAME EXPORT NAME-targets ARCHIVE DESTINATION lib/NAME)
+    install(TARGETS RACE EXPORT RACE-targets ARCHIVE DESTINATION lib/RACE)
 endif()
 

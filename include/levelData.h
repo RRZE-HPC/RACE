@@ -1,5 +1,5 @@
-#ifndef NAME_LEVEL_DATA_H
-#define NAME_LEVEL_DATA_H
+#ifndef RACE_LEVEL_DATA_H
+#define RACE_LEVEL_DATA_H
 
 #include "error.h"
 

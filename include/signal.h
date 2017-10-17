@@ -1,5 +1,5 @@
-#ifndef NAME_SIGNAL_H
-#define NAME_SIGNAL_H
+#ifndef RACE_SIGNAL_H
+#define RACE_SIGNAL_H
 
 #include <pthread.h>
 #include  "spin_cond.h"
@@ -11,7 +11,7 @@ struct Signal{
     pthread_cond_t*   signal;
     spin_cond_t* preSignal;
     double signalTime;
-    Signal(int NAME_BLOCKCTR);
+    Signal(int RACE_BLOCKCTR);
     ~Signal();
     SignalMode mode;
 };

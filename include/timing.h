@@ -1,5 +1,5 @@
-#ifndef NAME_TIMING_H
-#define NAME_TIMING_H
+#ifndef RACE_TIMING_H
+#define RACE_TIMING_H
 
 #include <sys/time.h>
 #include "print.h"

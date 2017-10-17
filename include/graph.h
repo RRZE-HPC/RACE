@@ -1,5 +1,5 @@
-#ifndef NAME_GRAPH_H
-#define NAME_GRAPH_H
+#ifndef RACE_GRAPH_H
+#define RACE_GRAPH_H
 
 #include "print.h"
 #include "error.h"
@@ -30,7 +30,7 @@ class Graph{
          * @param[in] rowPtr rowPtr of the matrix.
          * @param[in] col column index of the matrix.
          */
-        NAME_error createGraphFromCRS(int *rowPtr, int *col, int *initPerm=NULL, int *initInvPerm=NULL);
+        RACE_error createGraphFromCRS(int *rowPtr, int *col, int *initPerm=NULL, int *initInvPerm=NULL);
    public:
         /**
          * @brief Number of Rows in the matrix.
@@ -45,7 +45,7 @@ class Graph{
         Graph(int nrow, int ncol, int *row_ptr, int *col, int *initPerm=NULL, int *initInvPerm=NULL);//constructor
         Graph(const Graph &srcGraph);//copy constructor
         void writePattern(char *name);
-        NAME_error swap(Graph& other);
+        RACE_error swap(Graph& other);
         Node& at(unsigned idx);
         /**
          * @brief Traverse class is responsible for traversing through graph

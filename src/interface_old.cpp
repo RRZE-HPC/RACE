@@ -1,10 +1,10 @@
 #include "interface.h"
 
-NAMEInterface::NAMEInterface(int nrow_,int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int *initPerm_, int *initInvPerm_):nrow(nrow_),dist(dist_),requestedThreads(nthreads_),availableThreads(-1),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_)
+RACEInterface::RACEInterface(int nrow_,int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int *initPerm_, int *initInvPerm_):nrow(nrow_),dist(dist_),requestedThreads(nthreads_),availableThreads(-1),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_)
 {
 }
 
-void NAMEInterface::NAMEColor()
+void RACEInterface::RACEColor()
 {
     //1. Construct Graph
     Graph bmc(nrow, nrow, rowPtr, col, initPerm, initInvPerm);
@@ -25,13 +25,13 @@ void NAMEInterface::NAMEColor()
     delete levelData;
 }
 
-void NAMEInterface::getZonePtr(int **zonePtr_, int *len_)
+void RACEInterface::getZonePtr(int **zonePtr_, int *len_)
 {
     (*zonePtr_) = zonePtr;
     (*len_) = zonePtrLen;
 }
 
-void NAMEInterface::getPerm(int **perm_, int *len_)
+void RACEInterface::getPerm(int **perm_, int *len_)
 {
     if(initPerm)
     {
@@ -52,7 +52,7 @@ void NAMEInterface::getPerm(int **perm_, int *len_)
     (*len_) = permLen;
 }
 
-void NAMEInterface::getInvPerm(int **invPerm_, int *len_)
+void RACEInterface::getInvPerm(int **invPerm_, int *len_)
 {
     if(initInvPerm)
     {
@@ -74,7 +74,7 @@ void NAMEInterface::getInvPerm(int **invPerm_, int *len_)
     (*len_) = invPermLen;
 }
 
-int NAMEInterface::getNumThreads()
+int RACEInterface::getNumThreads()
 {
     return availableThreads;
 }

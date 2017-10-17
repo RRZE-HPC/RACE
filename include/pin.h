@@ -1,5 +1,5 @@
-#ifndef NAME_PIN_H
-#define NAME_PIN_H
+#ifndef RACE_PIN_H
+#define RACE_PIN_H
 
 #include "machine.h"
 #include "zone_tree.h"

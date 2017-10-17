@@ -1,5 +1,5 @@
-#ifndef NAME_UTILITY_H
-#define NAME_UTILITY_H
+#ifndef RACE_UTILITY_H
+#define RACE_UTILITY_H
 
 #include <algorithm>
 #include <iterator>
