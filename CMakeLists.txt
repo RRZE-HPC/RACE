@@ -168,23 +168,29 @@ configure_file (
     "${PROJECT_SOURCE_DIR}/include/config.h.in"
     "${PROJECT_SOURCE_DIR}/include/config.h"
 )
+
 include_directories(${PROJECT_SOURCE_DIR}/include)
 add_library(RACE ${SOURCES})
 
-include_directories(SYSTEM "${HWLOC_INCLUDE_DIR}")
-add_dependencies(RACE hwloc)
 
-if (NOT BUILD_SHARED_LIBS)
-        add_custom_target(combined ALL COMMAND ${CMAKE_AR} rc libRACE.a libRACE.a ${LIBHWLOC} DEPENDS RACE hwloc)
+get_filename_component(HWLOC_LIB_PATH ${LIBHWLOC} DIRECTORY)
+set(RACE_LIB_PATH ${CMAKE_INSTALL_PREFIX}/lib/RACE)
+
+if (${BUILD_SHARED_LIBS})
+    file(WRITE ${PROJECT_BINARY_DIR}/RACE_LFlags.sh "#!/bin/bash\n echo \"-L ${RACE_LIB_PATH} -Wl,-rpath ${RACE_LIB_PATH} -L ${HWLOC_LIB_PATH} -Wl,-rpath ${HWLOC_LIB_PATH} -l hwloc -l RACE\"")
 else ()
-    target_link_libraries(RACE "${LIBHWLOC}")
+    file(WRITE ${PROJECT_BINARY_DIR}/RACE_LFlags.sh "#!/bin/bash\n echo \"${RACE_LIB_PATH}/libRACE.a -L ${HWLOC_LIB_PATH} -Wl,-rpath ${HWLOC_LIB_PATH} -l hwloc\"")
 endif()
 
+include_directories(SYSTEM "${HWLOC_INCLUDE_DIR}")
+add_dependencies(RACE hwloc)
+target_link_libraries(RACE "${LIBHWLOC}")
+
 install(FILES ${HEADERS} DESTINATION include/RACE/)
+install(FILES ${PROJECT_BINARY_DIR}/RACE_LFlags.sh DESTINATION lib/RACE PERMISSIONS OWNER_READ OWNER_EXECUTE)
 
 if (${BUILD_SHARED_LIBS})
     install(TARGETS RACE EXPORT RACE-targets LIBRARY DESTINATION lib/RACE)
 else ()
     install(TARGETS RACE EXPORT RACE-targets ARCHIVE DESTINATION lib/RACE)
 endif()
-
