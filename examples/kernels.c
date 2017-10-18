@@ -110,7 +110,7 @@ inline void KACZ_KERNEL(int start, int end, void* args)
         double rowNorm = 0.0;
         double scale = 0.0;
 
-        for(int idx=mat->rowPtr[row]+1; idx<mat->rowPtr[row+1]; ++idx)
+        for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
         {
             double mval = mat->val[idx];
             scale += mval * x->val[mat->col[idx]];
@@ -119,7 +119,7 @@ inline void KACZ_KERNEL(int start, int end, void* args)
         scale /= rowNorm; //omega considered 1
 
 #pragma simd
-        for(int idx=mat->rowPtr[row]+1; idx<mat->rowPtr[row+1]; ++idx)
+        for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
         {
             x->val[mat->col[idx]] = x->val[mat->col[idx]] - scale*mat->val[idx];
         }
@@ -138,6 +138,45 @@ void kacz(densemat* b, sparsemat* mat, densemat* x, int iterations)
     for(int i=0; i<iterations; ++i)
     {
         ce->executeFunction(kaczId);
+    }
+
+    DELETE_ARG();
+}
+
+inline void SYMM_SPMV_KERNEL(int start, int end, void* args)
+{
+    DECODE_FROM_VOID(args);
+
+    for(int row=start; row<end; ++row)
+    {
+        double x_row = x->val[row];
+        b->val[row] += mat->val_symm[mat->rowPtr_symm[row]]*x_row;
+        double temp = 0;
+
+#pragma simd reduction(+:temp)
+        for(int idx=mat->rowPtr_symm[row]+1; idx<mat->rowPtr_symm[row+1]; ++idx)
+        {
+            double mval = mat->val_symm[idx];
+            int colIdx = mat->col_symm[idx];
+            temp += mval*x->val[colIdx];
+            b->val[colIdx] += mval*x_row;
+        }
+        b->val[row]+=temp;
+   }
+}
+
+//A*x=b; A is symmetric
+void symm_spmv(densemat* b, sparsemat* mat, densemat* x, int iterations)
+{
+    RACEInterface *ce = mat->ce;
+
+    ENCODE_TO_VOID(mat,b,x);
+
+    int symm_spmv_Id = ce->registerFunction(&SYMM_SPMV_KERNEL, voidArg);
+
+    for(int i=0; i<iterations; ++i)
+    {
+        ce->executeFunction(symm_spmv_Id);
     }
 
     DELETE_ARG();

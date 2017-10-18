@@ -25,6 +25,9 @@ void capitalize(char* beg)
 
 #define PERF_RUN(kernel, flopPerNnz)\
 {\
+    int iter = param.iter;\
+    double time = 0;\
+    double nnz_update = ((double)mat->nnz)*iter*1e-9;\
     sleep(1);\
     INIT_TIMER(kernel);\
     START_TIMER(kernel);\
@@ -34,7 +37,7 @@ void capitalize(char* beg)
     char* capsKernel;\
     asprintf(&capsKernel, "%s", #kernel);\
     capitalize(capsKernel);\
-    printf("%8s : %8.4f GFlop/s ; Time = %8.5f\n", capsKernel, flopPerNnz*nnz_update/(time), time);\
+    printf("%10s : %8.4f GFlop/s ; Time = %8.5f s\n", capsKernel, flopPerNnz*nnz_update/(time), time);\
     free(capsKernel);\
 }\
 
@@ -70,11 +73,6 @@ int main(const int argc, char * argv[])
     x->setRand();
     b->setRand();
 
-    int iter = param.iter;
-
-    double time = 0;
-    double nnz_update = ((double)mat->nnz)*iter*1e-9;
-
 
     //This macro times and reports performance
     PERF_RUN(spmv,2);
@@ -85,4 +83,7 @@ int main(const int argc, char * argv[])
     //performance drop
     mat->makeDiagFirst();
     PERF_RUN(gs,2);
+
+    mat->computeSymmData();
+    PERF_RUN(symm_spmv,2);
 }
