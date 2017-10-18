@@ -48,7 +48,6 @@ bool parser::parse_arg(int argc, char **argv)
         c = getopt_long(argc, argv, "0:m:i:c:t:p:h",
                 gnuOptions, &option_index);
 
-        printf("c=%d\n", c);
         if (c == -1)
             break;
 
@@ -116,6 +115,8 @@ void parser::help()
     {
         printf("-%c or --%s \t %s\n", ((char) long_options[i].gnu_opt.val), long_options[i].gnu_opt.name, long_options[i].desc);
     }
+
+    exit(0);
     /*    printf(" -m, --matrix=MATRIX FILE\t\tMatrix File in MatrixMarket Format\n");
     printf(" -c, --cores=CORES\t\tNumber of cores to be used\n");
     printf(" -t, --smt=THREADS PER CORE\t\tNumber of threads per core to be used (recommended 1)\n");
