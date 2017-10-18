@@ -11,4 +11,5 @@ pipelines:
     - step:
         script: # Modify the commands below to build your repository.
           - cd race && mkdir build && cd build
+          - cmake ..
           - make
