@@ -89,8 +89,6 @@ set(BUILTIN_HWLOC false)
 # hwloc not found - download and build it
 if (NOT HWLOC_INCLUDE_DIR)
     message(STATUS "Could not find hwloc.h neither via pkg-config nor in the defined HWLOC_INCLUDE_DIR! Trying to build hwloc...")
-    set(BUILTIN_HWLOC true)
-
     ExternalProject_Add(hwloc
         PREFIX ${PROJECT_BINARY_DIR}/hwloc
         URL https://www.open-mpi.org/software/hwloc/v1.11/downloads/hwloc-1.11.6.tar.gz
@@ -185,13 +183,11 @@ else ()
     file(WRITE ${PROJECT_BINARY_DIR}/RACE_LFlags.sh "#!/bin/bash\n echo \"${RACE_LIB_PATH}/libRACE.a -L ${HWLOC_LIB_PATH} -Wl,-rpath ${HWLOC_LIB_PATH} -l hwloc\"")
 endif()
 
-include_directories(SYSTEM "${HWLOC_INCLUDE_DIR}")
-
 if(BUILTIN_HWLOC)
+    target_link_libraries(RACE "${LIBHWLOC}")
+    include_directories(SYSTEM "${HWLOC_INCLUDE_DIR}")
     add_dependencies(RACE hwloc)
 endif()
-
-target_link_libraries(RACE "${LIBHWLOC}")
 
 install(FILES ${HEADERS} DESTINATION include/RACE/)
 install(FILES ${PROJECT_BINARY_DIR}/RACE_LFlags.sh DESTINATION lib/RACE PERMISSIONS OWNER_READ OWNER_EXECUTE)
