@@ -15,7 +15,3 @@ pipelines:
           - dpkg -i cuda-repo-ubuntu1404_8.0.44-1_amd64.deb
           - apt-get update
           - apt-get install -y libopenmpi-dev libgsl0-dev cmake openmpi-bin
-          - mkdir build
-          - cd build
-          - cmake ..
-          - make VERBOSE=1
