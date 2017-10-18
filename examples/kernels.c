@@ -39,9 +39,11 @@ inline void SPMTV_KERNEL(int start, int end, void* args)
 
     for(int row=start; row<end; ++row)
     {
+        double x_row = x->val[row];
+#pragma simd
         for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
         {
-            b->val[mat->col[idx]] += mat->val[idx]*x->val[row];
+            b->val[mat->col[idx]] += mat->val[idx]*x_row;
         }
     }
 }
@@ -59,6 +61,83 @@ void spmtv(densemat* b, sparsemat* mat, densemat* x, int iterations)
     for(int i=0; i<iterations; ++i)
     {
         ce->executeFunction(spmtvId);
+    }
+
+    DELETE_ARG();
+}
+
+inline void GS_KERNEL(int start, int end, void* args)
+{
+    DECODE_FROM_VOID(args);
+
+    for(int row=start; row<end; ++row)
+    {
+        x->val[row] = b->val[row];
+        double x_row = x->val[row];
+        int diag_idx = mat->rowPtr[row];
+#pragma simd
+        for(int idx=mat->rowPtr[row]+1; idx<mat->rowPtr[row+1]; ++idx)
+        {
+            x->val[row] -= mat->val[idx]*x->val[mat->col[idx]];
+        }
+        x->val[row] /= mat->val[diag_idx];
+    }
+}
+
+//Solve for x : A*x=b
+void gs(densemat* b, sparsemat* mat, densemat* x, int iterations)
+{
+    RACEInterface *ce = mat->ce;
+
+    ENCODE_TO_VOID(mat,b,x);
+
+    int gsId = ce->registerFunction(&GS_KERNEL, voidArg);
+
+    for(int i=0; i<iterations; ++i)
+    {
+        ce->executeFunction(gsId);
+    }
+
+    DELETE_ARG();
+}
+
+inline void KACZ_KERNEL(int start, int end, void* args)
+{
+    DECODE_FROM_VOID(args);
+
+    for(int row=start; row<end; ++row)
+    {
+        double rowNorm = 0.0;
+        double scale = 0.0;
+
+        for(int idx=mat->rowPtr[row]+1; idx<mat->rowPtr[row+1]; ++idx)
+        {
+            double mval = mat->val[idx];
+            scale += mval * x->val[mat->col[idx]];
+            rowNorm += mval*mval;
+        }
+        scale /= rowNorm; //omega considered 1
+
+#pragma simd
+        for(int idx=mat->rowPtr[row]+1; idx<mat->rowPtr[row+1]; ++idx)
+        {
+            x->val[mat->col[idx]] = x->val[mat->col[idx]] - scale*mat->val[idx];
+        }
+    }
+}
+
+//Solve for x : A*x=b
+void kacz(densemat* b, sparsemat* mat, densemat* x, int iterations)
+{
+    RACEInterface *ce = mat->ce;
+
+    ENCODE_TO_VOID(mat,b,x);
+
+    int kaczId = ce->registerFunction(&KACZ_KERNEL, voidArg);
+
+    for(int i=0; i<iterations; ++i)
+    {
+        ce->executeFunction(kaczId);
     }
 
     DELETE_ARG();

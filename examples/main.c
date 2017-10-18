@@ -12,6 +12,28 @@
 #include "kernels.h"
 #include "timer.h"
 
+
+void capitalize(char* beg)
+{
+    while (*beg++ = toupper(*beg));
+}
+
+#define PERF_RUN(kernel, flopPerNnz)\
+{\
+    sleep(1);\
+    INIT_TIMER(kernel);\
+    START_TIMER(kernel);\
+    kernel(b, mat, x, iter);\
+    STOP_TIMER(kernel);\
+    time = GET_TIMER(kernel);\
+    char* capsKernel;\
+    asprintf(&capsKernel, "%s", #kernel);\
+    capitalize(capsKernel);\
+    printf("%8s : %8.4f GFlop/s ; Time = %8.5f\n", capsKernel, flopPerNnz*nnz_update/(time), time);\
+    free(capsKernel);\
+}\
+
+
 int main(const int argc, char * argv[])
 {
 
@@ -28,7 +50,7 @@ int main(const int argc, char * argv[])
     {
         printf("Error in reading sparse matrix file\n");
     }
-    printf("Finished matrix reading\n");
+    printf("Coloring matrix\n");
 
     mat->colorAndPermute(TWO, param.cores, param.smt, param.pin);
 
@@ -43,35 +65,19 @@ int main(const int argc, char * argv[])
     x->setRand();
     b->setRand();
 
-    int iter = 100;
+    int iter = param.iter;
 
     double time = 0;
     double nnz_update = ((double)mat->nnz)*iter*1e-9;
 
-    sleep(1);
 
-    INIT_TIMER(spmv);
-
-    START_TIMER(spmv);
-    spmv(b, mat, x, iter);
-    STOP_TIMER(spmv);
-
-    time = GET_TIMER(spmv);
-    printf("SPMV : %f GFlop/s ; Time = %f\n", 2.0*nnz_update/(time), time);
-
-    sleep(1);
-
-    sleep(1);
-
-    INIT_TIMER(spmtv);
-
-    START_TIMER(spmtv);
-    spmtv(b, mat, x, iter);
-    STOP_TIMER(spmtv);
-
-    time = GET_TIMER(spmtv);
-    printf("SPMTV : %f GFlop/s ; Time = %f\n", 2.0*nnz_update/(time), time);
-
-    sleep(1);
-
+    //This macro times and reports performance
+    PERF_RUN(spmv,2);
+    PERF_RUN(spmtv,2);
+    PERF_RUN(kacz,4);
+    //diag entry first required for GS
+    //because of this there might be slight
+    //performance drop
+    mat->makeDiagFirst();
+    PERF_RUN(gs,2);
 }

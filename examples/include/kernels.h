@@ -13,6 +13,8 @@ struct kernelArg
 
 void spmv(densemat* b, sparsemat* mat, densemat* x, int iter);
 void spmtv(densemat* b, sparsemat* mat, densemat* x, int iter);
+void gs(densemat* b, sparsemat* mat, densemat* x, int iter);
+void kacz(densemat* b, sparsemat* mat, densemat* x, int iter);
 void symm_spmv(densemat* b, sparsemat* mat, densemat* x, int iter);
 
 //convenience macros
