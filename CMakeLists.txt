@@ -84,10 +84,13 @@ if (NOT HWLOC_INCLUDE_DIR)
 endif()
 
 #set(GITHUB_GIT_URL "github.com" CACHE STRING "The github GIT URL. This has to be changed in certain situations if located behind a firewall.")
+set(BUILTIN_HWLOC false)
 
 # hwloc not found - download and build it
 if (NOT HWLOC_INCLUDE_DIR)
     message(STATUS "Could not find hwloc.h neither via pkg-config nor in the defined HWLOC_INCLUDE_DIR! Trying to build hwloc...")
+    set(BUILTIN_HWLOC true)
+
     ExternalProject_Add(hwloc
         PREFIX ${PROJECT_BINARY_DIR}/hwloc
         URL https://www.open-mpi.org/software/hwloc/v1.11/downloads/hwloc-1.11.6.tar.gz
@@ -183,7 +186,11 @@ else ()
 endif()
 
 include_directories(SYSTEM "${HWLOC_INCLUDE_DIR}")
-add_dependencies(RACE hwloc)
+
+if(BUILTIN_HWLOC)
+    add_dependencies(RACE hwloc)
+endif()
+
 target_link_libraries(RACE "${LIBHWLOC}")
 
 install(FILES ${HEADERS} DESTINATION include/RACE/)
