@@ -11,19 +11,24 @@ dependencies.RACE uses a recursive level based method for coloring.
 * Easy parallelisation, user needs to just supply serial kernel 
 * Self-pinning
 
-### How do I get set up? ###
+### How to build RACE? ###
 
-* git clone the repository
+* git clone christiealappatt@bitbucket.org:christiealappatt/race.git
+* cd race && mkdir build && cd build
 * CC=icc CXX=icpc cmake ..
-* Configure the library using ccmake .
+* Configure the library using ccmake . (if needed)
 * make
 * make install
 * Library Dependencies : hwloc (will be cloned and installed if not found)
+* Use $(RACE\_LIB)/RACE\_LFLAGS.sh to get the proper linking flags for the library
 
+### Want to try RACE? ###
+RACE provides examples to illustrate the usage and easiness of using the RACE library. To try it out:
 
-### Contribution guidelines ###
-
-
+* cd race/example
+* make
+* ./race -m [matrix file] -c [nthreads]
+* To get other options use: ./race -h
 
 ### Who do I talk to? ###
 
