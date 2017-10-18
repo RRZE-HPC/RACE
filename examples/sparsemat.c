@@ -2,6 +2,7 @@
 #include "mmio.h"
 #include "stdlib.h"
 #include <omp.h>
+#include <vector>
 
 sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), val_symm(NULL), rowPtr_symm(NULL), col_symm(NULL)
 {
@@ -77,6 +78,116 @@ bool sparsemat::readFile(char* filename)
     return true;
 }
 
+//necessary for GS like kernels
+void sparsemat::makeDiagFirst()
+{
+    //check whether a new allocation is necessary
+    int extra_nnz=0;
+    std::vector<double>* val_with_diag = new std::vector<double>;
+    std::vector<int>* col_with_diag = new std::vector<int>;
+
+    for(int row=0; row<nrows; ++row)
+    {
+        bool diagHit = false;
+        for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
+        {
+            val_with_diag->push_back(val[idx]);
+            col_with_diag->push_back(col[idx]);
+
+            if(col[idx] == row)
+            {
+                diagHit = true;
+                break;
+            }
+        }
+        if(!diagHit)
+        {
+            val_with_diag->push_back(0.0);
+            col_with_diag->push_back(row);
+            ++extra_nnz;
+            rowPtr[row+1] = rowPtr[row+1] + extra_nnz;
+        }
+    }
+
+    //allocate new matrix if necessary
+    if(extra_nnz)
+    {
+        delete[] val;
+        delete[] col;
+
+        nnz += extra_nnz;
+        val = new double[nnz];
+        col = new int[nnz];
+
+        for(int idx=0; idx<nnz; ++idx)
+        {
+            val[idx] = val_with_diag->at(idx);
+            col[idx] = col_with_diag->at(idx);
+        }
+        printf("Explicit 0 in diagonal entries added\n");
+    }
+
+    delete val_with_diag;
+    delete col_with_diag;
+
+#pragma omp parallel for
+    for(int row=0; row<nrows; ++row)
+    {
+        bool diag_hit = false;
+
+        double* newVal = new double[rowPtr[row+1]-rowPtr[row]];
+        int* newCol = new int[rowPtr[row+1]-rowPtr[row]];
+        for(int idx=rowPtr[row], locIdx=0; idx<rowPtr[row+1]; ++idx, ++locIdx)
+        {
+            //shift all elements+1 until diag entry
+            if(col[idx] == row)
+            {
+                newVal[0] = val[idx];
+                newCol[0] = col[idx];
+                diag_hit = true;
+            }
+            else if(!diag_hit)
+            {
+                newVal[locIdx+1] = val[idx];
+                newCol[locIdx+1] = col[idx];
+            }
+            else
+            {
+                newVal[locIdx] = val[idx];
+                newCol[locIdx] = col[idx];
+            }
+        }
+        //assign new Val
+        for(int idx = rowPtr[row], locIdx=0; idx<rowPtr[row+1]; ++idx, ++locIdx)
+        {
+            val[idx] = newVal[locIdx];
+            col[idx] = newCol[locIdx];
+        }
+
+        delete[] newVal;
+        delete[] newCol;
+    }
+}
+
+//write matrix market file
+bool sparsemat::writeFile(char* filename)
+{
+    int* row = new int[nnz];
+    //create row indices
+    for(int i=0; i<nrows; ++i)
+    {
+        for(int idx=rowPtr[i]; idx<rowPtr[i+1]; ++idx)
+        {
+            row[idx]=i+1;
+            col[idx]+=1;
+        }
+    }
+
+    mm_write_mtx_crd(filename, nrows, nrows, nnz, row, col, val, "MCRG");
+
+    delete[] row;
+}
+
 bool sparsemat::computeSymmData()
 {
     /* Here we compute symmetric data of matrix
@@ -116,7 +227,6 @@ bool sparsemat::computeSymmData()
 
 void sparsemat::colorAndPermute(dist_t dist, int nthreads, int smt, PinMethod pinMethod)
 {
-    printf("nthreads = %d\n", nthreads);
     ce = new RACEInterface(nrows, nthreads, dist, rowPtr, col, smt, pinMethod, NULL, NULL);
     ce->RACEColor();
 
