@@ -18,6 +18,4 @@ pipelines:
           - mkdir build
           - cd build
           - cmake ..
-          - make -j
-          - cmake ..
-          - make
+          - make VERBOSE=1
