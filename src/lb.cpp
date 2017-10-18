@@ -291,7 +291,7 @@ void LB::splitZones()
     //do a check to ensure correct number of threads are produced
     //for initial estimate
     int threadCtr = 0;
-    for(int i=0; i!=scale.size(); ++i)
+    for(int i=0; i!=(int)scale.size(); ++i)
     {
         if(scale[i]==0)
         {

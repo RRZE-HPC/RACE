@@ -15,7 +15,12 @@
 
 void capitalize(char* beg)
 {
-    while (*beg++ = toupper(*beg));
+    int i = 0;
+    while(beg[i])
+    {
+        beg[i] = toupper(beg[i]);
+        ++i;
+    }
 }
 
 #define PERF_RUN(kernel, flopPerNnz)\

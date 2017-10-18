@@ -5,16 +5,23 @@ INC_DIR=~/race/examples/include
 DEPS = parse.c sparsemat.c mmio.c densemat.c kernels.c
 OBJ = parse.o sparsemat.o densemat.o kernels.o mmio.o main.o
 
-CC=icpc
+CXX?=icpc
 
-CFLAGS=-std=c++11 -qopenmp -O3 -xHOST -fno-alias -I . -I $(RACE_INC_DIR) -I $(INC_DIR) $(LIKWID_INC) -DLIKWID_PERFMON
+CFLAGS=
+
+ifeq ($(CXX), icpc)
+	CFLAGS=-std=c++11 -qopenmp -O3 -xHOST -fno-alias -I . -I $(RACE_INC_DIR) -I $(INC_DIR) $(LIKWID_INC) -DLIKWID_PERFMON
+else
+	CFLAGS=-std=c++11 -fopenmp -O3 -Wno-write-strings -I . -I $(RACE_INC_DIR) -I $(INC_DIR) $(LIKWID_INC) -DLIKWID_PERFMON
+endif
+
 LFLAGS=$(shell $(RACE_LIB_DIR)/RACE_LFlags.sh)
 
 %.o: %.c $(DEPS)
-		$(CC) -c -o $@ $< $(CFLAGS)
+		$(CXX) -c -o $@ $< $(CFLAGS)
 
 race: $(OBJ)
-		$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS)
+		$(CXX) -o $@ $^ $(CFLAGS) $(LFLAGS)
 
 clean: 
 	rm *.o race

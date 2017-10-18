@@ -13,7 +13,7 @@ my_option::my_option()
 {
 }
 
-parser::parser():mat_file(NULL), iter(100), cores(1), smt(1), pin(FILL), prgname("a.out"), numOptions(6)
+parser::parser():mat_file("NULL"), iter(100), cores(1), smt(1), pin(FILL), prgname("a.out"), numOptions(6)
 {
     long_options = new my_option[numOptions+1];
 
@@ -53,44 +53,58 @@ bool parser::parse_arg(int argc, char **argv)
 
         switch (c) {
             case 0:
-                printf("No parameters specified.\n Usage: %s -m [MATRIX] -i [ITERATIONS] -c [CORES] -t [SMT] -p [FILL/SCATTER]\n", prgname);
-                return false;
-                break;
+                {
+                    printf("No parameters specified.\n Usage: %s -m [MATRIX] -i [ITERATIONS] -c [CORES] -t [SMT] -p [FILL/SCATTER]\n", prgname);
+                    return false;
+                    break;
+                }
             case 'm':
-                mat_file = optarg;
-                break;
+                {
+                    mat_file = optarg;
+                    break;
+                }
             case 'i':
-                iter = atoi(optarg);
-                break;
+                {
+                    iter = atoi(optarg);
+                    break;
+                }
             case 'c':
-                printf("cores = %s\n", optarg);
-                cores = atoi(optarg);
-                break;
+                {
+                    printf("cores = %s\n", optarg);
+                    cores = atoi(optarg);
+                    break;
+                }
             case 't':
-                smt = atoi(optarg);
-                break;
-           case 'p':
-                char *pin_str = optarg;
-                printf("pin strategy = %s\n", pin_str);
-                if(!(strcmp(pin_str, "SCATTER")))
                 {
-                    pin = SCATTER;
+                    smt = atoi(optarg);
+                    break;
                 }
-                else if(!(strcmp(pin_str, "FILL")))
+            case 'p':
                 {
-                    pin = FILL;
+                    char *pin_str = optarg;
+                    printf("pin strategy = %s\n", pin_str);
+                    if(!(strcmp(pin_str, "SCATTER")))
+                    {
+                        pin = SCATTER;
+                    }
+                    else if(!(strcmp(pin_str, "FILL")))
+                    {
+                        pin = FILL;
+                    }
+                    else
+                    {
+                        printf("%s pin strategy unknown. setting to FILL\n", pin_str);
+                        pin = FILL;
+                    }
+                    break;
                 }
-                else
+            case 'h':
                 {
-                    printf("%s pin strategy unknown. setting to FILL\n", pin_str);
-                    pin = FILL;
+                    help();
+                    return 0;
+                    break;
                 }
-                break;
-           case 'h':
-                help();
-                return 0;
-                break;
-           default:
+            default:
                 break;
         }
     }
@@ -118,9 +132,9 @@ void parser::help()
 
     exit(0);
     /*    printf(" -m, --matrix=MATRIX FILE\t\tMatrix File in MatrixMarket Format\n");
-    printf(" -c, --cores=CORES\t\tNumber of cores to be used\n");
-    printf(" -t, --smt=THREADS PER CORE\t\tNumber of threads per core to be used (recommended 1)\n");
-    printf(" -p, --pin=PIN STRATEGY\t\tPinning strategy to be used; availablle options FILL or SCATTER\n");
-    printf(" -h, --help \t\t Prints this help informations\n");
-    */
+          printf(" -c, --cores=CORES\t\tNumber of cores to be used\n");
+          printf(" -t, --smt=THREADS PER CORE\t\tNumber of threads per core to be used (recommended 1)\n");
+          printf(" -p, --pin=PIN STRATEGY\t\tPinning strategy to be used; availablle options FILL or SCATTER\n");
+          printf(" -h, --help \t\t Prints this help informations\n");
+          */
 }
