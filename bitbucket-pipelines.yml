@@ -10,6 +10,14 @@ pipelines:
   default:
     - step:
         script: # Modify the commands below to build your repository.
-          - cd race && mkdir build && cd build
+          - echo "Building and testing RACE..."
+          - wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_8.0.44-1_amd64.deb
+          - dpkg -i cuda-repo-ubuntu1404_8.0.44-1_amd64.deb
+          - apt-get update
+          - apt-get install -y libhwloc-dev libopenmpi-dev libgsl0-dev cmake openmpi-bin
+          - mkdir build
+          - cd build
+          - cmake ..
+          - make -j
           - cmake ..
           - make
