@@ -15,7 +15,7 @@ dependencies.RACE uses a recursive level based method for coloring.
 
 * git clone christiealappatt@bitbucket.org:christiealappatt/race.git
 * cd race && mkdir build && cd build
-* CC=icc CXX=icpc cmake ..
+* CC=$(C\_COMPILER) CXX=$(CXX\_COMPILER) cmake ..
 * Configure the library using ccmake . (if needed)
 * make
 * make install
@@ -26,7 +26,7 @@ dependencies.RACE uses a recursive level based method for coloring.
 RACE provides examples to illustrate the usage and easiness of using the RACE library. To try it out:
 
 * cd race/example
-* make
+* CXX=$(CXX\_COMPILER) make
 * ./race -m [matrix file] -c [nthreads]
 * To get other options use: ./race -h
 
