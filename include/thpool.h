@@ -40,7 +40,7 @@ struct thread{
     team<arg_t>* workerTeam;      /*Current team in which the thread works*/
     Signal* signal;                 /* Signal for job wake      */
 
-    volatile bool jobPresent;
+    volatile int  jobPresent;
     int RACE_BLOCKCTR;
     //constructor
     thread();
@@ -62,7 +62,7 @@ struct thpool{
     int num_slaves;                      /* number of slave threads   */
     volatile int num_threads_alive;      /* threads currently working */
     pthread_mutex_t*  thcount_lock;      /* used for thread count etc */
-    volatile bool interrupt;
+    volatile int interrupt;
     int RACE_BLOCKCTR;
 
     thpool();

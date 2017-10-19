@@ -25,7 +25,7 @@ thread<arg_t>::~thread()
     template<typename arg_t>
 void thread<arg_t>::kill()
 {
-    jobPresent=true;
+    jobPresent=1;
     //send signal to tell the thread to wake and destroy
     sendSignal(signal);
 }
@@ -169,7 +169,7 @@ void thpool<arg_t>::init(int numThreads_)
         initialized = true;
         num_threads  = std::max(numThreads_,1);
         num_threads_alive = 0;
-        interrupt = false;
+        interrupt = 0;
 
         thcount_lock = new pthread_mutex_t;
         pthread_mutex_init(thcount_lock, NULL);
@@ -194,7 +194,7 @@ thpool<arg_t>::~thpool()
     //clean if pool is initialized before
     if(initialized)
     {
-        interrupt = true;
+        interrupt = 1;
 
         //give Signal
         for(int i=1; i<num_threads; ++i)
@@ -274,7 +274,7 @@ void team<arg_t>::barrier()
 #endif
 
     taskForce[0]->myJob.function(taskForce[0]->myJob.arg);
-    taskForce[0]->jobPresent = false;
+    taskForce[0]->jobPresent = 0;//false;
 
 #if DEBUG
     printf("master: tid = %u finished job\n",(unsigned) (pthread_self()));
