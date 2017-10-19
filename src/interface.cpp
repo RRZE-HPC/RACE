@@ -259,3 +259,8 @@ bool RACEInterface::simdify(int simdWidth, int C, int nrows, int* col_new, int* 
 {
     return simdifyTemplate<float> (simdWidth, C, nrows, col_new, chunkStart, rl, clp, val, this);
 }
+
+void RACEInterface::pinThread(int threadId)
+{
+    pool->pin.pinThread(threadId);
+}

@@ -61,6 +61,9 @@ class RACEInterface{
 
         bool simdify(int simdWidth, int C, int nrows, int*col, int* chunkStart, int* rl, int* clp, float* val);
 
+        //function to pin threads similar to RACE
+        //from external applications like OpenMP
+        void pinThread(int threadId);
 };
 
 #endif
