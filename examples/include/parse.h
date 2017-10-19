@@ -20,6 +20,8 @@ struct parser
         int cores;
         int smt;
         PinMethod pin;
+        bool validate;
+        double tol;
         char *prgname;
         int numOptions;
         my_option *long_options;

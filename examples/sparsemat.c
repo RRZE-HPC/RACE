@@ -4,7 +4,7 @@
 #include <omp.h>
 #include <vector>
 
-sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), val_symm(NULL), rowPtr_symm(NULL), col_symm(NULL)
+sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL)
 {
 }
 
@@ -190,38 +190,41 @@ bool sparsemat::writeFile(char* filename)
 
 bool sparsemat::computeSymmData()
 {
-    /* Here we compute symmetric data of matrix
-     * which is used if necessary; upper symmetric
-     * portion is stored*/
+    //compute only if previously not computed
+    if(nnz_symm == 0)
+    {
+        /* Here we compute symmetric data of matrix
+         * which is used if necessary; upper symmetric
+         * portion is stored*/
 
-    nnz_symm = 0;
-    //count non-zeros in upper-symm
-    for(int i=0; i<nrows; ++i) {
-        for(int j=rowPtr[i]; j<rowPtr[i+1]; ++j) {
-            if(col[j]>=i) {
-                ++nnz_symm;
+        nnz_symm = 0;
+        //count non-zeros in upper-symm
+        for(int i=0; i<nrows; ++i) {
+            for(int j=rowPtr[i]; j<rowPtr[i+1]; ++j) {
+                if(col[j]>=i) {
+                    ++nnz_symm;
+                }
             }
         }
-    }
 
-    rowPtr_symm = new int[nrows];
-    col_symm = new int[nnz_symm];
-    val_symm = new double[nnz_symm];
+        rowPtr_symm = new int[nrows];
+        col_symm = new int[nnz_symm];
+        val_symm = new double[nnz_symm];
 
-    rowPtr_symm[0] = 0;
+        rowPtr_symm[0] = 0;
 
-    int ctr=0;
-    for(int i=0; i<nrows; ++i) {
-        for(int j=rowPtr[i]; j<rowPtr[i+1]; ++j) {
-            if(col[j]>=i) {
-                val_symm[ctr] = val[j];
-                col_symm[ctr] = col[j];
-                ++ctr;
+        int ctr=0;
+        for(int i=0; i<nrows; ++i) {
+            for(int j=rowPtr[i]; j<rowPtr[i+1]; ++j) {
+                if(col[j]>=i) {
+                    val_symm[ctr] = val[j];
+                    col_symm[ctr] = col[j];
+                    ++ctr;
+                }
             }
+            rowPtr_symm[i+1] = ctr;
         }
-        rowPtr_symm[i+1] = ctr;
     }
-
     return true;
 }
 
@@ -240,6 +243,7 @@ void sparsemat::colorAndPermute(dist_t dist, int nthreads, int smt, PinMethod pi
 
     free(perm);
     free(invPerm);
+
 }
 
 //symmetrically permute
@@ -276,4 +280,47 @@ void sparsemat::permute(int *perm, int*  invPerm)
     val = newVal;
     rowPtr = newRowPtr;
     col = newCol;
+}
+
+void sparsemat::NUMA_init(bool symmPart)
+{
+    double* targetVal = (symmPart)?val_symm:val;
+    int* targetCol = (symmPart)?col_symm:col;
+    int* targetRowPtr = (symmPart)?rowPtr_symm:rowPtr;
+    int targetNnz = (symmPart)?nnz_symm:nnz;
+
+    double* NUMA_val = new double[targetNnz];
+    int* NUMA_col = new int[targetNnz];
+    int* NUMA_rowPtr = new int[nrows+1];
+
+    NUMA_rowPtr[0] = targetRowPtr[0];
+
+#pragma omp parallel for schedule(static)
+    for(int row=0; row<nrows; ++row)
+    {
+        NUMA_rowPtr[row+1] = targetRowPtr[row+1];
+        for(int idx=targetRowPtr[row]; idx<targetRowPtr[row+1]; ++idx)
+        {
+            NUMA_val[idx] = targetVal[idx];
+            NUMA_col[idx] = targetCol[idx];
+        }
+    }
+
+    //now delete old arrays
+    delete[] targetVal;
+    delete[] targetCol;
+    delete[] targetRowPtr;
+
+    if(symmPart)
+    {
+        val_symm = NUMA_val;
+        col_symm = NUMA_col;
+        rowPtr_symm = NUMA_rowPtr;
+    }
+    else
+    {
+        val = NUMA_val;
+        col = NUMA_col;
+        rowPtr = NUMA_rowPtr;
+    }
 }

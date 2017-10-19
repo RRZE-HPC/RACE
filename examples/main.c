@@ -62,7 +62,7 @@ int main(const int argc, char * argv[])
 
     mat->colorAndPermute(TWO, param.cores, param.smt, param.pin);
 
-    printf("Finished coloring\n");
+    printf("Finished coloring\n\n");
 
     int NROWS = mat->nrows;
 
@@ -72,7 +72,6 @@ int main(const int argc, char * argv[])
 
     x->setRand();
     b->setRand();
-
 
     //This macro times and reports performance
     PERF_RUN(spmv,2);
@@ -86,4 +85,48 @@ int main(const int argc, char * argv[])
 
     mat->computeSymmData();
     PERF_RUN(symm_spmv,2);
+
+
+    if(param.validate)
+    {
+        printf("\n");
+        densemat* bSPMV;
+        bSPMV = new densemat(NROWS);
+        bSPMV->setVal(0);
+        b->setVal(0);
+        x->setRand();
+        //Assuming symmetric matrix provided.
+        //Do one SPMV and SPMTV; compare results
+        spmv(bSPMV, mat, x, 1);
+        spmtv(b, mat, x, 1);
+
+        bool spmtv_flag = checkEqual(bSPMV,b, param.tol);
+        if(!spmtv_flag)
+        {
+            printf("SPMTV failed\n");
+        }
+
+        //check symmetric variant also
+        //Do one SPMV and symmSPMV; compare results
+        b->setVal(0);
+        mat->computeSymmData();
+        symm_spmv(b, mat, x, 1);
+        bool symm_spmv_flag = checkEqual(bSPMV,b, param.tol);
+        if(!symm_spmv_flag)
+        {
+            printf("SYMM SPMV failed\n");
+        }
+
+        if(spmtv_flag &&  symm_spmv_flag)
+        {
+            printf("Validated coloring\n");
+        }
+        else
+        {
+            printf("\nValidation failed: Possible reasons:\n");
+            printf("1. Tolerance is too low, use option -T to adjust\n");
+            printf("2. Matrix not symmetric (right now validation works only for symmetric matrices)\n");
+            printf("3. Coloring failed\n\n");
+        }
+   }
 }

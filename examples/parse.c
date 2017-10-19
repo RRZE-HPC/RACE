@@ -13,7 +13,7 @@ my_option::my_option()
 {
 }
 
-parser::parser():mat_file("NULL"), iter(100), cores(1), smt(1), pin(FILL), prgname("a.out"), numOptions(6)
+parser::parser():mat_file(NULL), iter(100), cores(1), smt(1), pin(FILL), validate(false), tol(1e-4), prgname("a.out"), numOptions(8)
 {
     long_options = new my_option[numOptions+1];
 
@@ -22,8 +22,10 @@ parser::parser():mat_file("NULL"), iter(100), cores(1), smt(1), pin(FILL), prgna
     long_options[2] = {"cores",   required_argument, 0,  'c', "Number of cores to be used" };
     long_options[3] = {"smt",     required_argument, 0,  't', "Number of threads per core to be used (recommended 1)" };
     long_options[4] = {"pin",     required_argument, 0,  'p', "Pinning strategy to be used; availablle options FILL or SCATTER" };
-    long_options[5] = {"help",    no_argument,       0,  'h', "Prints this help informations" };
-    long_options[6] = {0,         0,                 0,   0,  0 };
+    long_options[5] = {"validate",no_argument,       0,  'v', "Validate coloring" };
+    long_options[6] = {"tol",     required_argument, 0,  'T', "Tolerance for validation" };
+    long_options[7] = {"help",    no_argument,       0,  'h', "Prints this help informations" };
+    long_options[8] = {0,         0,                 0,   0,  0 };
 
     gnuOptions = new option[numOptions+1];
 
@@ -31,7 +33,6 @@ parser::parser():mat_file("NULL"), iter(100), cores(1), smt(1), pin(FILL), prgna
     {
         gnuOptions[i] = long_options[i].gnu_opt;
     }
-
 }
 
 parser::~parser()
@@ -45,7 +46,7 @@ bool parser::parse_arg(int argc, char **argv)
     prgname = argv[0];
     while (1) {
         int option_index = 0, c;
-        c = getopt_long(argc, argv, "0:m:i:c:t:p:h",
+        c = getopt_long(argc, argv, "0:m:i:c:t:p:T:vh",
                 gnuOptions, &option_index);
 
         if (c == -1)
@@ -98,6 +99,16 @@ bool parser::parse_arg(int argc, char **argv)
                     }
                     break;
                 }
+            case 'v':
+                {
+                    validate = true;
+                    break;
+                }
+            case 'T':
+                {
+                    tol = atof(optarg);
+                    break;
+                }
             case 'h':
                 {
                     help();
@@ -109,8 +120,10 @@ bool parser::parse_arg(int argc, char **argv)
         }
     }
 
-    if(mat_file == NULL)
+    if(mat_file==NULL)
     {
+        printf("Please provide matrix file \n\n");
+        help();
         return false;
     }
     else
@@ -123,13 +136,19 @@ void parser::help()
 {
     printf("Usage: %s [OPTION]...\n",prgname);
     printf("Valid options are:\n\n");
-
-    printf("   %s    \t %s\n", "option", "description");
+    char* HLINE = "────────────────────────────────────────────────────────────────────────────────────────────";
+    printf("%s\n",HLINE);
+    printf("\t%s\t\t\t%s\n", "options", "description");
+    printf("%s\n",HLINE);
     for(int i=0; i<numOptions; ++i)
     {
-        printf("-%c or --%s \t %s\n", ((char) long_options[i].gnu_opt.val), long_options[i].gnu_opt.name, long_options[i].desc);
+        char* long_opt;
+        asprintf(&long_opt,"--%s", long_options[i].gnu_opt.name);
+        printf("-%c or  %-12s |\t %-65s |\n", ((char) long_options[i].gnu_opt.val), long_opt, long_options[i].desc);
+        free(long_opt);
     }
 
+    printf("%s\n\n", HLINE);
     exit(0);
     /*    printf(" -m, --matrix=MATRIX FILE\t\tMatrix File in MatrixMarket Format\n");
           printf(" -c, --cores=CORES\t\tNumber of cores to be used\n");

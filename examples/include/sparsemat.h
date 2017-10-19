@@ -16,6 +16,7 @@ struct sparsemat
     void makeDiagFirst();
     void colorAndPermute(dist_t dist, int nthreads, int smt=1, PinMethod pinMethod=FILL);
     void permute(int* perm, int* invPerm);
+    void NUMA_init(bool symmPart);
 
     /* For symmetric computations */
     int nnz_symm;

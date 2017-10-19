@@ -15,6 +15,9 @@ struct densemat
 
     densemat(int nrows);
     ~densemat();
+
 };
+
+bool checkEqual(const densemat* lhs, const densemat* rhs, double tol=1e-4);
 
 #endif
