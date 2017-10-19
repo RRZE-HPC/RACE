@@ -83,8 +83,9 @@ void sparsemat::makeDiagFirst()
 {
     //check whether a new allocation is necessary
     int extra_nnz=0;
-    std::vector<double>* val_with_diag = new std::vector<double>;
-    std::vector<int>* col_with_diag = new std::vector<int>;
+    std::vector<double>* val_with_diag = new std::vector<double>();
+    std::vector<int>* col_with_diag = new std::vector<int>();
+    std::vector<int>* rowPtr_with_diag = new std::vector<int>(rowPtr, rowPtr+nrows+1);
 
     for(int row=0; row<nrows; ++row)
     {
@@ -97,7 +98,6 @@ void sparsemat::makeDiagFirst()
             if(col[idx] == row)
             {
                 diagHit = true;
-                break;
             }
         }
         if(!diagHit)
@@ -105,8 +105,8 @@ void sparsemat::makeDiagFirst()
             val_with_diag->push_back(0.0);
             col_with_diag->push_back(row);
             ++extra_nnz;
-            rowPtr[row+1] = rowPtr[row+1] + extra_nnz;
         }
+        rowPtr_with_diag->at(row+1) = rowPtr_with_diag->at(row+1) + extra_nnz;
     }
 
     //allocate new matrix if necessary
@@ -114,23 +114,32 @@ void sparsemat::makeDiagFirst()
     {
         delete[] val;
         delete[] col;
+        delete[] rowPtr;
 
         nnz += extra_nnz;
         val = new double[nnz];
         col = new int[nnz];
+        rowPtr = new int[nrows+1];
 
-        for(int idx=0; idx<nnz; ++idx)
+        rowPtr[0] = rowPtr_with_diag->at(0);
+#pragma omp parallel for schedule(static)
+        for(int row=0; row<nrows; ++row)
         {
-            val[idx] = val_with_diag->at(idx);
-            col[idx] = col_with_diag->at(idx);
+            rowPtr[row+1] = rowPtr_with_diag->at(row+1);
+            for(int idx=rowPtr_with_diag->at(row); idx<rowPtr_with_diag->at(row+1); ++idx)
+            {
+                val[idx] = val_with_diag->at(idx);
+                col[idx] = col_with_diag->at(idx);
+            }
         }
         printf("Explicit 0 in diagonal entries added\n");
     }
 
     delete val_with_diag;
     delete col_with_diag;
+    delete rowPtr_with_diag;
 
-#pragma omp parallel for
+#pragma omp parallel for schedule(static)
     for(int row=0; row<nrows; ++row)
     {
         bool diag_hit = false;
@@ -167,6 +176,7 @@ void sparsemat::makeDiagFirst()
         delete[] newVal;
         delete[] newCol;
     }
+
 }
 
 //write matrix market file
@@ -198,31 +208,40 @@ bool sparsemat::computeSymmData()
          * portion is stored*/
 
         nnz_symm = 0;
+        rowPtr_symm = new int[nrows+1];
+        rowPtr_symm[0] = 0;
+
+        //NUMA init
+#pragma omp parallel for schedule(static)
+        for(int row=0; row<nrows; ++row)
+        {
+            rowPtr_symm[row+1] = 0;
+        }
+
         //count non-zeros in upper-symm
-        for(int i=0; i<nrows; ++i) {
-            for(int j=rowPtr[i]; j<rowPtr[i+1]; ++j) {
-                if(col[j]>=i) {
+        for(int row=0; row<nrows; ++row) {
+            for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx) {
+                if(col[idx]>=row) {
                     ++nnz_symm;
                 }
+                rowPtr_symm[row+1] = nnz_symm;
             }
         }
 
-        rowPtr_symm = new int[nrows];
         col_symm = new int[nnz_symm];
         val_symm = new double[nnz_symm];
 
-        rowPtr_symm[0] = 0;
-
-        int ctr=0;
-        for(int i=0; i<nrows; ++i) {
-            for(int j=rowPtr[i]; j<rowPtr[i+1]; ++j) {
-                if(col[j]>=i) {
-                    val_symm[ctr] = val[j];
-                    col_symm[ctr] = col[j];
-                    ++ctr;
+        //With NUMA init
+#pragma omp parallel for schedule(static)
+        for(int row=0; row<nrows; ++row) {
+            int idx_symm = rowPtr_symm[row];
+            for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx) {
+                if(col[idx]>=row) {
+                    val_symm[idx_symm] = val[idx];
+                    col_symm[idx_symm] = col[idx];
+                    ++idx_symm;
                 }
             }
-            rowPtr_symm[i+1] = ctr;
         }
     }
     return true;
@@ -238,12 +257,14 @@ void sparsemat::colorAndPermute(dist_t dist, int nthreads, int smt, PinMethod pi
     ce->getPerm(&perm, &permLen);
     ce->getInvPerm(&invPerm, &permLen);
 
+    //pin omp threads as in RACE for proper NUMA
+    pinOMP(nthreads);
+
     //now permute the matrix according to the permutation vector
     permute(perm, invPerm);
 
     free(perm);
     free(invPerm);
-
 }
 
 //symmetrically permute
@@ -255,6 +276,14 @@ void sparsemat::permute(int *perm, int*  invPerm)
 
     newRowPtr[0] = 0;
 
+    //NUMA init
+#pragma omp parallel for schedule(static)
+    for(int row=0; row<nrows; ++row)
+    {
+        newRowPtr[row+1] = 0;
+    }
+
+    //first find newRowPtr; therefore wwe can do proper NUMA init
     int permIdx=0;
     for(int row=0; row<nrows; ++row)
     {
@@ -262,14 +291,24 @@ void sparsemat::permute(int *perm, int*  invPerm)
         int permRow = perm[row];
         for(int idx=rowPtr[permRow]; idx<rowPtr[permRow+1]; ++idx)
         {
+             ++permIdx;
+        }
+        newRowPtr[row+1] = permIdx;
+    }
+
+
+    //with NUMA init
+#pragma omp parallel for schedule(static)
+    for(int row=0; row<nrows; ++row)
+    {
+        //row permutation
+        int permRow = perm[row];
+        for(int permIdx=newRowPtr[row],idx=rowPtr[permRow]; permIdx<newRowPtr[row+1]; ++idx,++permIdx)
+        {
             //permute column-wise also
             newVal[permIdx] = val[idx];
             newCol[permIdx] = invPerm[col[idx]];
-
-            //TODO: if needed sort here
-            ++permIdx;
         }
-        newRowPtr[row+1] = permIdx;
     }
 
     //free old permutations
@@ -282,45 +321,16 @@ void sparsemat::permute(int *perm, int*  invPerm)
     col = newCol;
 }
 
-void sparsemat::NUMA_init(bool symmPart)
+//here openMP threads are pinned according to
+//RACE pinning, which is necessary for NUMA init
+void sparsemat::pinOMP(int nthreads)
 {
-    double* targetVal = (symmPart)?val_symm:val;
-    int* targetCol = (symmPart)?col_symm:col;
-    int* targetRowPtr = (symmPart)?rowPtr_symm:rowPtr;
-    int targetNnz = (symmPart)?nnz_symm:nnz;
+    omp_set_dynamic(0);    //  Explicitly disable dynamic teams
+    omp_set_num_threads(nthreads);
 
-    double* NUMA_val = new double[targetNnz];
-    int* NUMA_col = new int[targetNnz];
-    int* NUMA_rowPtr = new int[nrows+1];
-
-    NUMA_rowPtr[0] = targetRowPtr[0];
-
-#pragma omp parallel for schedule(static)
-    for(int row=0; row<nrows; ++row)
+#pragma omp parallel
     {
-        NUMA_rowPtr[row+1] = targetRowPtr[row+1];
-        for(int idx=targetRowPtr[row]; idx<targetRowPtr[row+1]; ++idx)
-        {
-            NUMA_val[idx] = targetVal[idx];
-            NUMA_col[idx] = targetCol[idx];
-        }
-    }
-
-    //now delete old arrays
-    delete[] targetVal;
-    delete[] targetCol;
-    delete[] targetRowPtr;
-
-    if(symmPart)
-    {
-        val_symm = NUMA_val;
-        col_symm = NUMA_col;
-        rowPtr_symm = NUMA_rowPtr;
-    }
-    else
-    {
-        val = NUMA_val;
-        col = NUMA_col;
-        rowPtr = NUMA_rowPtr;
+        int pinOrder = omp_get_thread_num();
+        ce->pinThread(pinOrder);
     }
 }
