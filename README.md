@@ -21,14 +21,16 @@ dependencies.RACE uses a recursive level based method for coloring.
 * make
 * make install
 * Library Dependencies : hwloc (will be cloned and installed if not found)
-* Use $(RACE\_LIB)/RACE\_LFLAGS.sh to get the proper linking flags for the library
+* Use $(RACE\_LIB)/RACE\_LFLAGS.sh or use CMAKE find\_package to get the proper linking flags for the library
 
 ### Want to try RACE? ###
 RACE provides examples to illustrate the usage and easiness of using the RACE library. To try it out:
 
 * cd race/example
-* CXX=$(CXX\_COMPILER) make
-* ./race -m [matrix file] -c [nthreads]
+* mkdir build && cd build
+* CC=$(C\_COMPILER) CXX=$(CXX\_COMPILER) cmake .. -DRACE\_DIR=$(RACE\_LIB)
+* make
+* To run: ./race -m [matrix file] -c [nthreads]
 * To get other options use: ./race -h
 
 ### Who do I talk to? ###
