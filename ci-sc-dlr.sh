@@ -95,7 +95,7 @@ make -j || make    || exit 5
 gunzip -k -c ../examples/matrices/spinSZ12.mm.gz > spinSZ12.mm
 
 # a simple test, just run with some example matrix
-./race -v -m spinSZ12.mm -c 12 -i 25 || error=6
+./race -v -m spinSZ12.mm -c 4 -i 25 || error=6
 
 #return error code
 exit $error
