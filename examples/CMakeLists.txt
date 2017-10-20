@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.8)
 # project name
 project(RACE_example CXX C)
 
+set(CMAKE_CXX_STANDARD 11)
+
 set(CMAKE_PREFIX_PATH ${RACE_DIR})
 # find RACE
 find_package(RACE REQUIRED CONFIG)
