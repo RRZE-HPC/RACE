@@ -34,8 +34,8 @@ RACE provides examples to illustrate the usage and easiness of using the RACE li
 * To get other options use: ./race -h
 
 ### RACE working ###
-![Screenshot](examples/animations/domain_anim.gif)
-![Scrrentshot](examples/animations/zone_tree_anim.gif)
+![Screenshot](animations/domain_anim.gif)
+![Scrrentshot](animations/zone_tree_anim.gif)
 
 ### Who do I talk to? ###
 
