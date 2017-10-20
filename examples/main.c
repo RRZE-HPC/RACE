@@ -78,8 +78,6 @@ int main(const int argc, char * argv[])
     PERF_RUN(spmtv,2);
     PERF_RUN(kacz,4);
     //diag entry first required for GS
-    //because of this there might be slight
-    //performance drop
     mat->makeDiagFirst();
     PERF_RUN(gs,2);
 

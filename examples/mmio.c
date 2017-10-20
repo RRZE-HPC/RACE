@@ -34,7 +34,7 @@ int mm_read_unsymmetric_sparse(const char *fname, int *M_, int *N_, int *nz_,
     }
 
 
-    if ( !(mm_is_real(matcode) && mm_is_matrix(matcode) &&
+    if ( !((mm_is_real(matcode)||mm_is_pattern(matcode)) && mm_is_matrix(matcode) &&
             mm_is_sparse(matcode)))
     {
         fprintf(stderr, "Sorry, this application does not support ");
@@ -65,17 +65,41 @@ int mm_read_unsymmetric_sparse(const char *fname, int *M_, int *N_, int *nz_,
     *I_ = II;
     *J_ = J;
 
+    if(mm_is_pattern(matcode))
+    {
+        printf("pattern matrix all non-zero values will be set to zeros.\n");
+
+        for(int i=0; i<nz; ++i)
+        {
+            val[i] = 0.0;
+        }
+    }
+
     /* NOTE: when reading in doubles, ANSI C requires the use of the "l"  */
     /*   specifier as in "%lg", "%lf", "%le", otherwise errors will occur */
     /*  (ANSI C X3.159-1989, Sec. 4.9.6.2, p. 136 lines 13-15)            */
 
-    for (i=0; i<nz; i++)
+    if(!mm_is_pattern(matcode))
     {
-        if (fscanf(f, "%d %d %lg\n", &II[i], &J[i], &val[i])
-                != 3) return MM_PREMATURE_EOF;
-        II[i]--;  /* adjust from 1-based to 0-based */
-        J[i]--;
+        for (i=0; i<nz; i++)
+        {
+            if (fscanf(f, "%d %d %lg\n", &II[i], &J[i], &val[i])
+                    != 3) return MM_PREMATURE_EOF;
+            II[i]--;  /* adjust from 1-based to 0-based */
+            J[i]--;
+        }
     }
+    else
+    {
+        for (i=0; i<nz; i++)
+        {
+            if (fscanf(f, "%d %d\n", &II[i], &J[i])
+                    != 2) return MM_PREMATURE_EOF;
+            II[i]--;  /* adjust from 1-based to 0-based */
+            J[i]--;
+        }
+    }
+
     fclose(f);
 
     return 0;

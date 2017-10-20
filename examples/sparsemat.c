@@ -53,13 +53,28 @@ bool sparsemat::readFile(char* filename)
 
     fclose(f);
 
-    bool compatible_flag = (mm_is_sparse(matcode) && mm_is_real(matcode)) && (mm_is_symmetric(matcode) || mm_is_general(matcode));
-
+    bool compatible_flag = (mm_is_sparse(matcode) && (mm_is_real(matcode)||mm_is_pattern(matcode))) && (mm_is_symmetric(matcode) || mm_is_general(matcode));
     bool symm_flag = mm_is_symmetric(matcode);
+    bool pattern_flag = mm_is_pattern(matcode);
 
-    if(!compatible_flag || symm_flag)
+    if(!compatible_flag)
     {
-        printf("The matrix market file provided is not supported\n");
+        printf("The matrix market file provided is not supported.\n Reason :\n");
+        if(!mm_is_sparse(matcode))
+        {
+            printf(" * matrix has to be sparse\n");
+        }
+
+        if(!mm_is_real(matcode) && !(mm_is_pattern(matcode)))
+        {
+            printf(" * matrix has to be real or pattern\n");
+        }
+
+        if(!mm_is_symmetric(matcode) && !mm_is_general(matcode))
+        {
+            printf(" * matrix has to be either general or symmetric\n");
+        }
+
         exit(0);
     }
 
@@ -77,6 +92,59 @@ bool sparsemat::readFile(char* filename)
     {
         printf("Currently only Symmetric matrices are supported\n");
         return false;
+    }
+
+    //If matrix market file is symmetric; create a general one out of it
+    if(symm_flag)
+    {
+        printf("Creating a general matrix out of a symmetric one\n");
+
+        int ctr = 0;
+
+        //this is needed since diagonals might be missing in some cases
+        for(int idx=0; idx<nnz; ++idx)
+        {
+            ++ctr;
+            if(row[idx]!=col_unsorted[idx])
+            {
+                ++ctr;
+            }
+        }
+
+        int new_nnz = ctr;
+
+        int *row_general = new int[new_nnz];
+        int *col_general = new int[new_nnz];
+        double *val_general = new double[new_nnz];
+
+        int idx_gen=0;
+
+        for(int idx=0; idx<nnz; ++idx)
+        {
+            row_general[idx_gen] = row[idx];
+            col_general[idx_gen] = col_unsorted[idx];
+            val_general[idx_gen] = val_unsorted[idx];
+            ++idx_gen;
+
+            if(row[idx] != col_unsorted[idx])
+            {
+                row_general[idx_gen] = col_unsorted[idx];
+                col_general[idx_gen] = row[idx];
+                val_general[idx_gen] = val_unsorted[idx];
+                ++idx_gen;
+            }
+        }
+
+        free(row);
+        free(col_unsorted);
+        free(val_unsorted);
+
+        nnz = new_nnz;
+
+        //assign right pointers for further proccesing
+        row = row_general;
+        col_unsorted = col_general;
+        val_unsorted = val_general;
     }
 
     //permute the col and val according to row
@@ -99,6 +167,7 @@ bool sparsemat::readFile(char* filename)
 
     delete[] col_unsorted;
     delete[] val_unsorted;
+
 
     rowPtr = new int[nrows+1];
 
