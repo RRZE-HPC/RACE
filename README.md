@@ -8,7 +8,8 @@ dependencies.RACE uses a recursive level based method for coloring.
 * Hardware friendly
 * Solve Distance-1 & Distance-2 dependencies kernels
 * Supports pre-processing and processing phase
-* Easy parallelisation, user needs to just supply serial kernel 
+* Easy parallelisation, user needs to just supply serial kernel
+* Support for CRS and SELL-C-sigma data formats
 * Self-pinning
 
 ### How to build RACE? ###
