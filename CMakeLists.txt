@@ -114,7 +114,7 @@ set(HWLOC_LIBRARIES ${LIBHWLOC})
 set(RACE_THREAD_METHOD PThread CACHE STRING "Which threading method should be used for the kernel: options are OpenMP or PThread")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -std=c99 -Wall -Wextra -Werror -pedantic")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++0x -Wall -Wextra -Werror -pedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -std=c++0x -Wall -Wextra -Werror -pedantic")
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     set(CMAKE_INCLUDE_SYSTEM_FLAG_C "-isystem ") # Not present in Cmake 2.8.11.2
     set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ") # Not present in Cmake 2.8.11.2
@@ -128,7 +128,7 @@ else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unknown-pragmas")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") 
-        message(STATUS "NOTE: by default, we only set the -save-temps compiler flag with Intel compilers right now. You may want to use CC=\"ccache gcc\" etc to speed up the compiliation, see issue #269.")
+        message(STATUS "NOTE: by default, we only set the -save-temps compiler flag with Intel compilers right now. You may want to use CC=\"ccache gcc\" etc to speed up the compiliation.")
         if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Ofast -fstrict-aliasing")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast -fstrict-aliasing")
@@ -169,6 +169,7 @@ configure_file (
     "${PROJECT_SOURCE_DIR}/include/config.h.in"
     "${PROJECT_SOURCE_DIR}/include/config.h"
 )
+configure_file(${PROJECT_SOURCE_DIR}/race-config.cmake.in ${PROJECT_BINARY_DIR}/race-config.cmake @ONLY)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 add_library(RACE ${SOURCES})
@@ -191,6 +192,7 @@ endif()
 
 install(FILES ${HEADERS} DESTINATION include/RACE/)
 install(FILES ${PROJECT_BINARY_DIR}/RACE_LFlags.sh DESTINATION lib/RACE PERMISSIONS OWNER_READ OWNER_EXECUTE)
+install(FILES ${PROJECT_BINARY_DIR}/race-config.cmake DESTINATION lib/RACE)
 
 if (${BUILD_SHARED_LIBS})
     install(TARGETS RACE EXPORT RACE-targets LIBRARY DESTINATION lib/RACE)
