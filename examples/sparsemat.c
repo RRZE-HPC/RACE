@@ -33,22 +33,36 @@ sparsemat::~sparsemat()
 
 }
 
-
 bool sparsemat::readFile(char* filename)
 {
-/*
+
     MM_typecode matcode;
-    mm_read_banner(filename, &matcode);
+
+    FILE *f;
+
+    if ((f = fopen(filename, "r")) == NULL)
+        return -1;
+
+
+    if (mm_read_banner(f, &matcode) != 0)
+    {
+        printf("mm_read_unsymetric: Could not process Matrix Market banner ");
+        printf(" in file [%s]\n", filename);
+        return -1;
+    }
+
+    fclose(f);
 
     bool compatible_flag = (mm_is_sparse(matcode) && mm_is_real(matcode)) && (mm_is_symmetric(matcode) || mm_is_general(matcode));
 
     bool symm_flag = mm_is_symmetric(matcode);
 
-    if(!compatible_flag)
+    if(!compatible_flag || symm_flag)
     {
         printf("The matrix market file provided is not supported\n");
+        exit(0);
     }
-*/
+
     int ncols;
     int *row;
     int *col_unsorted;
