@@ -35,7 +35,7 @@ RACE provides examples to illustrate the usage and easiness of using the RACE li
 
 ### RACE working ###
 ![Screenshot](examples/animations/domain_anim.gif)
-![Scrrentshot](examples/animations/zone_tree.gif)
+![Scrrentshot](examples/animations/zone_tree_anim.gif)
 
 ### Who do I talk to? ###
 
