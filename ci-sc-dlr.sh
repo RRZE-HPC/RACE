@@ -92,7 +92,7 @@ cd ${build_examples_dir} || exit -1
 export CMAKE_PREFIX_PATH=$install_dir:${CMAKE_PREFIX_PATH}
 cmake ../examples || exit 4
 make -j || make    || exit 5
-gunzip -k -c ../examples/spinSZ12.mm.gz > spinSZ12.mm
+gunzip -k -c ../examples/matrices/spinSZ12.mm.gz > spinSZ12.mm
 
 # a simple test, just run with some example matrix
 ./race -v -m spinSZ12.mm -c 12 -i 25 || error=6
