@@ -33,6 +33,10 @@ RACE provides examples to illustrate the usage and easiness of using the RACE li
 * To run: ./race -m [matrix file] -c [nthreads]
 * To get other options use: ./race -h
 
+### RACE working ###
+![](https://bitbucket.org/christiealappatt/race/src/7b0fdc256edcde4ae7bbda7f46d547750d6fa462/examples/animations/domain_anim.gif)
+![](https://bitbucket.org/christiealappatt/race/src/7b0fdc256edcde4ae7bbda7f46d547750d6fa462/examples/animations/zone_tree_anim.gif)
+
 ### Who do I talk to? ###
 
 * Christie Louis Alappat <christie.alappat@fau.de>
