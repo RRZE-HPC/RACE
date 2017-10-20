@@ -2,6 +2,19 @@
 #define RACE_SPARSEMAT_H
 
 #include <RACE/interface.h>
+#include <algorithm>
+#include <iterator>
+
+
+template <typename T> void sort_perm(T *arr, int *perm, int len, bool rev=false)
+{
+    if(rev == false) {
+        std::stable_sort(perm+0, perm+len, [&](const int& a, const int& b) {return (arr[a] < arr[b]); });
+    } else {
+        std::stable_sort(perm+0, perm+len, [&](const int& a, const int& b) {return (arr[a] > arr[b]); });
+    }
+}
+
 
 struct sparsemat
 {
@@ -27,6 +40,7 @@ struct sparsemat
 
     sparsemat();
     ~sparsemat();
+
 };
 
 #endif

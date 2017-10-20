@@ -33,21 +33,58 @@ sparsemat::~sparsemat()
 
 }
 
+
 bool sparsemat::readFile(char* filename)
 {
-    int *row, ncols;
+/*
+    MM_typecode matcode;
+    mm_read_banner(filename, &matcode);
 
-    if(mm_read_unsymmetric_sparse(filename, &nrows, &ncols, &nnz, &val, &row, &col) < 0)
+    bool compatible_flag = (mm_is_sparse(matcode) && mm_is_real(matcode)) && (mm_is_symmetric(matcode) || mm_is_general(matcode));
+
+    bool symm_flag = mm_is_symmetric(matcode);
+
+    if(!compatible_flag)
+    {
+        printf("The matrix market file provided is not supported\n");
+    }
+*/
+    int ncols;
+    int *row;
+    int *col_unsorted;
+    double *val_unsorted;
+
+    if(mm_read_unsymmetric_sparse(filename, &nrows, &ncols, &nnz, &val_unsorted, &row, &col_unsorted) < 0)
     {
         printf("Error in file reading\n");
         return false;
     }
-
     if(nrows != ncols)
     {
         printf("Currently only Symmetric matrices are supported\n");
         return false;
     }
+
+    //permute the col and val according to row
+    int* perm = new int[nnz];
+    for(int idx=0; idx<nnz; ++idx)
+    {
+        perm[idx] = idx;
+    }
+
+    sort_perm(row, perm, nnz);
+
+    col = new int[nnz];
+    val = new double[nnz];
+
+    for(int idx=0; idx<nnz; ++idx)
+    {
+        col[idx] = col_unsorted[perm[idx]];
+        val[idx] = val_unsorted[perm[idx]];
+    }
+
+    delete[] col_unsorted;
+    delete[] val_unsorted;
 
     rowPtr = new int[nrows+1];
 
@@ -75,6 +112,9 @@ bool sparsemat::readFile(char* filename)
         return false;
     }
 
+    free(row);
+
+    //writeFile("beforePerm.mtx");
     return true;
 }
 
@@ -182,20 +222,23 @@ void sparsemat::makeDiagFirst()
 //write matrix market file
 bool sparsemat::writeFile(char* filename)
 {
-    int* row = new int[nnz];
+    int* row_1_based = new int[nnz];
+    int* col_1_based = new int[nnz];
+
     //create row indices
     for(int i=0; i<nrows; ++i)
     {
         for(int idx=rowPtr[i]; idx<rowPtr[i+1]; ++idx)
         {
-            row[idx]=i+1;
-            col[idx]+=1;
+            row_1_based[idx]=i+1;
+            col_1_based[idx]=col[idx]+1;
         }
     }
 
-    mm_write_mtx_crd(filename, nrows, nrows, nnz, row, col, val, "MCRG");
+    mm_write_mtx_crd(filename, nrows, nrows, nnz, row_1_based, col_1_based, val, "MCRG");
 
-    delete[] row;
+    delete[] row_1_based;
+    delete[] col_1_based;
 }
 
 bool sparsemat::computeSymmData()
@@ -334,3 +377,5 @@ void sparsemat::pinOMP(int nthreads)
         ce->pinThread(pinOrder);
     }
 }
+
+
