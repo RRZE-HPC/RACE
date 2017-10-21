@@ -73,29 +73,37 @@ build_dir=build_${PRGENV}_${BUILD_TYPE}
 build_examples_dir=build_examples_${PRGENV}_${BUILD_TYPE}
 install_dir=$INSTALL_PREFIX/install-${PRGENV}-${BUILD_TYPE}
 
-
 error=0
 
-# build and install
-mkdir $build_dir                          || exit -1
-cd $build_dir                             || exit -1
-cmake -DCMAKE_INSTALL_PREFIX=$install_dir \
--DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DBUILD_SHARED_LIBS=ON ..              || exit 1
+function update_error { 
+if [[ "${error}" = "0" ]]; then
+  error=$1
+fi
+}
 
-make -j 24 || make || exit 2
-make install       || exit 3
-cd ..              || exit -1
+
+# build and install
+mkdir $build_dir                          || update_error ${LINENO}
+cd $build_dir                             || update_error ${LINENO}
+cmake -DCMAKE_INSTALL_PREFIX=$install_dir \
+-DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DBUILD_SHARED_LIBS=ON ..              || update_error ${LINENO}
+
+make -j 24 || make || update_error ${LINENO}
+make install       || update_error ${LINENO}
+cd ..              || update_error ${LINENO}
 
 # build examples
-mkdir ${build_examples_dir} || exit -1
-cd ${build_examples_dir} || exit -1
+mkdir ${build_examples_dir} || update_error ${LINENO}
+cd ${build_examples_dir} || update_error ${LINENO}
 export CMAKE_PREFIX_PATH=$install_dir:${CMAKE_PREFIX_PATH}
-cmake ../examples || exit 4
-make -j || make    || exit 5
-gunzip -k -c ../examples/matrices/spinSZ12.mm.gz > spinSZ12.mm
+cmake ../examples || update_error ${LINENO}
+make -j || make    || update_error ${LINENO}
+gunzip -k -c ../examples/matrices/spinSZ12.mm.gz > spinSZ12.mm || update_error ${LINENO}
 
 # a simple test, just run with some example matrix
-./race -v -m spinSZ12.mm -c 4 -i 25 || error=6
+./race -v -m spinSZ12.mm -c 12 -i 25 &> test.log || update_error ${LINENO}
+grep -i "validated coloring" test.log || update_error ${LINENO}
+
 
 #return error code
 exit $error
