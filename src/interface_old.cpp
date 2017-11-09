@@ -1,6 +1,6 @@
 #include "interface.h"
 
-RACEInterface::RACEInterface(int nrow_,int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int *initPerm_, int *initInvPerm_):nrow(nrow_),dist(dist_),requestedThreads(nthreads_),availableThreads(-1),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_)
+RACEInterface::RACEInterface(int nrow_,int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int *initPerm_, int *initInvPerm_):nrow(nrow_),dist(dist_),requestedThreads(nthreads_),availableThreads(-1),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_)
 {
 }
 

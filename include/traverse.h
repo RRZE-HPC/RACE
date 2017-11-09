@@ -13,7 +13,7 @@ class Traverse{
     private:
         Graph *graph;
 	static std::map<int, LevelData> cachedData;	
-        dist_t dist;
+        RACE::dist dist;
         int rangeLo;
         int rangeHi;
 	int parentIdx;
@@ -33,7 +33,7 @@ class Traverse{
         void permuteGraph();
     public:
         //constructor
-        Traverse(Graph *graph_, dist_t dist, int rangeLo_=0, int rangeHi_=-1, int parentIdx=0);
+        Traverse(Graph *graph_, RACE::dist dist, int rangeLo_=0, int rangeHi_=-1, int parentIdx=0);
         ~Traverse();
         void calculateDistance();
 

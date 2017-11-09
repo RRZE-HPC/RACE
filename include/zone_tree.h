@@ -43,11 +43,11 @@ class ZoneTree{
         void updateTimeRecursive(int parentIdx);
 
     public:
-        dist_t dist;
-        d2Method d2Type;
+        RACE::dist dist;
+        RACE::d2Method d2Type;
         tree_t *tree;
 
-        ZoneTree(dist_t dist, d2Method d2Type);
+        ZoneTree(RACE::dist dist, RACE::d2Method d2Type);
         ~ZoneTree();
 
         ZoneLeaf& at(unsigned idx);

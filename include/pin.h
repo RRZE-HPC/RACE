@@ -13,7 +13,7 @@ class Pin{
         std::vector<std::pair<int,int>> pinMap;
         void* machine; //this is of type Machine, but casting to void to avoid external library dependency
         int SMT;
-        PinMethod method;
+        RACE::PinMethod method;
         void pinOrderRecursive(int parentIdx);
         void calcPinOrder();
         void createPuNodeMapping();
@@ -23,7 +23,7 @@ class Pin{
         //For OMP: currently broken
         void pinApplicationRecursive(int parentIdx);
     public:
-        Pin(ZoneTree* zoneTree_, int SMT_, PinMethod method_);
+        Pin(ZoneTree* zoneTree_, int SMT_, RACE::PinMethod method_);
         void pinInit();
         void pinThread(int pinOrder);
         void pinApplication();

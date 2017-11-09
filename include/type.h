@@ -1,35 +1,41 @@
 #ifndef RACE_TYPE_H
 #define RACE_TYPE_H
+
 #include <vector>
 
-enum dist_t{
-    ONE=1,
-    TWO=2
-};
+namespace RACE {
 
-enum d2Method{
-    TWO_BLOCK,
-    THREE_BLOCK /*TODO: To be done*/
-};
+    enum dist{
+        ONE=1,
+        TWO=2
+    };
 
-enum LB_t{
-    ROW,
-    NNZ
-};
+    enum d2Method{
+        TWO_BLOCK,
+        THREE_BLOCK /*TODO: To be done*/
+    };
 
-enum PinMethod{
-    FILL,
-    SCATTER
-};
+    enum LBTarget{
+        ROW,
+        NNZ
+    };
 
-/*Load balncing mode, based on efficiency or just minimise effRow*/
-enum LBMode{
-   MIN,
-   EFFICIENCY
-};
+    enum PinMethod{
+        FILL,
+        SCATTER
+    };
+
+    /*Load balncing mode, based on efficiency or just minimise effRow*/
+    enum LBMode{
+        MIN,
+        EFFICIENCY
+    };
+
+}
 
 struct ZoneLeaf;
 
 typedef std::vector<ZoneLeaf> tree_t;
+
 
 #endif

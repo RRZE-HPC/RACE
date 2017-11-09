@@ -4,7 +4,7 @@
 #include <omp.h>
 
 std::map<int, LevelData> Traverse::cachedData;
-Traverse::Traverse(Graph *graph_, dist_t dist_, int rangeLo_, int rangeHi_, int parentIdx_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_),graphSize(graph_->graphData.size()),distFromRoot(NULL),perm(NULL),invPerm(NULL),levelData(NULL)
+Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_),graphSize(graph_->graphData.size()),distFromRoot(NULL),perm(NULL),invPerm(NULL),levelData(NULL)
 {
     if(rangeHi == -1)
     {
@@ -69,7 +69,7 @@ std::vector<int> Traverse::markChildren(int currChild, int currLvl)
             }
 
         }
-    } else if(dist==TWO) {
+    } else if(dist==RACE::TWO) {
         std::vector<int> *grandChildren = &(graph->graphData[currChild].children);
         for(unsigned childIdx=0; childIdx < grandChildren->size(); ++childIdx) {
             int grandChild = grandChildren->at(childIdx);

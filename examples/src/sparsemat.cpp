@@ -373,9 +373,9 @@ bool sparsemat::computeSymmData()
     return true;
 }
 
-void sparsemat::colorAndPermute(dist_t dist, int nthreads, int smt, PinMethod pinMethod)
+void sparsemat::colorAndPermute(dist distance, int nthreads, int smt, PinMethod pinMethod)
 {
-    ce = new RACEInterface(nrows, nthreads, dist, rowPtr, col, smt, pinMethod, NULL, NULL);
+    ce = new Interface(nrows, nthreads, distance, rowPtr, col, smt, pinMethod, NULL, NULL);
     ce->RACEColor();
 
     int *perm, *invPerm, permLen;

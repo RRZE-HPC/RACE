@@ -23,7 +23,7 @@ inline void sell_c_sigmize_Kernel(int start, int end, void *args)
     }
 }
 
-void sell_c_sigmize(int simdWidth, int C, int* col, int* chunkStart, int* rl, int *clp, RACEInterface *ce)
+void sell_c_sigmize(int simdWidth, int C, int* col, int* chunkStart, int* rl, int *clp, RACE::Interface *ce)
 {
     sell_c_sigmize_arg *mat = new sell_c_sigmize_arg;
     mat->simdWidth = simdWidth;

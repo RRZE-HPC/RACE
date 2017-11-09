@@ -54,8 +54,8 @@ class LB{
         LevelData* levelData;
         int* targetData; //points to either levelData->levelRow or levelData->levelNnz; depending on lbTarget
 
-        dist_t dist;
-        d2Method d2Type;
+        RACE::dist dist;
+        RACE::d2Method d2Type;
         //gap to be left between 2 levels
         int minGap;
 
@@ -67,7 +67,7 @@ class LB{
         int totalBlocks;
         int totalSubBlocks;
 
-        LB_t lbTarget;
+        RACE::LBTarget lbTarget;
 
         void calcChunkSum_general(int *arr, int *levelPtr_, int len, bool forceRow=false);
         void calcChunkSum(int *arr, bool forceRow=false);
@@ -80,7 +80,7 @@ class LB{
         void splitZones();
 
     public:
-        LB(int nThreads_, double efficiency_, LevelData* levelData_, dist_t dist_, d2Method d2Type, LB_t lbTarget = NNZ); //constructor
+        LB(int nThreads_, double efficiency_, LevelData* levelData_, RACE::dist dist_, RACE::d2Method d2Type, RACE::LBTarget lbTarget = RACE::NNZ); //constructor
         ~LB(); //destructor
 
         int getMaxThreads();

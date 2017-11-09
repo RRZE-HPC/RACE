@@ -14,7 +14,7 @@ ZoneLeaf::ZoneLeaf(int rangeLo_, int rangeHi_, int parent_):valueZ(2),nthreadsZ(
     valueZ[1] = rangeHi_;
 }
 
-ZoneTree::ZoneTree(dist_t dist_, d2Method d2Type_):cachedTree(NULL),dist(dist_),d2Type(d2Type_),tree(NULL)
+ZoneTree::ZoneTree(RACE::dist dist_, RACE::d2Method d2Type_):cachedTree(NULL),dist(dist_),d2Type(d2Type_),tree(NULL)
 {
     tree = new tree_t;
     cachedTree = new tree_t;

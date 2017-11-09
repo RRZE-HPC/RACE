@@ -1,7 +1,7 @@
 #include "level_recursion.h"
 #include "utility.h"
 
-LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, dist_t dist_, d2Method d2Type_):graph(graph_), dist(dist_), d2Type(d2Type_), requestNThreads(requestNThreads_), perm(NULL), invPerm(NULL)
+LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist dist_, RACE::d2Method d2Type_):graph(graph_), dist(dist_), d2Type(d2Type_), requestNThreads(requestNThreads_), perm(NULL), invPerm(NULL)
 {
     zoneTree = new ZoneTree(dist, d2Type);
     perm = new int[graph->NROW];

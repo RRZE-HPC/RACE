@@ -10,17 +10,21 @@
 #include "level_pool.h"
 #include "config.h"
 
+namespace RACE
+{
+    class Interface;
+}
 
-class RACEInterface{
+class RACE::Interface{
     private:
         Graph* graph;
         int nrow;
-        dist_t dist;
-        d2Method d2Type;
+        RACE::dist distance;
+        RACE::d2Method d2Type;
         int requestedThreads;
         int availableThreads;
         int SMT;
-        PinMethod pinMethod;
+        RACE::PinMethod pinMethod;
         LevelPool* pool;
         int *initPerm;
         int *initInvPerm;
@@ -39,8 +43,8 @@ class RACEInterface{
         bool recursiveChecker(int parent);
         bool D2Checker();
     public:
-        RACEInterface(int nrow_, int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int SMT_=1, PinMethod method_=SCATTER, int *initPerm_=NULL, int *initInvPerm_=NULL, d2Method d2Type_=TWO_BLOCK);
-        ~RACEInterface();
+        Interface(int nrow_, int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_=1, RACE::PinMethod method_=RACE::SCATTER, int *initPerm_=NULL, int *initInvPerm_=NULL, RACE::d2Method d2Type_=RACE::TWO_BLOCK);
+        ~Interface();
         //Pre-processing
         void RACEColor();
         void printZoneTree();

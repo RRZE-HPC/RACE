@@ -3,16 +3,16 @@
 #include <cmath>
 #include "macros.h"
 
-LB::LB(int nThreads_, double efficiency_, LevelData* levelData_, dist_t dist_, d2Method d2Type_, LB_t lbTarget_):levelPtr(NULL),subZonePtr(NULL),numBlocks(NULL),zonePtr(NULL),levelData(levelData_), dist(dist_), d2Type(d2Type_), maxThreads(-1), nThreads(nThreads_), efficiency(efficiency_), lbTarget(lbTarget_)
+LB::LB(int nThreads_, double efficiency_, LevelData* levelData_, RACE::dist dist_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):levelPtr(NULL),subZonePtr(NULL),numBlocks(NULL),zonePtr(NULL),levelData(levelData_), dist(dist_), d2Type(d2Type_), maxThreads(-1), nThreads(nThreads_), efficiency(efficiency_), lbTarget(lbTarget_)
 {
     printf("dist = %d\n",dist);
-    if( (lbTarget == NNZ) && (levelData->levelNnz == NULL) )
+    if( (lbTarget == RACE::NNZ) && (levelData->levelNnz == NULL) )
     {
         WARNING_PRINT("levelDataNnz not recieved, Load balancing target will fallback to ROW");
-        lbTarget = ROW;
+        lbTarget = RACE::ROW;
     }
 
-    if(lbTarget == ROW)
+    if(lbTarget == RACE::ROW)
     {
         targetData = levelData->levelRow;
     }
@@ -60,7 +60,7 @@ LB::~LB()
 void LB::calcChunkSum_general(int *arr, int *levelPtr_, int len, bool forceRow)
 {
     int *targetLevelData = NULL;
-    if( (lbTarget == ROW) || forceRow) {
+    if( (lbTarget == RACE::ROW) || forceRow) {
         targetLevelData = levelData->levelRow;
     } else {
         targetLevelData = levelData->levelNnz;
@@ -92,7 +92,7 @@ void LB::calcEffectiveRatio()
     effRatio = new double[levelData->totalLevel];
     int *targetLevelData = NULL;
     int targetNElements = 0;
-    if(lbTarget == ROW) {
+    if(lbTarget == RACE::ROW) {
         targetLevelData = levelData->levelRow;
         targetNElements = levelData->nrow;
     } else {

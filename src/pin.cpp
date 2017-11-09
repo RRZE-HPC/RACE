@@ -3,7 +3,7 @@
 #include "macros.h"
 #include "machine.h"
 
-Pin::Pin(ZoneTree* zoneTree_, int SMT_, PinMethod method_):zoneTree(zoneTree_),machine(NULL),SMT(SMT_),method(method_)
+Pin::Pin(ZoneTree* zoneTree_, int SMT_, RACE::PinMethod method_):zoneTree(zoneTree_),machine(NULL),SMT(SMT_),method(method_)
 {
     Machine *mc = new Machine(SMT);
     machine = (void*) mc;
@@ -69,7 +69,7 @@ void Pin::createPuNodeMapping()
 
     std::vector<int> puPerNode(numNode,0);
 
-    if(method == SCATTER)
+    if(method == RACE::SCATTER)
     {
         //Assuming equal weight, TODO unequal weight
         int currPuPerNode = static_cast<int>(static_cast<double>(totalThreads)/numNode);

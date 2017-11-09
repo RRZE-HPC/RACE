@@ -19,7 +19,7 @@ inline void SPMV_KERNEL(int start, int end, void* args)
 //b=A*x
 void spmv(densemat* b, sparsemat* mat, densemat* x, int iterations)
 {
-    RACEInterface *ce = mat->ce;
+    RACE::Interface *ce = mat->ce;
 
     ENCODE_TO_VOID(mat,b,x);
 
@@ -52,7 +52,7 @@ inline void SPMTV_KERNEL(int start, int end, void* args)
 //b=A'*x
 void spmtv(densemat* b, sparsemat* mat, densemat* x, int iterations)
 {
-    RACEInterface *ce = mat->ce;
+    RACE::Interface *ce = mat->ce;
 
     ENCODE_TO_VOID(mat,b,x);
 
@@ -87,7 +87,7 @@ inline void GS_KERNEL(int start, int end, void* args)
 //Solve for x : A*x=b
 void gs(densemat* b, sparsemat* mat, densemat* x, int iterations)
 {
-    RACEInterface *ce = mat->ce;
+    RACE::Interface *ce = mat->ce;
 
     ENCODE_TO_VOID(mat,b,x);
 
@@ -129,7 +129,7 @@ inline void KACZ_KERNEL(int start, int end, void* args)
 //Solve for x : A*x=b
 void kacz(densemat* b, sparsemat* mat, densemat* x, int iterations)
 {
-    RACEInterface *ce = mat->ce;
+    RACE::Interface *ce = mat->ce;
 
     ENCODE_TO_VOID(mat,b,x);
 
@@ -168,7 +168,7 @@ inline void SYMM_SPMV_KERNEL(int start, int end, void* args)
 //A*x=b; A is symmetric
 void symm_spmv(densemat* b, sparsemat* mat, densemat* x, int iterations)
 {
-    RACEInterface *ce = mat->ce;
+    RACE::Interface *ce = mat->ce;
 
     ENCODE_TO_VOID(mat,b,x);
 

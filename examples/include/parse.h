@@ -5,6 +5,8 @@
 #include <vector>
 #include <getopt.h>
 
+using namespace RACE;
+
 struct my_option
 {
     option gnu_opt;

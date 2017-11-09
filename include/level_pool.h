@@ -87,7 +87,7 @@ class LevelPool{
         void pinPoolRecursive(int parentIdx);
         void sleepPoolRecursive(int parentIdx);
     public:
-        LevelPool(ZoneTree *zoneTree_, int SMT, PinMethod pinMethod);
+        LevelPool(ZoneTree *zoneTree_, int SMT, RACE::PinMethod pinMethod);
         ~LevelPool();
         Pin pin;
         //thread pool

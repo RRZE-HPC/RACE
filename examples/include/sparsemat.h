@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iterator>
 
+using namespace RACE;
 
 template <typename T> void sort_perm(T *arr, int *perm, int len, bool rev=false)
 {
@@ -20,14 +21,14 @@ struct sparsemat
 {
     int nrows, nnz;
     //interface to coloring engine
-    RACEInterface* ce;
+    Interface* ce;
     int *rowPtr, *col;
     double *val;
 
     bool readFile(char* filename);
     bool writeFile(char* filename);
     void makeDiagFirst();
-    void colorAndPermute(dist_t dist, int nthreads, int smt=1, PinMethod pinMethod=FILL);
+    void colorAndPermute(dist d, int nthreads, int smt=1, PinMethod pinMethod=FILL);
     void permute(int* perm, int* invPerm);
     void NUMA_init(bool symmPart);
     void pinOMP(int nthreads);

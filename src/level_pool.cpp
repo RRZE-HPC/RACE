@@ -1,7 +1,7 @@
 #include "level_pool.h"
 #include "functional"
 
-LevelPool::LevelPool(ZoneTree *zoneTree_, int SMT_, PinMethod pinMethod_):zoneTree(zoneTree_),pin(zoneTree_,SMT_, pinMethod_),tree(NULL)
+LevelPool::LevelPool(ZoneTree *zoneTree_, int SMT_, RACE::PinMethod pinMethod_):zoneTree(zoneTree_),pin(zoneTree_,SMT_, pinMethod_),tree(NULL)
 {
     int totThreads = zoneTree->at(0).nthreadsZ;
     pool.init(totThreads);

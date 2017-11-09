@@ -9,7 +9,7 @@
 class RACEInterface{
     private:
         int nrow;
-        dist_t dist;
+        RACE::dist dist;
         int requestedThreads;
         int availableThreads;
         int *initPerm;
@@ -24,7 +24,7 @@ class RACEInterface{
         int invPermLen;
 
     public:
-        RACEInterface(int nrow_, int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int *initPerm_=NULL, int *initInvPerm_=NULL);
+        RACEInterface(int nrow_, int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int *initPerm_=NULL, int *initInvPerm_=NULL);
         void RACEColor();
         void getZonePtr(int **zonePtr_, int *len_);
         void getPerm(int **perm_, int *len_);

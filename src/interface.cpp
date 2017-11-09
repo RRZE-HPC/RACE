@@ -3,12 +3,12 @@
 #include <algorithm>
 #include <iostream>
 
-RACEInterface::RACEInterface(int nrow_,int nthreads_, dist_t dist_, int *rowPtr_, int *col_, int SMT_, PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, d2Method d2Type_):graph(NULL),nrow(nrow_),dist(dist_),d2Type(d2Type_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL)
+RACE::Interface::Interface(int nrow_,int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_, RACE::PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, RACE::d2Method d2Type_):graph(NULL),nrow(nrow_),distance(dist_),d2Type(d2Type_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL)
 {
 
 }
 
-RACEInterface::~RACEInterface()
+RACE::Interface::~Interface()
 {
     if(zoneTree) {
         delete zoneTree;
@@ -29,14 +29,14 @@ RACEInterface::~RACEInterface()
 }
 
 
-void RACEInterface::RACEColor()
+void RACE::Interface::RACEColor()
 {
 
     //1. Construct Graph
     graph = new Graph(nrow, nrow, rowPtr, col, initPerm, initInvPerm);
 
     //2. Call level_recursion
-    LevelRecursion lr(graph, requestedThreads, dist, d2Type);
+    LevelRecursion lr(graph, requestedThreads, distance, d2Type);
     lr.levelBalancing();
     availableThreads = lr.getAvailableThreads();
     int len;
@@ -63,12 +63,12 @@ void RACEInterface::RACEColor()
 }
 
 
-void RACEInterface::printZoneTree()
+void RACE::Interface::printZoneTree()
 {
    zoneTree->printTree();
 }
 
-void RACEInterface::getPerm(int **perm_, int *len_)
+void RACE::Interface::getPerm(int **perm_, int *len_)
 {
     if(initPerm)
     {
@@ -89,7 +89,7 @@ void RACEInterface::getPerm(int **perm_, int *len_)
     (*len_) = nrow;
 }
 
-void RACEInterface::getInvPerm(int **invPerm_, int *len_)
+void RACE::Interface::getInvPerm(int **invPerm_, int *len_)
 {
     if(initInvPerm)
     {
@@ -111,13 +111,13 @@ void RACEInterface::getInvPerm(int **invPerm_, int *len_)
     (*len_) = nrow;
 }
 
-int RACEInterface::getNumThreads()
+int RACE::Interface::getNumThreads()
 {
     return availableThreads;
 }
 
 
-int RACEInterface::registerFunction(void (*f) (int,int,void *), void* args)
+int RACE::Interface::registerFunction(void (*f) (int,int,void *), void* args)
 {
     //    pool->pin.pinApplication();
 
@@ -140,20 +140,20 @@ int RACEInterface::registerFunction(void (*f) (int,int,void *), void* args)
     return (funMan.size()-1);
 }
 
-void RACEInterface::executeFunction(int funcId)
+void RACE::Interface::executeFunction(int funcId)
 {
     funMan[funcId]->Run();
     //  funMan->Run();
 }
 
 
-void RACEInterface::resetTime()
+void RACE::Interface::resetTime()
 {
     zoneTree->resetTime();
 }
 
 
-bool RACEInterface::detectConflict(std::vector<int> range1, std::vector<int> range2)
+bool RACE::Interface::detectConflict(std::vector<int> range1, std::vector<int> range2)
 {
     bool conflict = false;
     for(int i=range1[0]; i<range1[1]; ++i)
@@ -192,11 +192,11 @@ bool RACEInterface::detectConflict(std::vector<int> range1, std::vector<int> ran
     return conflict;
 }
 
-bool RACEInterface::recursiveChecker(int parent)
+bool RACE::Interface::recursiveChecker(int parent)
 {
     std::vector<int> *children = &(zoneTree->at(parent).children);
     int totalSubBlocks = zoneTree->at(parent).totalSubBlocks;
-    int blockPerThread = getBlockPerThread(dist, d2Type);
+    int blockPerThread = getBlockPerThread(distance, d2Type);
     bool conflict = false;
 
     for(int subBlock=0; subBlock<totalSubBlocks; ++subBlock)
@@ -237,7 +237,7 @@ bool RACEInterface::recursiveChecker(int parent)
     return conflict;
 }
 
-bool RACEInterface::D2Checker()
+bool RACE::Interface::D2Checker()
 {
     bool conflict = false;
     conflict = recursiveChecker(5);
@@ -245,22 +245,22 @@ bool RACEInterface::D2Checker()
     return conflict;
 }
 
-void RACEInterface::sleep()
+void RACE::Interface::sleep()
 {
     pool->sleepPool();
 }
 
-bool RACEInterface::simdify(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* clp, double* val)
+bool RACE::Interface::simdify(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* clp, double* val)
 {
     return simdifyTemplate<double> (simdWidth, C, nrows, col_new, chunkStart, rl, clp, val, this);
 }
 
-bool RACEInterface::simdify(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* clp, float* val)
+bool RACE::Interface::simdify(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* clp, float* val)
 {
     return simdifyTemplate<float> (simdWidth, C, nrows, col_new, chunkStart, rl, clp, val, this);
 }
 
-void RACEInterface::pinThread(int threadId)
+void RACE::Interface::pinThread(int threadId)
 {
     pool->pin.pinThread(threadId);
 }

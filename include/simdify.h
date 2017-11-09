@@ -7,7 +7,7 @@
 #include <vector>
 #include <algorithm>
 
-template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int* col, int* chunkStart, int* rl, int *clp, T *val, RACEInterface *ce);
+template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int* col, int* chunkStart, int* rl, int *clp, T *val, RACE::Interface *ce);
 
 //print column entry corresponding to the row in arg (for debugging purposes)
 /*static void print_row(int row, int C,  int *chunkStart, int *col, int* clp)
@@ -39,7 +39,7 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
  * @param[in/out] val non zeros of the matrix
  *
 */
-template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int* col, int* chunkStart, int* rl, int *clp, T *val, RACEInterface *ce)
+template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int* col, int* chunkStart, int* rl, int *clp, T *val, RACE::Interface *ce)
 {
     if(C%simdWidth)
     {
