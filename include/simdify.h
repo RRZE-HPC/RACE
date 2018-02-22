@@ -7,7 +7,10 @@
 #include <vector>
 #include <algorithm>
 
-template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int* col, int* chunkStart, int* rl, int *clp, T *val, RACE::Interface *ce);
+template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int* col, int* chunkStart, int* rl, int *clp, T *val, RACE::Interface *ce, bool diagFirst=false);
+
+template <typename T> bool simdifyD1Template(int simdWidth, int C, int nrows, int* col, int* chunkStart, int* rl, int *clp, T *val, bool dist2Compatible=false);
+
 
 //print column entry corresponding to the row in arg (for debugging purposes)
 /*static void print_row(int row, int C,  int *chunkStart, int *col, int* clp)
@@ -37,9 +40,11 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
  * @param[in] cl  chunkLen of each chunk
  * @param[in] chunkStart padded chunkLen of each chunk
  * @param[in/out] val non zeros of the matrix
+ * @param[in] ce pointer to coloring engine
+ * @param[in] diagFirst set true if diagonals are stored first
  *
 */
-template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int* col, int* chunkStart, int* rl, int *clp, T *val, RACE::Interface *ce)
+template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int* col, int* chunkStart, int* rl, int *clp, T *val, RACE::Interface *ce, bool diagFirst)
 {
     if(C%simdWidth)
     {
@@ -128,8 +133,11 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
 #endif
 
             int row=0, col_idx=0;
+            //If diagFirst is enabled first element would be diagonal
+            int startingIdx = (diagFirst) ? 1:0;
+
             //re-arrange simdWidth rows here, in a fashion to enable SIMD
-            for(int j=0; j<clp[chunk]; ++j)
+            for(int j=startingIdx; j<clp[chunk]; ++j)
             {
                 row = chunk*simdInChunk*simdWidth + simdIdx*simdWidth;
                 for(int i=0; ((i<simdWidth) && (row<nrows)); ++i, ++row)
@@ -152,7 +160,7 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
                             //it's there, requires rearrangement
                             if( (*currCol) == simdCol[k] )
                             {
-                               repeat = true;
+                                repeat = true;
                                 collisionCtr[row] = true;
                                 break;
                             }
@@ -191,8 +199,8 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
                                 //wrap around
                                 else
                                 {
-                                    currCol = &(col[chunkStart[chunk]+simdIdx*simdWidth+i]);
-                                    exchangeIdx = 0;
+                                    currCol = &(col[chunkStart[chunk]+simdIdx*simdWidth+i+C*startingIdx]);
+                                    exchangeIdx = startingIdx;
                                     wrapped = true;
                                 }
                                 ++ctr;
@@ -209,6 +217,10 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
                     //exchange current col and nnz with exchangeIdx-th element
                     if(exchangeIdx != j)
                     {
+                        if( ( (j==0) || (exchangeIdx == 0) ) && (diagFirst) )
+                        {
+                            ERROR_PRINT("Diag first failed in simdify\n");
+                        }
                         int tempCol = col[chunkStart[chunk]+simdIdx*simdWidth+C*j+i];
                         col[chunkStart[chunk]+simdIdx*simdWidth+C*j+i] = col[chunkStart[chunk]+simdIdx*simdWidth+C*exchangeIdx+i];
                         col[chunkStart[chunk]+simdIdx*simdWidth+C*exchangeIdx+i] = tempCol;
@@ -318,6 +330,96 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
     delete[] collisionCtr;
     delete[] simdCol;
 
+    return true;
+}
+
+/*@brief: This function re-arranges column indices within a row to enable simd
+ * operations for GS like kernels. This is applicable only for SELL-C-sigma formats.
+ * After construction of the matrix call this function in order to make
+ * SELL-C-sigma work for distance-1 dependent kernels.
+ * i.e., last four entries in each row would be
+ *  .    .    .    .
+ *  .    .    .   x_0
+ *  .    .   x_1  x_0
+ *  .    x_2 x_1  x_0
+ *
+ *  OR if to be compatible with SpMTV, KACZ kernel
+ *  .    .    .    .
+ *  .    .    .   x_0
+ *  .    .   x_0  x_1
+ *  .    x_0 x_1  x_2
+ *
+ * where x_0 , x_1, ... are the coeff. of mtx. corresponding to x_0, x_1, ...
+ * of the particular row.
+ *
+ * @param[in] simdWidth Width of simd vector
+ * @param[in] C chunkLen, it has to be a multiple of simdWidth
+ * @param[in] nrows number of rows in the matrix
+ * @param[in/out] col column index of the matrix
+ * @param[in] rl rowLen of the matrix
+ * @param[in] cl  chunkLen of each chunk
+ * @param[in] chunkStart padded chunkLen of each chunk
+ * @param[in/out] val non zeros of the matrix
+ * @param[in] dist2Compatible Set true if the matrix has to also work with dist-2
+ *
+*/
+template <typename T> bool simdifyD1Template(int simdWidth, int C, int nrows, int* col, int* chunkStart, int* rl, int *cl, T *val, bool dist2Compatible)
+{
+    int nChunk = static_cast<int>(nrows/(static_cast<double>(C)));
+    //int remChunk = nrows%C;
+
+    int simdInChunk = C/simdWidth;
+
+    //int negativeNum = -1;
+    int row = 0;
+
+    int *currCol = NULL;
+
+    for(int chunk=0; chunk<(nChunk+1); ++chunk)
+    {
+        for(int simdIdx=0; simdIdx<simdInChunk; ++simdIdx)
+        {
+            //from second simdRow
+            for(int i=1; ((i<simdWidth) && (row<nrows)); ++i, ++row)
+            {
+                row = chunk*simdInChunk*simdWidth + simdIdx*simdWidth + i;
+                std::vector<int> dependentRow(i);
+                for(int k=0; k<i; ++k)
+                {
+                    int idx = (dist2Compatible) ? k : (i-k-1);
+                    dependentRow[idx] = row - (k+1);
+                }
+                //re-arrange el in this row if reqd.
+                for(int j=0; j<cl[chunk]; ++j)
+                {
+                    int col_idx = chunkStart[chunk]+C*j+simdIdx*simdWidth+i;
+                    currCol = &(col[col_idx]);
+
+                    for(int k=0; k<i; ++k)
+                    {
+                        if( (*currCol) == dependentRow[k] )
+                        {
+                            /* exchange curr position j with cl[chunk]-(k+1) */
+                            int exchangeIdx = cl[chunk]-(k+1);
+
+                            if(exchangeIdx != j)
+                            {
+                                int tempCol = col[chunkStart[chunk]+simdIdx*simdWidth+C*j+i];
+                                col[chunkStart[chunk]+simdIdx*simdWidth+C*j+i] = col[chunkStart[chunk]+simdIdx*simdWidth+C*exchangeIdx+i];
+                                col[chunkStart[chunk]+simdIdx*simdWidth+C*exchangeIdx+i] = tempCol;
+
+                                T temp_val = val[chunkStart[chunk]+simdIdx*simdWidth+C*j+i];
+                                val[chunkStart[chunk]+simdIdx*simdWidth+C*j+i] = val[chunkStart[chunk]+simdIdx*simdWidth+C*exchangeIdx+i];
+                                val[chunkStart[chunk]+simdIdx*simdWidth+C*exchangeIdx+i] = temp_val;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    UNUSED(rl);
     return true;
 }
 

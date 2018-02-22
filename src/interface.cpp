@@ -250,15 +250,26 @@ void RACE::Interface::sleep()
     pool->sleepPool();
 }
 
-bool RACE::Interface::simdify(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* clp, double* val)
+bool RACE::Interface::simdify(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* clp, double* val, bool diagFirst)
 {
-    return simdifyTemplate<double> (simdWidth, C, nrows, col_new, chunkStart, rl, clp, val, this);
+    return simdifyTemplate<double> (simdWidth, C, nrows, col_new, chunkStart, rl, clp, val, this, diagFirst);
 }
 
-bool RACE::Interface::simdify(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* clp, float* val)
+bool RACE::Interface::simdify(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* clp, float* val, bool diagFirst)
 {
-    return simdifyTemplate<float> (simdWidth, C, nrows, col_new, chunkStart, rl, clp, val, this);
+    return simdifyTemplate<float> (simdWidth, C, nrows, col_new, chunkStart, rl, clp, val, this, diagFirst);
 }
+
+bool RACE::Interface::simdifyD1(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* cl, double* val, bool d2Compatible)
+{
+    return simdifyD1Template<double> (simdWidth, C, nrows, col_new, chunkStart, rl, cl, val, d2Compatible);
+}
+
+bool RACE::Interface::simdifyD1(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* cl, float* val, bool d2Compatible)
+{
+    return simdifyD1Template<float> (simdWidth, C, nrows, col_new, chunkStart, rl, cl, val, d2Compatible);
+}
+
 
 void RACE::Interface::pinThread(int threadId)
 {

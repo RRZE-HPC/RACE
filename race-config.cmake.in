@@ -7,6 +7,7 @@ else()
 endif()
 set(RACE_LIBDIR @CMAKE_INSTALL_PREFIX@/lib)
 
+set(RACE_C_FLAGS "${RACE_C_FLAGS}")
 set(RACE_CXX_FLAGS "${RACE_CXX_FLAGS} -std=c++11")
 
 set(RACE_CC @CC@)
