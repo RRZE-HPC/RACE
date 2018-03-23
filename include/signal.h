@@ -21,28 +21,28 @@ struct Signal{
  * last argument is for resetting any data*/
 #define waitSignal(signalObj, predicate_lhs, predicate_rhs)\
     /*if(__sync_fetch_and_add(&predicate_lhs,0) != predicate_rhs) {*/\
-__sync_lock_test_and_set(&(signalObj->mode), spin);\
-spin_cond_wait(signalObj->preSignal);\
-/* }*/\
-if(__sync_fetch_and_add(&predicate_lhs,0) != predicate_rhs)\
-{\
-    pthread_mutex_lock(signalObj->lock);\
-    __sync_lock_test_and_set(&(signalObj->mode), idle);\
-    while(__sync_fetch_and_add(&predicate_lhs,0) != predicate_rhs) {\
-        pthread_cond_wait(signalObj->signal, signalObj->lock);\
+        __sync_lock_test_and_set(&(signalObj->mode), spin);\
+        spin_cond_wait(signalObj->preSignal);\
+    /* }*/\
+    if(__sync_fetch_and_add(&predicate_lhs,0) != predicate_rhs)\
+    {\
+        pthread_mutex_lock(signalObj->lock);\
+        __sync_lock_test_and_set(&(signalObj->mode), idle);\
+        while(__sync_fetch_and_add(&predicate_lhs,0) != predicate_rhs) {\
+            pthread_cond_wait(signalObj->signal, signalObj->lock);\
+        }\
+        pthread_mutex_unlock(signalObj->lock);\
     }\
-    pthread_mutex_unlock(signalObj->lock);\
-}\
-/*reset value for next iteration*/\
-__sync_lock_test_and_set(&(signalObj->mode), released);\
-__sync_lock_test_and_set(&(signalObj->preSignal->spinner),1);\
+    /*reset value for next iteration*/\
+    __sync_lock_test_and_set(&(signalObj->mode), released);\
+    __sync_lock_test_and_set(&(signalObj->preSignal->spinner),1);\
 
 
 #define sendSignal(signalObj)\
     spin_cond_signal(signalObj->preSignal);\
-pthread_mutex_lock(signalObj->lock);\
-pthread_cond_signal(signalObj->signal);\
-pthread_mutex_unlock(signalObj->lock);\
+    pthread_mutex_lock(signalObj->lock);\
+    pthread_cond_signal(signalObj->signal);\
+    pthread_mutex_unlock(signalObj->lock);\
 
 #define sleepSignal(signalObj)\
     spin_cond_signal(signalObj->preSignal);\

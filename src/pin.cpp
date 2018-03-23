@@ -169,23 +169,31 @@ void Pin::pinApplicationRecursive(int parent)
 
     for(int subBlock=0; subBlock<totalSubBlocks; ++subBlock)
     {
-        int currNthreads = (children->at(2*subBlock+1) - children->at(2*subBlock))/blockPerThread;
+        int currNthreads;
 
-        int tid = omp_get_thread_num();
+        if(!children->empty())
+        {
+            currNthreads = (children->at(2*subBlock+1) - children->at(2*subBlock))/blockPerThread;
+        }
+        else
+        {
+            currNthreads = 0;
+        }
+
         int pinOrder = zoneTree->at(parent).pinOrder;
 
-        printf("%d ,Pinning: tid=%d -> cpu=%d",parent,tid,pinOrder);
         pinThread(pinOrder);
-        printf("pinned to %d\n",sched_getcpu());
 
-
-#pragma omp parallel num_threads(currNthreads)
+        if(currNthreads > 1)
         {
-            int child_tid = omp_get_thread_num();
-            for(int block=0; block<blockPerThread; ++block)
+#pragma omp parallel num_threads(currNthreads)
             {
-                pinApplicationRecursive(children->at(2*subBlock)+2*child_tid+block);
+                int child_tid = omp_get_thread_num();
+                for(int block=0; block<blockPerThread; ++block)
+                {
+                    pinApplicationRecursive(children->at(2*subBlock)+blockPerThread*child_tid+block);
 #pragma omp barrier
+                }
             }
         }
     }

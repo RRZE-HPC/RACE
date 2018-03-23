@@ -44,7 +44,16 @@ void recursiveCall(FuncManager* funMan, int parent)
 
     for(int subBlock=0; subBlock<totalSubBlocks; ++subBlock)
     {
-        int currNthreads = (children->at(2*subBlock+1)-children->at(2*subBlock))/blockPerThread;
+        int currNthreads;
+        if(!children->empty())
+        {
+            currNthreads = (children->at(2*subBlock+1)-children->at(2*subBlock))/blockPerThread;
+        }
+        else
+        {
+            currNthreads = 0;
+        }
+
         if(currNthreads <= 1)
         {
             std::vector<int> range = funMan->zoneTree->at(parent).valueZ;
@@ -59,9 +68,9 @@ void recursiveCall(FuncManager* funMan, int parent)
                 //int pinOrder = zoneTree->at(children->at(2*subBlock)+2*tid).pinOrder;
                 //printf("omp_proc_bind = %d\n", omp_get_proc_bind());
                 //pool->pin.pinThread(pinOrder);
-                for(int block=0; block<blockPerThread-1; ++block)
+                for(int block=0; block<blockPerThread; ++block)
                 {
-                    recursiveCall(funMan, children->at(2*subBlock)+blockPerThread*tid+block);
+                    funMan->recursiveFun(children->at(2*subBlock)+blockPerThread*tid+block);
 #pragma omp barrier
                 }
                 //printf("Black: tid = %d, pinOrder = %d, cpu = %d\n",tid,pinOrder,sched_getcpu());
@@ -141,7 +150,7 @@ void FuncManager::Run()
     //set nested parallelism
     omp_set_nested(1);
     omp_set_dynamic(0);
-    recursiveCall(this, root);
+    recursiveFun(root);
 
     //reset states
     omp_set_nested(resetNestedState);

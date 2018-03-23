@@ -247,7 +247,9 @@ bool RACE::Interface::D2Checker()
 
 void RACE::Interface::sleep()
 {
+#ifndef RACE_KERNEL_THREAD_OMP
     pool->sleepPool();
+#endif
 }
 
 bool RACE::Interface::simdify(int simdWidth, int C, int nrows, int* col_new, int* chunkStart, int* rl, int* clp, double* val, bool diagFirst)
