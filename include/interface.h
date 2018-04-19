@@ -58,7 +58,7 @@ class RACE::Interface{
 
         //Execution
         int registerFunction(void (*f) (int,int,void *), void* args);
-        void executeFunction(int funcId);
+        void executeFunction(int funcId, bool rev=false);
         void resetTime();
 
         bool simdify(int simdWidth, int C, int nrows, int*col, int* chunkStart, int* rl, int* clp, double* val, bool diagFirst=false);

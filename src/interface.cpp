@@ -140,9 +140,9 @@ int RACE::Interface::registerFunction(void (*f) (int,int,void *), void* args)
     return (funMan.size()-1);
 }
 
-void RACE::Interface::executeFunction(int funcId)
+void RACE::Interface::executeFunction(int funcId, bool rev)
 {
-    funMan[funcId]->Run();
+    funMan[funcId]->Run(rev);
     //  funMan->Run();
 }
 

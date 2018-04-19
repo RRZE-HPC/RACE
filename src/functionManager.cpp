@@ -3,7 +3,7 @@
 #include <iostream>
 #include <typeinfo>
 
-FuncManager::FuncManager(void (*f_) (int,int,void*), void*args_, ZoneTree *zoneTree_, LevelPool* pool_):func(f_),args(args_),zoneTree(zoneTree_), pool(pool_)
+FuncManager::FuncManager(void (*f_) (int,int,void*), void*args_, ZoneTree *zoneTree_, LevelPool* pool_):rev(false),func(f_),args(args_),zoneTree(zoneTree_), pool(pool_)
 {
     //    func = std::bind(f_,*this,std::placeholders::_1,std::placeholders::_2,args);
     /*len = 72*72*72;
@@ -13,7 +13,7 @@ FuncManager::FuncManager(void (*f_) (int,int,void*), void*args_, ZoneTree *zoneT
       d = new double[len];
       */
     //  barrierTime = 0;   
-    recursiveFun = std::bind(recursiveCall, this, std::placeholders::_1);	
+    recursiveFun = std::bind(recursiveCall, this, std::placeholders::_1);
 }
 
 FuncManager::FuncManager(const FuncManager &obj)
@@ -63,12 +63,22 @@ void recursiveCall(FuncManager* funMan, int parent)
         {
 #pragma omp parallel num_threads(currNthreads)
             {
+                int startBlock = 0;
+                int endBlock = blockPerThread;
+                int inc = 1;
+
+                if(funMan->rev)
+                {
+                    startBlock = blockPerThread-1;
+                    endBlock = -1;
+                    inc = -1;
+                }
                 int tid = omp_get_thread_num();
                 //Pin in each call
                 //int pinOrder = zoneTree->at(children->at(2*subBlock)+2*tid).pinOrder;
                 //printf("omp_proc_bind = %d\n", omp_get_proc_bind());
                 //pool->pin.pinThread(pinOrder);
-                for(int block=0; block<blockPerThread; ++block)
+                for(int block=startBlock; block!=endBlock; block+=inc)
                 {
                     funMan->recursiveFun(children->at(2*subBlock)+blockPerThread*tid+block);
 #pragma omp barrier
@@ -117,12 +127,22 @@ void recursiveCall(FuncManager* funMan, int parentIdx)
         }
         else
         {
-            for(int block=0; block<blockPerThread; ++block)
+            int startBlock = 0;
+            int endBlock = blockPerThread;
+            int inc = 1;
+
+            if(funMan->rev)
+            {
+                startBlock = blockPerThread-1;
+                endBlock = -1;
+                inc = -1;
+            }
+            for(int block=startBlock; block!=endBlock; block+=inc)
             {
                 for(int tid=0; tid<nthreads; ++tid)
                 {
                     //pool->tree[parentIdx].addJob(tid, std::bind(test,a,b,c,d, tid*len/2.0, (tid+1)*len/2.0, std::placeholders::_1), 1);
-                    funMan->pool->tree[funMan->pool->poolTreeIdx(parentIdx, subBlock)].addJob(tid, funMan->recursiveFun, children->at(2*subBlock)+blockPerThread*tid+block) ;
+                    funMan->pool->tree[funMan->pool->poolTreeIdx(parentIdx, subBlock)].addJob(tid, funMan->recursiveFun, children->at(2*subBlock)+blockPerThread*tid+block);
                 }
                 funMan->pool->tree[funMan->pool->poolTreeIdx(parentIdx, subBlock)].barrier();
             }
@@ -136,8 +156,10 @@ void recursiveCall(FuncManager* funMan, int parentIdx)
 
 #endif
 
-void FuncManager::Run()
+void FuncManager::Run(bool rev_)
 {
+    rev = rev_;
+
     if(zoneTree == NULL)
     {
         ERROR_PRINT("NO Zone Tree present; Have you registered the function");
@@ -164,8 +186,8 @@ void FuncManager::Run()
 #endif
 }
 
-void FuncManager::RunOMP()
+/*void FuncManager::RunOMP()
 {
     //test_omp(a,b,c,d,0,len,1);
-}
+}*/
 
