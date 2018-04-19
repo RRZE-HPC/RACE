@@ -1,0 +1,38 @@
+\documentclass{standalone}
+\usepackage{tikz}
+
+\usepackage{amssymb}
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+\begin{document}
+	\tikzset{
+	font=\normalsize,
+	minimum width=20
+		}
+
+\newcommand{\scale}{1.5}%
+	\begin{tikzpicture}
+		\node[shape=circle,fill=red] (a) at (10*\scale,0*\scale) {1$^1$};
+	%	\node[shape=circle,fill=red] (h) at (10.75,0) {2};
+		\node[shape=circle,fill=red] (b) at (9*\scale,-1*\scale) {2$^2$};
+		\node[shape=circle,fill=red] (c) at (11*\scale,-1*\scale) {3$^2$};
+		\node[shape=circle,fill=blue] (d) at (8.5*\scale,-2*\scale) {4$^3$};
+		\node[shape=circle,fill=blue] (e) at (9.5*\scale,-2*\scale) {5$^3$};
+		\node[shape=circle,fill=blue] (f) at (10.5*\scale,-2*\scale) {6$^3$};
+		\node[shape=circle,fill=blue] (g) at (11.5*\scale,-2*\scale) {7$^3$};
+		\node[shape=circle,fill=blue] (x) at (9*\scale,-3*\scale) {8$^4$};
+		\node[shape=circle,fill=blue] (y) at (10*\scale,-3*\scale) {9$^4$};
+		\node[shape=circle,fill=blue] (z) at (11*\scale,-3*\scale) {10$^4$};
+		\draw (a) edge[<->] (b) (a) edge[<->] (c) 	
+	%	(h) edge[<->] (c)
+		(b) edge[<->] (d)  (b) edge[<->] (g)
+		(c) edge[<->] (f) (c) edge[<->] (g)
+		(b) edge[<->] (e) (e) edge[<->] (f) (f) edge[<->] (g)
+		(d) edge[<->] (x) (e) edge[<->] (y) (f) edge[<->] (z) (f) edge[<->] (y)
+		(x) edge[<->] (y); 
+		
+		\fill[color=blue,opacity=0.2,rounded corners=15pt] (8*\scale,-3.5*\scale) rectangle (12*\scale,-0.5*\scale);
+	\end{tikzpicture}
+\end{document}  

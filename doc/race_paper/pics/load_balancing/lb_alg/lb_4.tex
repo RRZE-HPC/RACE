@@ -1,0 +1,73 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usepackage{pgfmath}
+\usetikzlibrary{arrows.meta}
+\tikzset{>={Latex[width=1.5mm,length=1.5mm]}}
+
+\def\levelSize{{1,4,2,3,12,5,6,5,4,3,9,2,8,4,11,2,4}}
+\def\color{{"red","red","red","red","blue","blue","red","red","blue","blue","blue","blue","red","red","blue","blue","blue"}}
+\def\levelGroupSize{{10,17,11,17,12,17}}
+\def\levelGroupColor{{"red","blue","red","blue","red","blue"}}
+\def\diff{{-1,0,0,0,1,0}}
+\def\mr{11}
+\def\mb{17}
+\def\var{2}
+\definecolor{darkgreen}{rgb}{0.0, 0.2, 0.13}
+\def\Tptr{{0,4,6,8,12,14,17}}
+
+\begin{document}
+	\begin{tikzpicture}
+		\foreach \x in {0,...,6}
+		{
+			\pgfmathparse{\Tptr[\x]}
+			\edef\currLS{\pgfmathresult}
+			\node at (\currLS,4.5) {\LARGE{\currLS}};
+			\draw[->] (\currLS,4.25) -- (\currLS,3.25);
+		}
+		
+		\draw[step=1cm,gray,very thin] (0,2) grid (17,3);
+		\foreach \x in {0,...,16}
+		{
+			\pgfmathparse{\levelSize[\x]}
+			\edef\currLS{\pgfmathresult}
+			\pgfmathparse{\color[\x]}
+			\edef\currCOLOR{\pgfmathresult}
+			\node[\currCOLOR] at (0.5+\x,2.5) {\LARGE{\currLS}};
+		}
+		
+		\draw[step=1cm,gray,very thin] (0,0) grid (6,1);
+		\foreach \x in {0,...,5}
+		{
+			\pgfmathparse{\levelGroupSize[\x]}
+			\edef\currLS{\pgfmathresult}
+			\pgfmathparse{\levelGroupColor[\x]}
+			\edef\currCOLOR{\pgfmathresult}
+			\node[\currCOLOR] at (0.5+\x,0.5) {\LARGE{\currLS}};
+		}
+		
+		\node[red] at (9,0.5) {\LARGE{mean\_r = \mr}};
+		\node[blue] at (14,0.5) {\LARGE{mean\_b = \mb}};
+		
+		\draw[step=1cm,gray,very thin] (0,-2) grid (6,-1);
+		\foreach \x in {0,...,5}
+		{
+			\pgfmathparse{\diff[\x]}
+			\edef\currLS{\pgfmathresult}
+			\pgfmathparse{\levelGroupColor[\x]}
+			\edef\currCOLOR{\pgfmathresult}
+			\node[\currCOLOR] at (0.5+\x,-1.5) {\large{\currLS}};
+		}
+		
+		\node[darkgreen] at (11,-1.5) {\LARGE{var = \var}};
+		
+		\draw (0.5,-1.5) ellipse (0.45 and 0.8);
+		\draw (4.5,-1.5) ellipse (0.45 and 0.8);
+		\draw[<-] (0.5,-0.7) to [out=160,in=20] (4.5,-0.7);
+		
+		\node at (-1.5,4.25) {\LARGE{T\_ptr}};
+		\node at (-2,2.5) {\LARGE{nnz in levels}};
+		\node at (-1.5,0.5) {\LARGE{T\_size}};	
+		\node at (-2,-1.5) {\LARGE{signed dev.}};
+		\node[magenta] at (16,-1.5) {\LARGE{Step 4}};	
+	\end{tikzpicture}
+\end{document}  

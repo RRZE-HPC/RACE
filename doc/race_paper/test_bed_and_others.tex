@@ -1,0 +1,169 @@
+\subsection{Test bed}
+The tests are conducted on three different multi-core architectures. Two of them being Intel's \IVB and modern \SKX architecture, the choice of these architectures enables a good comparison of our method on both \LCCfull (LCC) and \HCCfull (HCC) architectures, which would play an important role in the convergence of the method we develop. As a third choice we select AMD's recent \EPY architecture, which is competitive to Intel \SKX architecture. This choice enables us to study the effect of our method on chips based on completely different microarchitecture, enabling us to demonstrate the applicability of our method on wide range of architectures. All the tests are conducted on a single socket of these architectures. 
+
+\begin{itemize}
+	\item \Intel \IVB architecture belongs to class of classic Intel's cache-based architecture, which has three inclusive cache  hierarchies. All the cache are scalacble and the \LLC (L3) being shared among all the cores on one socket. The processor is capable of delivering one full four wide \SIMD add, multiply and load in one cycle. 
+	\item \Intel \SKX architecture belongs to recent generation of Intel family. Contrary to it's predecessors (like \IVB), the \LLC is now changed to a non-inclusive victim cache shared by all the cores on a socket. The architecture comes with support for eight wide \SIMD operations (AVX-512). The processor is capable of doing two AVX-512 add, multiply and load operations per cycle.
+	\item \AMD \EPY is based on AMD's Zen microarchitecture. The basic building block of the architecture consists of Core Complex (CCX) consisting of three cores (can extend upto four on high end models) each having it's own private L1 and L2 cache. The L3 cache is shared between a core complex and is non-inclusive victim cache. A single socket of \EPY consists of eight such core complexes.
+	
+\end{itemize}
+The details of architectures along with the measured bandwidths are given in \cref{tab:test_bed}. The bandwidths are measured using \likwidBench suite.
+
+\begin{table}[tbhp]
+\footnotesize
+\caption{Test bed}\label{tab:test_bed}
+\begin{center}
+%	\setlength{\tabcolsep}{3em}
+	\begin{tabular}{|l| c  c c |}
+		\toprule
+		{Model name} & {Xeon\textsuperscript{\textregistered} E5-2660} & {Xeon\textsuperscript{\textregistered} Gold 6148} & { Epyc 7451 } \\
+		\midrule
+		{Microarchitecture} & {Ivy Bridge} & {Skylake} & {Zen} \\
+		\midrule
+		{Clock} & {2.2 GHz} & {2.4 GHz} & {2.3 GHz}\\
+		{Physical Cores per socket} & {10} & {20} & {24}\\
+		{L1d Cache} & {10 $\times$ 32 \KB} & {20 $\times$ 32 \KB} & {24 $\times$  32 \KB}\\
+		{L2 Cache} & {10 $\times$ 256 \KB} & {20 $\times$ 1 \MB} & {24 $\times$ 512 \MB }\\
+		{L3 Cache} & {25 \MB} & {27.5 \MB} & {8 $\times$ 8 \MB}\\
+		{L3 type} & {inclusive} & {non-inclusive} & {non-inclusive}\\
+		{Main Memory} & {32 GB} & {45 GB} & {4 $\times$ 16 GB}\\
+		{Bandwidth - load only)} & {47 GB/s} & {110 GB/s} & {130 GB/s }\\ %TODO
+		{Bandwidth - copy} & {40 GB/s} & {110 GB/s} & {114 GB/s }\\
+		{Architecture specific flag} & {-} & {-xCORE-AVX512} & {-}\\
+		\bottomrule
+	\end{tabular}
+\end{center}
+\end{table} 
+
+The code was compiled with newest Intel compiler version 18 and the following compiler flags were set {\tt -fno-alias -xHost -O3}. Furthermore all the measurements were done with  \CPU clock speeds fixed at frequencies indicated in \cref{tab:test_bed}.
+
+\subsection{Benchmark Matrices}
+All the test matrices are taken from SuiteSparse Matrix Collection (former University of Florida Sparse Matrix Collection) \cite{UOF} and \ESSEX project \cite{ESSEX}. The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by combining the test matrices from two papers \cite{RSB,park_ls}. This enables easy comparison of results. Matrices from \ESSEX project are some of the matrices that are of interest in the FEAST eigen value solver.  Only matrices having undirected graphs are considered due to scope of the paper as mentioned in \cref{Sec:contribution}. Matrices along with some of their parameters are given in \cref{table:bench_matrices}.  Matrices that have been marked with an * symbol indicate they are corner cases and will be discussed in detail.
+
+\begin{table}[ht]
+	\footnotesize
+	\caption{Benchmark matrices}\label{tab:test_mtx}
+	\label{table:bench_matrices}
+	\begin{center}
+		\input{pics/matrices/table.tex}
+	\end{center}
+
+\end{table}
+
+\subsection{Kernels}
+To test the performance we choose algorithms that are exact as well as iterative. Also we include kernels from both distance-1 and distance-2 dependency classes. All the kernels shown below are based on \CRS matrix storage format.
+
+\subsubsection{\SpMV}
+Sparse Matrix Vector (\SpMV) is a kernel that do not have any dependencies. It  acts as a good reference for other kernels to determine their performance upper bound.
+\begin{algorithm}[H]
+	\caption{SpMV Find $b$ : $b=A x$} 
+	\label{alg:SpMV}
+	\begin{algorithmic}[1]
+		\FOR{$row=1:nrows$}
+		\FOR{$idx=rowPtr[row]:rowPtr[row+1]$}
+		\STATE{$b[row] += A[idx]*x[col[idx]]$} 
+		\ENDFOR
+		\ENDFOR
+	\end{algorithmic}
+\end{algorithm}
+The arithmetic intensity of the kernel $I_{SpMV}$ is as follows:
+\begin{equation}
+\label{eq:SpMV_intensity}
+I_{\SpMV} = \frac{2}{8+4+8*\alpha+\frac{16}{\NNZRmath}} \\
+\end{equation}
+
+where $\alpha$ represents the data locality factor and \NNZR non-zeros per row. $\alpha$ depends on the sparsity pattern of the matrix and varies from matrix to matrix. Ideal value of $\alpha$ for sufficiently large matrix is $\frac{1}{\NNZRmath}$. More details on factor $\alpha$ could be found in \cite{Moritz_sell}.
+
+\subsubsection{\SpMTV}
+Sparse Matrix Transpose Vector (\SpMTV) is a kernel having \DTWO dependency.
+\begin{algorithm}[H]
+	\caption{SpMTV Find $b$ : $b=A'x$} 
+	\label{alg:SpMTV}
+	\begin{algorithmic}[1]
+		\FOR{$row=1:nrows$}
+		\FOR{$idx=rowPtr[row]:rowPtr[row+1]$}
+		\STATE{$b[col[idx]] += A[idx]*x[row]$} 
+		\ENDFOR
+		\ENDFOR
+	\end{algorithmic}
+\end{algorithm}
+In comparison to SpMV operation, the kernel requires an extra scatter operation, which causes dependency. The arithmetic intensity of the kernel $I_{SpMTV}$ is given as:
+\begin{equation}
+\label{eq:SpMTV_intensity}
+I_{SpMTV} = \frac{2}{8+4+16*\alpha+\frac{8}{\NNZRmath}} \\
+\end{equation}
+
+In ideal case data traffic for this kernel should remain close to that of SpMV, if \NNZR are sufficiently high, and $\alpha$ factor is small enough.
+
+\subsubsection{\SymmSpmv}
+Symmetric Sparse Matrix Vector (\SymmSpmv) makes use of the symmetric property of the matrix to perform the matrix  vector multiplication.
+\begin{algorithm}[H]
+	\caption{SymmSpMV Find $b$ : $b=Ax$, where $A$ is an upper triangular matrix} 
+	\label{alg:SymmSpMV}
+	\begin{algorithmic}[1]
+		\FOR{$row=1:nrows$}
+		\STATE{$diag\_idx=rowPtr[row]$}
+		\STATE{$b[row] += A[diag\_idx]*x[row]$}
+		\FOR{$idx=rowPtr[row]+1:rowPtr[row+1]$}
+		\STATE{$b[row] += A[idx]*x[col[idx]]$}
+		\STATE{$b[col[idx]] += A[idx]*x[row]$} 
+		\ENDFOR
+		\ENDFOR
+	\end{algorithmic}
+\end{algorithm}
+To operate on this kernel we just use the upper triangular part of the sparse matrix. The kernel requires only half the data traffic compared to SpMV but requires the same amount of Flops, leading to almost twice the intensity of SpMV operations.
+\begin{equation}
+\label{eq:SymmSpMV_intensity}
+I_{SymmSpMV} = \frac{4}{8+4+32*\alpha+\frac{16}{\NNZRmathSYMM}} \\
+\end{equation}
+
+Note that \NNZRSYMM is the number of non-zeros per row in upper triangular part of the matrix.
+
+\subsubsection{\GS}
+Gauss-Seidel (\GS) is a solver having distance-1 dependency. Contrary to the above kernels \GS is in-exact meaning it is an iterative method. Alg. \ref{alg:GS} shows the Gauss-Seidel algorithm where its assumed that the diagonal entries of the matrix is stored as first entry in their corresponding rows.
+\begin{algorithm}[H]
+	\caption{GS Solve for $x$ : $Ax=b$} 
+	\label{alg:GS}
+	\begin{algorithmic}[1]
+		\FOR{$row=1:nrows$}
+		\STATE{$x[row]+=b[row]$}
+		\FOR{$idx=rowPtr[row]+1:rowPtr[row+1]$}
+		\STATE{$x[row] -= A[idx]*x[col[idx]]$} 
+		\ENDFOR
+		\STATE{$diag=A[rowPtr[row]]$}
+		\STATE{$x[row]/=diag$}
+		\ENDFOR
+	\end{algorithmic}
+\end{algorithm}
+Regarding the in-core execution the kernel has same properties as of \SpMV, but requires an additional divide operation per row of the matrix. If the locality ($\alpha$ factor) is not disturbed due to pre-processing the kernel requires same data traffic as of \SpMV. The arithmetic intensity of \GS is the same as that of \SpMV, if we neglect the divide operation that occurs once per every row.
+\begin{equation}
+\label{eq:GS_intensity}
+I_{GS} = I_{SPMV}
+\end{equation}
+
+\subsubsection{KACZ}
+Kaczmarz (\KACZ) is an iterative solver based on row-projection based methods. The solver has a distance-2 dependency.
+\begin{algorithm}[H]
+	\caption{KACZ Solve for $x$ : $Ax=b$} 
+	\label{alg:KACZ}
+	\begin{algorithmic}[1]
+		\FOR{$row=1:nrows$}
+		\STATE{$row\_norm=0$}
+		\STATE{$scale=b[row]$}
+		\FOR{$idx=rowPtr[row]:rowPtr[row+1]$}
+		\STATE{$scale -= A[idx]*x[col[idx]]$}
+		\STATE{$rownorm += A[idx]*A[idx]$} 
+		\ENDFOR
+		\STATE{$scale=scale/rownorm$}
+		\FOR{$idx=rowPtr[row]:rowPtr[row+1]$}
+		\STATE{$x[col[idx]] += scale*A[idx]$} 
+		\ENDFOR
+		\ENDFOR
+	\end{algorithmic}
+\end{algorithm}
+
+In-core has a mixed behavior of both SpMV and SpMTV similar to SymmSpMV. The solver also requires a divide per  row of the matrix. In ideal case the data traffic from memory should remain same as that of SpMTV. But the solver requires thrice the flops compared to SpMTV per non-zero. For brevity of the results we ignore the flops used in $rownorm$ computations since, one could also row normalize the sparse matrix before performing the KACZ operation. This leads to an almost two fold higher Arithmetic Intensity compared to SpMTV.
+\begin{equation}
+\label{eq:KACZ_intensity}
+I_{KACZ} =  \frac{4}{8+4+16*\alpha+\frac{8}{nnzr}} = 2*I_{SpMTV}\\
+\end{equation}

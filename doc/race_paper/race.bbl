@@ -1,0 +1,138 @@
+\begin{thebibliography}{10}
+
+\bibitem{ESSEX}
+{\em {Equipping Sparse Solvers for Exascale - ESSEX}}.
+\newblock \url{https://blogs.fau.de/essex/activities}.
+
+\bibitem{UOF}
+{\em {SuiteSparse Matrix Collection}}.
+\newblock \url{https://sparse.tamu.edu/}.
+
+\bibitem{CSB}
+{\sc A.~Bulu\c{c}, J.~T. Fineman, M.~Frigo, J.~R. Gilbert, and C.~E.
+  Leiserson}, {\em Parallel sparse matrix-vector and matrix-transpose-vector
+  multiplication using compressed sparse blocks}, in Proceedings of the
+  Twenty-first Annual Symposium on Parallelism in Algorithms and Architectures,
+  SPAA '09, New York, NY, USA, 2009, ACM, pp.~233--244,
+  \url{https://doi.org/10.1145/1583991.1584053}.
+
+\bibitem{hpcg}
+{\sc J.~Dongarra and M.~Heroux}, {\em Toward a new metric for ranking high
+  performance computing systems}, Tech. Report SAND2013-4744, Sandia National
+  Laboratories, 2013.
+
+\bibitem{Elfving1980}
+{\sc T.~Elfving}, {\em Block-iterative methods for consistent and inconsistent
+  linear equations}, Numerische Mathematik, 35 (1980), pp.~1--12,
+  \url{https://doi.org/10.1007/BF01396365},
+  \url{https://doi.org/10.1007/BF01396365}.
+
+\bibitem{RBGS}
+{\sc D.~J. Evans}, {\em {Parallel S.O.R. Iterative Methods}}, Parallel Comput.,
+  1 (1984), pp.~3--18, \url{https://doi.org/10.1016/S0167-8191(84)90380-6}.
+
+\bibitem{feast_mc}
+{\sc M.~Galgon, L.~Kr\"{a}mer, J.~Thies, A.~Basermann, and B.~Lang}, {\em On
+  the parallel iterative solution of linear systems arising in the feast
+  algorithm for computing inner eigenvalues}, Parallel Comput., 49 (2015),
+  pp.~153--163, \url{https://doi.org/10.1016/j.parco.2015.06.005}.
+
+\bibitem{thread_private_symm_spmv}
+{\sc T.~Gkountouvas, V.~Karakasis, K.~Kourtis, G.~Goumas, and N.~Koziris}, {\em
+  Improving the performance of the symmetric sparse matrix-vector
+  multiplication in multicore}, in 2013 IEEE 27th International Symposium on
+  Parallel and Distributed Processing, May 2013, pp.~273--283,
+  \url{https://doi.org/10.1109/IPDPS.2013.43}.
+
+\bibitem{GoVa13}
+{\sc G.~H. Golub and C.~F. Van~Loan}, {\em Matrix Computations}, The Johns
+  Hopkins University Press, Baltimore, 4th~ed., 2013.
+
+\bibitem{CARP}
+{\sc D.~Gordon and R.~Gordon}, {\em Component-averaged row projections: A
+  robust, block-parallel scheme for sparse linear systems}, SIAM Journal on
+  Scientific Computing, 27 (2005), pp.~1092--1117,
+  \url{https://doi.org/10.1137/040609458}.
+
+\bibitem{ABMC}
+{\sc T.~Iwashita, H.~Nakashima, and Y.~Takahashi}, {\em Algebraic block
+  multi-color ordering method for parallel multi-threaded sparse triangular
+  solver in iccg method}, in Proceedings of the 2012 IEEE 26th International
+  Parallel and Distributed Processing Symposium, IPDPS '12, Washington, DC,
+  USA, 2012, IEEE Computer Society, pp.~474--483,
+  \url{https://doi.org/10.1109/IPDPS.2012.51},
+  \url{http://dx.doi.org/10.1109/IPDPS.2012.51}.
+
+\bibitem{MC}
+{\sc M.~T. Jones and P.~E. Plassmann}, {\em Scalable iterative solution of
+  sparse linear systems}, Parallel Comput., 20 (1994), pp.~753--773,
+  \url{https://doi.org/10.1016/0167-8191(94)90004-3},
+  \url{http://dx.doi.org/10.1016/0167-8191(94)90004-3}.
+
+\bibitem{Kamath}
+{\sc C.~Kamath and A.~Sameh}, {\em A projection method for solving nonsymmetric
+  linear systems on multiprocessors}, 9 (1989), pp.~291--312,
+  \url{https://doi.org/10.1016/0167-8191(89)90114-2}.
+
+\bibitem{Moritz_sell}
+{\sc M.~Kreutzer, G.~Hager, G.~Wellein, H.~Fehske, and A.~R. Bishop}, {\em {A
+  Unified Sparse Matrix Data Format for Efficient General Sparse Matrix-Vector
+  Multiplication on Modern Processors with Wide SIMD Units}}, SIAM Journal on
+  Scientific Computing, 36 (2014), pp.~C401--C423,
+  \url{https://doi.org/10.1137/130930352}.
+
+\bibitem{equitable_color}
+{\sc H.~Lu, M.~Halappanavar, D.~Chavarría-Miranda, A.~H. Gebremedhin,
+  A.~Panyala, and A.~Kalyanaraman}, {\em Algorithms for balanced graph
+  colorings with applications in parallel computing}, IEEE Transactions on
+  Parallel and Distributed Systems, 28 (2017), pp.~1240--1256,
+  \url{https://doi.org/10.1109/TPDS.2016.2620142}.
+
+\bibitem{RSB}
+{\sc M.~Martone}, {\em Efficient multithreaded untransposed, transposed or
+  symmetric sparse matrix-vector multiplication with the recursive sparse
+  blocks format}, Parallel Comput., 40 (2014), pp.~251--270,
+  \url{https://doi.org/10.1016/j.parco.2014.03.008},
+  \url{http://dx.doi.org/10.1016/j.parco.2014.03.008}.
+
+\bibitem{cm-rcm}
+{\sc K.~Nakajima and H.~Okuda}, {\em Parallel iterative solvers for
+  unstructured grids using an openmp/mpi hybrid programming model for the
+  geofem platform on smp cluster architectures}, in High Performance Computing,
+  H.~P. Zima, K.~Joe, M.~Sato, Y.~Seo, and M.~Shimasaki, eds., Berlin,
+  Heidelberg, 2002, Springer Berlin Heidelberg, pp.~437--448.
+
+\bibitem{park_ls}
+{\sc J.~Park, M.~Smelyanskiy, N.~Sundaram, and P.~Dubey}, {\em Sparsifying
+  synchronization for high-performance shared-memory sparse triangular solver},
+  in Proceedings of the 29th International Conference on Supercomputing -
+  Volume 8488, ISC 2014, New York, NY, USA, 2014, Springer-Verlag New York,
+  Inc., pp.~124--140, \url{https://doi.org/10.1007/978-3-319-07518-1_8}.
+
+\bibitem{FEAST}
+{\sc E.~Polizzi}, {\em A density matrix-based algorithm for solving eigenvalue
+  problems}, CoRR, abs/0901.2665 (2009), \url{https://arxiv.org/abs/0901.2665}.
+
+\bibitem{LIKWID_validation}
+{\sc T.~R{\"o}hl, J.~Eitzinger, G.~Hager, and G.~Wellein}, {\em Validation of
+  hardware events for successful performance pattern identification in high
+  performance computing}, in Tools for High Performance Computing 2015, Cham,
+  2016, Springer International Publishing, pp.~17--28.
+
+\bibitem{saad}
+{\sc Y.~Saad}, {\em Iterative Methods for Sparse Linear Systems}, Society for
+  Industrial and Applied Mathematics, second~ed., 2003,
+  \url{https://doi.org/10.1137/1.9780898718003},
+  \url{https://epubs.siam.org/doi/abs/10.1137/1.9780898718003},
+  \url{https://arxiv.org/abs/https://epubs.siam.org/doi/pdf/10.1137/1.9780898718003}.
+
+\bibitem{LIKWID}
+{\sc J.~Treibig, G.~Hager, and G.~Wellein}, {\em Likwid: A lightweight
+  performance-oriented tool suite for x86 multicore environments},  (2010).
+
+\bibitem{Williams_roofline}
+{\sc S.~Williams, A.~Waterman, and D.~Patterson}, {\em {Roofline: An Insightful
+  Visual Performance Model for Multicore Architectures}}, Commun. ACM, 52
+  (2009), pp.~65--76, \url{https://doi.org/10.1145/1498765.1498785}.
+
+\end{thebibliography}

@@ -1,0 +1,25 @@
+\documentclass{standalone}
+\usepackage{tikz}
+
+\begin{document}
+	\begin{tikzpicture}[darkstyle/.style={circle,draw,fill=yellow!30!white,minimum size=24}]
+	\foreach \x in {0,...,7}
+	\foreach \y in {0,...,7} 
+	{\pgfmathtruncatemacro{\label}{\y*8 + \x  }
+		\node [darkstyle]  (\x\y) at (1.5*\x,1.5*\y) {\large{\label}};} 
+	
+	\foreach \x in {0,...,7}
+	\foreach \y [count=\yi] in {0,...,6}  
+	{
+	\draw (\x\y)--(\x\yi) (\y\x)--(\yi\x) ;
+	\draw (\x\y)-- (\y\x);
+	}
+	
+	\foreach \x in {0,...,7}
+	\foreach \y in {0,...,7} 
+	{\pgfmathtruncatemacro{\label}{\y*8 + \x  }
+		\node [darkstyle]  (\x\y) at (1.5*\x,1.5*\y) {\large{\label}};} 
+	
+	\draw [white] (0.1,-0.5) rectangle (0.2,-1.5);
+	\end{tikzpicture}
+\end{document}  
