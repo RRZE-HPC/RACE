@@ -1,11 +1,11 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.8.7)  19 APR 2018 10:59
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.4.19)  19 APR 2018 11:26
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **race.tex
 (./race.tex
 LaTeX2e <2016/02/01>
-Babel <3.9q> and hyphenation patterns for 8 language(s) loaded.
+Babel <3.9q> and hyphenation patterns for 81 language(s) loaded.
 (./siamart171218.cls
 Document Class: siamart171218 2017/12/18 v1.4.2 LaTeX document e-class
 (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
@@ -318,27 +318,730 @@ Package hyperref Info: Option `colorlinks' set `true' on input line 1322.
 (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/hypcap.sty
 Package: hypcap 2011/02/16 v1.11 Adjusting the anchors of captions (HO)
 )
+(/usr/share/texlive/texmf-dist/tex/latex/algorithms/algorithm.sty
+Package: algorithm 2009/08/24 v0.1 Document Style `algorithm' - floating enviro
+nment
 
-! LaTeX Error: File `algorithm.sty' not found.
+(/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count113
+\float@exts=\toks38
+\float@box=\box28
+\@float@everytoks=\toks39
+\@floatcapt=\box29
+)
+\@float@every@algorithm=\toks40
+\c@algorithm=\count114
+)
+(/usr/share/texlive/texmf-dist/tex/latex/cleveref/cleveref.sty
+Package: cleveref 2013/12/28 v0.19 Intelligent cross-referencing
+Package cleveref Info: `hyperref' support loaded on input line 2230.
+LaTeX Info: Redefining \cref on input line 2230.
+LaTeX Info: Redefining \Cref on input line 2230.
+LaTeX Info: Redefining \crefrange on input line 2230.
+LaTeX Info: Redefining \Crefrange on input line 2230.
+LaTeX Info: Redefining \cpageref on input line 2230.
+LaTeX Info: Redefining \Cpageref on input line 2230.
+LaTeX Info: Redefining \cpagerefrange on input line 2230.
+LaTeX Info: Redefining \Cpagerefrange on input line 2230.
+LaTeX Info: Redefining \labelcref on input line 2230.
+LaTeX Info: Redefining \labelcpageref on input line 2230.
+Package cleveref Info: `ntheorem' support loaded on input line 2887.
+Package cleveref Info: always capitalise cross-reference names on input line 74
+70.
+Package cleveref Info: include cross-reference names in hyperlinks on input lin
+e 7476.
+Package cleveref Info: always capitalise cross-reference names on input line 74
+93.
+Package cleveref Info: include cross-reference names in hyperlinks on input lin
+e 7493.
+)
+\c@currproofctr=\count115
+\c@endproofctr=\count116
+\c@proof=\count117
+\c@currtheoremctr=\count118
+\c@endtheoremctr=\count119
+\c@theorem=\count120
+\c@currlemmactr=\count121
+\c@endlemmactr=\count122
+\c@currcorollaryctr=\count123
+\c@endcorollaryctr=\count124
+\c@currpropositionctr=\count125
+\c@endpropositionctr=\count126
+\c@currdefinitionctr=\count127
+\c@enddefinitionctr=\count128
 
-Type X to quit or <RETURN> to proceed,
-or enter new name. (Default extension: sty)
+(/usr/share/texlive/texmf-dist/tex/latex/lineno/lineno.sty
+Package: lineno 2005/11/02 line numbers on paragraphs v4.41
+\linenopenalty=\count129
+\output=\toks41
+\linenoprevgraf=\count130
+\linenumbersep=\dimen124
+\linenumberwidth=\dimen125
+\c@linenumber=\count131
+\c@pagewiselinenumber=\count132
+\c@LN@truepage=\count133
+\c@internallinenumber=\count134
+\c@internallinenumbers=\count135
+\quotelinenumbersep=\dimen126
+\bframerule=\dimen127
+\bframesep=\dimen128
+\bframebox=\box30
+LaTeX Info: Redefining \\ on input line 3056.
+))
+(/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2005/04/14 v1.61803 publication quality tables
+\heavyrulewidth=\dimen129
+\lightrulewidth=\dimen130
+\cmidrulewidth=\dimen131
+\belowrulesep=\dimen132
+\belowbottomsep=\dimen133
+\aboverulesep=\dimen134
+\abovetopsep=\dimen135
+\cmidrulesep=\dimen136
+\cmidrulekern=\dimen137
+\defaultaddspace=\dimen138
+\@cmidla=\count136
+\@cmidlb=\count137
+\@aboverulesep=\dimen139
+\@belowrulesep=\dimen140
+\@thisruleclass=\count138
+\@lastruleclass=\count139
+\@thisrulewidth=\dimen141
+)
+(/usr/share/texlive/texmf-dist/tex/latex/subfig/subfig.sty
+Package: subfig 2005/06/28 ver: 1.3 subfig package
 
-Enter file name: 
-! Emergency stop.
-<read *> 
-         
-l.1353 \RequirePackage{algorithm}[0.1]
-                                      ^^M
-*** (cannot \read from terminal in nonstop modes)
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2016/02/04 v1.7-139 caption3 kernel (AR)
+Package caption3 Info: TeX engine: e-TeX on input line 67.
+\captionmargin=\dimen142
+\captionmargin@=\dimen143
+\captionwidth=\dimen144
+\caption@tempdima=\dimen145
+\caption@indent=\dimen146
+\caption@parindent=\dimen147
+\caption@hangindent=\dimen148
+Package caption Info: Unknown document class (or package),
+(caption)             standard defaults will be used.
+)
+\c@KVtest=\count140
+\sf@farskip=\skip59
+\sf@captopadj=\dimen149
+\sf@capskip=\skip60
+\sf@nearskip=\skip61
+\c@subfigure=\count141
+\c@subfigure@save=\count142
+\c@lofdepth=\count143
+\c@subtable=\count144
+\c@subtable@save=\count145
+\c@lotdepth=\count146
+\sf@top=\skip62
+\sf@bottom=\skip63
+)
+(/usr/share/texlive/texmf-dist/tex/latex/braket/braket.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/algorithms/algorithmic.sty
+Package: algorithmic 2009/08/24 v0.1 Document Style `algorithmic'
+\c@ALC@unique=\count147
+\c@ALC@line=\count148
+\c@ALC@rem=\count149
+\c@ALC@depth=\count150
+\ALC@tlm=\skip64
+\algorithmicindent=\skip65
+)
+(/usr/share/texlive/texmf-dist/tex/latex/multirow/multirow.sty
+\bigstrutjot=\dimen150
+)
+(./ex_shared.tex (/usr/share/texlive/texmf-dist/tex/latex/lipsum/lipsum.sty
+Package: lipsum 2014/07/27 v1.3 150 paragraphs of Lorem Ipsum dummy text
+\c@lips@count=\count151
+)
+\c@currremarkctr=\count152
+\c@endremarkctr=\count153
+\c@currhypothesisctr=\count154
+\c@endhypothesisctr=\count155
+\c@currclaimctr=\count156
+\c@endclaimctr=\count157
+)
+(./race.aux)
+\openout1 = `race.aux'.
 
- 
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+\AtBeginShipoutBox=\box31
+Package hyperref Info: Link coloring ON on input line 113.
+ (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
+Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
+)
+\c@section@level=\count158
+)
+LaTeX Info: Redefining \ref on input line 113.
+LaTeX Info: Redefining \pageref on input line 113.
+LaTeX Info: Redefining \nameref on input line 113.
+
+(./race.out) (./race.out)
+\@outlinefile=\write3
+\openout3 = `race.out'.
+
+
+(/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count159
+\scratchdimen=\dimen151
+\scratchbox=\box32
+\nofMPsegments=\count160
+\nofMParguments=\count161
+\everyMPshowfont=\toks42
+\MPscratchCnt=\count162
+\MPscratchDim=\dimen152
+\MPnumerator=\count163
+\makeMPintoPDFobject=\count164
+\everyMPtoPDFconversion=\toks43
+)
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: subfig package v1.3 is loaded.
+Package caption Info: End \AtBeginDocument code.
+LaTeX Font Info:    Try loading font information for U+msa on input line 116.
+ (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 116.
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+
+LATEX WARNING: NO \author GIVEN.
+
+
+LaTeX Warning: Reference `sec:main' on page 1 undefined on input line 147.
+
+
+LaTeX Warning: Reference `sec:alg' on page 1 undefined on input line 147.
+
+
+LaTeX Warning: Reference `sec:experiments' on page 1 undefined on input line 14
+8.
+
+
+LaTeX Warning: Reference `sec:conclusions' on page 1 undefined on input line 14
+9.
+
+(./related_work.tex [1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}])
+(./contribution.tex) (./test_bed_and_others.tex [2]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 19.
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
+File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <6> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 19.
+
+Underfull \vbox (badness 2617) has occurred while \output is active []
+
+ [3]
+(./pics/matrices/table.tex)
+Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
+put line 59.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [4]
+[5] [6]) (./motivation.tex
+<pics/motivation/motivation_1.pdf, id=268, 422.18727pt x 348.76698pt>
+File: pics/motivation/motivation_1.pdf Graphic file (type pdf)
+
+<use pics/motivation/motivation_1.pdf>
+Package pdftex.def Info: pics/motivation/motivation_1.pdf used on input line 10
+.
+(pdftex.def)             Requested size: 166.67517pt x 131.55894pt.
+
+<pics/motivation/motivation_3.pdf, id=269, 395.59895pt x 312.21643pt>
+File: pics/motivation/motivation_3.pdf Graphic file (type pdf)
+
+<use pics/motivation/motivation_3.pdf>
+Package pdftex.def Info: pics/motivation/motivation_3.pdf used on input line 12
+.
+(pdftex.def)             Requested size: 166.66954pt x 131.56352pt.
+
+<pics/motivation/motivation_2.pdf, id=270, 455.36523pt x 348.76698pt>
+File: pics/motivation/motivation_2.pdf Graphic file (type pdf)
+
+<use pics/motivation/motivation_2.pdf>
+Package pdftex.def Info: pics/motivation/motivation_2.pdf used on input line 14
+.
+(pdftex.def)             Requested size: 166.66899pt x 131.55894pt.
+
+<pics/motivation/motivation_4.pdf, id=271, 429.96434pt x 348.76698pt>
+File: pics/motivation/motivation_4.pdf Graphic file (type pdf)
+
+<use pics/motivation/motivation_4.pdf>
+Package pdftex.def Info: pics/motivation/motivation_4.pdf used on input line 16
+.
+(pdftex.def)             Requested size: 166.67506pt x 131.55894pt.
+ [7 <./pics/motivation/motivation_1.pdf> <./pics/motivation/motivation_3.pdf> <
+./pics/motivation/motivation_2.pdf> <./pics/motivation/motivation_4.pdf>]
+<pics/mc_alpha_problem/mc_alpha.pdf, id=332, 782.91698pt x 139.55737pt>
+File: pics/mc_alpha_problem/mc_alpha.pdf Graphic file (type pdf)
+
+<use pics/mc_alpha_problem/mc_alpha.pdf>
+Package pdftex.def Info: pics/mc_alpha_problem/mc_alpha.pdf used on input line 
+35.
+(pdftex.def)             Requested size: 352.30939pt x 62.80023pt.
+ [8 <./pics/mc_alpha_problem/mc_alpha.pdf>]) (./race_method.tex
+Package epstopdf Info: Source file: <pics/2d-7pt/2d_7pt_bw.eps>
+(epstopdf)                    date: 2018-04-10 10:16:15
+(epstopdf)                    size: 64463 bytes
+(epstopdf)             Output file: <pics/2d-7pt/2d_7pt_bw-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2018-04-10 10:16:45
+(epstopdf)                    size: 16186 bytes
+(epstopdf)             Command: <repstopdf --outfile=pics/2d-7pt/2d_7pt_bw-eps-
+converted-to.pdf pics/2d-7pt/2d_7pt_bw.eps>
+(epstopdf)             \includegraphics on input line 22.
+Package epstopdf Info: Output file is already uptodate.
+
+<pics/2d-7pt/2d_7pt_bw-eps-converted-to.pdf, id=357, 578.16pt x 434.62375pt>
+File: pics/2d-7pt/2d_7pt_bw-eps-converted-to.pdf Graphic file (type pdf)
+
+<use pics/2d-7pt/2d_7pt_bw-eps-converted-to.pdf>
+Package pdftex.def Info: pics/2d-7pt/2d_7pt_bw-eps-converted-to.pdf used on inp
+ut line 22.
+(pdftex.def)             Requested size: 148.14784pt x 119.59816pt.
+
+<pics/2d-7pt/stencil_2d_7pt.pdf, id=358, 323.1533pt x 353.8329pt>
+File: pics/2d-7pt/stencil_2d_7pt.pdf Graphic file (type pdf)
+
+<use pics/2d-7pt/stencil_2d_7pt.pdf>
+Package pdftex.def Info: pics/2d-7pt/stencil_2d_7pt.pdf used on input line 24.
+(pdftex.def)             Requested size: 129.6387pt x 113.61755pt.
+
+Underfull \vbox (badness 2913) has occurred while \output is active []
+
+ [9 <./pics/2d-7pt/2d_7pt_bw-eps-converted-to.pdf> <./pics/2d-7pt/stencil_2d_7p
+t.pdf>]
+<pics/level_construction/stencil_2d_7pt.pdf, id=384, 329.15373pt x 329.15373pt>
+File: pics/level_construction/stencil_2d_7pt.pdf Graphic file (type pdf)
+<use pics/level_construction/stencil_2d_7pt.pdf>
+Package pdftex.def Info: pics/level_construction/stencil_2d_7pt.pdf used on inp
+ut line 60.
+(pdftex.def)             Requested size: 118.52538pt x 107.63666pt.
+
+<pics/permutation/stencil_2d_7pt.pdf, id=385, 329.15373pt x 329.15373pt>
+File: pics/permutation/stencil_2d_7pt.pdf Graphic file (type pdf)
+
+<use pics/permutation/stencil_2d_7pt.pdf>
+Package pdftex.def Info: pics/permutation/stencil_2d_7pt.pdf used on input line
+ 62.
+(pdftex.def)             Requested size: 118.52538pt x 107.63666pt.
+
+<pics/permutation/levelPtr.pdf, id=386, 21.58363pt x 109.99995pt>
+File: pics/permutation/levelPtr.pdf Graphic file (type pdf)
+
+<use pics/permutation/levelPtr.pdf>
+Package pdftex.def Info: pics/permutation/levelPtr.pdf used on input line 64.
+(pdftex.def)             Requested size: 25.93117pt x 107.64143pt.
+ [10 <./pics/level_construction/stencil_2d_7pt.pdf> <./pics/permutation/stencil
+_2d_7pt.pdf> <./pics/permutation/levelPtr.pdf>]
+Package hyperref Info: bookmark level for unknown corollary defaults to 0 on in
+put line 86.
+Package hyperref Info: bookmark level for unknown proof defaults to 0 on input 
+line 90.
+
+<pics/dk_coloring/stencil_2d_7pt_d1.pdf, id=442, 329.15373pt x 329.15373pt>
+File: pics/dk_coloring/stencil_2d_7pt_d1.pdf Graphic file (type pdf)
+
+<use pics/dk_coloring/stencil_2d_7pt_d1.pdf>
+Package pdftex.def Info: pics/dk_coloring/stencil_2d_7pt_d1.pdf used on input l
+ine 102.
+(pdftex.def)             Requested size: 148.15295pt x 119.59517pt.
+
+<pics/dk_coloring/stencil_2d_7pt_d2_with_lg.pdf, id=443, 401.94466pt x 389.3546
+1pt>
+File: pics/dk_coloring/stencil_2d_7pt_d2_with_lg.pdf Graphic file (type pdf)
+ <use pics/dk_coloring/stencil_2d_7pt_d2_with_lg.pdf>
+Package pdftex.def Info: pics/dk_coloring/stencil_2d_7pt_d2_with_lg.pdf used on
+ input line 104.
+(pdftex.def)             Requested size: 177.7823pt x 137.53566pt.
+ [11]
+<pics/load_balancing/lb_alg/lb_all.pdf, id=468, 1230.34656pt x 422.64197pt>
+File: pics/load_balancing/lb_alg/lb_all.pdf Graphic file (type pdf)
+
+<use pics/load_balancing/lb_alg/lb_all.pdf>
+Package pdftex.def Info: pics/load_balancing/lb_alg/lb_all.pdf used on input li
+ne 123.
+(pdftex.def)             Requested size: 370.38342pt x 131.55936pt.
+
+<pics/load_balancing/2d-7pt/stencil_2d_7pt.pdf, id=469, 677.48003pt x 677.48003
+pt>
+File: pics/load_balancing/2d-7pt/stencil_2d_7pt.pdf Graphic file (type pdf)
+ <use pics/load_balancing/2d-7pt/stencil_2d_7pt.pdf>
+Package pdftex.def Info: pics/load_balancing/2d-7pt/stencil_2d_7pt.pdf used on 
+input line 131.
+(pdftex.def)             Requested size: 210.0063pt x 155.47598pt.
+
+Underfull \vbox (badness 1546) has occurred while \output is active []
+
+ [12 <./pics/dk_coloring/stencil_2d_7pt_d1.pdf> <./pics/dk_coloring/stencil_2d_
+7pt_d2_with_lg.pdf>]
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 144.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 144.
+
+[13 <./pics/load_balancing/lb_alg/lb_all.pdf> <./pics/load_balancing/2d-7pt/ste
+ncil_2d_7pt.pdf>]
+<pics/recursion/d1/rec_graph_s1/recursion_graph_1.pdf, id=555, 108.69107pt x 10
+5.35861pt>
+File: pics/recursion/d1/rec_graph_s1/recursion_graph_1.pdf Graphic file (type p
+df)
+ <use pics/recursion/d1/rec_graph_s1/recursion_graph_1.pdf>
+Package pdftex.def Info: pics/recursion/d1/rec_graph_s1/recursion_graph_1.pdf u
+sed on input line 148.
+(pdftex.def)             Requested size: 96.30022pt x 83.72432pt.
+
+<pics/recursion/d1/rec_graph_s1/recursion_graph_2.pdf, id=556, 109.09157pt x 10
+7.1212pt>
+File: pics/recursion/d1/rec_graph_s1/recursion_graph_2.pdf Graphic file (type p
+df)
+ <use pics/recursion/d1/rec_graph_s1/recursion_graph_2.pdf>
+Package pdftex.def Info: pics/recursion/d1/rec_graph_s1/recursion_graph_2.pdf u
+sed on input line 150.
+(pdftex.def)             Requested size: 96.30215pt x 83.72253pt.
+
+<pics/recursion/d1/rec_graph_s1/recursion_graph_3.pdf, id=557, 109.09157pt x 10
+7.1212pt>
+File: pics/recursion/d1/rec_graph_s1/recursion_graph_3.pdf Graphic file (type p
+df)
+ <use pics/recursion/d1/rec_graph_s1/recursion_graph_3.pdf>
+Package pdftex.def Info: pics/recursion/d1/rec_graph_s1/recursion_graph_3.pdf u
+sed on input line 152.
+(pdftex.def)             Requested size: 96.30215pt x 83.72253pt.
+
+<pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_1.pdf, id=561, 128.52516
+pt x 107.34103pt>
+File: pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_1.pdf Graphic file 
+(type pdf)
+
+<use pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_1.pdf>
+Package pdftex.def Info: pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_
+1.pdf used on input line 161.
+(pdftex.def)             Requested size: 96.29753pt x 83.72238pt.
+
+<pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_2.pdf, id=562, 31.78575p
+t x 135.15092pt>
+File: pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_2.pdf Graphic file 
+(type pdf)
+
+<use pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_2.pdf>
+Package pdftex.def Info: pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_
+2.pdf used on input line 163.
+(pdftex.def)             Requested size: 29.63171pt x 83.72052pt.
+
+<pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_3.pdf, id=563, 31.78575p
+t x 135.15092pt>
+File: pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_3.pdf Graphic file 
+(type pdf)
+
+<use pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_3.pdf>
+Package pdftex.def Info: pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_
+3.pdf used on input line 165.
+(pdftex.def)             Requested size: 25.92963pt x 83.72052pt.
+
+<pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_4.pdf, id=564, 31.78575p
+t x 135.15092pt>
+File: pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_4.pdf Graphic file 
+(type pdf)
+
+<use pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_4.pdf>
+Package pdftex.def Info: pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_
+4.pdf used on input line 167.
+(pdftex.def)             Requested size: 25.92963pt x 83.72052pt.
+
+<pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_5.pdf, id=565, 31.78575p
+t x 135.15092pt>
+File: pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_5.pdf Graphic file 
+(type pdf)
+
+<use pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_5.pdf>
+Package pdftex.def Info: pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_
+5.pdf used on input line 169.
+(pdftex.def)             Requested size: 25.92963pt x 83.72052pt.
+ [14 <./pics/recursion/d1/rec_graph_s1/recursion_graph_1.pdf> <./pics/recursion
+/d1/rec_graph_s1/recursion_graph_2.pdf> <./pics/recursion/d1/rec_graph_s1/recur
+sion_graph_3.pdf> <./pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_1.pd
+f> <./pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_2.pdf> <./pics/recu
+rsion/d1/rec_graph_s2/recursion_graph_stage2_3.pdf> <./pics/recursion/d1/rec_gr
+aph_s2/recursion_graph_stage2_4.pdf> <./pics/recursion/d1/rec_graph_s2/recursio
+n_graph_stage2_5.pdf>]
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 185.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 185.
+
+
+<pics/recursion/d2/wrong/recursion_graph_wrong_1.pdf, id=665, 174.05025pt x 160
+.25873pt>
+File: pics/recursion/d2/wrong/recursion_graph_wrong_1.pdf Graphic file (type pd
+f)
+ <use pics/recursion/d2/wrong/recursion_graph_wrong_1.pdf>
+Package pdftex.def Info: pics/recursion/d2/wrong/recursion_graph_wrong_1.pdf us
+ed on input line 190.
+(pdftex.def)             Requested size: 85.18709pt x 77.7425pt.
+
+<pics/recursion/d2/wrong/recursion_graph_wrong_2.pdf, id=666, 174.05025pt x 85.
+3579pt>
+File: pics/recursion/d2/wrong/recursion_graph_wrong_2.pdf Graphic file (type pd
+f)
+ <use pics/recursion/d2/wrong/recursion_graph_wrong_2.pdf>
+Package pdftex.def Info: pics/recursion/d2/wrong/recursion_graph_wrong_2.pdf us
+ed on input line 192.
+(pdftex.def)             Requested size: 85.18709pt x 41.86479pt.
+
+<pics/recursion/d2/wrong/recursion_graph_wrong_3.pdf, id=667, 174.05025pt x 85.
+3579pt>
+File: pics/recursion/d2/wrong/recursion_graph_wrong_3.pdf Graphic file (type pd
+f)
+ <use pics/recursion/d2/wrong/recursion_graph_wrong_3.pdf>
+Package pdftex.def Info: pics/recursion/d2/wrong/recursion_graph_wrong_3.pdf us
+ed on input line 194.
+(pdftex.def)             Requested size: 85.18709pt x 41.86479pt.
+
+<pics/recursion/d2/wrong/recursion_graph_wrong_4.pdf, id=668, 174.05025pt x 147
+.5402pt>
+File: pics/recursion/d2/wrong/recursion_graph_wrong_4.pdf Graphic file (type pd
+f)
+ <use pics/recursion/d2/wrong/recursion_graph_wrong_4.pdf>
+Package pdftex.def Info: pics/recursion/d2/wrong/recursion_graph_wrong_4.pdf us
+ed on input line 196.
+(pdftex.def)             Requested size: 85.18709pt x 77.74117pt.
+
+<pics/recursion/d2/correct/recursion_graph_correct_1.pdf, id=678, 174.05025pt x
+ 160.25873pt>
+File: pics/recursion/d2/correct/recursion_graph_correct_1.pdf Graphic file (typ
+e pdf)
+ <use pics/recursion/d2/correct/recursion_graph_correct_1.pdf>
+Package pdftex.def Info: pics/recursion/d2/correct/recursion_graph_correct_1.pd
+f used on input line 209.
+(pdftex.def)             Requested size: 81.48492pt x 77.7425pt.
+
+<pics/recursion/d2/correct/recursion_graph_correct_2.pdf, id=679, 174.05025pt x
+ 128.03734pt>
+File: pics/recursion/d2/correct/recursion_graph_correct_2.pdf Graphic file (typ
+e pdf)
+ <use pics/recursion/d2/correct/recursion_graph_correct_2.pdf>
+Package pdftex.def Info: pics/recursion/d2/correct/recursion_graph_correct_2.pd
+f used on input line 211.
+(pdftex.def)             Requested size: 81.48492pt x 62.78767pt.
+
+<pics/recursion/d2/correct/recursion_graph_correct_3.pdf, id=680, 174.05025pt x
+ 128.03734pt>
+File: pics/recursion/d2/correct/recursion_graph_correct_3.pdf Graphic file (typ
+e pdf)
+ <use pics/recursion/d2/correct/recursion_graph_correct_3.pdf>
+Package pdftex.def Info: pics/recursion/d2/correct/recursion_graph_correct_3.pd
+f used on input line 213.
+(pdftex.def)             Requested size: 81.48492pt x 62.78767pt.
+
+<pics/recursion/d2/correct/recursion_graph_correct_4.pdf, id=681, 174.05025pt x
+ 120.1007pt>
+File: pics/recursion/d2/correct/recursion_graph_correct_4.pdf Graphic file (typ
+e pdf)
+ <use pics/recursion/d2/correct/recursion_graph_correct_4.pdf>
+Package pdftex.def Info: pics/recursion/d2/correct/recursion_graph_correct_4.pd
+f used on input line 215.
+(pdftex.def)             Requested size: 81.48492pt x 62.78807pt.
+
+[15 <./pics/recursion/d2/wrong/recursion_graph_wrong_1.pdf> <./pics/recursion/d
+2/wrong/recursion_graph_wrong_2.pdf> <./pics/recursion/d2/wrong/recursion_graph
+_wrong_3.pdf> <./pics/recursion/d2/wrong/recursion_graph_wrong_4.pdf>]
+<pics/recursion/2d-7pt_example/tree/tree.pdf, id=745, 754.92342pt x 289.53268pt
+>
+File: pics/recursion/2d-7pt_example/tree/tree.pdf Graphic file (type pdf)
+ <use pics/recursion/2d-7pt_example/tree/tree.pdf>
+Package pdftex.def Info: pics/recursion/2d-7pt_example/tree/tree.pdf used on in
+put line 227.
+(pdftex.def)             Requested size: 370.388pt x 119.59715pt.
+
+<pics/recursion/2d-7pt_example/2d-7pt/stencil_2d_7pt.pdf, id=746, 675.58698pt x
+ 675.58698pt>
+File: pics/recursion/2d-7pt_example/2d-7pt/stencil_2d_7pt.pdf Graphic file (typ
+e pdf)
+ <use pics/recursion/2d-7pt_example/2d-7pt/stencil_2d_7pt.pdf>
+Package pdftex.def Info: pics/recursion/2d-7pt_example/2d-7pt/stencil_2d_7pt.pd
+f used on input line 233.
+(pdftex.def)             Requested size: 206.66708pt x 149.49551pt.
+
+[16 <./pics/recursion/d2/correct/recursion_graph_correct_1.pdf> <./pics/recursi
+on/d2/correct/recursion_graph_correct_2.pdf> <./pics/recursion/d2/correct/recur
+sion_graph_correct_3.pdf> <./pics/recursion/d2/correct/recursion_graph_correct_
+4.pdf> <./pics/recursion/2d-7pt_example/tree/tree.pdf> <./pics/recursion/2d-7pt
+_example/2d-7pt/stencil_2d_7pt.pdf>]) (./experiment_and_results.tex [17]
+<pics/results/ivy/race.pdf, id=821, 2172.36986pt x 653.50246pt>
+File: pics/results/ivy/race.pdf Graphic file (type pdf)
+
+<use pics/results/ivy/race.pdf>
+Package pdftex.def Info: pics/results/ivy/race.pdf used on input line 11.
+(pdftex.def)             Requested size: 181.4834pt x 65.77287pt.
+
+<pics/results/ivy/symm_spmv.pdf, id=822, 2172.36986pt x 653.5035pt>
+File: pics/results/ivy/symm_spmv.pdf Graphic file (type pdf)
+
+<use pics/results/ivy/symm_spmv.pdf>
+Package pdftex.def Info: pics/results/ivy/symm_spmv.pdf used on input line 12.
+(pdftex.def)             Requested size: 181.4834pt x 65.77298pt.
+
+<pics/results/ivy/gs.pdf, id=823, 2146.30765pt x 593.3076pt>
+File: pics/results/ivy/gs.pdf Graphic file (type pdf)
+
+<use pics/results/ivy/gs.pdf>
+Package pdftex.def Info: pics/results/ivy/gs.pdf used on input line 14.
+(pdftex.def)             Requested size: 181.4676pt x 65.78006pt.
+
+<pics/results/ivy/kacz.pdf, id=824, 2146.30765pt x 605.19502pt>
+File: pics/results/ivy/kacz.pdf Graphic file (type pdf)
+
+<use pics/results/ivy/kacz.pdf>
+Package pdftex.def Info: pics/results/ivy/kacz.pdf used on input line 15.
+(pdftex.def)             Requested size: 181.4676pt x 65.77748pt.
+
+<pics/results/skx/race.pdf, id=825, 2172.38701pt x 664.1673pt>
+File: pics/results/skx/race.pdf Graphic file (type pdf)
+
+<use pics/results/skx/race.pdf>
+Package pdftex.def Info: pics/results/skx/race.pdf used on input line 22.
+(pdftex.def)             Requested size: 181.48482pt x 65.77202pt.
+
+<pics/results/skx/symm_spmv.pdf, id=826, 2172.38701pt x 664.1673pt>
+File: pics/results/skx/symm_spmv.pdf Graphic file (type pdf)
+
+<use pics/results/skx/symm_spmv.pdf>
+Package pdftex.def Info: pics/results/skx/symm_spmv.pdf used on input line 23.
+(pdftex.def)             Requested size: 181.48482pt x 65.77202pt.
+
+<pics/results/skx/gs.pdf, id=827, 2146.30765pt x 599.04301pt>
+File: pics/results/skx/gs.pdf Graphic file (type pdf)
+
+<use pics/results/skx/gs.pdf>
+Package pdftex.def Info: pics/results/skx/gs.pdf used on input line 25.
+(pdftex.def)             Requested size: 181.4676pt x 65.7761pt.
+
+<pics/results/skx/kacz.pdf, id=828, 2146.30765pt x 600.54662pt>
+File: pics/results/skx/kacz.pdf Graphic file (type pdf)
+
+<use pics/results/skx/kacz.pdf>
+Package pdftex.def Info: pics/results/skx/kacz.pdf used on input line 26.
+(pdftex.def)             Requested size: 181.4676pt x 65.77626pt.
+ [18 <./pics/results/ivy/race.pdf> <./pics/results/ivy/symm_spmv.pdf> <./pics/r
+esults/ivy/gs.pdf> <./pics/results/ivy/kacz.pdf> <./pics/results/skx/race.pdf> 
+<./pics/results/skx/symm_spmv.pdf> <./pics/results/skx/gs.pdf> <./pics/results/
+skx/kacz.pdf>]) [19] [20] (./race.bbl
+Missing character: There is no Ã in font cmcsc10!
+Missing character: There is no ­ in font cmcsc10!
+
+Underfull \hbox (badness 1052) in paragraph at lines 109--111
+[]\OT1/cmr/m/sc/8 E. Polizzi\OT1/cmr/m/n/8 , \OT1/cmr/m/it/8 A den-sity matrix-
+based al-go-rithm for solv-ing eigen-value prob-lems\OT1/cmr/m/n/8 , CoRR,
+ []
+
+
+Underfull \hbox (badness 3417) in paragraph at lines 119--124
+\OT1/cmr/m/n/8 epubs . siam . org / doi / abs / 10 . 1137 / 1 . 9780898718003$[
+][], [][]$https : / / arxiv . org / abs / https : / / epubs .
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [21])
+[22]
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 204.
+\tf@thm=\write4
+\openout4 = `race.thm'.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 284.
+ [23] [24]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 284.
+ (./race.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 284.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 284.
+Package rerunfilecheck Info: File `race.out' has not changed.
+(rerunfilecheck)             Checksum: 2D0CC0A39384D0F469DF3538E4B7A427;1811.
+
+
+LaTeX Warning: There were undefined references.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 284.
+ ) 
 Here is how much of TeX's memory you used:
- 6052 strings out of 494901
- 86009 string characters out of 6178618
- 176515 words of memory out of 5000000
- 9341 multiletter control sequences out of 15000+600000
- 3640 words of font info for 14 fonts, out of 8000000 for 9000
- 14 hyphenation exceptions out of 8191
- 37i,0n,39p,259b,47s stack positions out of 5000i,500n,10000p,200000b,80000s
-!  ==> Fatal error occurred, no output PDF file produced!
+ 10776 strings out of 493029
+ 173353 string characters out of 6136234
+ 386340 words of memory out of 5000000
+ 13852 multiletter control sequences out of 15000+600000
+ 11894 words of font info for 47 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 37i,18n,49p,1579b,872s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
+r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/share
+/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/share/texl
+ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/te
+xmf-dist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr
+10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb>
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/s
+hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/tex
+live/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/publ
+ic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8
+.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb><
+/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti8.pfb></usr/sh
+are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/te
+xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt8.pfb></usr/share/texlive/t
+exmf-dist/fonts/type1/urw/zapfding/uzdr.pfb>
+Output written on race.pdf (24 pages, 774279 bytes).
+PDF statistics:
+ 1143 PDF objects out of 1200 (max. 8388607)
+ 1017 compressed objects within 11 object streams
+ 275 named destinations out of 1000 (max. 500000)
+ 441 words of extra memory for PDF output out of 10000 (max. 10000000)
+
