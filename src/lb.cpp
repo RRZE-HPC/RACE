@@ -334,16 +334,17 @@ void LB::splitZones()
 
     currLvlThreads = scale.size();
 
-    /*
-    for(int i=0; i<currLvlThreads; ++i)
-    {
-        printf("scale[%d] = %d\n", i, scale[i]);
-    }
 
-    for(int i=0; i<currLvlThreads+1; ++i)
-    {
-        printf("initLvlPtr[%d] = %d\n", i, initialLvlPtr[i]);
-    }*/
+    /*DEBUG
+       for(int i=0; i<currLvlThreads; ++i)
+       {
+       printf("scale[%d] = %d\n", i, scale[i]);
+       }
+
+       for(int i=0; i<currLvlThreads+1; ++i)
+       {
+       printf("initLvlPtr[%d] = %d\n", i, initialLvlPtr[i]);
+       }*/
 
 
     totalBlocks = blockPerThread*currLvlThreads;
@@ -410,39 +411,57 @@ void LB::splitZones()
             double myMean = meanVar.mean[rankIdx%blockPerThread];
             bool fail = false;
 
-            //If I am less than mean
-            if(chunkSum[rankIdx] < myMean)
-            {
-                //try to acquire from my neighbours
-                int acquireIdx = findNeighbour(meanVar, acquire);
-                if(acquireIdx==-1)
-                {
-                    fail = true;
-                }
-                moveOneStep(rankIdx, acquireIdx);
-            }
-            // If I am greater than mean
-            else if( (levelPtr[rankIdx+1] - levelPtr[rankIdx]) > minGap)
-            {
-                //try to give to my neighbours
-                int giveIdx = findNeighbour(meanVar, give);
-                if(giveIdx==-1)
-                {
-                    fail = true;
-                }
-                moveOneStep(giveIdx, rankIdx);
-            }
+            //maybe moving one step does nothing due to 0 elements in levels
+            //for example Spin-26 and subBlock, therefore in this case move more
+            //step till a change happens
+            bool movePossible = true;
+            double currVar = newVar;
 
-            if(!fail)
+            while(movePossible && fabs(currVar-newVar)<1e-5)
             {
-                calcChunkSum(newChunkSum);
-                Stat newMeanVar(newChunkSum, totalBlocks, blockPerThread, scale);
-                //newMeanVar.calculate();
-
-                newVar = 0;
-                for(int i=0; i<newMeanVar.numPartitions; ++i)
+                //If I am less than mean
+                if(chunkSum[rankIdx] < myMean)
                 {
-                    newVar += newMeanVar.var[i];
+                    //try to acquire from my neighbours
+                    int acquireIdx = findNeighbour(meanVar, acquire);
+                    if(acquireIdx==-1)
+                    {
+                        fail = true;
+                        movePossible = false;
+                    }
+                    moveOneStep(rankIdx, acquireIdx);
+                }
+                // If I am greater than mean
+                else
+                {
+                    if( (levelPtr[rankIdx+1] - levelPtr[rankIdx]) > minGap)
+                    {
+                        //try to give to my neighbours
+                        int giveIdx = findNeighbour(meanVar, give);
+                        if(giveIdx==-1)
+                        {
+                            movePossible = false;
+                            fail = true;
+                        }
+                        moveOneStep(giveIdx, rankIdx);
+                    }
+                    else
+                    {
+                        movePossible = false;
+                    }
+                }
+
+                if(!fail)
+                {
+                    calcChunkSum(newChunkSum);
+                    Stat newMeanVar(newChunkSum, totalBlocks, blockPerThread, scale);
+                    //newMeanVar.calculate();
+
+                    newVar = 0;
+                    for(int i=0; i<newMeanVar.numPartitions; ++i)
+                    {
+                        newVar += newMeanVar.var[i];
+                    }
                 }
             }
 
@@ -460,7 +479,7 @@ void LB::splitZones()
     delete[] chunkSum;
     delete[] newChunkSum;
 
-    /*
+    /*DEBUG
     printf("Final lvl ptr\n");
     for(int i=0; i<levelPtrSize; ++i)
     {
@@ -475,7 +494,7 @@ void LB::splitZones()
     //TODO: Simulate LLC cache here
     int cacheSize = 100*1024*1024;
     int nnzr = 27;
-    int blockedSize = cacheSize/(8*2 + nnzr*12);
+    int blockedSize = levelData->nrow*0 + cacheSize/(8*2 + nnzr*12);
 
     int maxLvlNrow = 0;
     //blockedSize has to be greater than a single level size
