@@ -424,7 +424,7 @@ void LB::splitZones()
                 {
                     //try to acquire from my neighbours
                     int acquireIdx = findNeighbour(meanVar, acquire);
-                    if(acquireIdx==-1)
+                    if(acquireIdx==-1 || (acquireIdx==rankIdx))
                     {
                         fail = true;
                         movePossible = false;
@@ -438,7 +438,7 @@ void LB::splitZones()
                     {
                         //try to give to my neighbours
                         int giveIdx = findNeighbour(meanVar, give);
-                        if(giveIdx==-1)
+                        if(giveIdx==-1 || (rankIdx==giveIdx))
                         {
                             movePossible = false;
                             fail = true;
@@ -463,6 +463,7 @@ void LB::splitZones()
                         newVar += newMeanVar.var[i];
                     }
                 }
+
             }
 
             if( (currRank == (totalBlocks-1)) && (newVar>=var) )
