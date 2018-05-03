@@ -1,5 +1,5 @@
 \subsection{Test bed}
-The tests are conducted on three different multi-core architectures. Two of them being Intel's \IVB and modern \SKX architecture, the choice of these architectures enables a good comparison of our method on both \LCCfull (LCC) and \HCCfull (HCC) architectures, which would play an important role in the convergence of the method we develop. As a third choice we select AMD's recent \EPY architecture, which is competitive to Intel \SKX architecture. This choice enables us to study the effect of our method on chips based on completely different microarchitecture, enabling us to demonstrate the applicability of our method on wide range of architectures. All the tests are conducted on a single socket of these architectures. 
+The tests are conducted on three different multi-core architectures. Two of them being Intel's \IVB and modern \SKX architecture, the choice of these architectures enable study of the method on two extreme generation of Intel's processor currently being used on \HPC systems. As a third choice we select AMD's recent \EPY architecture, which is competitive to Intel \SKX architecture. This choice enables us to study the effect of our method on chips based on completely different microarchitecture, enabling us to demonstrate the applicability of our method on wide range of architectures. All the tests are conducted on a single socket of these architectures. 
 
 \begin{itemize}
 	\item \Intel \IVB architecture belongs to class of classic Intel's cache-based architecture, which has three inclusive cache  hierarchies. All the cache are scalacble and the \LLC (L3) being shared among all the cores on one socket. The processor is capable of delivering one full four wide \SIMD add, multiply and load in one cycle. 
@@ -27,18 +27,27 @@ The details of architectures along with the measured bandwidths are given in \cr
 		{L3 Cache} & {25 \MB} & {27.5 \MB} & {8 $\times$ 8 \MB}\\
 		{L3 type} & {inclusive} & {non-inclusive} & {non-inclusive}\\
 		{Main Memory} & {32 GB} & {45 GB} & {4 $\times$ 16 GB}\\
-		{Bandwidth - load only)} & {47 GB/s} & {110 GB/s} & {130 GB/s }\\ %TODO
-		{Bandwidth - copy} & {40 GB/s} & {110 GB/s} & {114 GB/s }\\
+		{Bandwidth - load only} & {47 GB/s} & {115 GB/s} & {130 GB/s }\\ %TODO
+		{Bandwidth - copy} & {40 GB/s} & {104 GB/s} & {114 GB/s }\\
 		{Architecture specific flag} & {-} & {-xCORE-AVX512} & {-}\\
 		\bottomrule
 	\end{tabular}
 \end{center}
 \end{table} 
 
-The code was compiled with newest Intel compiler version 18 and the following compiler flags were set {\tt -fno-alias -xHost -O3}. Furthermore all the measurements were done with  \CPU clock speeds fixed at frequencies indicated in \cref{tab:test_bed}.
+The code was compiled with newest Intel compiler version 17 and the following compiler flags were set {\tt -fno-alias -xHost -O3}. Furthermore all the measurements were done with  \CPU clock speeds fixed at frequencies indicated in \cref{tab:test_bed}.
+
+\subsection{External Tolls and Software}
+\begin{itemize}
+	%TODO
+	\item LIKWID
+	\item ColPACK
+	\item SpMP
+	\item METIS
+\end{itemize}
 
 \subsection{Benchmark Matrices}
-All the test matrices are taken from SuiteSparse Matrix Collection (former University of Florida Sparse Matrix Collection) \cite{UOF} and \ESSEX project \cite{ESSEX}. The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by combining the test matrices from two papers \cite{RSB,park_ls}. This enables easy comparison of results. Matrices from \ESSEX project are some of the matrices that are of interest in the FEAST eigen value solver.  Only matrices having undirected graphs are considered due to scope of the paper as mentioned in \cref{Sec:contribution}. Matrices along with some of their parameters are given in \cref{table:bench_matrices}.  Matrices that have been marked with an * symbol indicate they are corner cases and will be discussed in detail.
+All the test matrices are taken from SuiteSparse Matrix Collection (former University of Florida Sparse Matrix Collection) \cite{UOF} and quantum mechanics field (see \ESSEX project \cite{ESSEX} for more details). The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by combining the test matrices from two papers \cite{RSB,park_ls}. This enables easy comparison of results. Matrices from \ESSEX project are some of the matrices that are of interest in the FEAST eigen value solver.  Only matrices having undirected graphs are considered due to scope of the paper as mentioned in \cref{Sec:contribution}. Matrices along with some of their parameters are given in \cref{table:bench_matrices}.  Matrices that have been marked with an * symbol indicate they are corner cases and will be discussed in detail.
 
 \begin{table}[ht]
 	\footnotesize
@@ -119,7 +128,7 @@ I_{SymmSpMV} = \frac{4}{8+4+32*\alpha+\frac{16}{\NNZRmathSYMM}} \\
 
 Note that \NNZRSYMM is the number of non-zeros per row in upper triangular part of the matrix.
 
-\subsubsection{\GS}
+\subsubsection{\GS and \SYMMGS}
 Gauss-Seidel (\GS) is a solver having distance-1 dependency. Contrary to the above kernels \GS is in-exact meaning it is an iterative method. Alg. \ref{alg:GS} shows the Gauss-Seidel algorithm where its assumed that the diagonal entries of the matrix is stored as first entry in their corresponding rows.
 \begin{algorithm}[H]
 	\caption{GS Solve for $x$ : $Ax=b$} 
@@ -141,7 +150,9 @@ Regarding the in-core execution the kernel has same properties as of \SpMV, but 
 I_{GS} = I_{SPMV}
 \end{equation}
 
-\subsubsection{KACZ}
+In general for most of the algorithms one is interested in symmetric operator therefore commonly one would encounter symmetric variant of Gauss-Seidel, so called symmetric Gauss-Seidel (\SYMMGS). The algorithm remains same except that instead of just doing forward sweep shown in \cref{alg:GS} one would follow it with a backward sweep \ie {\tt row=nrows:-1:1}. The intensity of \SYMMGS remains same as of \GS, as we do two times more flops and bring in proportional data.
+
+\subsubsection{KACZ and \SYMMKACZ}
 Kaczmarz (\KACZ) is an iterative solver based on row-projection based methods. The solver has a distance-2 dependency.
 \begin{algorithm}[H]
 	\caption{KACZ Solve for $x$ : $Ax=b$} 
@@ -167,3 +178,5 @@ In-core has a mixed behavior of both SpMV and SpMTV similar to SymmSpMV. The sol
 \label{eq:KACZ_intensity}
 I_{KACZ} =  \frac{4}{8+4+16*\alpha+\frac{8}{nnzr}} = 2*I_{SpMTV}\\
 \end{equation}
+
+Symmetric variant of \KACZ is denoted by \SYMMKACZ, and similar to \SYMMGS this requires forward sweep followed by a backward sweep. 

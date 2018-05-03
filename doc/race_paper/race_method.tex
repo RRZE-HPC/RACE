@@ -29,7 +29,7 @@ To explain the method in an easier and illustrative way we choose a simple matri
 \subsection*{Definitions}
 The following basic definitions from graph theory are used in the following sections:
 \begin{itemize}
-	\item \textbf{Graph : } $G = (V,E)$ represents a graph where $V(G)$ belongs to set of vertices and $E(G)$ represents the edges in the graph. Note that here we specifically denote $G$ for fully connected undirected graphs.
+	\item \textbf{Graph : } $G = (V,E)$ represents a graph where $V(G)$ belongs to set of vertices and $E(G)$ represents the edges in the graph. Note that here we specifically denote $G$ for irreducible undirected graphs.
 	\item \textbf{Neighborhood :} Neighborhood of vertex $u$ represented as $N(u)$ is defined as:
 	\begin{equation*}
 	  N(u) = \set{ v : uv \in E}
@@ -41,19 +41,20 @@ The following basic definitions from graph theory are used in the following sect
 \end{itemize}
 
 \subsection{Level Construction}\label{subsec:LEVEL_CONST}
-The first step of the \RACE method is level construction. The step concerns with finding different \levels in the graph. First \level ($L(0)$) is chosen to consist of a selected a root vertex. Level $i$ ($L(i)$) for $i > 0$ is defined to  contain vertices that are in neighborhood of vertices in previous \level ($L(i-1)$) and not in $L(i-2)$ \ie
+The first step of the \RACE method is level construction. The step concerns with finding different \levels in the graph, \levels used here are same to the ones found in ``Breadth First Search" (\BFS) algorithm. First \level ($L(0)$) is chosen to consist of a selected root vertex. Rest of the levels ($L(i)$ for $i > 0$) are defined to  contain vertices that are in neighborhood of vertices in previous \level ($L(i-1)$) and not in $L(i-2)$ \ie
 \begin{equation}\label{eq:level}
 L(i) = 
 \begin{cases}
-	  u : u \in N(L(i-1)) \cap N(L(i-2))'  & \text{ if } i \neq 0 \\
+	  u : u \in N(L(i-1)) \cap \overline{N(L(i-2))}  & \text{ if } i \neq 0 \\
 	 root & otherwise
 \end{cases}   
 \end{equation}
 
-These \levels are same to the ones found in ``Breadth First Search" (\BFS) traversal and aims to find the minimum distance from the root node. Note that this is substantially different to the \levels in methods like ``level-scheduling" \cite{saad} where maximum distance is sought after. \Cref{alg:BFS} shows an algorithm to find each nodes minimum distance from root, L($i$) consists of all the nodes having a distance of $i$ from the root. Total number of levels obtained with this graph traversal will be denoted as \totalLvl. \Cref{fig:2d_7pt_level_construction} shows \levels on the \STEX (\totalLvl = 14), the main number on each vertex refers to the vertex number and the superscript shows the \level number, \ie
+ One could easily observe from \cref{eq:level} $i$-th \level consist of all vertices that have a minimum distance of $i$ from the root node. \Cref{alg:BFS} shows an algorithm to find each nodes minimum distance from root. Total number of levels obtained with this graph traversal will be denoted as \totalLvl. \Cref{fig:2d_7pt_level_construction} shows \levels on the \STEX (\totalLvl = 14), the main number on each vertex refers to the vertex number and the superscript shows the \level number, \ie
 \begin{equation}\label{eq:node_notation}
 	n^i \implies n \in L(i)
 \end{equation}
+Note that this is substantially different to the \levels in methods like ``level-scheduling" \cite{saad} where depth (maximum distance) is sought after.
 
 \begin{figure}[tbhp]
 	\centering
@@ -108,15 +109,16 @@ Once the \levels are known one has to permute the matrix in the order of its \le
  
   Due to this weak definition in \cref{corollary_dk} there exists many possibility to make \levels independent of each other and \cref{fig:2d-7pt_d1_d2} shows one such possibility each for \DONE and \DTWO independent \levels. One could group some of the nearby \levels together to form a \levelGroup, and make this \DONE or \DTWO independent of other \levelGroups. The $i$-th \levelGroup would be denoted by $T(i)$. Difference between \level and  \levelGroup can be seen in \cref{fig:2d_7pt_d2}, for \cref{fig:2d_7pt_d1} \levelGroup and \level coincides.
   
-  In principle one could compute on all independent \levelGroups in parallel, but serial within a \levelGroup, i.e. for example in \cref{fig:2d_7pt_d2} $T(0)$, $T(2)$, $T(4)$, $T(6)$ can be operated by four different threads in parallel and in the next sweep rest \levelGroups. For the configurations seen in \cref{fig:2d-7pt_d1_d2} this would mean we have $\frac{\totalLvlMATH}{2}$ and $\frac{\totalLvlMATH}{4}$ parallelism for \DONE and \DTWO kernels respectively. 
+  In principle one could compute on all independent \levelGroups in parallel, but serial within a \levelGroup, i.e. for example in \cref{fig:2d_7pt_d2} $T(0)$, $T(2)$, $T(4)$, $T(6)$ can be operated by four different threads in parallel and in the next sweep rest \levelGroups. For the configurations seen in \cref{fig:2d-7pt_d1_d2} this would mean we have $\frac{\totalLvlMATH}{2}$ and $\frac{\totalLvlMATH}{4}$ parallelism for \DONE and \DTWO kernels respectively.
   
-  But the problem with the configurations like the one seen in \cref{fig:2d-7pt_d1_d2} is that there is load imbalances between threads as the non-zeros per \levelGroup is not distributed evenly. As seen here in the case of \STEX the threads working on extreme ends of graph (\eg $T(1), T(7)$) have small amount of work compared to the threads working on middle (\eg $T(3), T(4)$). 
+  But the problem with the configurations like the one seen in \cref{fig:2d-7pt_d1_d2} is that there is load imbalances between threads as the number of rows (\nrows) per \levelGroup is not distributed evenly. As seen here in the case of \STEX the threads working on extreme ends of graph (\eg $T(1), T(7)$) have small amount of work compared to the threads working on middle (\eg $T(3), T(4)$). 
   
   \subsection{Load balancing}\label{subsec:LB}
-  Depending on the matrix each \levelGroup would contain different number of non-zeros, which leads to load imbalances as seen above in \cref{subsec:DK}. \Inorder to avoid this problem we employ a load balancing scheme. At this step we plug in detail from hardware side like total parallelism. The idea is to exploit only the parallelism as required by the hardware while at the same time maintain \DK constraint seen in \cref{corollary_dk}. To balance the load more nearby \levels would be added to a \levelGroup which has less number of non-zeros and at \levelGroup where we have considerably big \levels only sufficient amount of \levels to maintain \DK constraint would be assigned. Assigning nearby levels instead of a random level further helps in preserving data locality. 
+  Depending on the matrix each \levelGroup would contain different number of rows, which leads to load imbalances as seen above in \cref{subsec:DK}. \Inorder to avoid this problem we employ a load balancing scheme. At this step we plug in detail from hardware side like total parallelism. The idea is to exploit only the parallelism as required by the hardware while at the same time maintain \DK constraint seen in \cref{corollary_dk}. To balance the load more nearby \levels would be added to a \levelGroup which has less number of \nrows and at \levelGroup where we have considerably big \levels only sufficient amount of \levels to maintain \DK constraint would be assigned. Assigning nearby levels instead of a random level further helps in preserving data locality. 
   
-  An algorithm for load balancing can be found in \cref{alg:LB}. The aim of the algorithm is to reduce combined variance of number of non-zeros in each \levelGroup ($T\_size(i)$ refers to non-zeros in \levelGroup $i$). It does this by calculating mean and variance of $T\_size$ in each parallel sweeps. For example in \cref{fig:2d_7pt_d2} we need to calculate mean of $T\_size$ of all \levelGroups in red sweep and blue sweep separately. The combined variance is then found by summing up the variances in each parallel sweep. \Inorder to reduce this combined variance we select the \levelGroup that has biggest absolute deviation from mean and try to add/remove levels to/from this \levelGroup from/to a \levelGroup that has biggest/least signed deviation. While removing \levels from a \levelGroup one has to take care that the \DK coloring is not violated, for example in case of \DTWO and two sweep scheme like seen in \cref{fig:2d_7pt_d2} we need to ensure at least two levels remain in a \levelGroup. To aid this shifting of \levels to/from \levelGroup we use the pointers to \levelGroup denoted by $T\_ptr$. Doing this process in an iterative way finally we end up in a state with lowest combined variance at which no further moves are possible either due to violation of \DK dependency or due to increase in combined variance. \Cref{fig:lb_alg} shows step by step procedure involved in load balancing and \cref{fig:2d_7pt_lb} shows \levelGroups after load balancing applied on \STEX example of size $16 \times 16.$
+  An algorithm for load balancing can be found in \cref{alg:LB}. The aim of the algorithm is to reduce combined variance of \nrows in each \levelGroup ($T\_size(i)$ refers to \nrows in \levelGroup $i$). It does this by calculating mean and variance of $T\_size$ in each parallel sweeps. For example in \cref{fig:2d_7pt_d2} we need to calculate mean of $T\_size$ of all \levelGroups in red sweep and blue sweep separately. The combined variance is then found by summing up the variances in each parallel sweep. \Inorder to reduce this combined variance we select the \levelGroup that has biggest absolute deviation from mean and try to add/remove levels to/from this \levelGroup from/to a \levelGroup that has biggest/least signed deviation. While removing \levels from a \levelGroup one has to take care that the \DK coloring is not violated, for example in case of \DTWO and two sweep scheme like seen in \cref{fig:2d_7pt_d2} we need to ensure at least two levels remain in a \levelGroup. To aid this shifting of \levels to/from \levelGroup we use the pointers to \levelGroup denoted by $T\_ptr$. Doing this process in an iterative way finally we end up in a state with lowest combined variance at which no further moves are possible either due to violation of \DK dependency or due to increase in combined variance. \Cref{fig:lb_alg} shows step by step procedure involved in load balancing and \cref{fig:2d_7pt_lb} shows \levelGroups after load balancing applied on \STEX example of size $16 \times 16.$
 
+  One could also do this entire load balancing based on number of non-zeros (\nnz) rather than \nrows.
   
    \begin{figure}[tbhp]
    	\centering
@@ -131,7 +133,7 @@ Once the \levels are known one has to permute the matrix in the order of its \le
       	\includegraphics[height=0.26\textheight,width=0.9\textwidth]{pics/load_balancing/2d-7pt/stencil_2d_7pt}
       \end{minipage}\hfill
       \begin{minipage}[c]{0.34\textwidth}
-      	\caption{After load balancing for five threads and \DTWO dependency on \STEX example, domain size $16 \times 16$. Note that \levelGroups at extreme end have more \levels due to less number of non-zeros in each \level, while \levelGroups in middle having bigger \levels maintain two levels to preserve \DTWO constraint.
+      	\caption{After load balancing for five threads and \DTWO dependency on \STEX example, domain size $16 \times 16$. Note that \levelGroups at extreme end have more \levels due to less \nrows in each \level, while \levelGroups in middle having bigger \levels maintain two levels to preserve \DTWO constraint.
       	} \label{fig:2d_7pt_lb}
       \end{minipage}
      \end{figure}
@@ -225,7 +227,7 @@ Once the \levels are known one has to permute the matrix in the order of its \le
 	
 	 \begin{figure}[thbp]
 		 \includegraphics[width=\textwidth, height=0.2\textheight]{pics/recursion/2d-7pt_example/tree/tree}
-	 	\caption{\levelTree corresponding to \STEX example for domain size $16 \times 16$, and 8 threads. The range specified in each leaves represent the vertices belonging to each \levelGroup, and the number in bracket represents the thread assigned to the \levelGroup in fill type pinning.}
+	 	\caption{\levelTree corresponding to \STEX example for domain size $16 \times 16$, and 8 threads. The range (square brackets) specified in each leaves represent the vertices belonging to each \levelGroup, the number in bracket (parenthesis) represents the thread assigned to the \levelGroup in fill type pinning and the \nrowsEff (see \cref{Sec:param_study}) is represented within angle brackets.}
 	 	\label{fig:rec_2d-7pt_tree}
 	 \end{figure}
     \begin{figure}[H]
@@ -261,8 +263,8 @@ Parallelism required for hardware underneath can be obtained either by expanding
 		\end{align*}
 	
 	\item Starting from $w(L_s(0))$ sum up weights till they form a number ($a$) close to whole number ($b$). The closeness can be controlled by an efficiency parameter for stage $s$, $\epsilon_s$ is defined as:
-	\begin{equation*}
+	\begin{equation} \label{eq:epsilon}
 		\epsilon_s =  1 - abs(a-b);
-	\end{equation*}
-	The obtained number $b$ is chosen as weight for \levelGroups operated by first thread in the current stage \ie $w(T_s(0))=w(T_s(1))=b$. The weight for next \levelGroups are found by resetting the sum counter to zero and repeating the  procedure with \levels just after the current \levelGroup.
+	\end{equation}
+	The obtained number $b$ is chosen as weight for \levelGroups operated by first thread in the current stage \ie $w(T_s(0))=w(T_s(1))=b$. A local search is then done by increasing \levels in this \levelGroups to see if there is a better choice ($a$ close to $b$) with weight $b$, finally a \levelGroup is formed with the best choice.  The weight for next \levelGroups are found by resetting the sum counter to zero and repeating the  procedure with \levels just after the current \levelGroups.
 \end{enumerate}

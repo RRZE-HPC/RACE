@@ -11,9 +11,9 @@ Motivation for developing an alternative method stems from the ESSEX (Equipping 
   	\hspace{1em}
   	\subfloat[Data Traffic]{\label{fig:motivation_b}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_3}}
   	
-  	\subfloat[False sharing]{\label{fig:motivation_c}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_2}}
-  	\hspace{1em}
-  	\subfloat[Barrier effect]{\label{fig:motivation_d}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_4}}
+  %	\subfloat[False sharing]{\label{fig:motivation_c}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_2}}
+  %	\hspace{1em}
+  %	\subfloat[Barrier effect]{\label{fig:motivation_d}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_4}}
   	\caption{Effect of Multicoloring}
   	\label{fig:motivation}
   \end{figure}
@@ -39,10 +39,9 @@ Motivation for developing an alternative method stems from the ESSEX (Equipping 
   
   \Cref{fig:mc_alpha}  shows an illustration of why data traffic increases for a given matrix. If one assumes last level cache (\LLC) can only hold less than six elements and obeys perfect LRU policy, as seen in the \cref{fig:mc_alpha} for  each new color we would need to load the data from main memory. As we will see later this $\alpha$ factor strongly depends on the matrix size and the size of \LLC.
   
- As seen in \cref{fig:motivation_b} the data traffic further increases for \SpMTV due to additional indirect writes (scatter) and this scales up $\alpha$ factor as seen in the denominator of $I_{\SpMTV}$ (see \cref{eq:SpMTV_intensity}).  This further decreases performance of \SpMTV compared to \SpMV on \MC matrix which can be verified in \cref{fig:motivation_c}. 
+ As seen in \cref{fig:motivation_b} the data traffic further increases for \SpMTV due to additional indirect writes (scatter) and this scales up $\alpha$ factor as seen in the denominator of $I_{\SpMTV}$ (see \cref{eq:SpMTV_intensity}),  which further decreases performance of \SpMTV compared to \SpMV on \MC matrix. 
  
- 
-Other contributors to the drop in performance is the global synchronizations and false sharing occurring while executing the kernel. These factors strongly depend on the number of colors and in general increase with colors required to resolve the dependency.  A rough estimate for the barrier/synchronization overhead can be evaluated by comparing performance between kernel with (correct result) and without barriers (incorrect result) as seen in \cref{fig:motivation_d}.  \Cref{fig:motivation_c} shows the volume of false-sharing as measured by \LIKWID for \SpMTV kernels.For \SpMV the amount of false sharing is negligible and is close to zero since it does not have indirect writes. It has to be noted that \LIKWID measurements for counters like false sharing, might not be 100\% accurate, but they provide a good qualitative estimate for comparison, as seen here counter indicates increase in false sharing with number of threads. More on counter validation can be found in \cite{LIKWID_validation}.
+ Other contributors to the drop in performance is global synchronizations and false sharing. These factors strongly depend on the number of colors and in general increase with chromatic number. For the Spin matrix the overhead of synchronization is roughly 10\%.  For most of the matrices one could also observe a strong positive correlation between false sharing and number of threads for \SpMTV kernels, due to the indirect writes in \SpMTV.
 
 It was seen that for most of the matrices arising in the project the average drop in performance by \MCfull was almost a factor of two on a single socket of \IVB. Although for most of the matrices the performance could be improved by \ABMCfull (\ABMC), still the results we obtained were not optimal mainly for large matrices when compared to performance models which we will see later in \cref{Sec:expt}. This led to the development of a method which works on a common data format like \CRS in which most of the other kernels are written and at the same time preserves data locality, reduce synchronization overheads and false sharing.
 

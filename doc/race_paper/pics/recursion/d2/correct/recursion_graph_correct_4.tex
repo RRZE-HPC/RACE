@@ -6,6 +6,8 @@
 \newcommand{\cmark}{\ding{51}}%
 \newcommand{\xmark}{\ding{55}}%
 
+\definecolor{carmine}{rgb}{0.59, 0.0, 0.09}
+
 \begin{document}
 	\tikzset{
 	font=\normalsize,
@@ -16,13 +18,13 @@
 	\begin{tikzpicture}
 	\node[shape=circle,fill=gray] (b) at (9*\scale,-1*\scale) {2$^{2,2}$};
 	\node[shape=circle,fill=gray] (c) at (11*\scale,-1*\scale) {3$^{2,5}$};
-	\node[shape=circle,fill=red] (d) at (8.5*\scale,-2*\scale) {4$^{3,1}$};
-	\node[shape=circle,fill=blue, text=white] (e) at (9.5*\scale,-2*\scale) {5$^{3,3}$};
-	\node[shape=circle,fill=blue, text=white] (f) at (10.5*\scale,-2*\scale) {6$^{3,4}$};
-	\node[shape=circle,fill=blue, text=white] (g) at (11.5*\scale,-2*\scale) {7$^{3,3}$};
-	\node[shape=circle,fill=red] (x) at (9*\scale,-3*\scale) {8$^{4,2}$};
-	\node[shape=circle,fill=blue, text=white] (y) at (10*\scale,-3*\scale) {9$^{4,3}$};
-	\node[shape=circle,fill=red] (z) at (11*\scale,-3*\scale) {10$^{4,5}$};
+	\node[shape=circle,fill=carmine, text=white] (d) at (8.5*\scale,-2*\scale) {4$^{3,1}$};
+	\node[shape=circle,fill=cyan] (e) at (9.5*\scale,-2*\scale) {5$^{3,3}$};
+	\node[shape=circle,fill=cyan] (f) at (10.5*\scale,-2*\scale) {6$^{3,4}$};
+	\node[shape=circle,fill=cyan] (g) at (11.5*\scale,-2*\scale) {7$^{3,3}$};
+	\node[shape=circle,fill=carmine, text=white] (x) at (9*\scale,-3*\scale) {8$^{4,2}$};
+	\node[shape=circle,fill=cyan] (y) at (10*\scale,-3*\scale) {9$^{4,3}$};
+	\node[shape=circle,fill=carmine, text=white] (z) at (11*\scale,-3*\scale) {10$^{4,5}$};
 	\draw 
 	(b) edge[<->] (d)  (b) edge[<->] (g)
 	(c) edge[<->] (f) (c) edge[<->] (g)
@@ -30,6 +32,6 @@
 	(d) edge[<->] (x) (e) edge[<->] (y) (f) edge[<->] (z) (f) edge[<->] (y)
 	(x) edge[<->] (y); 
 	
-	\fill[color=blue,opacity=0.2,rounded corners=15pt] (8*\scale,-3.5*\scale) rectangle (12*\scale,-1.5*\scale);
+	\fill[color=blue,opacity=0.1,rounded corners=15pt] (8*\scale,-3.5*\scale) rectangle (12*\scale,-1.5*\scale);
 	\end{tikzpicture}
 \end{document}  
