@@ -8,6 +8,7 @@
  \Crefname{ALC@unique}{Line}{Lines}
  \usepackage{multirow}
 \usepackage{xspace} 
+\usepackage{comment}
 
 \definecolor{amber}{rgb}{1.0, 0.49, 0.0}
 \definecolor{carmine}{rgb}{0.59, 0.0, 0.09}
@@ -116,12 +117,20 @@
 \newcommand{\effPar}{\emph{effective parallelism}\xspace}
 \newcommand{\effRow}{\emph{effective row}\xspace}
 \newcommand{\EffRow}{\emph{Effective row}\xspace}
-\newcommand{\nrows}{${nrows}$\xspace}
-\newcommand{\nnz}{${nnz}$\xspace}
-\newcommand{\nrowsEff}{${eff_{row}}$\xspace}
-\newcommand{\nrowsEffMath}{eff_{row}\xspace}
-\newcommand{\threadEff}{${eff_{thread}}$\xspace}
-\newcommand{\threadEffMath}{{eff_{thread}}\xspace}
+\newcommand{\nthreads}{${n_{t}}$\xspace}
+\newcommand{\nthreadsMath}{n_{t}\xspace}
+\newcommand{\nrows}{${n_{r}}$\xspace}
+\newcommand{\nrowsMath}{n_{r}\xspace}
+\newcommand{\nnz}{${n_{nz}}$\xspace}
+\newcommand{\nnzMath}{n_{nz}\xspace}
+\newcommand{\nrowsEff}{${n_{r}^{eff}}$\xspace}
+\newcommand{\nrowsEffMath}{n_{r}^{eff}\xspace}
+\newcommand{\threadEff}{${n_{t}^{eff}}$\xspace}
+\newcommand{\threadEffMath}{n_{t}^{eff}\xspace}
+\newcommand{\upto}{up to \xspace}
+\newcommand{\fracUnit}[2]{\Big[\frac{\mbox{#1}}{\mbox{#2}}\Big]}
+\newcommand{\unit}[1]{\Big[\mbox{#1}\Big]}
+\newcommand{\roofline}{roofline\xspace}
 \begin{document}
 
 \maketitle

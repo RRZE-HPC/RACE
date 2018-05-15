@@ -75,10 +75,10 @@ Sparse Matrix Vector (\SpMV) is a kernel that do not have any dependencies. It  
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
-The arithmetic intensity of the kernel $I_{SpMV}$ is as follows:
+The arithmetic intensity of the kernel $I_\mathrm{\SpMV}$ is as follows:
 \begin{equation}
 \label{eq:SpMV_intensity}
-I_{\SpMV} = \frac{2}{8+4+8*\alpha+\frac{16}{\NNZRmath}} \\
+I_\mathrm{\SpMV} = \frac{2}{8+4+8*\alpha+\frac{16}{\NNZRmath}} \\
 \end{equation}
 
 where $\alpha$ represents the data locality factor and \NNZR non-zeros per row. $\alpha$ depends on the sparsity pattern of the matrix and varies from matrix to matrix. Ideal value of $\alpha$ for sufficiently large matrix is $\frac{1}{\NNZRmath}$. More details on factor $\alpha$ could be found in \cite{Moritz_sell}.
@@ -96,10 +96,10 @@ Sparse Matrix Transpose Vector (\SpMTV) is a kernel having \DTWO dependency.
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
-In comparison to SpMV operation, the kernel requires an extra scatter operation, which causes dependency. The arithmetic intensity of the kernel $I_{SpMTV}$ is given as:
+In comparison to SpMV operation, the kernel requires an extra scatter operation, which causes dependency. The arithmetic intensity of the kernel $I_\mathrm{\SpMTV}$ is given as:
 \begin{equation}
 \label{eq:SpMTV_intensity}
-I_{SpMTV} = \frac{2}{8+4+16*\alpha+\frac{8}{\NNZRmath}} \\
+I_\mathrm{\SpMTV} = \frac{2}{8+4+16*\alpha+\frac{8}{\NNZRmath}} \\
 \end{equation}
 
 In ideal case data traffic for this kernel should remain close to that of SpMV, if \NNZR are sufficiently high, and $\alpha$ factor is small enough.
@@ -123,7 +123,7 @@ Symmetric Sparse Matrix Vector (\SymmSpmv) makes use of the symmetric property o
 To operate on this kernel we just use the upper triangular part of the sparse matrix. The kernel requires only half the data traffic compared to SpMV but requires the same amount of Flops, leading to almost twice the intensity of SpMV operations.
 \begin{equation}
 \label{eq:SymmSpMV_intensity}
-I_{SymmSpMV} = \frac{4}{8+4+32*\alpha+\frac{16}{\NNZRmathSYMM}} \\
+I_\mathrm{\SymmSpmv} = \frac{4}{8+4+32*\alpha+\frac{16}{\NNZRmathSYMM}} \\
 \end{equation}
 
 Note that \NNZRSYMM is the number of non-zeros per row in upper triangular part of the matrix.
@@ -147,7 +147,7 @@ Gauss-Seidel (\GS) is a solver having distance-1 dependency. Contrary to the abo
 Regarding the in-core execution the kernel has same properties as of \SpMV, but requires an additional divide operation per row of the matrix. If the locality ($\alpha$ factor) is not disturbed due to pre-processing the kernel requires same data traffic as of \SpMV. The arithmetic intensity of \GS is the same as that of \SpMV, if we neglect the divide operation that occurs once per every row.
 \begin{equation}
 \label{eq:GS_intensity}
-I_{GS} = I_{SPMV}
+I_\mathrm{GS} = I_\mathrm{SPMV}
 \end{equation}
 
 In general for most of the algorithms one is interested in symmetric operator therefore commonly one would encounter symmetric variant of Gauss-Seidel, so called symmetric Gauss-Seidel (\SYMMGS). The algorithm remains same except that instead of just doing forward sweep shown in \cref{alg:GS} one would follow it with a backward sweep \ie {\tt row=nrows:-1:1}. The intensity of \SYMMGS remains same as of \GS, as we do two times more flops and bring in proportional data.
@@ -176,7 +176,7 @@ Kaczmarz (\KACZ) is an iterative solver based on row-projection based methods. T
 In-core has a mixed behavior of both SpMV and SpMTV similar to SymmSpMV. The solver also requires a divide per  row of the matrix. In ideal case the data traffic from memory should remain same as that of SpMTV. But the solver requires thrice the flops compared to SpMTV per non-zero. For brevity of the results we ignore the flops used in $rownorm$ computations since, one could also row normalize the sparse matrix before performing the KACZ operation. This leads to an almost two fold higher Arithmetic Intensity compared to SpMTV.
 \begin{equation}
 \label{eq:KACZ_intensity}
-I_{KACZ} =  \frac{4}{8+4+16*\alpha+\frac{8}{nnzr}} = 2*I_{SpMTV}\\
+I_\mathrm{KACZ} =  \frac{4}{8+4+16*\alpha+\frac{8}{nnzr}} = 2*I_\mathrm{SpMTV}\\
 \end{equation}
 
 Symmetric variant of \KACZ is denoted by \SYMMKACZ, and similar to \SYMMGS this requires forward sweep followed by a backward sweep. 

@@ -41,7 +41,7 @@ The following basic definitions from graph theory are used in the following sect
 \end{itemize}
 
 \subsection{Level Construction}\label{subsec:LEVEL_CONST}
-The first step of the \RACE method is level construction. The step concerns with finding different \levels in the graph, \levels used here are same to the ones found in ``Breadth First Search" (\BFS) algorithm. First \level ($L(0)$) is chosen to consist of a selected root vertex. Rest of the levels ($L(i)$ for $i > 0$) are defined to  contain vertices that are in neighborhood of vertices in previous \level ($L(i-1)$) and not in $L(i-2)$ \ie
+The first step of the \RACE method is level construction. The step concerns with finding different \levels in the graph, \levels used here are same to the ones found in ``Breadth First Search" (\BFS) algorithm \cite{BFS}. First \level ($L(0)$) is chosen to consist of a selected root vertex. Rest of the levels ($L(i)$ for $i > 0$) are defined to  contain vertices that are in neighborhood of vertices in previous \level ($L(i-1)$) and not in $L(i-2)$ \cite{BFS_level_def} \ie
 \begin{equation}\label{eq:level}
 L(i) = 
 \begin{cases}
@@ -257,9 +257,9 @@ Parallelism required for hardware underneath can be obtained either by expanding
 \begin{enumerate}
 	\item Find weights, $w(L_s(i))$ for each level in the current stage ($s$) by
 		\begin{align*}
-			w(L_s(i)) &= (\levelPtr_s[i+1] - \levelPtr_s[i])*\frac{n\_threads}{n\_vertices}\\
-			n\_threads &: \text{total parallelism required by hardware}\\
-			n\_vertices &: \text{number of vertices in graph}
+			w(L_s(i)) &= (\levelPtr_s[i+1] - \levelPtr_s[i])*\frac{\nthreadsMath}{\nrowsMath}\\
+			\nthreadsMath &: \text{total parallelism required by hardware}\\
+			\nrowsMath &: \text{number of vertices in graph}
 		\end{align*}
 	
 	\item Starting from $w(L_s(0))$ sum up weights till they form a number ($a$) close to whole number ($b$). The closeness can be controlled by an efficiency parameter for stage $s$, $\epsilon_s$ is defined as:

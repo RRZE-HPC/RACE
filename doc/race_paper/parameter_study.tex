@@ -15,39 +15,61 @@ Quantifying quality of the method in a well-defined way is a primary and most vi
 
 Such a definition for \effRow is based on the idea that a parent has to wait until the child leaf with most number of rows has finished it's work due to synchronization needed with it's siblings. This has to be handled separately for each of the two parallel sweep as there is this synchronization happening after each of the sweeps. 
 
-Once the information is propagated up the tree and as it reaches the root we have a single \effRow (\nrowsEff$(T_0)$) for the entire tree, which has taken care of load balancing happening between all \levelGroups in all stages. The ratio of total number of rows in the entire matrix to that of \nrowsEff$(T_0)$ gives \effPar, denoted as \threadEff. Efficiency ($\eta$) of the method is then defined as ratio of  \threadEff to that of required hardware parallelism ($n\_threads$). 
+Once the information is propagated up the tree and as it reaches the root we have a single \effRow (\nrowsEff$(T_0)$) for the entire tree, which has taken care of load balancing happening between all \levelGroups in all stages. The ratio of total number of rows in the entire matrix to that of \nrowsEff$(T_0)$ gives \effPar, denoted as \threadEff. Efficiency ($\eta$) of the method is then defined as ratio of  \threadEff to that of required hardware parallelism (\nthreads). 
 
 \begin{align}
-	\threadEffMath &= \frac{nrows}{\nrowsEffMath(T_0)} \\
-	\eta &= \frac{\threadEffMath}{n\_threads} \label{eq:eta}
+	\threadEffMath &= \frac{\nrowsMath}{\nrowsEffMath(T_0)} \\
+	\eta &= \frac{\threadEffMath}{\nthreadsMath} \label{eq:eta}
 \end{align}
 
-For example in our \STEX example, \cref{fig:rec_2d-7pt_tree} shows \nrowsEff for each leaves in angular brackets and here $\threadEffMath = 5.8$ and $\eta = 0.725$. The value of $\eta = 1$ implies there is perfect load balancing, else $0 < \eta \leq 1$.
-
-This parameter $\eta$ will be used as a measure of quality in parameter study. One has to note that the efficiency ($\eta$) calculated here is a worse case scenario and in reality memory bandwidth saturation and other factors will normally lead to a better efficiency.
+For example in our \STEX example, \cref{fig:rec_2d-7pt_tree} shows \nrowsEff for each leaves in angular brackets and here $\threadEffMath = 5.8$ and $\eta = 0.725$. The value of $\eta = 1$ implies there is perfect load balancing, else $0 < \eta \leq 1$. This parameter $\eta$ will be used as a measure of quality in parameter study.
 
 \subsection{Case study}
-A given matrix has a fixed amount of parallelism and as the amount of required parallelism ($nthreads$) increases load balancing degrades due to more threads per stage and imbalances between stages. The rate of degradation can however be controlled to certain extent by the tolerance $\epsilon_s$ (see \cref{eq:epsilon}) specified while choosing a \levelGroup. Typical value of $\epsilon_s$ is in range of [0.4,0.9]. Having a small $\epsilon_s$ (for example 0.4) implies we utilize the current stage `s' to maximum and do not impose high load balancing constraint, a high value on the other hand requires more balanced load from current stage `s'. 
+A given matrix has a fixed amount of parallelism and as the amount of required parallelism (\nthreads) increases load balancing degrades due to more threads per stage and imbalances between stages. The rate of degradation can however be controlled to certain extent by the tolerance $\epsilon_s$ (see \cref{eq:epsilon}) specified while choosing a \levelGroup. Typical value of $\epsilon_s$ is in range of [0.4,0.9]. Having a small $\epsilon_s$ (for example 0.4) implies we utilize the current stage `s' to maximum and do not impose high load balancing constraint, a high value on the other hand requires more balanced load from current stage `s'. 
 
-Test matrices (see \cref{Sec:test_bed}) considered have a varying degree of parallelism, and in order to see the effect of $\eta$ and $\epsilon_s$ we choose \emph{inline} matrix. The choice is due to the fact that this matrix has relatively small amount of parallelism and this allows us to demonstrate various effect, ranging from good to bad case scenario with small number of parallelism ($nthreads < 200$). This limited parallelism can be observed from \cref{fig:inline-a} 
-where efficiency keeps on decreasing with $n\_threads$ for \emph{inline} matrix. Similar behavior can be observed for \emph{crankseg} and \emph{ship} matrices which we will discuss in \cref{Sec:expt}. For majority of other test matrices one could observe that efficiency $\eta$ initially drops but then remains almost constant ($\eta$ = [0.70,0.85]) for the entire scanned area of $n\_threads\leq200$.
+Test matrices (see \cref{Sec:test_bed}) considered have a varying degree of parallelism, and in order to see the effect of $\eta$ and $\epsilon_s$ we choose \emph{inline} matrix. The choice is due to the fact that this matrix has relatively small amount of parallelism and this allows us to demonstrate various effect, ranging from good to bad case scenario with small number of parallelism (\nthreads$ < 200$). This limited parallelism can be observed from \cref{fig:inline-a} 
+where efficiency keeps on decreasing with \nthreads for \emph{inline} matrix. Similar behavior can be observed for \emph{crankseg\_1}, \emph{F1} and \emph{ship} matrices, of which \emph{crankseg\_1} being the worst. For majority of other test matrices one could observe that efficiency $\eta$ initially drops but then remains almost constant in the range $\eta$ = [0.50,0.80] (depending on matrix) for the entire scanned area of $1 \leq $\nthreads$ \leq 200$.
 
 \begin{figure}[tbhp]
 	\centering
-	\subfloat[$n\_threads$ vs $\eta$]{\label{fig:inline-a}\includegraphics[width=0.45\textwidth , height=0.2\textheight]{pics/param_study/threads_vs_eff}}
+	\subfloat[$\eta$ vs \nthreads for \emph{inline} matrix ]{\label{fig:inline-a}\includegraphics[width=0.45\textwidth , height=0.2\textheight]{pics/param_study/threads_vs_eff}}
 	\hspace{1.5em}
-	\subfloat[Effect of $\epsilon_1$ at low $nthreads$]{\label{fig:inline-b}\includegraphics[width=0.45\textwidth , height=0.2\textheight]{pics/param_study/scaling_eps_1_25_threads}}
+	\subfloat[Effect of $\epsilon_1$ at low \nthreads, \nthreads=25]{\label{fig:inline-b}\includegraphics[width=0.45\textwidth , height=0.2\textheight]{pics/param_study/scaling_eps_1_25_threads}}
 	
-	\subfloat[Optimal $\epsilon_1$ lowered, optimal $\epsilon_2$ = 0.9 ]{\label{fig:inline-c}\includegraphics[width=0.45\textwidth , height=0.2\textheight]{pics/param_study/scaling_eps_1_45_threads}}
+	\subfloat[Optimal $\epsilon_1$ lowered and optimal $\epsilon_2$ = 0.9, \nthreads=45 ]{\label{fig:inline-c}\includegraphics[width=0.45\textwidth , height=0.2\textheight]{pics/param_study/scaling_eps_1_45_threads}}
 	\hspace{1.5em}
-	\subfloat[Optimal $\epsilon_1$ lowered to 0.4 and $\epsilon_2$ to 0.7 ]{\label{fig:inline-d}\includegraphics[width=0.45\textwidth , height=0.2\textheight]{pics/param_study/scaling_eps_1_190_threads}}
-	\caption{Parameter study on \emph{inline} matrix}
+	\subfloat[Optimal $\epsilon_1$ lowered to 0.4 and $\epsilon_2$ to 0.7, \nthreads=190 ]{\label{fig:inline-d}\includegraphics[width=0.45\textwidth , height=0.2\textheight]{pics/param_study/scaling_eps_1_190_threads}}
+	\caption{Parameter study on \emph{inline} matrix. In \cref{fig:inline-b,fig:inline-c,fig:inline-d} each lines in the plot are iso-$\epsilon_2$ and impact of $\eta$ with respect to $\epsilon_1$ is shown.}
 	\label{fig:inline_param_study}
 \end{figure}
 
-At small number of $nthreads$ all matrices have good efficiency $\eta$. As there is a lot of parallelism in this stage compared to requirement, $\eta$ is insensitive of $\epsilon_s$. Increasing $nthreads$ one could then gradually observe $\eta$ starts to vary with $\epsilon_1$. For example in case of $nthreads = 25$ one could see in \cref{fig:inline-b} maximum $\eta$ is achieved with high value of $\epsilon_1$ (0.9) due to good load balancing. But as $nthreads$ further increase the optimal $\epsilon_1$ starts shifting towards left (see \cref{fig:inline-c}),
- since one requires more parallelism from the current stage (1) and higher $\epsilon_1$ would be decremental since it would require the \levelTree to go more deep and hence load imbalances in next stages will get multiplied. $\epsilon_2$ which till now didn't effect much starts to influence slowly as $nthreads$ increments again.For example in case of \emph{inline} till $nthreaads=90$ $\epsilon_2=0.9$ was optimal, but then the optimal $\epsilon_2$ reduces and reaches $0.7$ at $n\_threads=190$ as seen in \cref{fig:inline-d}. $\eta$ would start to get affected by $\epsilon_s$ of next stages in similar manner with increase of $n\_threads$.
+At small number of threads (\nthreads) all matrices have high efficiency (like $\eta>0.8$). As there is a lot of parallelism in this stage compared to requirement, $\eta$ is insensitive of $\epsilon_s$. The value of \nthreads upto which such a behavior can be observed varies from matrix to matrix, for example \emph{inline} shows this upto \nthreads$\approx20$, while for matrix like \emph{Graphene} this is grater than $200$.  Further increasing \nthreads one could then observe $\eta$ starts to vary with $\epsilon_1$. For example in case of \nthreads$ = 25$ one could see in \cref{fig:inline-b} maximum $\eta$ is achieved with high value of $\epsilon_1$ (0.9) due to good load balancing. But as 
+\nthreads further increase the optimal $\epsilon_1$ starts shifting towards left (see \cref{fig:inline-c}),
+ since one requires more parallelism from the current stage (s=1) and higher $\epsilon_1$ would be decremental since it would require the \levelTree to go more deep and hence load imbalances in next stages will get multiplied. $\epsilon_2$ which till now didn't effect much starts to influence slowly as \nthreads increments again, for example in case of \emph{inline} till $nthreaads=90$ $\epsilon_2=0.9$ was optimal, but then the optimal $\epsilon_2$ reduces and reaches $0.7$ at \nthreads$=190$ as seen in \cref{fig:inline-d}. $\eta$ would start to get affected by $\epsilon_s$ of next stages in similar manner with increase of \nthreads.
  
-In practice for a given matrix it's difficult to precisely determine the optimal rate of decrease in $\epsilon_s$ without parameter search, and therefore selecting proper $\epsilon_s$ for given $n\_threads$ can be challenging. One idea is to see the \totalLvl and distribution of \nrows (or \nnz) in different levels of current stage `s' and heuristically determine $\epsilon_s$ based on the pressure of parallelism from stage `s'. This is not currently done and is part of our future work. Currently for experiments we set $\epsilon_s=0.8$ for all matrices.
+   \begin{figure}[tbhp]
+   	\centering
+   	\includegraphics[height=0.18\textheight,width=\textwidth]{pics/param_study/bar_plot}
+   	\caption{Statistical box plot of $\eta$ vs \nthreads of all test matrices, with $\epsilon_s$ = 0.4}
+   	\label{fig:param_all_mtx_stat}
+   \end{figure}
+   
+Behavior of other matrices in the test bed follow similar pattern, but \nthreads at which different phases occur varies from matrix to matrix.  \Cref{fig:param_all_mtx_stat} gives a broad overview of behavior of entire test matrices using statistical box plot. Majority of test matrices having an initial drop in $\eta$ and then remaining constant is reflected in the statistical plot. The lowest whisker in the plot corresponds to \emph{crankseg\_1} matrix, here we achieve only a mere parallelism of eight at maximum (\threadEff = 8), while the upper whisker corresponds to matrix having highest parallelism namely \emph{Graphene} matrix.
 
+In practice for a given matrix it's difficult to precisely determine the optimal rate of decrease in $\epsilon_s$ without parameter search, and therefore selecting proper $\epsilon_s$ for given \nthreads can be challenging. One idea is to see the \totalLvl and distribution of \nrows (or \nnz) in different levels of current stage `s' and heuristically determine $\epsilon_s$ based on the pressure of parallelism from stage `s'. This is not currently done and is part of our future work. Currently for experiments we set $\epsilon_s=0.8$ for all matrices.
+
+\begin{figure}[tbhp]
+	\centering
+	\subfloat[\emph{crankseg\_1}]{\label{fig:crankseg_param}\includegraphics[width=0.46\textwidth , height=0.16\textheight]{pics/param_study/corner_cases/crankseg_1}}
+	\hspace{1.5em}
+	\subfloat[\emph{inline\_1}]{\label{fig:inline_param}\includegraphics[width=0.46\textwidth , height=0.16\textheight]{pics/param_study/corner_cases/inline_1}}	
+	\hspace{1.5em}
+	\subfloat[\emph{parabolic\_fem}]{\label{fig:parabolic_fem_param}\includegraphics[width=0.46\textwidth , height=0.16\textheight]{pics/param_study/corner_cases/parabolic_fem}}
+	\hspace{1.5em}
+	\subfloat[\emph{Graphene-4096}]{\label{fig:Graphene-4096_param}\includegraphics[width=0.46\textwidth , height=0.16\textheight]{pics/param_study/corner_cases/Graphene-4096}}	
+	\caption{\threadEff and $\eta$ vs \nthreads for corner case matrices, with the same settings used in experiment runs.}
+	\label{fig:corner_cases_param}
+\end{figure}
+
+ In \cref{fig:corner_cases_param} we have plotted \threadEff and $eta$ vs \nthreads for the corner case matrices with the settings used in experiment runs. Here we set $\epsilon_{1,2}=0.8$ and use \RCM (\RCMfull) in the \emph{level construction} stage (\cref{subsec:LEVEL_CONST}). Big fluctuation in \emph{crankseg\_1} is due to the fact that we set high load balancing requirement (high $\epsilon_s$ factor) and as seen in the example of \emph{inline\_1} matrix this is not optimal when we reach the limit of parallelism. The theoretical estimated obtained in \cref{fig:corner_cases_param} will be directly used to compare with experiment runs in the next section (\cref{Sec:expt}).
 

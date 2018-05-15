@@ -44,8 +44,9 @@
 	\def\ymin{0}
 	\def\ymax{30}
 	
-	\begin{axis}[ xlabel={\LARGE{$n\_threads$}}, ylabel={\LARGE{$\eta$}}, 
+	\begin{axis}[ xlabel={\LARGE{$n_t$}}, ylabel={\LARGE{$\eta$}}, 
 	y label style={at={(axis description cs:-0.07,.5)},rotate=0,anchor=south},
+	x label style={at={(axis description cs:0.5,-.13)},rotate=0,anchor=south},
 	ymode=linear, ylabel shift =-0.25cm,
 	%xtick={1000, 2744, 5832, 10648, 17576, 27000, 39304, 54872, 74088},
 	%xticklabels={$10^3$, %$14^3$
@@ -54,7 +55,7 @@
 	%xmode=log,
 	xmin=1,xmax = 200,
 	ymin=0, ymax=1,
-	title = {\LARGE{$n\_threads$ vs $eta$ , matrix - \emph{inline\_1}, $\epsilon_2 = 40$} },
+%	title = {\LARGE{$n\_threads$ vs $\eta$ , matrix - \emph{inline\_1}, $\epsilon_2 = 40$} },
 	legend style={legend pos=south west, font=\LARGE},
 	tick label style={font=\Large}
 	]
@@ -63,7 +64,7 @@
 	
 	%MEASURE_START%
 	\addplot+[color=color_1, line width=2, mark options={color_1}] table[x =THREAD,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study/db/matrix_inline_1/eff_1_40/eff_2_40//derived.txt}; \label{plot_one}
-	\addlegendentry{$\epsilon_1 = 40$}
+	\addlegendentry{$\epsilon_1 = 0.40$}
 	%MEASURE_STOP%
 
 
@@ -72,7 +73,7 @@
 	
 	%MEASURE_START%
 	\addplot+[color=color_2, line width=2, mark options={color_2}] table[x =THREAD,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study/db/matrix_inline_1/eff_1_70/eff_2_40//derived.txt}; \label{plot_two}
-	\addlegendentry{$\epsilon_1 = 70$}
+	\addlegendentry{$\epsilon_1 = 0.70$}
 	%MEASURE_STOP%
 
 
@@ -81,7 +82,7 @@
 	
 	%MEASURE_START%
 	\addplot+[color=color_3, line width=2, mark options={color_3}] table[x =THREAD,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study/db/matrix_inline_1/eff_1_80/eff_2_40//derived.txt}; \label{plot_three}
-	\addlegendentry{$\epsilon_1 = 80$}
+	\addlegendentry{$\epsilon_1 = 0.80$}
 	%MEASURE_STOP%
 
 
