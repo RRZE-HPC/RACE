@@ -37,13 +37,16 @@ The details of architectures along with the measured bandwidths are given in \cr
 
 The code was compiled with newest Intel compiler version 17 and the following compiler flags were set {\tt -fno-alias -xHost -O3}. Furthermore all the measurements were done with  \CPU clock speeds fixed at frequencies indicated in \cref{tab:test_bed}.
 
+
 \subsection{External Tolls and Software}
+Following external libraries are used in this paper. The application of these libraries will be stated at the point it is needed.
 \begin{itemize}
 	%TODO
-	\item LIKWID
-	\item ColPACK
-	\item SpMP
-	\item METIS
+	\item \LIKWID \cite{LIKWID} \text{\tt{likwid-perfctr}} is used for measuring hardware performance counters and \text{\tt{likwid-bench}}  for measuring bandwidth.
+	\item \COLPACK \cite{COLPACK} is used for pre-processing matrix by \MCfull.
+	\item \SPMP \cite{SpMP} is used to perform \RCMfull (\RCM).
+	\item \METIS\cite{METIS} is used for graph partitioning.
+	\item \MKL \cite{MKL} is used for performing some reference sparse matrix computations.
 \end{itemize}
 
 \subsection{Benchmark Matrices}
