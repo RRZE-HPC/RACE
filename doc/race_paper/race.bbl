@@ -48,6 +48,19 @@
   algorithm for computing inner eigenvalues}, Parallel Comput., 49 (2015),
   pp.~153--163, \url{https://doi.org/10.1016/j.parco.2015.06.005}.
 
+\bibitem{dist_k_def}
+{\sc A.~H. Gebremedhin, F.~Manne, and A.~Pothen}, {\em Parallel distance-k
+  coloring algorithms for numerical optimization}, in Proceedings of the 8th
+  International Euro-Par Conference on Parallel Processing, Euro-Par '02,
+  London, UK, UK, 2002, Springer-Verlag, pp.~912--921,
+  \url{http://dl.acm.org/citation.cfm?id=646667.699892}.
+
+\bibitem{COLPACK}
+{\sc A.~H. Gebremedhin, D.~Nguyen, M.~M.~A. Patwary, and A.~Pothen}, {\em
+  Colpack: Software for graph coloring and related problems in scientific
+  computing}, ACM Trans. Math. Softw., 40 (2013), pp.~1:1--1:31,
+  \url{https://doi.org/10.1145/2513109.2513110}.
+
 \bibitem{thread_private_symm_spmv}
 {\sc T.~Gkountouvas, V.~Karakasis, K.~Kourtis, G.~Goumas, and N.~Koziris}, {\em
   Improving the performance of the symmetric sparse matrix-vector
@@ -80,6 +93,11 @@
 {\sc C.~Kamath and A.~Sameh}, {\em A projection method for solving nonsymmetric
   linear systems on multiprocessors}, 9 (1989), pp.~291--312,
   \url{https://doi.org/10.1016/0167-8191(89)90114-2}.
+
+\bibitem{METIS}
+{\sc G.~Karypis and V.~Kumar}, {\em A fast and high quality multilevel scheme
+  for partitioning irregular graphs}, SIAM Journal on Scientific Computing, 20
+  (1998), pp.~359--392, \url{https://doi.org/10.1137/S1064827595287997}.
 
 \bibitem{Moritz_sell}
 {\sc M.~Kreutzer, G.~Hager, G.~Wellein, H.~Fehske, and A.~R. Bishop}, {\em {A
@@ -121,9 +139,13 @@
   Volume 8488, ISC 2014, New York, NY, USA, 2014, Springer-Verlag New York,
   Inc., pp.~124--140, \url{https://doi.org/10.1007/978-3-319-07518-1_8}.
 
-\bibitem{FEAST}
-{\sc E.~Polizzi}, {\em A density matrix-based algorithm for solving eigenvalue
-  problems}, CoRR, abs/0901.2665 (2009), \url{https://arxiv.org/abs/0901.2665}.
+\bibitem{Park_HPCG}
+{\sc J.~Park, M.~Smelyanskiy, K.~Vaidyanathan, A.~Heinecke, D.~D. Kalamkar,
+  X.~Liu, M.~M.~A. Patwary, Y.~Lu, and P.~Dubey}, {\em Efficient shared-memory
+  implementation of high-performance conjugate gradient benchmark and its
+  application to unstructured matrices}, in SC14: International Conference for
+  High Performance Computing, Networking, Storage and Analysis, Nov 2014,
+  pp.~945--955, \url{https://doi.org/10.1109/SC.2014.82}.
 
 \bibitem{saad}
 {\sc Y.~Saad}, {\em Iterative Methods for Sparse Linear Systems}, Society for
@@ -131,6 +153,10 @@
   \url{https://doi.org/10.1137/1.9780898718003},
   \url{https://epubs.siam.org/doi/abs/10.1137/1.9780898718003},
   \url{https://arxiv.org/abs/https://epubs.siam.org/doi/pdf/10.1137/1.9780898718003}.
+
+\bibitem{SpMP}
+{\sc {SpMP Development Team}}, {\em Sparse matrix pre-processing library},
+  \url{https://github.com/IntelLabs/SpMP} (accessed 2018/05/22).
 
 \bibitem{LIKWID}
 {\sc J.~Treibig, G.~Hager, and G.~Wellein}, {\em Likwid: A lightweight

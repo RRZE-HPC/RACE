@@ -3,7 +3,7 @@ The tests are conducted on three different multi-core architectures. Two of them
 
 \begin{itemize}
 	\item \Intel \IVB architecture belongs to class of classic Intel's cache-based architecture, which has three inclusive cache  hierarchies. All the cache are scalacble and the \LLC (L3) being shared among all the cores on one socket. The processor is capable of delivering one full four wide \SIMD add, multiply and load in one cycle. 
-	\item \Intel \SKX architecture belongs to recent generation of Intel family. Contrary to it's predecessors (like \IVB), the \LLC is now changed to a non-inclusive victim cache shared by all the cores on a socket. The architecture comes with support for eight wide \SIMD operations (AVX-512). The processor is capable of doing two AVX-512 add, multiply and load operations per cycle.
+	\item \Intel \SKX architecture belongs to recent generation of Intel family. Contrary to it's predecessors (like \IVB), L3 cache is now changed to a non-inclusive victim cache shared by all the cores on a socket. The architecture comes with support for eight wide \SIMD operations (AVX-512). The processor is capable of doing two AVX-512 add, multiply and load operations per cycle.
 	\item \AMD \EPY is based on AMD's Zen microarchitecture. The basic building block of the architecture consists of Core Complex (CCX) consisting of three cores (can extend upto four on high end models) each having it's own private L1 and L2 cache. The L3 cache is shared between a core complex and is non-inclusive victim cache. A single socket of \EPY consists of eight such core complexes.
 	
 \end{itemize}
@@ -27,8 +27,8 @@ The details of architectures along with the measured bandwidths are given in \cr
 		{L3 Cache} & {25 \MB} & {27.5 \MB} & {8 $\times$ 8 \MB}\\
 		{L3 type} & {inclusive} & {non-inclusive} & {non-inclusive}\\
 		{Main Memory} & {32 GB} & {45 GB} & {4 $\times$ 16 GB}\\
-		{Bandwidth - load only} & {47 GB/s} & {115 GB/s} & {130 GB/s }\\ %TODO
-		{Bandwidth - copy} & {40 GB/s} & {104 GB/s} & {114 GB/s }\\
+		{Bandwidth per socket - load only} & {47 GB/s} & {115 GB/s} & {130 GB/s }\\ %TODO
+		{Bandwidth per socket - copy} & {40 GB/s} & {104 GB/s} & {114 GB/s }\\
 		{Architecture specific flag} & {-} & {-xCORE-AVX512} & {-}\\
 		\bottomrule
 	\end{tabular}
@@ -59,7 +59,7 @@ All the test matrices are taken from SuiteSparse Matrix Collection (former Unive
 
 \end{table}
 
-\subsection{Kernels}
+\subsection{Kernels} \label{subsec:test_kernels}
 To test the performance we choose algorithms that are exact as well as iterative. Also we include kernels from both distance-1 and distance-2 dependency classes. All the kernels shown below are based on \CRS matrix storage format.
 
 \subsubsection{\SpMV}
@@ -129,7 +129,7 @@ I_\mathrm{\SymmSpmv} = \frac{4}{8+4+32*\alpha+\frac{16}{\NNZRmathSYMM}} \\
 Note that \NNZRSYMM is the number of non-zeros per row in upper triangular part of the matrix.
 
 \subsubsection{\GS and \SYMMGS}
-Gauss-Seidel (\GS) is a solver having distance-1 dependency. Contrary to the above kernels \GS is in-exact meaning it is an iterative method. Alg. \ref{alg:GS} shows the Gauss-Seidel algorithm where its assumed that the diagonal entries of the matrix is stored as first entry in their corresponding rows.
+Gauss-Seidel (\GS) is a solver having distance-1 dependency. Contrary to the above kernels \GS is in-exact meaning it is an iterative method. \Cref{alg:GS} shows the Gauss-Seidel algorithm where its assumed that the diagonal entries of the matrix are stored as first entry in their corresponding rows.
 \begin{algorithm}[H]
 	\caption{GS Solve for $x$ : $Ax=b$} 
 	\label{alg:GS}
