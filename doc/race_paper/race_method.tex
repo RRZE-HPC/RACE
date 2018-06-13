@@ -109,7 +109,7 @@ Once the \levels are known one has to permute the matrix in the order of its \le
  
   Due to this weak definition in \cref{corollary_dk} there exists many possibility to make \levels independent of each other and \cref{fig:2d-7pt_d1_d2} shows one such possibility each for \DONE and \DTWO independent \levels. One could group some of the nearby \levels together to form a \levelGroup, and make this \DONE or \DTWO independent of other \levelGroups. The $i$-th \levelGroup would be denoted by $T(i)$. Difference between \level and  \levelGroup can be seen in \cref{fig:2d_7pt_d2}, for \cref{fig:2d_7pt_d1} \levelGroup and \level coincides.
   
-  In principle one could compute on all independent \levelGroups in parallel, but serial within a \levelGroup, i.e. for example in \cref{fig:2d_7pt_d2} $T(0)$, $T(2)$, $T(4)$, $T(6)$ can be operated by four different threads in parallel and in the next sweep rest \levelGroups. For the configurations seen in \cref{fig:2d-7pt_d1_d2} this would mean we have $\frac{\totalLvlMATH}{2}$ and $\frac{\totalLvlMATH}{4}$ parallelism for \DONE and \DTWO kernels respectively.
+  In principle one could compute on all independent \levelGroups in parallel, but sequentially within a \levelGroup, i.e. for example in \cref{fig:2d_7pt_d2} $T(0)$, $T(2)$, $T(4)$, $T(6)$ can be operated by four different threads in parallel and in the next sweep rest \levelGroups. For the configurations seen in \cref{fig:2d-7pt_d1_d2} this would mean we have $\frac{\totalLvlMATH}{2}$ and $\frac{\totalLvlMATH}{4}$ parallelism for \DONE and \DTWO kernels respectively.
   
   But the problem with the configurations like the one seen in \cref{fig:2d-7pt_d1_d2} is that there is load imbalances between threads as the number of rows (\nrows) per \levelGroup is not distributed evenly. As seen here in the case of \STEX the threads working on extreme ends of graph (\eg $T(1), T(7)$) have small amount of work compared to the threads working on middle (\eg $T(3), T(4)$). 
   
@@ -204,7 +204,7 @@ Once the \levels are known one has to permute the matrix in the order of its \le
    \begin{equation*}
 	   I^k(L_s(j)) = \set{u : u \xrightarrow{k} v \text{  } \forall v \in L_s(j) \text { and } u \notin L_s(j)}
    \end{equation*}
-   For \DTWO this would mean we have to include 1 interface level, the new selection is illustrated in \cref{fig:rec_d2_correct}. With the new \subgraph selection for \DTWO coloring as seen in \cref{fig:rec_d2_correct_a}, the result after third step \DK coloring remains correct. In the example vertices 4 and 7 which had same color previously now gets a different color in (see \cref{fig:rec_d2_correct_d}). 
+   For \DTWO this would mean we have to include 1 interface level, the new selection is illustrated in \cref{fig:rec_d2_correct}. With the new \subgraph selection for \DTWO coloring as seen in \cref{fig:rec_d2_correct_a}, the result after third step remains correct with respect to \DTWO coloring. In the example vertices 4 and 7 which had same color previously now gets a different color in (see \cref{fig:rec_d2_correct_d}). 
      
      \begin{figure}[thbp]
      	\centering
@@ -216,39 +216,48 @@ Once the \levels are known one has to permute the matrix in the order of its \le
      	\hspace{0.6em}
      	\subfloat[]{\label{fig:rec_d2_correct_d}\includegraphics[width=0.22\textwidth, height=0.105\textheight]{pics/recursion/d2/correct/recursion_graph_correct_4}}
      	\hspace{0.6em}
-     	\caption{Correct procedure of selecting \subgraph for \DTWO coloring. The \levelGroup $T(2)$ and it's $1^{st}$ interface level is chosen as shown in \cref{fig:rec_d2_correct_a,fig:rec_d2_correct_b} for level construction stage seen in \cref{fig:rec_d2_correct_c}. For rest of the steps only required \subgraph to be parallelised is considered as shown in \cref{fig:rec_d2_correct_d} for \DK coloring.}
+     	\caption{Correct procedure of selecting \subgraph for \DTWO coloring. The \levelGroup $T_1(2)$ and it's $1^{st}$ interface level is chosen as the \subgraph as shown in \cref{fig:rec_d2_correct_a,fig:rec_d2_correct_b}. Level construction step is then applied to this \subgraph as seen in \cref{fig:rec_d2_correct_c}. Rest of the steps like permutation and \DK coloring is applied only to the \subgraph  chosen for recursion (here $T_1(2)$). Finally as seen in \cref{fig:rec_d2_correct_d} we get three \levelGroups at the end of recursion on $T_1(2)$.}
      	\label{fig:rec_d2_correct}
      \end{figure}
      
-     Note that the interface levels have to be considered only in the first step namely level construction in the rest of the steps we just need to consider target \subgraphs induced by \levelGroups. 
+     Note that the interface levels have to be considered only in the first step namely level construction in the rest of the steps we just need to consider target \subgraphs induced by \levelGroups \ie in \cref{fig:rec_d2_correct} the \subgraph induced by $T_1(2)$. 
+   
+       \begin{figure}[H]
+       	\begin{minipage}[c]{0.62\textwidth}
+       		\includegraphics[height=0.25\textheight,width=0.9\textwidth]{pics/recursion/2d-7pt_example/2d-7pt/stencil_2d_7pt}
+       	\end{minipage}\hfill
+       	\begin{minipage}[c]{0.38\textwidth}
+       		{\tt for parallel all \textcolor{red}{red}\\
+       			\hspace*{1em} for parallel all \textcolor{amber}{orange}\\
+       			\hspace*{1em} for parallel all \textcolor{magenta}{pink}\\
+       		}
+       		{\tt for parallel all \textcolor{blue}{blue}\\
+       			\hspace*{1em} for parallel all \textcolor{carmine}{brown}\\
+       			\hspace*{1em} for parallel all \textcolor{cyan}{cyan}\\
+       		}
+       		\caption{\STEX example for eight threads. Here recursion is applied on \levelGroups $T_1(5-8)$, to get more threads. The execution order of different \levelGroup is specified in the short code snippet on right. Note nested parallelism being used.}
+       		\label{fig:rec_2d-7pt_graph}
+       	\end{minipage}
+       \end{figure}
      
-	\subsubsection{\levelTree} \label{subsec:level_tree}
-	By recursion we are able to exploit more parallelism. However this introduces more complexity and one has to also respect the dependencies between stages in addition to one within stages. The best idea is to have a data structure similar to the recursion, therefore we extent the \levelPtr data structure to a hierarchical tree data structure to store the informations. This data structure is called a \levelTree. The root of \levelTree contains information of entire domain, first leaves of this root stores information about \levelGroups  in stage 1 ($T_1$), next leaves about \levelGroups in stage 2 ($T_2$) and so on. 
+     \Cref{fig:rec_2d-7pt_graph} (left) shows \DTWO coloring of \STEX example for eight threads. Here we see recursion is applied to \levelGroups $T_1(5),T_1(6),T_1(7)$ and $T_1(8)$. In this case each of the \levelGroups where recursion is applied spawns parallelism for two threads. The choice of \levelGroups to refine and number of threads needed from each recursion are determined using a global load balancing technique as will be explained in \cref{subsec:subgraph_selection}.
+     
+      \Cref{fig:rec_2d-7pt_graph} (right) shows the execution order of different \levelGroups. Note the usage of nested parallelism \ie for example thread responsible for $T_1(5)$ spawns two child threads to execute $T_2(1) \subset T_1(5)$ and $T_2(3) \subset T_1(5)$ in parallel, as well as $T_2(2) \subset T_1(5)$ and $T_2(4) \subset T_1(5)$ in parallel. At the end of each {\tt for parallel all color} there is synchronization between threads assigned to \levelGroup of corresponding color. Since each of the leaf need to synchronize only with it's siblings (leaves of same parent)  we use simple point to point synchronization scheme. 
+          
+       
+	\subsubsection{Internal representation of recursively generated \boldmath{\levelGroups}} \label{subsec:level_tree}
+	The recursive nature of our procedure allows to exploit more parallelism. However this introduces more complexity and one has to additionally respect the dependencies between stages and still observe the dependencies within one stage. The best idea is to have a data structure similar to the recursion, therefore we extent the \levelPtr data structure to a hierarchical tree data structure to store these informations. This data structure is called a \levelTree. The root of \levelTree contains information of entire domain, first child leaves of this root \ie leaves with depth 1 stores information about \levelGroups in stage 1 ($T_1(..)$), leaves with depth 2 stores information about \levelGroups in stage 2 ($T_2$) and so on. 
 	
 	 \begin{figure}[thbp]
 		 \includegraphics[width=\textwidth, height=0.2\textheight]{pics/recursion/2d-7pt_example/tree/tree}
 	 	\caption{\levelTree corresponding to \STEX example for domain size $16 \times 16$, and 8 threads. The range (square brackets) specified in each leaves represent the vertices belonging to each \levelGroup, the number in bracket (parenthesis) represents the thread assigned to the \levelGroup in fill type pinning and the \nrowsEff (see \cref{Sec:param_study}) is represented within angle brackets.}
 	 	\label{fig:rec_2d-7pt_tree}
 	 \end{figure}
-    \begin{figure}[H]
-    	\begin{minipage}[c]{0.62\textwidth}
-    		\includegraphics[height=0.25\textheight,width=0.9\textwidth]{pics/recursion/2d-7pt_example/2d-7pt/stencil_2d_7pt}
-    	\end{minipage}\hfill
-    	\begin{minipage}[c]{0.38\textwidth}
-	    	{\tt for parallel all \textcolor{red}{red}\\
-	    	\hspace*{1em} for parallel all \textcolor{amber}{orange}\\
-	    	\hspace*{1em} for parallel all \textcolor{magenta}{pink}\\
-	    	}
-		    {\tt for parallel all \textcolor{blue}{blue}\\
-	    	\hspace*{1em} for parallel all \textcolor{carmine}{brown}\\
-	    	\hspace*{1em} for parallel all \textcolor{cyan}{cyan}\\
-		    }
-		    \caption{Graph corresponding to \levelTree in \cref{fig:rec_2d-7pt_tree}. The execution order of different \levelGroup is specified in the short code snippet on right. Note nested parallelism being used.}
-		    \label{fig:rec_2d-7pt_graph}
-    	\end{minipage}
-    \end{figure}
+
  
- \Cref{fig:rec_2d-7pt_tree} shows a \levelTree corresponding for \STEX example. Threads are assigned to each \levelGroup, order of which depends on the pinning strategy used. For example in fill type pinning strategy one would pin thread 0 to $T_1(0)$ and $T_1(1)$, thread 1 to $T_1(2)$ and $T_1(3)$, thread 2 to $T_2(0)  \subset T_1(4)$, $T_2(1) \subset T_1(4)$, $T_2(0)  \subset T_1(5)$ and $T_2(1) \subset T_1(5)$, and so on. \Inorder to replicate this tree like parallelisation strategy we use nested parallelism, where threads in stage $k+1$ is spawned by threads in stage $k$. The graph corresponding to \STEX example is shown in \cref{fig:rec_2d-7pt_graph}, and the execution order is specified in the figure.  At the end of each {\tt for parallel all color} there is synchronization between threads assigned to \levelGroup of corresponding color. Since each of the leaf need to synchronize only with it's siblings (leaves of same parent)  we use simple point to point synchronization scheme. 
+ \Cref{fig:rec_2d-7pt_tree} shows a \levelTree corresponding for \STEX example with 8 threads as seen in \cref{fig:rec_2d-7pt_graph}. The leaves in the tree that correspond to different \levelGroups and store various informations like the range of vertices or nodes that belong to this \levelGroup, the effective number of rows (\nrowsEff) that describes the quality which will be seen in \cref{Sec:param_study}, and other informations like threads assigned to specific \levelGroups.  Threads are assigned to each \levelGroup depending on the pinning strategy used. For example in \emph{fill} type pinning strategy one would pin thread 0 to $T_1(0)$ and $T_1(1)$, thread 1 to $T_1(2)$ and $T_1(3)$, thread 2 to $T_2(0)  \subset T_1(4)$, $T_2(1) \subset T_1(4)$, $T_2(0)  \subset T_1(5)$ and $T_2(1) \subset T_1(5)$, and so on as seen in \cref{fig:rec_2d-7pt_tree}. 
+ 
+ Note that the \levelTree data structure is an exact replica of the nested parallelism being used as seen in \cref{fig:rec_2d-7pt_graph} (right). Therefore threads are spawned based on this \levelTree allowing for easy implementation of point to point synchronizations.
 
 \subsubsection{Sub-graph selection and global load balancing} \label{subsec:subgraph_selection}
 Parallelism required for hardware underneath can be obtained either by expanding the \levelTree horizontally \ie increasing \levelGroups within a stage or by expanding \levelTree vertically with the help of recursion. But as we have seen before in \cref{subsec:DK} the horizontal parallelism is limited and after a certain extent this would lead to load balancing. Similarly excessive usage of recursion is also not a good idea since data locality worsens due to local permutations within \subgraph. Therefore it is vital to find a proper balance and choose proper configuration. Furthermore just doing load balancing within a single stage is not the best, for example if we had equally balanced within stage 1 in \cref{fig:rec_2d-7pt_tree}, we would receive no benefit from recursion. Therefore a global load balancing becomes inevitable.
@@ -266,5 +275,5 @@ Parallelism required for hardware underneath can be obtained either by expanding
 	\begin{equation} \label{eq:epsilon}
 		\epsilon_s =  1 - abs(a-b);
 	\end{equation}
-	The obtained number $b$ is chosen as weight for \levelGroups operated by first thread in the current stage \ie $w(T_s(0))=w(T_s(1))=b$. A local search is then done by increasing \levels in this \levelGroups to see if there is a better choice ($a$ close to $b$) with weight $b$, finally a \levelGroup is formed with the best choice.  The weight for next \levelGroups are found by resetting the sum counter to zero and repeating the  procedure with \levels just after the current \levelGroups.
+	All the \levels that are involved in the sum belongs to \levelGroups  operated by first thread in the current stage. The obtained number $b$ is chosen as weight for these \levelGroups \ie $w(T_s(0))=w(T_s(1))=b$. A local search is then done by increasing \levels in this \levelGroups to see if there is a better choice ($a$ close to $b$) with weight $b$, finally \levelGroups are formed with the best choice.  The weight for next \levelGroups are found by resetting the sum counter to zero and repeating the  procedure with \levels just after the current \levelGroups.
 \end{enumerate}

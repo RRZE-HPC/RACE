@@ -33,5 +33,15 @@
 	(x) edge[<->] (y); 
 	
 	\fill[color=blue,opacity=0.1,rounded corners=15pt] (8*\scale,-3.5*\scale) rectangle (12*\scale,-1.5*\scale);
+	
+	\draw[dashed,rounded corners=5mm,color=red] (8*\scale,-1.65*\scale) -- (8.75*\scale,-3.4*\scale) -- (9.55*\scale,-3.4*\scale) -- (8.8*\scale,-1.65*\scale) --cycle;
+	
+	\draw[dashed,rounded corners=5mm,color=blue] (8.95*\scale,-1.65*\scale) -- (9.8*\scale,-3.4*\scale) -- (10.3*\scale,-3.4*\scale) -- (10.65*\scale,-2.34*\scale) -- (11.9*\scale, -2.34*\scale) -- (11.9*\scale, -1.65*\scale) -- cycle;
+	
+	\draw[dashed,color=red] (11*\scale,-3*\scale) circle [radius=0.68cm];
+	
+	\node[color=red] at (8.35*\scale,-3.2*\scale) {$T_2(1)$};
+	\node[color=blue] at (11.55*\scale,-1.5*\scale) {$T_2(2)$};
+	\node[color=red] at (11.72*\scale,-2.8*\scale) {$T_2(3)$};
 	\end{tikzpicture}
 \end{document}  
