@@ -37,7 +37,7 @@ Motivation for developing an alternative method stems from the ESSEX (Equipping 
   	\label{fig:mc_alpha}
   \end{figure}
   
-  \Cref{fig:mc_alpha}  shows an illustration of why data traffic increases for a given matrix. If one assumes last level cache (\LLC) can only hold less than six elements and obeys perfect LRU policy, as seen in the \cref{fig:mc_alpha} for  each new color we would need to load the data from main memory. As we will see later this $\alpha$ factor strongly depends on the matrix size and the size of \LLC.
+  \Cref{fig:mc_alpha}  shows an illustration of why data traffic increases for a given matrix. If one assumes last level cache (\LLC) can only hold less than six elements and obeys perfect LRU policy, as seen in the \cref{fig:mc_alpha} for  each new color we would need to load the indirectly accessed vector ($x$ in case of \SpMV) from main memory. As we will see later this $\alpha$ factor strongly depends on the matrix size and the size of \LLC.
   
  As seen in \cref{fig:motivation_b} the data traffic further increases for \SpMTV due to additional indirect writes (scatter) and this scales up $\alpha$ factor as seen in the denominator of $I_{\SpMTV}$ (see \cref{eq:SpMTV_intensity}),  which further decreases performance of \SpMTV compared to \SpMV on \MC matrix. 
  

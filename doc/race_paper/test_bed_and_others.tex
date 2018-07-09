@@ -4,7 +4,7 @@ The tests are conducted on three different multi-core architectures. Two of them
 \begin{itemize}
 	\item \Intel \IVB architecture belongs to class of classic Intel's cache-based architecture, which has three inclusive cache  hierarchies. All the cache are scalacble and the \LLC (L3) being shared among all the cores on one socket. The processor is capable of delivering one full four wide \SIMD add, multiply and load in one cycle. 
 	\item \Intel \SKX architecture belongs to recent generation of Intel family. Contrary to it's predecessors (like \IVB), L3 cache is now changed to a non-inclusive victim cache shared by all the cores on a socket. The architecture comes with support for eight wide \SIMD operations (AVX-512). The processor is capable of doing two AVX-512 add, multiply and load operations per cycle.
-	\item \AMD \EPY is based on AMD's Zen microarchitecture. The basic building block of the architecture consists of Core Complex (CCX) consisting of three cores (can extend upto four on high end models) each having it's own private L1 and L2 cache. The L3 cache is shared between a core complex and is non-inclusive victim cache. A single socket of \EPY consists of eight such core complexes.
+	\item \AMD \EPY is based on AMD's Zen microarchitecture. The basic building block of the architecture consists of Core Complex (CCX) consisting of three cores (can extend upto four on high end models) each having it's own private L1 and L2 cache. The L3 cache is shared between a core complex and is non-inclusive victim cache. A single socket of \EPY consists of eight such CCX.
 	
 \end{itemize}
 The details of architectures along with the measured bandwidths are given in \cref{tab:test_bed}. The bandwidths are measured using \likwidBench suite.
@@ -35,7 +35,7 @@ The details of architectures along with the measured bandwidths are given in \cr
 \end{center}
 \end{table} 
 
-The code was compiled with newest Intel compiler version 17 and the following compiler flags were set {\tt -fno-alias -xHost -O3}. Furthermore all the measurements were done with  \CPU clock speeds fixed at frequencies indicated in \cref{tab:test_bed}.
+All the code used was compiled with Intel compiler version 17 and the following compiler flags were set {\tt -fno-alias -xHost -O3}. Furthermore all the measurements were done with  \CPU clock speeds fixed at frequencies indicated in \cref{tab:test_bed}.
 
 
 \subsection{External Tolls and Software}
@@ -50,7 +50,7 @@ Following external libraries are used in this paper. The application of these li
 \end{itemize}
 
 \subsection{Benchmark Matrices}
-All the test matrices are taken from SuiteSparse Matrix Collection (former University of Florida Sparse Matrix Collection) \cite{UOF} and quantum mechanics field (see \ESSEX project \cite{ESSEX} for more details). The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by combining the test matrices from two papers \cite{RSB,park_ls}. This enables easy comparison of results. Matrices from \ESSEX project are some of the matrices that are of interest in the FEAST eigen value solver.  Only matrices having undirected graphs are considered due to scope of the paper as mentioned in \cref{Sec:contribution}. Matrices along with some of their parameters are given in \cref{table:bench_matrices}.  Matrices that have been marked with an * symbol indicate they are corner cases and will be discussed in detail.
+All the test matrices are taken from SuiteSparse Matrix Collection (former University of Florida Sparse Matrix Collection) \cite{UOF} and quantum mechanics field (see \ESSEX project \cite{ESSEX} for more details). The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by combining the test matrices from two papers \cite{RSB,park_ls}. This enables easy comparison of results. Matrices from \ESSEX project are some of the matrices that are of interest in the iterative FEAST eigen value solver that internally uses Kaczmarz solver.  Only matrices having undirected graphs are considered due to scope of the paper as mentioned in \cref{Sec:contribution}. Matrices along with some of their parameters are given in \cref{table:bench_matrices}.  Matrices that have been marked with an * symbol indicate they are corner cases and will be discussed in detail.
 
 \begin{table}[ht]
 	\footnotesize
@@ -78,13 +78,13 @@ Sparse Matrix Vector (\SpMV) is a kernel that do not have any dependencies. It  
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
-The arithmetic intensity of the kernel $I_\mathrm{\SpMV}$ is as follows:
+The arithmetic intensity of the \SpMV kernel $I_\mathrm{\SpMV}$ is as follows:
 \begin{equation}
 \label{eq:SpMV_intensity}
 I_\mathrm{\SpMV} = \frac{2}{8+4+8*\alpha+\frac{16}{\NNZRmath}} \\
 \end{equation}
 
-where $\alpha$ represents the data locality factor and \NNZR non-zeros per row. $\alpha$ depends on the sparsity pattern of the matrix and varies from matrix to matrix. Ideal value of $\alpha$ for sufficiently large matrix is $\frac{1}{\NNZRmath}$. More details on factor $\alpha$ could be found in \cite{Moritz_sell}.
+where $\alpha$ represents the data locality factor and \NNZR non-zeros per row. $\alpha$ depends on the sparsity pattern of the matrix and varies from matrix to matrix. Ideal value of $\alpha$ for sufficiently large matrix is $\frac{1}{\NNZRmath}$. The $\alpha$ factor takes into account indirect accesses of the $x$ vector seen in \cref{alg:SpMV}. More details on factor $\alpha$ could be found in \cite{Moritz_sell}.
 
 \subsubsection{\SpMTV}
 Sparse Matrix Transpose Vector (\SpMTV) is a kernel having \DTWO dependency.
