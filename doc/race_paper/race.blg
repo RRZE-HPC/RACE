@@ -3,56 +3,57 @@ Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: race.aux
 The style file: siamplain.bst
 Database file #1: references.bib
-I was expecting a `,' or a `}'---line 76 of file references.bib
+I was expecting a `,' or a `}'---line 75 of file references.bib
  : 
  : keywords={graph colouring;multiprocessing systems;parallel architectures;balanced coloring heuristics;balanced graph colorings;balancing efficacy;distance-1 coloring;manycore architectures;multicore architectures;parallel community detection;parallel computing;Bipartite graph;Color;Context;Image color analysis;Processor scheduling;Standards;Balanced coloring;Tilera manycore architecture;community detection;distance-1 coloring;graph algorithms;parallel graph coloring;partial distance-2 coloring},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
 Warning--string name "june" is undefined
---line 150 of file references.bib
+--line 148 of file references.bib
 Warning--to sort, need author or key in UOF
 Warning--to sort, need author or key in ESSEX
+Warning--can't use both author and editor fields in RCM
 Warning--empty journal in Kamath
 Warning--empty journal in LIKWID
-You've used 22 entries,
+You've used 31 entries,
             2244 wiz_defined-function locations,
-            727 strings with 9210 characters,
-and the built_in function-call counts, 8954 in all, are:
-= -- 807
-> -- 364
+            794 strings with 11386 characters,
+and the built_in function-call counts, 13104 in all, are:
+= -- 1187
+> -- 538
 < -- 1
-+ -- 145
-- -- 121
-* -- 713
-:= -- 1257
-add.period$ -- 24
-call.type$ -- 22
-change.case$ -- 124
++ -- 216
+- -- 181
+* -- 1042
+:= -- 1824
+add.period$ -- 33
+call.type$ -- 31
+change.case$ -- 180
 chr.to.int$ -- 0
-cite$ -- 26
-duplicate$ -- 462
-empty$ -- 819
-format.name$ -- 121
-if$ -- 2004
+cite$ -- 36
+duplicate$ -- 664
+empty$ -- 1181
+format.name$ -- 181
+if$ -- 2940
 int.to.chr$ -- 0
-int.to.str$ -- 22
-missing$ -- 20
-newline$ -- 71
-num.names$ -- 42
-pop$ -- 178
+int.to.str$ -- 31
+missing$ -- 28
+newline$ -- 98
+num.names$ -- 60
+pop$ -- 257
 preamble$ -- 1
-purify$ -- 102
+purify$ -- 150
 quote$ -- 0
-skip$ -- 331
+skip$ -- 502
 stack$ -- 0
-substring$ -- 586
-swap$ -- 165
+substring$ -- 895
+swap$ -- 252
 text.length$ -- 1
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 86
-warning$ -- 4
-while$ -- 84
-width$ -- 24
-write$ -- 227
+type$ -- 120
+warning$ -- 5
+while$ -- 122
+width$ -- 33
+write$ -- 314
 (There was 1 error message)

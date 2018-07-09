@@ -16,10 +16,27 @@
   SPAA '09, New York, NY, USA, 2009, ACM, pp.~233--244,
   \url{https://doi.org/10.1145/1583991.1584053}.
 
+\bibitem{RCM}
+{\sc E.~Cuthill}, {\em Several Strategies for Reducing the Bandwidth of
+  Matrices}, Springer US, Boston, MA, 1972, pp.~157--166,
+  \url{https://doi.org/10.1007/978-1-4615-8675-3_14},
+  \url{https://doi.org/10.1007/978-1-4615-8675-3_14}.
+
+\bibitem{BFS_level_def}
+{\sc J.~D\'{\i}az, J.~Petit, and M.~Serna}, {\em A survey of graph layout
+  problems}, ACM Comput. Surv., 34 (2002), pp.~313--356,
+  \url{https://doi.org/10.1145/568522.568523}.
+
 \bibitem{hpcg}
 {\sc J.~Dongarra and M.~Heroux}, {\em Toward a new metric for ranking high
   performance computing systems}, Tech. Report SAND2013-4744, Sandia National
   Laboratories, 2013.
+
+\bibitem{sparseX}
+{\sc A.~Elafrou, V.~Karakasis, T.~Gkountouvas, K.~Kourtis, G.~Goumas, and
+  N.~Koziris}, {\em Sparsex: A library for high-performance sparse
+  matrix-vector multiplication on multicore platforms}, ACM Trans. Math.
+  Softw., 44 (2018), pp.~26:1--26:32, \url{https://doi.org/10.1145/3134442}.
 
 \bibitem{Elfving1980}
 {\sc T.~Elfving}, {\em Block-iterative methods for consistent and inconsistent
@@ -37,6 +54,19 @@
   algorithm for computing inner eigenvalues}, Parallel Comput., 49 (2015),
   pp.~153--163, \url{https://doi.org/10.1016/j.parco.2015.06.005}.
 
+\bibitem{dist_k_def}
+{\sc A.~H. Gebremedhin, F.~Manne, and A.~Pothen}, {\em Parallel distance-k
+  coloring algorithms for numerical optimization}, in Proceedings of the 8th
+  International Euro-Par Conference on Parallel Processing, Euro-Par '02,
+  London, UK, UK, 2002, Springer-Verlag, pp.~912--921,
+  \url{http://dl.acm.org/citation.cfm?id=646667.699892}.
+
+\bibitem{COLPACK}
+{\sc A.~H. Gebremedhin, D.~Nguyen, M.~M.~A. Patwary, and A.~Pothen}, {\em
+  Colpack: Software for graph coloring and related problems in scientific
+  computing}, ACM Trans. Math. Softw., 40 (2013), pp.~1:1--1:31,
+  \url{https://doi.org/10.1145/2513109.2513110}.
+
 \bibitem{thread_private_symm_spmv}
 {\sc T.~Gkountouvas, V.~Karakasis, K.~Kourtis, G.~Goumas, and N.~Koziris}, {\em
   Improving the performance of the symmetric sparse matrix-vector
@@ -50,25 +80,32 @@
   Scientific Computing, 27 (2005), pp.~1092--1117,
   \url{https://doi.org/10.1137/040609458}.
 
+\bibitem{MKL}
+{\sc {Intel}}, {\em Intel math kernel library},
+  \url{https://software.intel.com/en-us/mkl} (accessed 2018/05/22).
+
 \bibitem{ABMC}
 {\sc T.~Iwashita, H.~Nakashima, and Y.~Takahashi}, {\em Algebraic block
   multi-color ordering method for parallel multi-threaded sparse triangular
   solver in iccg method}, in Proceedings of the 2012 IEEE 26th International
   Parallel and Distributed Processing Symposium, IPDPS '12, Washington, DC,
   USA, 2012, IEEE Computer Society, pp.~474--483,
-  \url{https://doi.org/10.1109/IPDPS.2012.51},
-  \url{http://dx.doi.org/10.1109/IPDPS.2012.51}.
+  \url{https://doi.org/10.1109/IPDPS.2012.51}.
 
 \bibitem{MC}
 {\sc M.~T. Jones and P.~E. Plassmann}, {\em Scalable iterative solution of
   sparse linear systems}, Parallel Comput., 20 (1994), pp.~753--773,
-  \url{https://doi.org/10.1016/0167-8191(94)90004-3},
-  \url{http://dx.doi.org/10.1016/0167-8191(94)90004-3}.
+  \url{https://doi.org/10.1016/0167-8191(94)90004-3}.
 
 \bibitem{Kamath}
 {\sc C.~Kamath and A.~Sameh}, {\em A projection method for solving nonsymmetric
   linear systems on multiprocessors}, 9 (1989), pp.~291--312,
   \url{https://doi.org/10.1016/0167-8191(89)90114-2}.
+
+\bibitem{METIS}
+{\sc G.~Karypis and V.~Kumar}, {\em A fast and high quality multilevel scheme
+  for partitioning irregular graphs}, SIAM Journal on Scientific Computing, 20
+  (1998), pp.~359--392, \url{https://doi.org/10.1137/S1064827595287997}.
 
 \bibitem{Moritz_sell}
 {\sc M.~Kreutzer, G.~Hager, G.~Wellein, H.~Fehske, and A.~R. Bishop}, {\em {A
@@ -76,6 +113,11 @@
   Multiplication on Modern Processors with Wide SIMD Units}}, SIAM Journal on
   Scientific Computing, 36 (2014), pp.~C401--C423,
   \url{https://doi.org/10.1137/130930352}.
+
+\bibitem{BFS}
+{\sc C.~Y. Lee}, {\em An algorithm for path connections and its applications},
+  IRE Transactions on Electronic Computers, EC-10 (1961), pp.~346--365,
+  \url{https://doi.org/10.1109/TEC.1961.5219222}.
 
 \bibitem{equitable_color}
 {\sc H.~Lu, M.~Halappanavar, D.~Chavarría-Miranda, A.~H. Gebremedhin,
@@ -98,6 +140,12 @@
   H.~P. Zima, K.~Joe, M.~Sato, Y.~Seo, and M.~Shimasaki, eds., Berlin,
   Heidelberg, 2002, Springer Berlin Heidelberg, pp.~437--448.
 
+\bibitem{RCM_Sparse_computation}
+{\sc L.~Oliker, X.~Li, P.~Husbands, and R.~Biswas}, {\em Effects of ordering
+  strategies and programming paradigms on sparse matrix computations}, SIAM
+  Review, 44 (2002), pp.~373--393,
+  \url{https://doi.org/10.1137/S00361445003820}.
+
 \bibitem{park_ls}
 {\sc J.~Park, M.~Smelyanskiy, N.~Sundaram, and P.~Dubey}, {\em Sparsifying
   synchronization for high-performance shared-memory sparse triangular solver},
@@ -105,15 +153,13 @@
   Volume 8488, ISC 2014, New York, NY, USA, 2014, Springer-Verlag New York,
   Inc., pp.~124--140, \url{https://doi.org/10.1007/978-3-319-07518-1_8}.
 
-\bibitem{FEAST}
-{\sc E.~Polizzi}, {\em A density matrix-based algorithm for solving eigenvalue
-  problems}, CoRR, abs/0901.2665 (2009), \url{https://arxiv.org/abs/0901.2665}.
-
-\bibitem{LIKWID_validation}
-{\sc T.~R{\"o}hl, J.~Eitzinger, G.~Hager, and G.~Wellein}, {\em Validation of
-  hardware events for successful performance pattern identification in high
-  performance computing}, in Tools for High Performance Computing 2015, Cham,
-  2016, Springer International Publishing, pp.~17--28.
+\bibitem{Park_HPCG}
+{\sc J.~Park, M.~Smelyanskiy, K.~Vaidyanathan, A.~Heinecke, D.~D. Kalamkar,
+  X.~Liu, M.~M.~A. Patwary, Y.~Lu, and P.~Dubey}, {\em Efficient shared-memory
+  implementation of high-performance conjugate gradient benchmark and its
+  application to unstructured matrices}, in SC14: International Conference for
+  High Performance Computing, Networking, Storage and Analysis, Nov 2014,
+  pp.~945--955, \url{https://doi.org/10.1109/SC.2014.82}.
 
 \bibitem{saad}
 {\sc Y.~Saad}, {\em Iterative Methods for Sparse Linear Systems}, Society for
@@ -121,6 +167,10 @@
   \url{https://doi.org/10.1137/1.9780898718003},
   \url{https://epubs.siam.org/doi/abs/10.1137/1.9780898718003},
   \url{https://arxiv.org/abs/https://epubs.siam.org/doi/pdf/10.1137/1.9780898718003}.
+
+\bibitem{SpMP}
+{\sc {SpMP Development Team}}, {\em Sparse matrix pre-processing library},
+  \url{https://github.com/IntelLabs/SpMP} (accessed 2018/05/22).
 
 \bibitem{LIKWID}
 {\sc J.~Treibig, G.~Hager, and G.~Wellein}, {\em Likwid: A lightweight

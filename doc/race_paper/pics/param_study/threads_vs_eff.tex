@@ -1,0 +1,96 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{matrix}
+
+\pgfplotsset{width=18cm,height=12cm,compat=1.3}
+
+\usepackage{filecontents}
+
+\newcommand{\tikzcircle}[2][red,fill=red]{\tikz[baseline=-0.5ex]\draw[#1,radius=#2] (0,0) circle ;}%
+
+\usetikzlibrary{arrows.meta}
+\tikzset{>={Latex[width=1.5mm,length=1.5mm]}}
+
+\definecolor{color_1}{RGB}{230, 25, 75}
+\definecolor{color_2}{RGB}{60, 180, 75}
+\definecolor{color_3}{RGB}{255, 225, 25}
+\definecolor{color_4}{RGB}{0, 130, 200}
+\definecolor{color_5}{RGB}{245, 130, 48}
+\definecolor{color_6}{RGB}{145, 30, 180}
+\definecolor{color_7}{RGB}{70, 240, 240}
+\definecolor{color_8}{RGB}{240, 50, 230}
+\definecolor{color_9}{RGB}{210, 245, 60}
+\definecolor{color_10}{RGB}{250, 190, 190}
+\definecolor{color_11}{RGB}{0, 128, 128}
+\definecolor{color_12}{RGB}{230, 190, 255}
+\definecolor{color_13}{RGB}{170, 110, 40}
+\definecolor{color_14}{RGB}{255, 250, 200}
+\definecolor{color_15}{RGB}{128, 0, 0}
+\definecolor{color_16}{RGB}{170, 255, 195}
+\definecolor{color_17}{RGB}{128, 128, 0}
+\definecolor{color_18}{RGB}{255, 215, 180}
+\definecolor{color_19}{RGB}{0, 0, 128}
+\definecolor{color_20}{RGB}{128, 128, 128}
+
+\begin{document}
+	\pgfplotsset{compat=1.5}
+	%\begin{figure}
+	
+	\centering
+	\begin{tikzpicture}
+	\def\xmin{0}
+	\def\xmax{10}
+	\def\ymin{0}
+	\def\ymax{30}
+	
+	\begin{axis}[ xlabel={\LARGE{$n_t$}}, ylabel={\LARGE{$\eta$}}, 
+	y label style={at={(axis description cs:-0.07,.5)},rotate=0,anchor=south},
+	x label style={at={(axis description cs:0.5,-.13)},rotate=0,anchor=south},
+	ymode=linear, ylabel shift =-0.25cm,
+	%xtick={1000, 2744, 5832, 10648, 17576, 27000, 39304, 54872, 74088},
+	%xticklabels={$10^3$, %$14^3$
+	%  , $18^3$, $22^3$, $26^3$, $30^3$, $34^3$, $38^3$, $42^3$},
+	%scaled ticks=false,
+	%xmode=log,
+	xmin=1,xmax = 200,
+	ymin=0, ymax=1,
+%	title = {\LARGE{$n\_threads$ vs $\eta$ , matrix - \emph{inline\_1}, $\epsilon_2 = 40$} },
+	legend style={legend pos=south west, font=\LARGE},
+	tick label style={font=\Large}
+	]
+	
+	%BEGIN_CODE%
+	
+	%MEASURE_START%
+	\addplot+[color=color_1, line width=2, mark options={color_1}] table[x =THREAD,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study/db/matrix_inline_1/eff_1_40/eff_2_40//derived.txt}; \label{plot_one}
+	\addlegendentry{$\epsilon_1 = 0.40$}
+	%MEASURE_STOP%
+
+
+	%END_CODE%
+	%BEGIN_CODE%
+	
+	%MEASURE_START%
+	\addplot+[color=color_2, line width=2, mark options={color_2}] table[x =THREAD,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study/db/matrix_inline_1/eff_1_70/eff_2_40//derived.txt}; \label{plot_two}
+	\addlegendentry{$\epsilon_1 = 0.70$}
+	%MEASURE_STOP%
+
+
+	%END_CODE%
+	%BEGIN_CODE%
+	
+	%MEASURE_START%
+	\addplot+[color=color_3, line width=2, mark options={color_3}] table[x =THREAD,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study/db/matrix_inline_1/eff_1_80/eff_2_40//derived.txt}; \label{plot_three}
+	\addlegendentry{$\epsilon_1 = 0.80$}
+	%MEASURE_STOP%
+
+
+	%END_CODE%
+	
+	\end{axis}
+	
+	\end{tikzpicture}
+	
+	%\end{figure}
+\end{document}
