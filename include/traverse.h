@@ -12,11 +12,11 @@ class Graph;
 class Traverse{
     private:
         Graph *graph;
-	static std::map<int, LevelData> cachedData;	
+        static std::map<int, LevelData> cachedData;
         RACE::dist dist;
         int rangeLo;
         int rangeHi;
-	int parentIdx;
+        int parentIdx;
         //Size without pure diagonal elements
         int graphSize;
 

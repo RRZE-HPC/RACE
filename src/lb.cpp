@@ -334,8 +334,8 @@ void LB::splitZones()
 
     currLvlThreads = scale.size();
 
-
-    /*DEBUG
+#ifdef RACE_DEBUG
+    //DEBUG
        for(int i=0; i<currLvlThreads; ++i)
        {
        printf("scale[%d] = %d\n", i, scale[i]);
@@ -344,8 +344,8 @@ void LB::splitZones()
        for(int i=0; i<currLvlThreads+1; ++i)
        {
        printf("initLvlPtr[%d] = %d\n", i, initialLvlPtr[i]);
-       }*/
-
+       }
+#endif
 
     totalBlocks = blockPerThread*currLvlThreads;
     int levelPtrSize = totalBlocks+1;
@@ -378,6 +378,12 @@ void LB::splitZones()
     while(!exitFlag)
     {
         calcChunkSum(chunkSum);
+#ifdef RACE_DEBUG
+        for(int i=0; i<totalBlocks; ++i)
+        {
+            printf("ChunkSum[%d] = %d\n", i,chunkSum[i]);
+        }
+#endif
         Stat meanVar(chunkSum, totalBlocks, blockPerThread, scale);
         double var = 0;
         for(int i=0; i<meanVar.numPartitions; ++i)
@@ -403,6 +409,9 @@ void LB::splitZones()
         while(newVar>=var)
         {
             int rankIdx = rankPerm[currRank];
+#ifdef RACE_DEBUG
+            printf("rankIdx = %d\n", rankIdx);
+#endif
             for(int i=0; i<totalBlocks+1; ++i)
             {
                 levelPtr[i] = oldLevelPtr[i];
@@ -415,12 +424,28 @@ void LB::splitZones()
             //for example Spin-26 and subBlock, therefore in this case move more
             //step till a change happens
             bool movePossible = true;
-            double currVar = newVar;
+            //double currVar = newVar;
 
-            while(movePossible && fabs(currVar-newVar)<1e-5)
+#ifdef RACE_DEBUG
+            printf("start\n");
+            for(int i=0; i<levelPtrSize; ++i)
             {
+                printf("levelPtr[%d] = %d\n",i,levelPtr[i]);
+            }
+            int *testChunkSum = new int[totalBlocks];
+            calcChunkSum(testChunkSum);
+            for(int i=0; i<totalBlocks; ++i)
+            {
+                printf("ChunkSum[%d] = %d\n", i,testChunkSum[i]);
+            }
+#endif
+
+            bool first=true;
+            while((first==true) || (movePossible && fabs(var-newVar)<1e-5))
+            {
+                first = false;
                 //If I am less than mean
-                if(chunkSum[rankIdx] < myMean)
+                if((chunkSum[rankIdx]/(double)scale[rankIdx/blockPerThread]) < myMean)
                 {
                     //try to acquire from my neighbours
                     int acquireIdx = findNeighbour(meanVar, acquire);
@@ -430,7 +455,21 @@ void LB::splitZones()
                         movePossible = false;
                     }
                     moveOneStep(rankIdx, acquireIdx);
-                }
+
+#ifdef RACE_DEBUG
+                    printf("%d less than mean acquiring from %d\n", rankIdx, acquireIdx);
+                    for(int i=0; i<levelPtrSize; ++i)
+                    {
+                        printf("levelPtr[%d] = %d\n",i,levelPtr[i]);
+                    }
+                    calcChunkSum(testChunkSum);
+                    for(int i=0; i<totalBlocks; ++i)
+                    {
+                        printf("ChunkSum[%d] = %d\n", i,testChunkSum[i]);
+                    }
+#endif
+
+               }
                 // If I am greater than mean
                 else
                 {
@@ -444,6 +483,19 @@ void LB::splitZones()
                             fail = true;
                         }
                         moveOneStep(giveIdx, rankIdx);
+#ifdef RACE_DEBUG
+                        printf("%d greater than mean giving to %d\n", rankIdx, giveIdx);
+                        for(int i=0; i<levelPtrSize; ++i)
+                        {
+                            printf("levelPtr[%d] = %d\n",i,levelPtr[i]);
+                        }
+                        calcChunkSum(testChunkSum);
+                        for(int i=0; i<totalBlocks; ++i)
+                        {
+                            printf("ChunkSum[%d] = %d\n", i,testChunkSum[i]);
+                        }
+#endif
+
                     }
                     else
                     {
@@ -463,7 +515,6 @@ void LB::splitZones()
                         newVar += newMeanVar.var[i];
                     }
                 }
-
             }
 
             if( (currRank == (totalBlocks-1)) && (newVar>=var) )
@@ -474,18 +525,23 @@ void LB::splitZones()
                 break;
             }
             currRank += 1;
+#ifdef RACE_DEBUG
+            delete[] testChunkSum;
+#endif
         }
         delete[] rankPerm;
     }
     delete[] chunkSum;
     delete[] newChunkSum;
 
-    /*DEBUG
+#ifdef RACE_DEBUG
+   // DEBUG
     printf("Final lvl ptr\n");
     for(int i=0; i<levelPtrSize; ++i)
     {
         printf("levelPtr[%d] = %d\n",i,levelPtr[i]);
-    }*/
+    }
+#endif
 
     calcZonePtr(0);
 

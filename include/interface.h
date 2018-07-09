@@ -46,7 +46,9 @@ class RACE::Interface{
         Interface(int nrow_, int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_=1, RACE::PinMethod method_=RACE::SCATTER, int *initPerm_=NULL, int *initInvPerm_=NULL, RACE::d2Method d2Type_=RACE::TWO_BLOCK);
         ~Interface();
         //Pre-processing
-        void RACEColor();
+        RACE_error RACEColor();
+        double getEfficiency();
+        int getMaxStageDepth();
         void printZoneTree();
         //void getZoneTree(int **zoneTree_, int *len);
         void getPerm(int **perm_, int *len_);

@@ -83,8 +83,9 @@
 class LevelPool{
     private:
         ZoneTree* zoneTree;
+        int pinInitSuccess;
         void createPoolRecursive(int parentIdx);
-        void pinPoolRecursive(int parentIdx);
+        RACE_error pinPoolRecursive(int parentIdx);
         void sleepPoolRecursive(int parentIdx);
     public:
         LevelPool(ZoneTree *zoneTree_, int SMT, RACE::PinMethod pinMethod);
@@ -102,8 +103,8 @@ class LevelPool{
             return (mappedIdx[parentIdx]+parentSubIdx);
         }
         //creates pinned pool
-        void createPool();
-        void pinPool();
+        RACE_error createPool();
+        RACE_error pinPool();
         void sleepPool();
         void wake();
         void resetMaster();

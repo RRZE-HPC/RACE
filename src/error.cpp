@@ -22,6 +22,9 @@ char const * RACE_error_string(RACE_error e)
         case RACE_ERR_HWLOC:
             ret = "HWLOC ERROR";
             break;
+        case RACE_ERR_PIN:
+            ret = "PIN ERROR";
+            break;
         case RACE_ERR_NOT_IMPLEMENTED:
             ret = "NOT IMPLEMENTED";
             break;

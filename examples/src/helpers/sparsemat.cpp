@@ -195,7 +195,7 @@ bool sparsemat::readFile(char* filename)
         return false;
     }
 
-    free(row);
+    delete[] row;
 
     //writeFile("beforePerm.mtx");
     return true;
@@ -373,25 +373,43 @@ bool sparsemat::computeSymmData()
     return true;
 }
 
-void sparsemat::colorAndPermute(dist distance, int nthreads, int smt, PinMethod pinMethod)
+int sparsemat::colorAndPermute(dist distance, int nthreads, int smt, PinMethod pinMethod)
 {
     ce = new Interface(nrows, nthreads, distance, rowPtr, col, smt, pinMethod, NULL, NULL);
-    ce->RACEColor();
+    RACE_error ret = ce->RACEColor();
+
+    if(ret != RACE_SUCCESS)
+    {
+        printf("Pinning failure\n");
+        return 0;
+    }
 
     int *perm, *invPerm, permLen;
 
     ce->getPerm(&perm, &permLen);
     ce->getInvPerm(&invPerm, &permLen);
 
+    //now permute the matrix according to the permutation vector
+    permute(perm, invPerm);
+    delete[] perm;
+    delete[] invPerm;
+
     //pin omp threads as in RACE for proper NUMA
     pinOMP(nthreads);
 
-    //now permute the matrix according to the permutation vector
-    permute(perm, invPerm);
-
-    free(perm);
-    free(invPerm);
+    return 1;
 }
+
+double sparsemat::colorEff()
+{
+    return ce->getEfficiency();
+}
+
+int sparsemat::maxStageDepth()
+{
+    return ce->getMaxStageDepth();
+}
+
 
 //symmetrically permute
 void sparsemat::permute(int *perm, int*  invPerm)
@@ -411,6 +429,7 @@ void sparsemat::permute(int *perm, int*  invPerm)
 
     //first find newRowPtr; therefore wwe can do proper NUMA init
     int permIdx=0;
+    printf("nrows = %d\n", nrows);
     for(int row=0; row<nrows; ++row)
     {
         //row permutation
@@ -452,7 +471,8 @@ void sparsemat::permute(int *perm, int*  invPerm)
 void sparsemat::pinOMP(int nthreads)
 {
     omp_set_dynamic(0);    //  Explicitly disable dynamic teams
-    omp_set_num_threads(nthreads);
+    int availableThreads = ce->getNumThreads();
+    omp_set_num_threads(availableThreads);
 
 #pragma omp parallel
     {

@@ -15,7 +15,14 @@ LevelPool::LevelPool(ZoneTree *zoneTree_, int SMT_, RACE::PinMethod pinMethod_):
     }
 
     tree = new team<int> [ctr];
-    pin.pinInit();
+    pinInitSuccess = 1;
+    RACE_error ret = pin.pinInit();
+
+    if(ret!=RACE_SUCCESS)
+    {
+        pinInitSuccess = 0;
+        ERROR_PRINT("Error in initing pin");
+    }
 }
 
 LevelPool::~LevelPool()
@@ -26,6 +33,7 @@ LevelPool::~LevelPool()
 //Recursively spawn thread pools
 void LevelPool::createPoolRecursive(int parentIdx)
 {
+
     RECURSIVE_HELPER(LevelPool::createPoolRecursive,
             std::vector<int> gid(nThreads);
             for(unsigned i=0; i<gid.size(); ++i)
@@ -36,25 +44,43 @@ void LevelPool::createPoolRecursive(int parentIdx)
     );
 }
 
-void LevelPool::createPool()
+RACE_error LevelPool::createPool()
 {
     int root = 0;
     createPoolRecursive(root);
-    pinPool();
+    RACE_error ret = pinPool();
+    return ret;
 }
 
 
 //Recursively pin pools
-void LevelPool::pinPoolRecursive(int parentIdx)
+RACE_error LevelPool::pinPoolRecursive(int parentIdx)
 {
-    RECURSIVE_HELPER(LevelPool::pinPoolRecursive, pin.pinThread(zoneTree->at(parentIdx).pinOrder));
+    RACE_error save_ret = RACE_SUCCESS;
+    RECURSIVE_HELPER(LevelPool::pinPoolRecursive, 
+            RACE_error ret = pin.pinThread(zoneTree->at(parentIdx).pinOrder);
+            if(ret != RACE_SUCCESS)
+            {
+               save_ret = ret;
+            }
+        );
+
+    return save_ret;
 }
 
 
-void LevelPool::pinPool()
+RACE_error LevelPool::pinPool()
 {
-    int root = 0;
-    pinPoolRecursive(root);
+    if(pinInitSuccess)
+    {
+        int root = 0;
+        RACE_error ret = pinPoolRecursive(root);
+        return ret;
+    }
+    else
+    {
+        return RACE_ERR_PIN;
+    }
 }
 
 void LevelPool::resetMaster()

@@ -28,7 +28,9 @@ struct sparsemat
     bool readFile(char* filename);
     bool writeFile(char* filename);
     void makeDiagFirst();
-    void colorAndPermute(dist d, int nthreads, int smt=1, PinMethod pinMethod=FILL);
+    int colorAndPermute(dist d, int nthreads, int smt=1, PinMethod pinMethod=FILL);
+    double colorEff();
+    int maxStageDepth();
     void permute(int* perm, int* invPerm);
     void NUMA_init(bool symmPart);
     void pinOMP(int nthreads);

@@ -4,13 +4,14 @@
 LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist dist_, RACE::d2Method d2Type_):graph(graph_), dist(dist_), d2Type(d2Type_), requestNThreads(requestNThreads_), perm(NULL), invPerm(NULL)
 {
     zoneTree = new ZoneTree(dist, d2Type);
-    perm = new int[graph->NROW];
-    invPerm = new int[graph->NROW];
+    int totalRows;
+    graph->getInitialPerm(&perm, &totalRows);
+    printf("totalRows = %d\n", totalRows);
+    invPerm = new int[totalRows];
 
-    for(int i=0; i<graph->NROW; ++i)
+    for(int i=0; i<totalRows; ++i)
     {
-        perm[i] = i;
-        invPerm[i] = i;
+        invPerm[perm[i]] = i;
     }
 
     double default_eff = 40;
@@ -202,7 +203,7 @@ void LevelRecursion::recursivePartition(int parentIdx, int parentSubIdx, int cur
                 int *levelPerm = NULL;
                 int len;
                 traverse.getPerm(&levelPerm, &len);
-                updatePerm(&perm, levelPerm, len);
+                updatePerm(&perm, levelPerm, len, len+graph->NROW_serial);
                 delete[] levelPerm;
 
                 LevelData* levelData = traverse.getLevelData();
@@ -246,7 +247,7 @@ void LevelRecursion::levelBalancing()
     int *levelPerm = NULL;
     int len;
     traverse.getPerm(&levelPerm, &len);
-    updatePerm(&perm, levelPerm, len);
+    updatePerm(&perm, levelPerm, len, len+graph->NROW_serial);
     delete[] levelPerm;
     LevelData* levelData = traverse.getLevelData();
     int currLevel = 1;
@@ -272,7 +273,7 @@ void LevelRecursion::levelBalancing()
     }
 
     //update invPerm
-    for(int i=0; i<graph->NROW; ++i)
+    for(int i=0; i<graph->NROW+graph->NROW_serial; ++i)
     {
         invPerm[perm[i]] = i;
     }
@@ -283,14 +284,14 @@ void LevelRecursion::getPerm(int **perm_, int *len)
 {
     (*perm_) = perm;
     perm = NULL;
-    (*len) = graph->NROW;
+    (*len) = graph->NROW + graph->NROW_serial;
 }
 
 void LevelRecursion::getInvPerm(int **invPerm_, int *len)
 {
     (*invPerm_) = invPerm;
     invPerm = NULL;
-    (*len) = graph->NROW;
+    (*len) = graph->NROW + graph->NROW_serial;
 }
 
 int LevelRecursion::getAvailableThreads()

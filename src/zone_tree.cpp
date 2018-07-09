@@ -4,7 +4,7 @@
 #include "utility.h"
 #include <limits>
 
-ZoneLeaf::ZoneLeaf():valueZ(2),nthreadsZ(-1),idealNthreadsZ(-1),totalSubBlocks(-1), parentZ(-2),effRowZ(-1),reachedLimit(false), time(0)
+ZoneLeaf::ZoneLeaf():valueZ(2),nthreadsZ(-1),idealNthreadsZ(-1),totalSubBlocks(-1), parentZ(-2),effRowZ(-1),reachedLimit(false), stage(0), time(0)
 {
 }
 
@@ -230,6 +230,8 @@ bool ZoneTree::spawnChild(int parentIdx, int parentSubIdx, int requestNthreads, 
     int *zonePtr = NULL, *subZonePtr = NULL, *numBlocks = NULL;
     int totalBlocks, totalSubBlocks;
     int base = tree->at(parentIdx).valueZ[parentSubIdx];
+    int parent_stage = tree->at(parentIdx).stage;
+
 
     int len;
     lb.getZonePtr(&zonePtr, &len, base);
@@ -253,6 +255,7 @@ bool ZoneTree::spawnChild(int parentIdx, int parentSubIdx, int requestNthreads, 
         }
         currLeaf.valueZ[numBlocks[block]] = (subZonePtr[ctr]);
         currLeaf.totalSubBlocks = numBlocks[block];
+        currLeaf.stage = parent_stage+1;
 
         tree->push_back(currLeaf);
     }
@@ -298,10 +301,21 @@ void ZoneTree::printTree()
             printf("%d, ",currLeaf->children[j]);
         }
 
-        printf("], Parent: %d, nthreads: %d, idealNThreads:%d, subBLocks:%d, effRow: %d, reachedLimit: %s, pinOrder = %d funTime = %f\n", currLeaf->parentZ, currLeaf->nthreadsZ, currLeaf->idealNthreadsZ, currLeaf->totalSubBlocks, currLeaf->effRowZ, (currLeaf->reachedLimit)?"true":"false", currLeaf->pinOrder, currLeaf->time);
+        printf("], Parent: %d, nthreads: %d, idealNThreads:%d, stage:%d, subBLocks:%d, effRow: %d, reachedLimit: %s, pinOrder = %d funTime = %f\n", currLeaf->parentZ, currLeaf->nthreadsZ, currLeaf->idealNthreadsZ, currLeaf->stage, currLeaf->totalSubBlocks, currLeaf->effRowZ, (currLeaf->reachedLimit)?"true":"false", currLeaf->pinOrder, currLeaf->time);
     }
 }
 
+int ZoneTree::findMaxStage()
+{
+    int maxStage = 0;
+    for(unsigned i=0; i<tree->size(); ++i)
+    {
+        ZoneLeaf* currLeaf = &(at(i));
+        maxStage = std::max(maxStage, currLeaf->stage);
+    }
+
+    return maxStage;
+}
 
 void ZoneTree::resetTime()
 {
@@ -314,4 +328,4 @@ void ZoneTree::resetTime()
 void ZoneTree::updateTime()
 {
     updateTimeRecursive(0);
-} 
+}

@@ -50,9 +50,9 @@ template <typename T> inline T maxArr(T *arr, int len)
 
 
 //updates first prmutation array based on the current permutation
-inline void updatePerm(int **mainPerm, int *currPerm, int len)
+inline void updatePerm(int **mainPerm, int *currPerm, int len, int fullLen)
 {
-    int *totPerm = new int [len];
+    int *totPerm = new int [fullLen];
 
     if(*mainPerm)
     {
@@ -61,7 +61,10 @@ inline void updatePerm(int **mainPerm, int *currPerm, int len)
         {
             totPerm[i] = (*mainPerm)[currPerm[i]];
         }
-
+        for(int i=len; i<fullLen; ++i)
+        {
+            totPerm[i] = (*mainPerm)[i];
+        }
     }
     else
     {
@@ -70,7 +73,10 @@ inline void updatePerm(int **mainPerm, int *currPerm, int len)
         {
             totPerm[i] = currPerm[i];
         }
-
+        for(int i=len; i<fullLen; ++i)
+        {
+            totPerm[i] = i;
+        }
     }
 
     //swap mainPerm and totPerm

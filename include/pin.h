@@ -16,17 +16,17 @@ class Pin{
         RACE::PinMethod method;
         void pinOrderRecursive(int parentIdx);
         void calcPinOrder();
-        void createPuNodeMapping();
+        RACE_error createPuNodeMapping();
         void getNodeId(int cpuId);
         //For pthread
         //void createPinnedThreadPool(int parentIdx);
         //For OMP: currently broken
-        void pinApplicationRecursive(int parentIdx);
+        RACE_error pinApplicationRecursive(int parentIdx);
     public:
         Pin(ZoneTree* zoneTree_, int SMT_, RACE::PinMethod method_);
-        void pinInit();
-        void pinThread(int pinOrder);
-        void pinApplication();
+        RACE_error pinInit();
+        RACE_error pinThread(int pinOrder);
+        RACE_error pinApplication();
         void resetMaster();
 };
 

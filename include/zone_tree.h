@@ -17,6 +17,7 @@ struct ZoneLeaf{
     int effRowZ;
     int pinOrder;
     bool reachedLimit;
+    int stage;
     double time;
     ZoneLeaf();
     ZoneLeaf(int rangeLo, int rangeHi, int parentIdx);
@@ -68,6 +69,7 @@ class ZoneTree{
         bool spawnChild(int parentIdx, int parentSubIdx, int requestNthreads, LevelData* levelData, double eff=0);
         KeyChild findKeyChild(int parentIdx);
         void printTree();
+        int findMaxStage();
         void resetTime();
         void updateTime();
 };

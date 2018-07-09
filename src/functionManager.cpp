@@ -3,7 +3,7 @@
 #include <iostream>
 #include <typeinfo>
 
-FuncManager::FuncManager(void (*f_) (int,int,void*), void*args_, ZoneTree *zoneTree_, LevelPool* pool_):rev(false),func(f_),args(args_),zoneTree(zoneTree_), pool(pool_)
+FuncManager::FuncManager(void (*f_) (int,int,void*), void*args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),func(f_),args(args_),zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_)
 {
     //    func = std::bind(f_,*this,std::placeholders::_1,std::placeholders::_2,args);
     /*len = 72*72*72;
@@ -156,6 +156,8 @@ void recursiveCall(FuncManager* funMan, int parentIdx)
 
 #endif
 
+
+
 void FuncManager::Run(bool rev_)
 {
     rev = rev_;
@@ -163,6 +165,11 @@ void FuncManager::Run(bool rev_)
     if(zoneTree == NULL)
     {
         ERROR_PRINT("NO Zone Tree present; Have you registered the function");
+    }
+
+    if(rev)
+    {
+        func(serialPart[1],serialPart[0],args);
     }
 
     int root = 0;
@@ -184,6 +191,11 @@ void FuncManager::Run(bool rev_)
     recursiveFun(root);
     //STOP_TIME(main_fn_call)
 #endif
+
+    if(!rev)
+    {
+        func(serialPart[0],serialPart[1],args);
+    }
 }
 
 /*void FuncManager::RunOMP()

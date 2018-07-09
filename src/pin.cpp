@@ -61,7 +61,7 @@ void Pin::calcPinOrder()
     pinOrderRecursive(root);
 }
 
-void Pin::createPuNodeMapping()
+RACE_error Pin::createPuNodeMapping()
 {
     Machine* mc = (Machine*) machine;
     int totalThreads = zoneTree->at(0).nthreadsZ;
@@ -98,6 +98,7 @@ void Pin::createPuNodeMapping()
         if(insufficientResource)
         {
             ERROR_PRINT("You do not have sufficient resources to satisfy the threads");
+            return RACE_ERR_PIN;
         }
     }
     else
@@ -117,6 +118,7 @@ void Pin::createPuNodeMapping()
         if(restThread != 0)
         {
             ERROR_PRINT("You do not have sufficient resources to satisfy the threads");
+            return RACE_ERR_PIN;
         }
     }
 
@@ -133,22 +135,25 @@ void Pin::createPuNodeMapping()
     if(totalThreads != static_cast<int>(pinMap.size()))
     {
         ERROR_PRINT("ERROR occured while creating thread pin map");
+        return RACE_ERR_PIN;
     }
+
+    return RACE_SUCCESS;
 }
 
-void Pin::pinInit()
+RACE_error Pin::pinInit()
 {
     calcPinOrder();
-    createPuNodeMapping();
+    return createPuNodeMapping();
 }
 
-void Pin::pinThread(int pinOrder)
+RACE_error Pin::pinThread(int pinOrder)
 {
     Machine* mc = (Machine*) machine;
     int puId = pinMap[pinOrder].first;
     int nodeId = pinMap[pinOrder].second;
 
-    mc->pinThread(puId,nodeId);
+    return mc->pinThread(puId,nodeId);
 }
 
 void Pin::resetMaster()
@@ -161,11 +166,12 @@ void Pin::resetMaster()
 //just by pinning for the first time
 //This function is deprecated
 //refer pthreads pinning in level_pool.cpp
-void Pin::pinApplicationRecursive(int parent)
+RACE_error Pin::pinApplicationRecursive(int parent)
 {
     std::vector<int> *children = &(zoneTree->at(parent).children);
     int totalSubBlocks = zoneTree->at(parent).totalSubBlocks;
     int blockPerThread = getBlockPerThread(zoneTree->dist, zoneTree->d2Type);
+    RACE_error save_ret = RACE_SUCCESS;
 
     for(int subBlock=0; subBlock<totalSubBlocks; ++subBlock)
     {
@@ -182,7 +188,11 @@ void Pin::pinApplicationRecursive(int parent)
 
         int pinOrder = zoneTree->at(parent).pinOrder;
 
-        pinThread(pinOrder);
+        RACE_error ret = pinThread(pinOrder);
+        if(ret != RACE_SUCCESS)
+        {
+            save_ret = ret;
+        }
 
         if(currNthreads > 1)
         {
@@ -191,15 +201,21 @@ void Pin::pinApplicationRecursive(int parent)
                 int child_tid = omp_get_thread_num();
                 for(int block=0; block<blockPerThread; ++block)
                 {
-                    pinApplicationRecursive(children->at(2*subBlock)+blockPerThread*child_tid+block);
+                    ret = pinApplicationRecursive(children->at(2*subBlock)+blockPerThread*child_tid+block);
+                    if(ret != RACE_SUCCESS)
+                    {
+                        save_ret = ret;
+                    }
 #pragma omp barrier
                 }
             }
         }
     }
+
+    return save_ret;
 }
 
-void Pin::pinApplication()
+RACE_error Pin::pinApplication()
 {
     calcPinOrder();
     int resetNestedState = omp_get_nested();
@@ -208,8 +224,10 @@ void Pin::pinApplication()
     omp_set_nested(1);
     omp_set_dynamic(0);
 
-    pinApplicationRecursive(0);
+    RACE_error ret = pinApplicationRecursive(0);
 
     omp_set_nested(resetNestedState);
     omp_set_dynamic(resetDynamicState);
+
+    return ret;
 }

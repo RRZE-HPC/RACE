@@ -25,26 +25,39 @@ class Graph{
          */
         std::vector<int> pureDiag;
         /**
+         * @brief Serially procedssed row list
+         */
+        std::vector<int> serialPartRow;
+        /**
          * @brief Create Graph from sparsematrix in CRS fromat.
          *
          * @param[in] rowPtr rowPtr of the matrix.
          * @param[in] col column index of the matrix.
          */
         RACE_error createGraphFromCRS(int *rowPtr, int *col, int *initPerm=NULL, int *initInvPerm=NULL);
-   public:
+
+        std::vector<int> perm;
+        void permuteAndRemoveSerialPart();
+    public:
         /**
          * @brief Number of Rows in the matrix.
          */
         int NROW;
+        int NCOL;
+        int NROW_serial;
         /**
          * @brief Number of Columns in the matrix.
          */
-        int NCOL;
         int NNZ;
+        int NNZ_serial;
+        std::vector<int> serialPart;
 
         Graph(int nrow, int ncol, int *row_ptr, int *col, int *initPerm=NULL, int *initInvPerm=NULL);//constructor
         Graph(const Graph &srcGraph);//copy constructor
         void writePattern(char *name);
+        //returns a list of nodes having load more than RACE_MAX_LOAD
+        void getStatistics();
+        void getInitialPerm(int **perm_, int *len_);
         RACE_error swap(Graph& other);
         Node& at(unsigned idx);
         /**

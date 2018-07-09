@@ -29,7 +29,7 @@ RACE::Interface::~Interface()
 }
 
 
-void RACE::Interface::RACEColor()
+RACE_error RACE::Interface::RACEColor()
 {
 
     //1. Construct Graph
@@ -46,13 +46,13 @@ void RACE::Interface::RACEColor()
 
     pool = new LevelPool(zoneTree, SMT, pinMethod);
 
-#ifdef RACE_KERNEL_THREAD_OMP
-    pool->pin.pinApplication();
-#else
-    pool->createPool();//creates pinned thread pools
-#endif
     printZoneTree();
 
+#ifdef RACE_KERNEL_THREAD_OMP
+    return pool->pin.pinApplication();
+#else
+    return pool->createPool();//creates pinned thread pools
+#endif
     /*    printf("Checking Coloring\n");
           if(D2Checker())
           {
@@ -62,6 +62,18 @@ void RACE::Interface::RACEColor()
           */    
 }
 
+
+double RACE::Interface::getEfficiency()
+{
+    double effThreads = ((double)nrow/(double)zoneTree->at(0).effRowZ);
+    double eff = effThreads/requestedThreads;
+    return eff;
+}
+
+int RACE::Interface::getMaxStageDepth()
+{
+    return zoneTree->findMaxStage();
+}
 
 void RACE::Interface::printZoneTree()
 {
@@ -121,7 +133,7 @@ int RACE::Interface::registerFunction(void (*f) (int,int,void *), void* args)
 {
     //    pool->pin.pinApplication();
 
-    FuncManager* currFun = new FuncManager(f, args, zoneTree, pool);
+    FuncManager* currFun = new FuncManager(f, args, zoneTree, pool, graph->serialPart);
     funMan.push_back(currFun);
 
     //     funMan = new FuncManager(f, args, zoneTree, pool);
