@@ -578,18 +578,155 @@ url = {https://www.siam.org/journals/pdf/stylemanual.pdf}}
   urldate =	 {2015-07-30},
   year =	 2002}
 
-@Misc{shortmath,
-  author =	 {Michael Downes},
-  title =	 {Short Math Guide for {\LaTeX}},
-  url =		 {ftp://ftp.ams.org/pub/tex/doc/amsmath/short-math-guide.pdf},
-  urldate =	 {2015-07-30},
-  year =	 2002}
+% Olaf addes July 16, 2018
 
-@Misc{pgfplots,
-  author =	 {Christian Feuers\"anger},
-  title =	 {Manual for Package \texttt{PGFPLOTS}},
-  month =	 may,
-  year =	 2015,
-  url =		 {http://sourceforge.net/projects/pgfplots}
+
+@inproceedings{Liu:2013:ESM:2464996.2465013,
+ author = {Liu, Xing and Smelyanskiy, Mikhail and Chow, Edmond and Dubey, Pradeep},
+ title = {Efficient Sparse Matrix-vector Multiplication on x86-based Many-core Processors},
+ booktitle = {Proceedings of the 27th International ACM Conference on International Conference on Supercomputing},
+ series = {ICS '13},
+ year = {2013},
+ isbn = {978-1-4503-2130-3},
+ location = {Eugene, Oregon, USA},
+ pages = {273--282},
+ numpages = {10},
+ url = {http://doi.acm.org/10.1145/2464996.2465013},
+ doi = {10.1145/2464996.2465013},
+ acmid = {2465013},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {esb format, intel many integrated core architecture (intel mic), intel xeon phi, knights corner, spmv},
+ abstract = {Sparse matrix-vector multiplication (SpMV) is an important kernel in many scientific applications and is known to be memory bandwidth limited. On modern processors with wide SIMD and large numbers of cores, we identify and address several bottlenecks which may limit performance even before memory bandwidth: (a) low SIMD efficiency due to sparsity, (b) overhead due to irregular memory accesses, and (c) load-imbalance due to non-uniform matrix structures. We describe an efficient implementation of SpMV on the IntelR Xeon PhiTM Coprocessor, codenamed Knights Corner (KNC), that addresses the above challenges. Our implementation exploits the salient architectural features of KNC, such as large caches and hardware support for irregular memory accesses. By using a specialized data structure with careful load balancing, we attain performance on average close to 90% of KNC's achievable memory bandwidth on a diverse set of sparse matrices. Furthermore, we demonstrate that our implementation is 3.52x and 1.32x faster, respectively, than the best available implementations on dual IntelR XeonR Processor E5-2680 and the NVIDIA Tesla K20X architecture.}
+} 
+
+
+@inproceedings{Buluc:2011:RMA:2058524.2059503,
+ author = {Buluc, Aydin and Williams, Samuel and Oliker, Leonid and Demmel, James},
+ title = {Reduced-Bandwidth Multithreaded Algorithms for Sparse Matrix-Vector Multiplication},
+ booktitle = {Proceedings of the 2011 IEEE International Parallel \& Distributed Processing Symposium},
+ series = {IPDPS '11},
+ year = {2011},
+ isbn = {978-0-7695-4385-7},
+ pages = {721--733},
+ numpages = {13},
+ url = {https://doi.org/10.1109/IPDPS.2011.73},
+ doi = {10.1109/IPDPS.2011.73},
+ acmid = {2059503},
+ publisher = {IEEE Computer Society},
+ address = {Washington, DC, USA},
+ abstract= {On multicore architectures, the ratio of peak memory bandwidth to peak floating-point performance (byte:flop ratio) is decreasing as core counts increase, further limiting the performance of bandwidth limited applications. Multiplying a sparse matrix (as well as its transpose in the unsymmetric case) with a dense vector is the core of sparse iterative methods. In this paper, we present a new multithreaded algorithm for the symmetric case which potentially cuts the bandwidth requirements in half while exposing lots of parallelism in practice. We also give a new data structure transformation, called bit masked register blocks, which promises significant reductions on bandwidth requirements by reducing the number of indexing elements without introducing additional fill-in zeros. Our work shows how to incorporate this transformation into existing parallel algorithms (both symmetric and unsymmetric) without limiting their parallel scalability. Experimental results indicate that the combined benefits of bit masked register blocks and the new symmetric algorithm can be as high as a factor of 3.5x in multicore performance over an already scalable parallel approach. We also provide a model that accurately predicts the performance of the new methods, showing that even larger performance gains are expected in future multicore systems as current trends (decreasing byte:flop ratio and larger sparse matrices) continue.}
+} 
+
+@article{doi:10.1137/13093426X,
+author = {McCourt, M. and Smith, B. and Zhang, H.},
+title = {Sparse Matrix-Matrix Products Executed Through Coloring},
+journal = {SIAM Journal on Matrix Analysis and Applications},
+volume = {36},
+number = {1},
+pages = {90-109},
+year = {2015},
+doi = {10.1137/13093426X},
+URL = {https://doi.org/10.1137/13093426X},
+eprint = {https://doi.org/10.1137/13093426X}
+
+@article{doi:10.1177/1094342004041296,
+author = {Eun-Jin Im and Katherine Yelick and Richard Vuduc},
+title ={Sparsity: Optimization Framework for Sparse Matrix Kernels},
+journal = {The International Journal of High Performance Computing Applications},
+volume = {18},
+number = {1},
+pages = {135-158},
+year = {2004},
+doi = {10.1177/1094342004041296},
+URL = {https://doi.org/10.1177/1094342004041296},
+eprint = {https://doi.org/10.1177/1094342004041296},
+abstract = { Sparse matrix–vector multiplication is an important computational kernel that performs poorly on most modern processors due to a low compute-to-memory ratio and irregular memory access patterns. Optimization is difficult because of the complexity of cache-based memory systems and because performance is highly dependent on the non-zero structure of the matrix. The SPARSITY system is designed to address these problems by allowing users to automatically build sparse matrix kernels that are tuned to their matrices and machines. SPARSITY combines traditional techniques such as loop transformations with data structure transformations and optimization heuristics that are specific to sparse matrices. It provides a novel framework for selecting optimization parameters, such as block size, using a combination of performance models and search.In this paper we discuss the optimization of two operations: a sparse matrix times a dense vector and a sparse matrix times a set of dense vectors. Our experience indicates that register level optimizations are effective for matrices arising in certain scientific simulations, in particular finite-element problems. Cache level optimizations are important when the vector used in multiplication is larger than the cache size, especially for matrices in which the non-zero structure is random. For applications involving multiple vectors, reorganizing the computation to perform the entire set of multiplications as a single operation produces significant speedups. We describe the different optimizations and parameter selection techniques and evaluate them on several machines using over 40 matrices taken from a broad set of application domains. Our results demonstrate speedups of up to 4× for the single vector case and up to 10× for the multiple vector case. }
 }
 
+@article{Catalyurek:1999,
+author={U.V.~Catalyurek and C.~Aykanat},
+journal={IEEE Trans. Parallel Distrib. Systems},
+title={Hypergraph-partitioning-based decomposition for parallel sparse-matrix vector multiplication},
+year={1999)},
+volume={10},
+number={7},
+pages={673-693},
+doi={10.1109/71.780863},
+abstract = {In this work, we show that the standard graph-partitioning-based decomposition of sparse matrices does not reflect the actual communication volume requirement for parallel matrix-vector multiplication. We propose two computational hypergraph models which avoid this crucial deficiency of the graph model. The proposed models reduce the decomposition problem to the well-known hypergraph partitioning problem. The recently proposed successful multilevel framework is exploited to develop a multilevel hypergraph partitioning tool PaToH for the experimental verification of our proposed hypergraph models. Experimental results on a wide range of realistic sparse test matrices confirm the validity of the proposed hypergraph models. In the decomposition of the test matrices, the hypergraph models using PaToH and hMeTiS result in up to 63 percent less communication volume (30 to 38 percent less on the average) than the graph model using MeTiS, while PaToH is only 1.3-2.3 times slower than MeTiS on the average.}
+}
+
+@phdthesis{Yzelman-thesis-2011,
+    title = "Fast sparse matrix–vector multiplication by partitioning and reordering",
+    author = "Albert-Jan Nicholas Yzelman",
+    school = "Utrecht University",
+    address =" Utrecht",
+    year = "2011"
+}
+
+
+
+@article{doi:10.1137/080733243,
+author = {Yzelman, A. and Bisseling, R.},
+title = {Cache-Oblivious Sparse Matrix–Vector Multiplication by Using Sparse Matrix Partitioning Methods},
+journal = {SIAM Journal on Scientific Computing},
+volume = {31},
+number = {4},
+pages = {3128-3154},
+year = {2009},
+doi = {10.1137/080733243},
+URL = {https://doi.org/10.1137/080733243},
+eprint = {https://doi.org/10.1137/080733243},
+abstract = {In this article, we introduce a cache-oblivious method for sparse matrix–vector multiplication. Our method attempts to permute the rows and columns of the input matrix using a recursive hypergraph-based sparse matrix partitioning scheme so that the resulting matrix induces cache-friendly behavior during sparse matrix–vector multiplication. Matrices are assumed to be stored in row-major format, by means of the compressed row storage (CRS) or its variants incremental CRS and zig-zag CRS. The zig-zag CRS data structure is shown to fit well with the hypergraph metric used in partitioning sparse matrices for the purpose of parallel computation. The separated block-diagonal (SBD) form is shown to be the appropriate matrix structure for cache enhancement. We have implemented a run-time cache simulation library enabling us to analyze cache behavior for arbitrary matrices and arbitrary cache properties during matrix–vector multiplication within a k-way set-associative idealized cache model. The results of these simulations are then verified by actual experiments run on various cache architectures. In all these experiments, we use the Mondriaan sparse matrix partitioner in one-dimensional mode. The savings in computation time achieved by our matrix reorderings reach up to 50 percent, in the case of a large link matrix.}
+}
+
+@article{Toledo:1997:IMP:279511.279532,
+ author = {Toledo, S.},
+ title = {Improving the Memory-system Performance of Sparse-matrix Vector Multiplication},
+ journal = {IBM J. Res. Dev.},
+ issue_date = {Nov. 1997},
+ volume = {41},
+ number = {6},
+ month = nov,
+ year = {1997},
+ issn = {0018-8646},
+ pages = {711--726},
+ numpages = {16},
+ url = {http://dx.doi.org/10.1147/rd.416.0711},
+ doi = {10.1147/rd.416.0711},
+ acmid = {279532},
+ publisher = {IBM Corp.},
+ address = {Riverton, NJ, USA},
+ note = {Toledo performs an extensive study of such ordering techniques, and found that CM ordering works well on 3D finite-element test matrices when used in combination with blocking into small dense blocks.}
+}
+
+article{Williams:2009:OSM:1513001.1513318,
+ author = {Williams, Samuel and Oliker, Leonid and Vuduc, Richard and Shalf, John and Yelick, Katherine and Demmel, James},
+ title = {Optimization of Sparse Matrix-vector Multiplication on Emerging Multicore Platforms},
+ journal = {Parallel Comput.},
+ issue_date = {March, 2009},
+ volume = {35},
+ number = {3},
+ month = mar,
+ year = {2009},
+ issn = {0167-8191},
+ pages = {178--194},
+ numpages = {17},
+ url = {http://dx.doi.org/10.1016/j.parco.2008.12.006},
+ doi = {10.1016/j.parco.2008.12.006},
+ acmid = {1513318},
+ publisher = {Elsevier Science Publishers B. V.},
+ address = {Amsterdam, The Netherlands, The Netherlands},
+ keywords = {Autotuning, Cell, HPC, Multicore, Niagara, Performance, Sparse},
+ abstract = {We are witnessing a dramatic change in computer architecture due to the multicore paradigm shift, as every electronic device from cell phones to supercomputers confronts parallelism of unprecedented scale. To fully unleash the potential of these systems, the HPC community must develop multicore specific-optimization methodologies for important scientific computations. In this work, we examine sparse matrix-vector multiply (SpMV) - one of the most heavily used kernels in scientific computing - across a broad spectrum of multicore designs. Our experimental platform includes the homogeneous AMD quad-core, AMD dual-core, and Intel quad-core designs, the heterogeneous STI Cell, as well as one of the first scientific studies of the highly multithreaded Sun Victoria Falls (a Niagara2 SMP). We present several optimization strategies especially effective for the multicore environment, and demonstrate significant performance improvements compared to existing state-of-the-art serial and parallel SpMV implementations. Additionally, we present key insights into the architectural trade-offs of leading multicore design strategies, in the context of demanding memory-bound numerical algorithms.}
+} 
+
+
+@article{Boman:2016,
+author={Mehmet~Deveci and Erik~G~Boman and Karen~D~Devine and Sivasankaran~Rajamanickam},
+journal={IEEE International Parallel and Distributed Processing Symposium},
+title={Parallel Graph Coloring for Manycore Architectures},
+year={2016},
+doi={10.1109/IPDPS.2016.54},
+abstract = {Graph algorithms are challenging to parallelize on manycore architectures due to complex data dependencies and irregular memory access. We consider the well studied problem of coloring the vertices of a graph. In many applications it is important to compute a coloring with few colors in near-lineartime. In parallel, the optimistic (speculative) coloring method by Gebremedhin and Manne is the preferred approach but it needs to be modified for manycore architectures. We discuss a range of implementation issues for this vertex-based optimistic approach. We also propose a novel edge-based optimistic approach that has more parallelism and is better suited to GPUs. We study the performance empirically on two architectures(Xeon Phi and GPU) and across many data sets (from finite element problems to social networks). Our implementation uses the Kokkos library, so it is portable across platforms. We show that on GPUs, we significantly reduce the number of colors (geometric mean 4X, but up to 48X) as compared to the widely used cuSPARSE library. In addition, our edge-based algorithm is 1.5 times faster on average than cuSPARSE, where it hasspeedups up to 139X on a circuit problem. We also show the effect of the coloring on a conjugate gradient solver using multi-colored Symmetric Gauss-Seidel method as preconditioner, the higher coloring quality found by the proposed methods reduces the overall solve time up to 33\% compared to cuSPARSE.}
+}
