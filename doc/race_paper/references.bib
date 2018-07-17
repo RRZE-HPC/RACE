@@ -71,11 +71,12 @@ year={2017},
 volume={28},
 number={5},
 pages={1240-1256},
-doi = {10.1109/TPDS.2016.2620142}
+doi = {10.1109/TPDS.2016.2620142},
 keywords={graph colouring;multiprocessing systems;parallel architectures;balanced coloring heuristics;balanced graph colorings;balancing efficacy;distance-1 coloring;manycore architectures;multicore architectures;parallel community detection;parallel computing;Bipartite graph;Color;Context;Image color analysis;Processor scheduling;Standards;Balanced coloring;Tilera manycore architecture;community detection;distance-1 coloring;graph algorithms;parallel graph coloring;partial distance-2 coloring},
 doi={10.1109/TPDS.2016.2620142},
 ISSN={1045-9219},
-month={May},}
+month={May},
+}
 
 @inproceedings{ABMC,
  author = {Iwashita, Takeshi and Nakashima, Hiroshi and Takahashi, Yasuhito},
@@ -145,7 +146,7 @@ isbn="978-3-540-47847-8"
 @Techreport{hpcg,
 author = {Dongarra, Jack and Heroux, Michael},
 year = {2013},
-month = june,
+month = {June},
 pages = {},
 title = {Toward a New Metric for Ranking High Performance Computing Systems},
 number = {SAND2013-4744},
@@ -629,6 +630,7 @@ year = {2015},
 doi = {10.1137/13093426X},
 URL = {https://doi.org/10.1137/13093426X},
 eprint = {https://doi.org/10.1137/13093426X}
+}
 
 @article{doi:10.1177/1094342004041296,
 author = {Eun-Jin Im and Katherine Yelick and Richard Vuduc},
@@ -700,7 +702,7 @@ abstract = {In this article, we introduce a cache-oblivious method for sparse ma
  note = {Toledo performs an extensive study of such ordering techniques, and found that CM ordering works well on 3D finite-element test matrices when used in combination with blocking into small dense blocks.}
 }
 
-article{Williams:2009:OSM:1513001.1513318,
+@article{Williams:2009:OSM:1513001.1513318,
  author = {Williams, Samuel and Oliker, Leonid and Vuduc, Richard and Shalf, John and Yelick, Katherine and Demmel, James},
  title = {Optimization of Sparse Matrix-vector Multiplication on Emerging Multicore Platforms},
  journal = {Parallel Comput.},
@@ -722,11 +724,38 @@ article{Williams:2009:OSM:1513001.1513318,
 } 
 
 
+  	
+@article{1742-6596-16-1-071,
+  author={Richard Vuduc and James W Demmel and Katherine A Yelick},
+  title={OSKI: A library of automatically tuned sparse matrix kernels},
+  journal={Journal of Physics: Conference Series},
+  volume={16},
+  number={1},
+  pages={521},
+  url={http://stacks.iop.org/1742-6596/16/i=1/a=071},
+  year={2005},
+  abstract={The Optimized Sparse Kernel Interface (OSKI) is a collection of low-level primitives that provide automatically tuned computational kernels on sparse matrices, for use by solver libraries and applications. These kernels include sparse matrix-vector multiply and sparse triangular solve, among others. The primary aim of this interface is to hide the complex decisionmaking process needed to tune the performance of a kernel implementation for a particular user's sparse matrix and machine, while also exposing the steps and potentially non-trivial costs of tuning at run-time. This paper provides an overview of OSKI, which is based on our research on automatically tuned sparse kernels for modern cache-based superscalar machines.}
+}
+	
+
+
+
 @article{Boman:2016,
 author={Mehmet~Deveci and Erik~G~Boman and Karen~D~Devine and Sivasankaran~Rajamanickam},
 journal={IEEE International Parallel and Distributed Processing Symposium},
 title={Parallel Graph Coloring for Manycore Architectures},
 year={2016},
 doi={10.1109/IPDPS.2016.54},
-abstract = {Graph algorithms are challenging to parallelize on manycore architectures due to complex data dependencies and irregular memory access. We consider the well studied problem of coloring the vertices of a graph. In many applications it is important to compute a coloring with few colors in near-lineartime. In parallel, the optimistic (speculative) coloring method by Gebremedhin and Manne is the preferred approach but it needs to be modified for manycore architectures. We discuss a range of implementation issues for this vertex-based optimistic approach. We also propose a novel edge-based optimistic approach that has more parallelism and is better suited to GPUs. We study the performance empirically on two architectures(Xeon Phi and GPU) and across many data sets (from finite element problems to social networks). Our implementation uses the Kokkos library, so it is portable across platforms. We show that on GPUs, we significantly reduce the number of colors (geometric mean 4X, but up to 48X) as compared to the widely used cuSPARSE library. In addition, our edge-based algorithm is 1.5 times faster on average than cuSPARSE, where it hasspeedups up to 139X on a circuit problem. We also show the effect of the coloring on a conjugate gradient solver using multi-colored Symmetric Gauss-Seidel method as preconditioner, the higher coloring quality found by the proposed methods reduces the overall solve time up to 33\% compared to cuSPARSE.}
+abstract = {Graph algorithms are challenging to parallelize on manycore architectures due to complex data dependencies and irregular memory access. We consider the well studied problem of coloring the vertices of a graph. In many applications it is important to compute a coloring with few colors in near-linear time. In parallel, the optimistic (speculative) coloring method by Gebremedhin and Manne is the preferred approach but it needs to be modified for manycore architectures. We discuss a range of implementation issues for this vertex-based optimistic approach. We also propose a novel edge-based optimistic approach that has more parallelism and is better suited to GPUs. We study the performance empirically on two architectures(Xeon Phi and GPU) and across many data sets (from finite element problems to social networks). Our implementation uses the Kokkos library, so it is portable across platforms. We show that on GPUs, we significantly reduce the number of colors (geometric mean 4X, but up to 48X) as compared to the widely used cuSPARSE library. In addition, our edge-based algorithm is 1.5 times faster on average than cuSPARSE, where it hasspeedups up to 139X on a circuit problem. We also show the effect of the coloring on a conjugate gradient solver using multi-colored Symmetric Gauss-Seidel method as preconditioner, the higher coloring quality found by the proposed methods reduces the overall solve time up to 33\% compared to cuSPARSE.}
+}
+
+@article{gebremedhin2000scalable,
+  title={Scalable parallel graph coloring algorithms},
+  author={Gebremedhin, Assefaw Hadish and Manne, Fredrik},
+  journal={Concurrency: Practice and Experience},
+  volume={12},
+  number={12},
+  pages={1131--1146},
+  year={2000},
+  publisher={Wiley Online Library}
 }
