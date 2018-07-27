@@ -1,0 +1,56 @@
+\section{Motivation}
+\begin{itemize}
+	\item Dependencies for sparse linear algebra kernels ranging from iterative solvers to basic building blocks.
+	\item FEAST eigen value solver which has wide range of application like electronic structure calculation, needs a robust inner linear solver. To date only Kaczmarz (\KACZ) has proved to be effective here for large scale simulation. But this has dependency. 
+	\item Another example is SymmGS preconditioning in HPCG.
+	\item Commonly we observe two kinds of dependency \DONE and \DTWO. In this poster we concentrate on \DTWO dependencies like that occur in \SymmSpmv and \KACZ.
+\end{itemize}
+
+
+\section{Related Work}
+\begin{itemize}
+	\item Locking methods
+	\item Thread private vector and reduction \cite{thread_private_symm_spmv}
+	\item Different storage format \cite{CSB,RSB} 
+	\item Matrix reordering we concentrate on this because it explicitly doesn't have disadvantages mentioned for others. Two widely used schemes in this area for resolving such dependencies are Multicoloring (MC) \cite{MC,COLPACK} and Algebraic Block Multicoloring (ABMC) \cite{ABMC}.
+	\item Application of Multicoloring for \DTWO dependent sparse kernels has been shown in \cite{feast_mc}.
+	\item We extend ABMC for \DTWO dependent kernels.
+	\item But still with these methods we see that the performance is not upto the mark when compared to performance models like roofline \cite{Williams_roofline}.
+	\item Further investigations show that with reordering one destroys data locality, needs more synchronizations, increases false sharing especially for \DTWO kernels and so on.
+\end{itemize}
+
+\section{Recursive Algebraic Coloring (RAC) method}
+\subsection{RAC objectives}
+\begin{itemize}
+	\item The method is derived with hardware efficiency and performance as the central concept.
+	\item The method aims to improve the problem of data locality, reduce synchronizations, generate sufficient parallelism and at the same time enabling the implementations on simple data formats like \CRSfull (\CRS).
+\end{itemize}
+\subsection{RAC method}
+\begin{itemize}
+	\item Its a recursive level based method. 
+	\item Its a general method in the sense its applicable to distance-k dependency.
+	\item Currently \RAC is limited to matrices having symmetric structure (undirected graph).
+	\item It has four steps, and works on the graph of the matrix.
+	\begin{enumerate}
+		\item Level construction : Here we do a BFS\cite{BFS} on the graph of the matrix, this is a commonly used pre-processing step for normal sparse operations like SpMV, because it's well known such permutations can improve the data locality \cite{RCM_Sparse_computation}, which is also our aim. One could also substitute this stage with more complicated algorithm like RCM\cite{RCM}.
+		
+		\item Permutation: Once the levels in the graph has been found one has to permute the matrices in the order of levels. In order for coloring to work on top  of this we should additionally store the information on levels which we do by using a data structure known as \levelPtr. This basically is an array containing the nodes corresponding to  the first element of each level.
+		
+		\item Distance-k coloring: With these levels L(i) one can easily show that $L(i)$ and $L(i+(k+j))$ are distance-k independent for all $j\geq1$. For example in case of k=2, this would mean if we leave at least a gap of two levels between any two group of levels ($T(a)$ and $T(b)$) they are distance-2 independent. Consequently this would mean one could work on $T(a)$ and $T(b)$ in parallel, but serially within each \levelGroup. This leads to one possible configuration seen in the figure where we have two colors and note that each \levelGroup in red color is separated by at least two levels of blue  color and vice-versa. But this as such is not an efficient manner to parallelize since as one could easily see from the figure that this could lead to load imbalances. Therefore as a final step we do a load balancing.
+		
+		\item Load balancing: In this step the main idea is to resolve the distance-k dependency as required by the algorithm in hand but at the same time equally distribute non-zeros within each thread. In order to do this in most efficient way for a given hardware we plug-in also the information from hardware side like number of cores. Then we try to generate the required parallelism for the hardware while keeping data locality and dependency in mind. As seen in figure for the example shown we see that with this algorithm one assigns more levels to the region where each levels have few nodes, but at bigger levels we one assign here the minimum requirement of two levels needed to respect the dependency. The load balancing algorithm works in such a way that it tries to reduce the variance of (non-zeros) \nnz in the two colors (red and blue) by acquiring or giving levels from the corresponding \levelGroup. 
+		
+		\end{enumerate}
+		\item Recursion: It might happen that with the above four steps one does not attain sufficient parallelism to satisfy the hardware underneath, therefore in order to achieve more parallelism one has to apply the concept of recursion. Here we first choose a \subgraph (typically a \levelGroup) based on a global load balancing algorithm which determines splitting a \levelGroup for making two or more threads to operate on it will be beneficial. Then all the four steps is applied on this \subgraph to generate more parallelism from this \subgraph. In practice the thread which is assigned to the parent \subgraph has to spawn two or more threads to work on each of the splitted part of this \subgraph. 
+\end{itemize}
+
+\section{RACE library}
+We have consolidated all this idea of \RAC method into a library called \RACEfull (\RACE), which can basically carry out all the procedures explained above. \RACE supports user in both pre-processing and processing phase. In the pre-processing phase one has to input it with matrix details, kernel requirements (like \DONE or \DTWO) and hardware settings. The library then generates a permutation and stores the recursive coloring information in form of a tree called \levelTree. Internally the library also creates an internal pinned thread pool which will be used later for the processing phase. In the processing phase user just needs to provide a serial kernel (with dependency) and supply its arguments, then the library can execute the function in parallel with the help of thread pool created and respecting all the dependencies.
+
+\section{Performance}
+In order to compare the performance we use the test setup as mentioned in the poster and AD sheet. In this poster we show performance of two kernels \SymmSpmv and \KACZ sweeps on two Intel architectures: modern SkyLake and  Ivy Bridge. We compare our results against \ABMC, \MC and \MKL implementations. From the performance measurements  it is clear that \RACE has an upper hand for almost all the matrices, and next comes \ABMC followed by \MKL and \MC versions. Especially for large matrices where the memory traffic and data locality becomes crucial here \RACE clearly outperforms others even getting over 2.5 $\times$ speed-up in performance. The reason for this can be clearly seen also with data traffic measurements using hardware counters (here we used \LIKWID\cite{LIKWID}) as shown for an example matrix.
+
+When it comes to iterative solvers like \KACZ it is also important to study the convergence behavior of the method since re-ordering the matrix leads to change in convergence. Relative iterations required to achieve the same absolute error as that of exact kernel (serial \KACZ) is shown in the spider plot. Here we see \RACE is on par with \ABMC and in some case has slight advantage in terms of convergence, while \MC method follows after that. Combining the performance and iterations we could then finally arrive at the actual benefit one could achieve from RACE which is shown as inverse time to solution.
+
+\section{Future Work}
+
