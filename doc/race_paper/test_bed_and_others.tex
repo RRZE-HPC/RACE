@@ -126,7 +126,7 @@ Symmetric Sparse Matrix Vector (\SymmSpmv) makes use of the symmetric property o
 To operate on this kernel we just use the upper triangular part of the sparse matrix. The kernel requires only half the data traffic compared to SpMV but requires the same amount of Flops, leading to almost twice the intensity of SpMV operations.
 \begin{equation}
 \label{eq:SymmSpMV_intensity}
-I_\mathrm{\SymmSpmv} = \frac{4}{8+4+32*\alpha+\frac{16}{\NNZRmathSYMM}} \\
+I_\mathrm{\SymmSpmv} = \frac{4}{8+4+24*\alpha+\frac{4}{nnzr}} \\
 \end{equation}
 
 Note that \NNZRSYMM is the number of non-zeros per row in upper triangular part of the matrix.
