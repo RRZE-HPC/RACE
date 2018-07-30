@@ -35,9 +35,9 @@
 % Submission ID
 %\acmSubmissionID{123-A56-BU3}
 
-\newcommand{\RAC}{RAC \xspace}
-\newcommand{\RACfull}{Recursive Algebraic Coloring \xspace}
-\newcommand{\RACE}{RACE \xspace}
+\newcommand{\RAC}{RAC\xspace}
+\newcommand{\RACfull}{Recursive Algebraic Coloring\xspace}
+\newcommand{\RACE}{RACE\xspace}
 \newcommand{\RACEfull}{Recursive Algebraic Coloring Engine\xspace}
 \newcommand{\DONE}{distance-$1$\xspace}
 \newcommand{\DTWO}{distance-$2$\xspace}
@@ -177,9 +177,9 @@
 
 
 \begin{abstract}
-Many iterative numerical methods for sparse systems and important building blocks of sparse linear algebra feature strong data dependencies. They may be loop-carried dependencies as they occur in many iterative solvers or preconditioners (e.g. Gauss-Seidel type, Kaczmarz solver) or write conflicts as they show up in the parallelization of building blocks such as symmetric sparse matrix vector or sparse matrix transpose vector. Scalable, hardware-efficient parallelization of such kernels is known to be a challenge. Most of the typical schemes currently available to parallelize such kernels suffer from performance issues on modern hardware or are are highly matrix specific or require changes in entire matrix storage format.
+Many iterative numerical methods for sparse systems and important building blocks of sparse linear algebra feature strong data dependencies. They may be loop-carried dependencies as they occur in many iterative solvers or preconditioners (e.g., Gauss-Seidel, Kaczmarz) or write conflicts as in the parallelization of building blocks such as symmetric sparse matrix vector or sparse matrix transpose vector multiplication. Scalable, hardware-efficient parallelization of such kernels is known to be a challenge. Most of the typical solutions suffer from low performance on modern hardware, are highly matrix specific, or require tailored matrix storage formats.
 
-In this poster we show a novel method called Recursive Algebraic Coloring (RAC) that achieves high hardware efficiency on modern multi-core architectures and at the same time use simple data storage formats like compressed row storage (CRS). RAC uses a recursive level based method that aims at finding optimal permutations while preserving good data locality. This method is implemented and consolidated into a user friendly library called Recursive Algebraic Coloring Engine (RACE). A thorough performance analysis shows that RACE out-performs traditional Multicoloring methods and Intel MKL implementations with a factor of 2-2.5x. We are on par with Algebraic Block Multicoloring (ABMC) for small matrices, while for large matrices we gain almost a factor of 1.5-2x.
+In this poster we show a novel method called Recursive Algebraic Coloring (RAC), which achieves high hardware efficiency on modern multi-core architectures and works with simple data formats like compressed row storage (CRS). RAC uses a recursive level-based method that aims at finding optimal permutations while preserving data locality. It is implemented and consolidated into a user-friendly library called Recursive Algebraic Coloring Engine (RACE). A thorough performance analysis shows that RACE outperforms traditional Multicoloring methods and Intel MKL implementations with a factor of 2--2.5$\times$. We are on par with Algebraic Block Multicoloring (ABMC) for small matrices, while for large matrices we gain almost a factor of 1.5--2$\times$.
 \end{abstract}
 
 
