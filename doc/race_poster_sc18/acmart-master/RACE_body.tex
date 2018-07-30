@@ -8,25 +8,24 @@ like in \SymmSpmv.
 
 \section{Related Work}
 
-This is a long-standing and active area of research. Many solutions to
-the \DTWO problem have been proposed, such as locking methods,
-thread-private target arrays \cite{thread_private_symm_spmv}, special
-storage formats \cite{CSB,RSB}, and matrix reordering, on which we
-focus here. Multicoloring (MC) \cite{MC,COLPACK} and Algebraic Block
+Many solutions to the \DTWO problem have been proposed, such as
+locking methods, thread-private target arrays
+\cite{thread_private_symm_spmv}, special storage formats
+\cite{CSB,RSB}, and matrix reordering, on which we focus
+here. Multicoloring (MC) \cite{MC,COLPACK} and Algebraic Block
 Multicoloring (ABMC) \cite{ABMC} are two widely used solutions in this
 area. In \cite{feast_mc}, MC was applied to the CARP-CG
 algorithm. However, reordering can impact data access locality,
-increase the need for synchronization, and effect false sharing, which
-leads to low performance compared with the Roof\/line model.
-Here we extend ABMC for \DTWO kernels in order to mitigate these effects.
+increase the need for synchronization, and effect false sharing,
+leading to low performance. Here we extend ABMC for \DTWO kernels in
+order to mitigate these effects.
 
 
 \section{Recursive Algebraic Coloring (RAC) method}
 
-The method aims to improve data locality, reduce synchronizations, and
+The method aims at improving data locality, reduce synchronization, and
 generate sufficient parallelism while still retaining simple sparse
-data formats like \CRSfull (\CRS). It is currently a sequential
-algorithm.
+data formats like \CRSfull (\CRS).
 
 RAC is a recursive, level-based algorithm that is applicable to
 general \DK dependencies. It is currently limited to matrices
@@ -48,9 +47,8 @@ algorithm, which operate on the matrix graph.
   show that $L(i)$ and $L(i+(k+j))$ are \DK independent
   for all $j\geq1$. In case of $k=2$ this would mean if we
   leave at least a gap of two levels between any two groups of levels
-  ($T(a)$ and $T(b)$) they are \DTWO independent. Thus
-  one could work on $T(a)$ and $T(b)$ in parallel, but
-  serially within each \levelGroup. One possible
+  ($T(a)$ and $T(b)$) they are \DTWO independent.
+  One possible
   configuration can be seen in the figure for the case of two colors;
   each red \levelGroup is separated by at least two
   levels of blue and vice-versa. Obviously there is now
@@ -64,7 +62,7 @@ algorithm, which operate on the matrix graph.
   small, but fewer levels where they are large, observing the minimum
   requirement of two levels for maintaining the \DTWO dependency.
   The algorithm tries to reduce the variance in the number of nonzeros
-  in the two colors by acquiring or giving levels from the
+  in the two colors by acquiring or giving levels from or to the
   corresponding \levelGroup.
 \end{enumerate}
 If above steps do not lead to sufficient parallelism, recursion is
@@ -84,8 +82,8 @@ In pre-processing the user supplies the matrix, the kernel requirements
 affinity strategy). The library generates a permutation and stores the
 recursive coloring information in a \levelTree. It also creates
 a pool of pinned threads to be used later. In the processing phase,
-the user provides a sequential kernel code, which the library
-executes in parallel as a callback function, using the thread pool. 
+the user provides a sequential kernel function, which the library
+executes in parallel as a callback, using the thread pool. 
 
 \section{Performance}
 
@@ -93,12 +91,13 @@ The test setup for the performance measurements is available in the
 artifacts description. We show the performance of \SymmSpmv % and \KACZ
 for a range of matrices on Intel Ivy Bridge EP and Skylake SP,
 comparing \RACE against \ABMC, \MC, and \MKL implementations. \RACE is
-faster than the alternatives (by up to 2.5\$times$) for almost all
+faster than the alternatives (by up to 2.5$times$) for almost all
 matrices, followed by \ABMC, \MKL, and \MC. The advantage of \RACE is
 especially pronounced with large matrices, where data traffic and
 locality of access is pivotal. For one matrix (nlpkkt-200) we show
 performance of \SymmSpmv together with Roof\/line limits and data
 traffic measurements (via \LIKWID \cite{LIKWID}).
+
 
 With iterative solvers (like \KACZ), matrix reordering causes a change
 in convergence behavior. The Kiviat graph shows the change in
