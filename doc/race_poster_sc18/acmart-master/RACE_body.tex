@@ -27,7 +27,7 @@ The method aims at improving data locality, reduce synchronization, and
 generate sufficient parallelism while still retaining simple sparse
 data formats like \CRSfull (\CRS).
 
-RAC is a recursive, level-based algorithm that is applicable to
+RAC is a sequential, recursive, level-based algorithm that is applicable to
 general \DK dependencies. It is currently limited to matrices
 with symmetric structure (undirected graph), but possibly nonsymmetric
 entries. In the following we describe the four steps of the
@@ -35,7 +35,7 @@ algorithm, which operate on the matrix graph.
 \begin{enumerate}
 \item \emph{Level construction}.  A breadth-first search (BFS)
   \cite{BFS} is done on the graph to improve data locality
-  \cite{RCM_Sparse_computation}. In our implementation we substituted
+  \cite{RCM_Sparse_computation}. In our experiments we substituted
   this stage with the slightly more complicated Reverse Cuthill-McKee
   algorithm (RCM) \cite{RCM}.
 		
@@ -47,8 +47,7 @@ algorithm, which operate on the matrix graph.
   show that $L(i)$ and $L(i+(k+j))$ are \DK independent
   for all $j\geq1$. In case of $k=2$ this would mean if we
   leave at least a gap of two levels between any two groups of levels
-  ($T(a)$ and $T(b)$) they are \DTWO independent.
-  One possible
+  ($T(a)$ and $T(b)$) they are \DTWO independent. $T()$ is called \levelGroups and are formed by aggregating nearby levels $L()$.  One possible
   configuration can be seen in the figure for the case of two colors;
   each red \levelGroup is separated by at least two
   levels of blue and vice-versa. Obviously there is now
@@ -91,7 +90,7 @@ The test setup for the performance measurements is available in the
 artifacts description. We show the performance of \SymmSpmv % and \KACZ
 for a range of matrices on Intel Ivy Bridge EP and Skylake SP,
 comparing \RACE against \ABMC, \MC, and \MKL implementations. \RACE is
-faster than the alternatives (by up to 2.5$times$) for almost all
+faster than the alternatives (by up to 2.5$\times$) for almost all
 matrices, followed by \ABMC, \MKL, and \MC. The advantage of \RACE is
 especially pronounced with large matrices, where data traffic and
 locality of access is pivotal. For one matrix (nlpkkt-200) we show
@@ -99,14 +98,9 @@ performance of \SymmSpmv together with Roof\/line limits and data
 traffic measurements (via \LIKWID \cite{LIKWID}).
 
 
-With iterative solvers (like \KACZ), matrix reordering causes a change
+With iterative solvers (like Kaczmarz), matrix reordering causes a change
 in convergence behavior. The Kiviat graph shows the change in
 iterations to convergence relative to the serial version (lower is
-better). Note that \RCM was used for all coloring methods, while no
-reordering was done in the serial case. Here \RACE is on par with
-\ABMC, followed by \MC. Hence, we show for \KACZ the GFlop/s rate as
+better). Here \RACE is on par with
+\ABMC, followed by \MC. Hence, we show for Kaczmarz the GFlop/s rate as
 well as the actual inverse time to solution.
-
-
-\section{Future Work}
-
