@@ -39,11 +39,9 @@ algorithm, which operate on the matrix graph.
   this stage with the slightly more complicated Reverse Cuthill-McKee
   algorithm (RCM) \cite{RCM}.
 		
-
 \item \emph{Permutation}. The matrix is permuted in the order of
   levels.  We additionally store an array containing the index
   of to the first element in each level (\levelPtr).
-
 		
 \item \emph{Distance-k coloring}. Using the levels $L(i)$ one can
   show that $L(i)$ and $L(i+(k+j))$ are \DK independent
