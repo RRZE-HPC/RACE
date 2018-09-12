@@ -129,7 +129,7 @@ int RACE::Interface::getNumThreads()
 }
 
 
-int RACE::Interface::registerFunction(void (*f) (int,int,void *), void* args)
+int RACE::Interface::registerFunction(void (*f) (int,int,void *), void *args)
 {
     //    pool->pin.pinApplication();
 

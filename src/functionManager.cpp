@@ -3,7 +3,7 @@
 #include <iostream>
 #include <typeinfo>
 
-FuncManager::FuncManager(void (*f_) (int,int,void*), void*args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),func(f_),args(args_),zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_)
+FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),func(f_),args(args_),zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_)
 {
     //    func = std::bind(f_,*this,std::placeholders::_1,std::placeholders::_2,args);
     /*len = 72*72*72;
@@ -18,10 +18,12 @@ FuncManager::FuncManager(void (*f_) (int,int,void*), void*args_, ZoneTree *zoneT
 
 FuncManager::FuncManager(const FuncManager &obj)
 {
+    rev = obj.rev;
     func = obj.func;
     zoneTree = obj.zoneTree;
     args = obj.args;
     pool = obj.pool;
+    serialPart = obj.serialPart;
 }
 
 FuncManager::~FuncManager()
@@ -81,7 +83,7 @@ void recursiveCall(FuncManager* funMan, int parent)
                 for(int block=startBlock; block!=endBlock; block+=inc)
                 {
                     funMan->recursiveFun(children->at(2*subBlock)+blockPerThread*tid+block);
-#pragma omp barrier
+                    #pragma omp barrier
                 }
                 //printf("Black: tid = %d, pinOrder = %d, cpu = %d\n",tid,pinOrder,sched_getcpu());
             }

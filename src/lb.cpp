@@ -5,7 +5,7 @@
 
 LB::LB(int nThreads_, double efficiency_, LevelData* levelData_, RACE::dist dist_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):levelPtr(NULL),subZonePtr(NULL),numBlocks(NULL),zonePtr(NULL),levelData(levelData_), dist(dist_), d2Type(d2Type_), maxThreads(-1), nThreads(nThreads_), efficiency(efficiency_), lbTarget(lbTarget_)
 {
-    printf("dist = %d\n",dist);
+    //printf("dist = %d\n",dist);
     if( (lbTarget == RACE::NNZ) && (levelData->levelNnz == NULL) )
     {
         WARNING_PRINT("levelDataNnz not recieved, Load balancing target will fallback to ROW");

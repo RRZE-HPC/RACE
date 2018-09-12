@@ -141,7 +141,7 @@ void Traverse::calculateDistance()
             currLvl += 1;
 
             if( marked_all==true && (Counter::val != (rangeHi-rangeLo)) ) {
-                printf("We have islands in range [%d - %d]\n",rangeLo,rangeHi);
+                //printf("We have islands in range [%d - %d]\n",rangeLo,rangeHi);
                 //now process islands
                 for(int i=rangeLo; i<rangeHi; ++i) {
                     if(distFromRoot[i] == -1) {
@@ -156,7 +156,7 @@ void Traverse::calculateDistance()
         }
 
         levelData->totalLevel = currLvl;
-        printf("Total Level = %d\n",levelData->totalLevel);
+        //printf("Total Level = %d\n",levelData->totalLevel);
 
         createLevelData();
         permuteGraph();

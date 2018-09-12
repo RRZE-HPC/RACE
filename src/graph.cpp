@@ -58,10 +58,12 @@ RACE_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *
     }
 
     NNZ = nnz;
+    int irr_ctr=0;
     //resize Graph to the small size
     if(nodeWithChildren != NROW) {
+        printf("ctr = %d\n", ++irr_ctr);
         ERROR_PRINT("Currently Graph has to be connected and irreducible");
-        return RACE_ERR_NOT_IMPLEMENTED;
+        //return RACE_ERR_NOT_IMPLEMENTED;
         /*int ctr = 0;
         for(intIter iter=pureDiag.begin(); iter!=pureDiag.end(); ++iter) {
             graphData.erase(graphData.begin()+(*iter)-ctr);
@@ -72,7 +74,7 @@ RACE_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *
     if(!pureDiag.empty())
     {
         ERROR_PRINT("Currently Graph has to be connected and irreducible");
-        return RACE_ERR_NOT_IMPLEMENTED;
+    //    return RACE_ERR_NOT_IMPLEMENTED;
     }
 
     getStatistics();
@@ -150,12 +152,12 @@ void Graph::getStatistics()
         }
         rowBucket[rowLen] += 1;
     }
-
+/*
     for(auto it=rowBucket.begin(); it!=rowBucket.end(); ++it)
     {
         printf("%d -> %d\n",it->first, it->second);
     }
-
+*/
     //print black-listed rows
     if(!blackList.empty())
     {
