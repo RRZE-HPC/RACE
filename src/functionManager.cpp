@@ -83,7 +83,7 @@ void recursiveCall(FuncManager* funMan, int parent)
                 for(int block=startBlock; block!=endBlock; block+=inc)
                 {
                     funMan->recursiveFun(children->at(2*subBlock)+blockPerThread*tid+block);
-#pragma omp barrier
+                    #pragma omp barrier
                 }
                 //printf("Black: tid = %d, pinOrder = %d, cpu = %d\n",tid,pinOrder,sched_getcpu());
             }

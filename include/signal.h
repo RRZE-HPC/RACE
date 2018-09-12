@@ -26,6 +26,8 @@ struct Signal{
     /* }*/\
     if(__sync_fetch_and_add(&predicate_lhs,0) != predicate_rhs)\
     {\
+        signalObj->preSignal->spinner*=2;\
+        __sync_fetch_and_add(&signalObj->preSignal->spinner,0);\
         pthread_mutex_lock(signalObj->lock);\
         __sync_lock_test_and_set(&(signalObj->mode), idle);\
         while(__sync_fetch_and_add(&predicate_lhs,0) != predicate_rhs) {\

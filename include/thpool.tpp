@@ -64,6 +64,7 @@ void run(thread<arg_t> * thread)
     {
         //wait till jobPresent becomes true
         waitSignal(thread->signal, thread->jobPresent, true);
+        //do RECV if master of the team is in different proc
 
         if(thread->jobPresent && (!pool->interrupt))
         {
@@ -114,6 +115,7 @@ void thread<arg_t>::addJob(std::function<void(arg_t)> function_, arg_t arg_, tea
         {
             workerTeam = currTeam_;
             sendSignal(signal);
+            //if my proc id not equal to curr child; then do SEND
         }
 
     }
@@ -143,6 +145,7 @@ void thread<arg_t>::finishJob()
             printf("tid = %d(%u) sending barrier signal\n", gid, (unsigned) (* (pthread)));
 #endif
             sendSignal(workerTeam->barrierSignal);
+            //if master not in same proc; do a MPI_SEND
 #if DEBUG
             printf("tid = %d(%u) sent barrier signal\n", gid, (unsigned) (* (pthread)));
 #endif
@@ -290,6 +293,9 @@ void team<arg_t>::barrier()
     //START_TIME(Barrier);
 
     waitSignal(barrierSignal, num_jobs, num_slaves);
+    //If we have children in different procs do MPI_RECV; when counting check
+    //only for children that do not belong to me
+
     __sync_lock_test_and_set(&num_jobs, 0);
 
     /*gettimeofday(&end, NULL);		

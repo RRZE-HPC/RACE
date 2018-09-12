@@ -93,6 +93,8 @@ class LevelPool{
         Pin pin;
         //thread pool
         thpool<int> pool;
+        //communicators
+        std::vector<MPI_Comm*> comm;
         //Team tree
         team<int>* tree;
         //to map between (parentIdx, parentSubIdx) to poolTreeIdx
