@@ -44,54 +44,62 @@ In the case of \emph{parabolic\_fem} matrix we theoretically have a good efficie
 
 \begin{figure}[thbp]
 	\centering
-	\subfloat[RACE performance compared to SpMV]{\label{fig:race_ivy}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/ivy/race}}
-	\hspace{1.2em}
-	\subfloat[SymmSpMV Comparison]{\label{fig:symm_spmv_ivy}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/ivy/symm_spmv}}
-	\hspace{1.2em}
-	\subfloat[GS Comparison]{\label{fig:gs_ivy}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/ivy/gs}}
-	\hspace{1.2em}
-	\subfloat[KACZ Comparison]{\label{fig:kacz_ivy}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/ivy/kacz}}
-	\caption{Performance results on \IVB}
+	\subfloat[\SymmSpmv on 1 socket of \IVB]{\label{fig:symm_spmv_ivy}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/symm_spmv/symm_spmv}}
+	\hspace{1em}
+	\subfloat[\SymmSpmv on 1 socket of \SKX]{\label{fig:symm_spmv_skx}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/symm_spmv/symm_spmv}}
+	\caption{\SymmSpmv performance}
 	\label{fig:ivy}
 \end{figure}
 
 
-\begin{figure}[thbp]
-	\centering
-	\subfloat[RACE performance compared to SpMV]{\label{fig:race_skx}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/skx/race}}
-	\hspace{1.2em}
-	\subfloat[SymmSpMV Comparison]{\label{fig:symm_spmv_skx}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/skx/symm_spmv}}
-	\hspace{1.2em}
-	\subfloat[GS Comparison]{\label{fig:gs_skx}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/skx/gs}}
-	\hspace{1.2em}
-	\subfloat[KACZ Comparison]{\label{fig:kacz_skx}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/skx/kacz}}
-	\caption{Performance results on \SKX}
-	\label{fig:skx}
-\end{figure}
+%\begin{figure}[thbp]
+%	\centering
+	%\subfloat[RACE performance compared to SpMV]{\label{fig:race_skx}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/skx/race}}
+	%\hspace{1.2em}
+%	\subfloat[SymmSpMV Comparison]{\label{fig:symm_spmv_skx}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/skx/symm_spmv}}
+%	\hspace{1.2em}
+	%\subfloat[GS Comparison]{\label{fig:gs_skx}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/skx/gs}}
+	%\hspace{1.2em}
+%	\subfloat[KACZ Comparison]{\label{fig:kacz_skx}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/skx/kacz}}
+%	\caption{Performance results on \SKX}
+%	\label{fig:skx}
+%\end{figure}
 
-\subsubsection{RACE performance}
-Here we plot the performance of \SymmSpmv, \GS and \KACZ with \RACE compared to \SpMV. \Cref{fig:race_ivy,fig:race_skx} will be used here. This is done for entire test matrices and all the hardwares. 
+%\subsubsection{RACE performance}
+%Here we plot the performance of \SymmSpmv, \GS and \KACZ with \RACE compared to \SpMV. \Cref{fig:race_ivy,fig:race_skx} will be used here. This is done for entire test matrices and all the hardwares. 
 
-\subsubsection{Comparison exact kernel}
+\subsubsection{Exact kernel}
 Here we compare  \RACE with \ABMC, \MC and \MKL for \SymmSpmv. \Cref{fig:symm_spmv_ivy,fig:symm_spmv_skx} will be used. \COLPACK \cite{COLPACK} %TOD cite
 was used for multicoloring (\MC). \METIS \cite{METIS}  was used for graph partitioning for \ABMC, and \COLPACK was used for coloring the hyper graph. The blocksize for \ABMC is chosen by doing parameter scan over 4 to 128 as shown by Iwashita \etal in \cite{ABMC}, and choosing the optimal one. Note that the time for this parameter search is not included in the performance results shown. 
 
 
 \begin{figure}[thbp]
 	\centering
-	\subfloat[\SYMMGS iterations required by different methods compared to exact MKL kernel] {\label{fig:iter_gs}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/skx/iter/gs/plot}}
-	\hspace{1.2em}
-	\subfloat[\SYMMKACZ iterations required by different methods compared to exact Serial kernel] {\label{fig:iter_kacz}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/skx/iter/kacz/plot}}
-	\caption{Convergence behavior of \SYMMGS and \SYMMKACZ at 20 threads}
-	\label{fig:conv_behavior}
+	\subfloat[1 socket \IVB] {\label{fig:derived_perf_kacz_ivb}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/kacz/derived_perf}}
+	\hspace{1em}
+	\subfloat[1 socket \SKX] {\label{fig:derived_perf_kacz_skx}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/kacz/derived_perf}}
+	\caption{\SYMMKACZ inverse runtime (scaled)}
+	\label{fig:symmkacz_dp}
 \end{figure}
 
-\subsubsection{Comparison iterative kernel}
-Here we compare  \RACE with \ABMC, \MC and \MKL for \GS and \KACZ. Here we include iterations also in performance metric. \Cref{fig:gs_ivy,fig:kacz_ivy,fig:gs_skx,fig:kacz_skx} will be used. Actual iteration behavior can be seen in \cref{fig:conv_behavior}.
+\begin{figure}[thbp]
+	\centering
+	\subfloat[Plain performance] {\label{fig:perf_kacz_ivb}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/kacz/perf}}
+	\hspace{1em}
+	\subfloat[Iterations compared to serial Symm\KACZ kernel] {\label{fig:iter_kacz_skx}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/kacz/iter}}
+	\caption{\SYMMKACZ convergence study on \SKX}
+	\label{fig:symmkacz_convergence}
+\end{figure}
+\subsubsection{Iterative kernel}
+Here we compare  \RACE with \ABMC and \MC for Symm\KACZ kernel. Inverse runtime of Symm\KACZ kernel is shown in \cref{fig:symmkacz_dp}.
 
-Matrices only compatible with the solvers (\GS, \KACZ) are shown in performance results.
+ Since each of the matrices reorder rows of the matrices they change convergence of each kernels, therefore we need to also study the convergence behavior. \Cref{fig:symmkacz_convergence} shows the plain performance and iterations required on \SKX (20 threads) architecture.
 
- The exact implementation of \MKL for \SYMMGS is not explicitly stated and is not published. But due to the property of the solver having same convergence as serial case we believe level-scheduling is used. The usage of same kernels in Intel's implementation of HPCG benchmark where the usage of level-scheduling has been stated \cite{Park_HPCG} leads to more confidence in our assumption.
+Note that matrices only compatible with the \KACZ solvers are shown in performance results.
+
+% The exact implementation of \MKL for \SYMMGS is not explicitly stated and is not published. But due to the property of the solver having same convergence as serial case we believe level-scheduling is used. The usage of same kernels in Intel's implementation of HPCG benchmark where the usage of level-scheduling has been stated \cite{Park_HPCG} leads to more confidence in our assumption.
+
+
 
 \subsubsection{Comparison with tailored data format}
 Comparison of \RACE with \RSB data format. Note \RSB is pre-processed with \RCM, which improves its performance for some cases. \Cref{fig:race_vs_rsb_ivy,fig:race_vs_rsb_skx} shows this comparison.

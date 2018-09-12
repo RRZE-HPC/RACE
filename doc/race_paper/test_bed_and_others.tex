@@ -86,6 +86,7 @@ I_\mathrm{\SpMV} = \frac{2}{8+4+8*\alpha+\frac{16}{\NNZRmath}} \\
 
 where $\alpha$ represents the data locality factor and \NNZR non-zeros per row. $\alpha$ depends on the sparsity pattern of the matrix and varies from matrix to matrix. Ideal value of $\alpha$ for sufficiently large matrix is $\frac{1}{\NNZRmath}$. The $\alpha$ factor takes into account indirect accesses of the $x$ vector seen in \cref{alg:SpMV}. More details on factor $\alpha$ could be found in \cite{Moritz_sell}.
 
+\begin{comment}
 \subsubsection{\SpMTV}
 Sparse Matrix Transpose Vector (\SpMTV) is a kernel having \DTWO dependency.
 \begin{algorithm}[H]
@@ -106,6 +107,7 @@ I_\mathrm{\SpMTV} = \frac{2}{8+4+16*\alpha+\frac{8}{\NNZRmath}} \\
 \end{equation}
 
 In ideal case data traffic for this kernel should remain close to that of SpMV, if \NNZR are sufficiently high, and $\alpha$ factor is small enough.
+\end{comment}
 
 \subsubsection{\SymmSpmv}
 Symmetric Sparse Matrix Vector (\SymmSpmv) makes use of the symmetric property of the matrix to perform the matrix  vector multiplication.
@@ -131,6 +133,7 @@ I_\mathrm{\SymmSpmv} = \frac{4}{8+4+24*\alpha+\frac{4}{nnzr}} \\
 
 Note that \NNZRSYMM is the number of non-zeros per row in upper triangular part of the matrix.
 
+\begin{comment}
 \subsubsection{\GS and \SYMMGS}
 Gauss-Seidel (\GS) is a solver having distance-1 dependency. Contrary to the above kernels \GS is in-exact meaning it is an iterative method. \Cref{alg:GS} shows the Gauss-Seidel algorithm where its assumed that the diagonal entries of the matrix are stored as first entry in their corresponding rows.
 \begin{algorithm}[H]
@@ -154,6 +157,7 @@ I_\mathrm{GS} = I_\mathrm{SPMV}
 \end{equation}
 
 In general for most of the algorithms one is interested in symmetric operator therefore commonly one would encounter symmetric variant of Gauss-Seidel, so called symmetric Gauss-Seidel (\SYMMGS). The algorithm remains same except that instead of just doing forward sweep shown in \cref{alg:GS} one would follow it with a backward sweep \ie {\tt row=nrows:-1:1}. The intensity of \SYMMGS remains same as of \GS, as we do two times more flops and bring in proportional data.
+\end{comment}
 
 \subsubsection{KACZ and \SYMMKACZ}
 Kaczmarz (\KACZ) is an iterative solver based on row-projection based methods. The solver has a distance-2 dependency.
@@ -179,7 +183,8 @@ Kaczmarz (\KACZ) is an iterative solver based on row-projection based methods. T
 In-core has a mixed behavior of both SpMV and SpMTV similar to SymmSpMV. The solver also requires a divide per  row of the matrix. In ideal case the data traffic from memory should remain same as that of SpMTV. But the solver requires thrice the flops compared to SpMTV per non-zero. For brevity of the results we ignore the flops used in $rownorm$ computations since, one could also row normalize the sparse matrix before performing the KACZ operation. This leads to an almost two fold higher Arithmetic Intensity compared to SpMTV.
 \begin{equation}
 \label{eq:KACZ_intensity}
-I_\mathrm{KACZ} =  \frac{4}{8+4+16*\alpha+\frac{8}{nnzr}} = 2*I_\mathrm{SpMTV}\\
+I_\mathrm{KACZ} =  \frac{4}{8+4+16*\alpha+\frac{8}{nnzr}} \\%= 2*I_\mathrm{SpMTV}\\
 \end{equation}
 
-Symmetric variant of \KACZ is denoted by \SYMMKACZ, and similar to \SYMMGS this requires forward sweep followed by a backward sweep. 
+In general for most of the algorithms one is interested in symmetric operator therefore commonly one would encounter symmetric variant of \KACZ, so called symmetric Kaczmarz (\SYMMKACZ). The algorithm remains same except that instead of just doing forward sweep shown in \cref{alg:KACZ} one would follow it with a backward sweep \ie {\tt row=nrows:-1:1}. The intensity of \SYMMKACZ remains same as of \KACZ, as we do two times more flops and bring in proportional data.
+%Symmetric variant of \KACZ is denoted by \SYMMKACZ, and similar to \SYMMGS this requires forward sweep followed by a backward sweep. 
