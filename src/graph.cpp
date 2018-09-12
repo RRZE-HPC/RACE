@@ -150,12 +150,12 @@ void Graph::getStatistics()
         }
         rowBucket[rowLen] += 1;
     }
-
+/*
     for(auto it=rowBucket.begin(); it!=rowBucket.end(); ++it)
     {
         printf("%d -> %d\n",it->first, it->second);
     }
-
+*/
     //print black-listed rows
     if(!blackList.empty())
     {

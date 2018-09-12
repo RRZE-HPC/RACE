@@ -6,7 +6,6 @@ LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist d
     zoneTree = new ZoneTree(dist, d2Type);
     int totalRows;
     graph->getInitialPerm(&perm, &totalRows);
-    printf("totalRows = %d\n", totalRows);
     invPerm = new int[totalRows];
 
     for(int i=0; i<totalRows; ++i)

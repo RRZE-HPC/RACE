@@ -7,6 +7,8 @@
 #include<malloc.h>
 #include <unistd.h>
 
+#define DEFAULT_RACE_BLOCKCTR 200000
+
 #define DEBUG 0
     template< typename arg_t>
 thread<arg_t>::thread():pthread(NULL),workerTeam(NULL),jobPresent(false)
@@ -154,7 +156,7 @@ thpool<arg_t>::thpool():initialized(false)
     char* RACE_BLOCKCTR_str = getenv("RACE_BLOCKCTR");
     if(RACE_BLOCKCTR_str == NULL)
     {
-        RACE_BLOCKCTR = 200000;
+        RACE_BLOCKCTR = DEFAULT_RACE_BLOCKCTR;
     }
     else {
         RACE_BLOCKCTR = atoi(RACE_BLOCKCTR_str);
@@ -324,5 +326,8 @@ void team<arg_t>::sleep()
         }
 
     }
+
+    //reset BLOCKCTR value
+    taskForce[0]->pool->RACE_BLOCKCTR = DEFAULT_RACE_BLOCKCTR;
 //    __sync_synchronize();
 }
