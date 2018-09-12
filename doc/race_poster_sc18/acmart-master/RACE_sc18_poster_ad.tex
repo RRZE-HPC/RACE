@@ -1,9 +1,9 @@
-\documentclass[sigplan, review]{acmart}
+\documentclass[sigplan]{acmart}
 
 \usepackage{booktabs} % For formal tables
 \usepackage{xspace} 
-
-
+\usepackage{hyperref}
+\usepackage{listings}
 % Copyright
 \setcopyright{none}
 %\setcopyright{acmcopyright}
@@ -24,10 +24,10 @@
 
 %Conference
 \acmConference[SC'18]{Supercomputing Conference}{November 2018}{Dallas,TX USA}
-\acmYear{}
+\acmYear{2018}
 \copyrightyear{2018}
 
-%\acmPrice{15.00}
+\acmPrice{}
 
 %\acmBadgeL[http://ctuning.org/ae/ppopp2016.html]{ae-logo}
 %\acmBadgeR[http://ctuning.org/ae/ppopp2016.html]{ae-logo}
@@ -35,9 +35,9 @@
 % Submission ID
 %\acmSubmissionID{123-A56-BU3}
 
-\newcommand{\RAC}{RAC\xspace}
-\newcommand{\RACfull}{Recursive Algebraic Coloring\xspace}
-\newcommand{\RACE}{RACE\xspace}
+\newcommand{\RAC}{RAC \xspace}
+\newcommand{\RACfull}{Recursive Algebraic Coloring \xspace}
+\newcommand{\RACE}{RACE \xspace}
 \newcommand{\RACEfull}{Recursive Algebraic Coloring Engine\xspace}
 \newcommand{\DONE}{distance-$1$\xspace}
 \newcommand{\DTWO}{distance-$2$\xspace}
@@ -131,11 +131,31 @@
 \newcommand{\SPMP}{Intel SpMP\xspace}
 \newcommand{\MKL}{MKL\xspace}
 
+
+\lstset{frame=tb,
+	language=C,
+	aboveskip=1mm,
+	belowskip=1mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\footnotesize\ttfamily},
+	numbers=none,
+	numberstyle=\tiny\color{gray},
+	keywordstyle=\color{blue},
+	commentstyle=\color{dkgreen},
+	stringstyle=\color{mauve},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3,
+	frame=single,
+%	framexleftmargin=-2pt
+}
+
 \begin{document}
 \title[RACE]{Recursive Algebraic Coloring Engine}
 %\titlenote{Produces the permission block, and
 %  copyright information}
-\subtitle{Poster Summary}
+\subtitle{Artifact description}
 %\subtitlenote{The full version of the author's guide is available as
 %  \texttt{acmart.pdf} document}
 
@@ -174,17 +194,11 @@
 % The default list of authors is too long for headers.
 \renewcommand{\shortauthors}{C. Alappat et al.}
 
+\appendix
 
 
-\begin{abstract}
-Many iterative numerical methods for sparse systems and important building blocks of sparse linear algebra feature strong data dependencies. They may be loop-carried dependencies as they occur in many iterative solvers or preconditioners (e.g., Gauss-Seidel, Kaczmarz) or write conflicts as in the parallelization of building blocks such as symmetric sparse matrix vector or sparse matrix transpose vector multiplication. Scalable, hardware-efficient parallelization of such kernels is known to be a challenge. Most of the typical solutions suffer from low performance on modern hardware, are highly matrix specific, or require tailored matrix storage formats.
+%\end{abstract}
 
-In this poster we show a novel method called Recursive Algebraic Coloring (RAC), which achieves high hardware efficiency on modern multi-core architectures and works with simple data formats like compressed row storage (CRS). RAC uses a recursive level-based method that aims at finding optimal permutations while preserving data locality. It is implemented and consolidated into a user-friendly library called Recursive Algebraic Coloring Engine (RACE). A thorough performance analysis shows that RACE outperforms traditional Multicoloring methods and Intel MKL implementations with a factor of 2--2.5$\times$. We are on par with Algebraic Block Multicoloring (ABMC) for small matrices, while for large matrices we gain almost a factor of 1.5--2$\times$.
-\end{abstract}
-
-
-
-\keywords{Shared memory parallel, Distance-k dependency, Graph algorithm, Sparse matrices, Sparse linear algebra, Performance}
 
 %\begin{teaserfigure}
 %  \includegraphics[width=\textwidth]{sampleteaser}
@@ -195,7 +209,7 @@ In this poster we show a novel method called Recursive Algebraic Coloring (RAC),
 
 \maketitle
 
-\input{RACE_body}
+\input{RACE_AD_body}
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{RACE_references}
