@@ -11,7 +11,7 @@ Our approach can be seen as a recursive level based method. Each step of the met
 	\item Distance-k coloring
 	\item Load balancing
 \end{enumerate}
-The method is strongly coupled to the hardware underneath and exploits only the parallelism as required by the hardware. If at the end of all these four steps one does not achieve sufficient parallelism, all the steps are recursively applied to selected sub-graphs of the matrix until sufficient parallelism is attained. This recursive nature of our coloring method led to the naming of the method as ``\RACfull" in short \RAC.
+The method is strongly coupled to the hardware underneath and exploits only the parallelism as required by the hardware. If at the end of all these four steps one does not achieve sufficient parallelism, all the steps are recursively applied to selected sub-graphs of the matrix until sufficient parallelism is attained. This recursive nature of our coloring method led to the naming of the method as ``\RACfullNoSpace" in short \RAC.
 
 To explain the method in an easier and illustrative way we choose a simple matrix namely the sparse matrix associated with \STEX. The sparsity pattern and the corresponding graph of the matrix is as shown in \cref{fig:2d-7pt}.
 
