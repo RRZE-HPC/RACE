@@ -261,18 +261,19 @@ Once the \levels are known one has to permute the matrix in the order of its \le
 \subsubsection{Sub-graph selection and global load balancing} \label{subsec:subgraph_selection}
 Parallelism required for hardware underneath can be obtained either by expanding the \levelTree horizontally \ie increasing \levelGroups within a stage or by expanding \levelTree vertically with the help of recursion. But as we have seen before in \cref{subsec:DK} the horizontal parallelism is limited and after a certain extent this would lead to load balancing. Similarly excessive usage of recursion is also not a good idea since data locality worsens due to local permutations within \subgraph. Therefore it is vital to find a proper balance and choose proper configuration. Furthermore just doing load balancing within a single stage is not the best, for example if we had equally balanced within stage 1 in \cref{fig:rec_2d-7pt_tree}, we would receive no benefit from recursion. Therefore a global load balancing becomes inevitable.
 
-\Inorder to select proper \subgraph and do global load balancing we employ a simple algorithm to find proper weights for each \levelGroup ($T_s(i)$) in a particular stage, then depending on this weights, denoted as $w(T_s(i))$, we do load balancing with weights in the particular stage (as seen in \cref{alg:LB}, except weightage is given to \levelGroups). Finally if $w(T_s(i)) > 1$ we use recursion to achieve $w(T_s(i))$ parallel work in the next stage of $T_s(i)$. The basic structure of the algorithm employed to find weights is as follows:
+\Inorder to select proper \subgraph and do global load balancing we employ a simple algorithm to find proper weights for each \levelGroup ($T_s(i)$) in a particular stage, then depending on this weights, denoted as $w(T_s(i))$, we do load balancing with weights in the particular stage (as seen in \cref{alg:LB}, except weightage is given to \levelGroups). Finally if $w(T_s(i)) > 1$ we use recursion to achieve $w(T_s(i))$ parallel work in the next stage of $T_s(i)$. The basic structure of the algorithm employed to find weights for the first stage is as follows:
 \begin{enumerate}
-	\item Find weights, $w(L_s(i))$ for each level in the current stage ($s$) by
+	\item Find weights, $w(L_1(i))$ for each level in the current stage ($s$) by
 		\begin{align*}
-			w(L_s(i)) &= (\levelPtr_s[i+1] - \levelPtr_s[i])*\frac{\nthreadsMath}{\nrowsMath^{total}}\\
+			w(L_1(i)) &= (\levelPtr_1[i+1] - \levelPtr_1[i])*\frac{\nthreadsMath}{\nrowsMath^{total}}\\
 			\nthreadsMath &: \text{total parallelism required by hardware}\\
 			\nrowsMath^{total} &: \text{number of vertices in graph}
 		\end{align*}
 	
-	\item Starting from $w(L_s(0))$ sum up weights till they form a number ($a$) close to whole number ($b$). The closeness can be controlled by an efficiency parameter for stage $s$, $\epsilon_s$ is defined as:
+	\item Starting from $w(L_1(0))$ sum up weights till they form a number ($a$) close to whole number ($b$). The closeness can be controlled by an efficiency parameter for stage $s$, $\epsilon_s$ is defined as:
 	\begin{equation} \label{eq:epsilon}
 		\epsilon_s =  1 - abs(a-b);
 	\end{equation}
-	All the \levels that are involved in the sum belongs to \levelGroups  operated by first thread in the current stage. The obtained number $b$ is chosen as weight for these \levelGroups \ie $w(T_s(0))=w(T_s(1))=b$. A local search is then done by increasing \levels in this \levelGroups to see if there is a better choice ($a$ close to $b$) with weight $b$, finally \levelGroups are formed with the best choice.  The weight for next \levelGroups are found by resetting the sum counter to zero and repeating the  procedure with \levels just after the current \levelGroups.
+	All the \levels that are involved in the sum belongs to \levelGroups  operated by first thread in the current stage. The obtained number $b$ is chosen as weight for these \levelGroups \ie $w(T_1(0))=w(T_1(1))=b$. A local search is then done by increasing \levels in this \levelGroups to see if there is a better choice ($a$ close to $b$) with weight $b$, finally \levelGroups are formed with the best choice.  The weight for next \levelGroups are found by resetting the sum counter to zero and repeating the  procedure with \levels just after the current \levelGroups.
 \end{enumerate}
+For other recursive stage ($s>1$) same procedure can be applied to find weights $w(T_s(i))$, except that now $\nthreadsMath$ and $\nrowsMath^{total}$ has to be substituted with the threads required and vertices in the \subgraph considered.
