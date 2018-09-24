@@ -28,3 +28,8 @@ for arch in ivy skx; do
 	done
 done
 
+cd skx/corner_cases_scaling
+./generate_plots.sh
+
+cd -
+
