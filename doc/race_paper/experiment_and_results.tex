@@ -44,9 +44,9 @@ In the case of \emph{parabolic\_fem} matrix we theoretically have a good efficie
 
 \begin{figure}[thbp]
 	\centering
-	\subfloat[\SymmSpmv on 1 socket of \IVB]{\label{fig:symm_spmv_ivy}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/symm_spmv/symm_spmv}}
+	\subfloat[\SymmSpmv on 1 socket of \IVB]{\label{fig:symm_spmv_ivy}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx/perf}}
 	\hspace{1em}
-	\subfloat[\SymmSpmv on 1 socket of \SKX]{\label{fig:symm_spmv_skx}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/symm_spmv/symm_spmv}}
+	\subfloat[\SymmSpmv on 1 socket of \SKX]{\label{fig:symm_spmv_skx}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx/perf}}
 	\caption{\SymmSpmv performance}
 	\label{fig:ivy}
 \end{figure}
@@ -75,18 +75,18 @@ was used for multicoloring (\MC). \METIS \cite{METIS}  was used for graph partit
 
 \begin{figure}[thbp]
 	\centering
-	\subfloat[1 socket \IVB] {\label{fig:derived_perf_kacz_ivb}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/kacz/derived_perf}}
+	\subfloat[1 socket \IVB] {\label{fig:derived_perf_kacz_ivb}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/data_symm_kacz/plot_generator/derived_perf_vs_mtx/derived_perf}}
 	\hspace{1em}
-	\subfloat[1 socket \SKX] {\label{fig:derived_perf_kacz_skx}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/kacz/derived_perf}}
+	\subfloat[1 socket \SKX] {\label{fig:derived_perf_kacz_skx}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_kacz/plot_generator/derived_perf_vs_mtx/derived_perf}}
 	\caption{\SYMMKACZ inverse runtime (scaled)}
 	\label{fig:symmkacz_dp}
 \end{figure}
 
 \begin{figure}[thbp]
 	\centering
-	\subfloat[Plain performance] {\label{fig:perf_kacz_ivb}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/kacz/perf}}
+	\subfloat[Plain performance] {\label{fig:perf_kacz_ivb}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_kacz/plot_generator/perf_vs_mtx/perf}}
 	\hspace{1em}
-	\subfloat[Iterations compared to serial Symm\KACZ kernel] {\label{fig:iter_kacz_skx}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/kacz/iter}}
+	\subfloat[Iterations compared to serial Symm\KACZ kernel] {\label{fig:iter_kacz_skx}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_kacz/plot_generator/iter_vs_mtx/iter}}
 	\caption{\SYMMKACZ convergence study on \SKX}
 	\label{fig:symmkacz_convergence}
 \end{figure}
@@ -106,9 +106,9 @@ Comparison of \RACE with \RSB data format. Note \RSB is pre-processed with \RCM,
 
 \begin{figure}[thbp]
 	\centering
-	\subfloat[Comparison of \RACE with \RSB on \IVB] {\label{fig:race_vs_rsb_ivy}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/ivy/race_vs_rsb}}
+	\subfloat[Comparison of \RACE with \RSB on \IVB] {\label{fig:race_vs_rsb_ivy}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_w_RSB/perf}}
 	\hspace{1.2em}
-	\subfloat[Comparison of \RACE with \RSB on \SKX] {\label{fig:race_vs_rsb_skx}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/skx/race_vs_rsb}}
+	\subfloat[Comparison of \RACE with \RSB on \SKX] {\label{fig:race_vs_rsb_skx}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_w_RSB/perf}}
 	\caption{Comparison with \RSB data format}
 	\label{fig:race_vs_rsb}
 \end{figure}
