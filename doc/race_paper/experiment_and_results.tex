@@ -44,11 +44,22 @@ In the case of \emph{parabolic\_fem} matrix we theoretically have a good efficie
 
 \begin{figure}[thbp]
 	\centering
+	\subfloat[Comparison of \SpMV and RACE \SymmSpmv on 1 socket of \IVB]{\label{fig:spmv_vs_symm_spmv_ivy}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV/perf}}
+	\hspace{1em}
+	\subfloat[\SymmSpmv on 1 socket of \SKX]{\label{fig:spmv_vs_symm_spmv_skx}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV/perf}}
+	\caption{\SpMV vs RACE \SymmSpmv performance}
+	\label{fig:SpMV_vs_SymmSpMV}
+\end{figure}
+\subsection{RACE performance in comparison to SpMV}
+\Cref{fig:SpMV_vs_SymmSpMV} provides performance of SymmSpMV compared to SpMV, where one can get an idea of how close we can reach near ideal performance. TODO provide RLM for each matrices. 
+
+\begin{figure}[thbp]
+	\centering
 	\subfloat[\SymmSpmv on 1 socket of \IVB]{\label{fig:symm_spmv_ivy}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx/perf}}
 	\hspace{1em}
 	\subfloat[\SymmSpmv on 1 socket of \SKX]{\label{fig:symm_spmv_skx}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx/perf}}
 	\caption{\SymmSpmv performance}
-	\label{fig:ivy}
+	\label{fig:symm_spmv}
 \end{figure}
 
 
