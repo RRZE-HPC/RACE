@@ -1,13 +1,14 @@
 \subsection{Test bed}
+{\GW ToDo: EPYC raus;}
 The tests are conducted on three different multi-core architectures. Two of them being Intel's \IVB and modern \SKX architecture, the choice of these architectures enable study of the method on two extreme generation of Intel's processor currently being used on \HPC systems. As a third choice we select AMD's recent \EPY architecture, which is competitive to Intel \SKX architecture. This choice enables us to study the effect of our method on chips based on completely different microarchitecture, enabling us to demonstrate the applicability of our method on wide range of architectures. All the tests are conducted on a single socket of these architectures. 
 
 \begin{itemize}
 	\item \Intel \IVB architecture belongs to class of classic Intel's cache-based architecture, which has three inclusive cache  hierarchies. All the cache are scalable and the \LLC (L3) being shared among all the cores on one socket. The processor is capable of delivering one full four wide \SIMD add, multiply and load in one cycle. 
 	\item \Intel \SKX architecture belongs to recent generation of Intel family. Contrary to it's predecessors (like \IVB), L3 cache is now changed to a non-inclusive victim cache shared by all the cores on a socket. The architecture comes with support for eight wide \SIMD operations (AVX-512). The processor is capable of doing two AVX-512 add, multiply and load operations per cycle.
-	\item \AMD \EPY is based on AMD's Zen microarchitecture. The basic building block of the architecture consists of Core Complex (CCX) consisting of three cores (can extend upto four on high end models) each having it's own private L1 and L2 cache. The L3 cache is shared between a core complex and is non-inclusive victim cache. A single socket of \EPY consists of eight such CCX.
+	\item {\GW \AMD \EPY is based on AMD's Zen microarchitecture. The basic building block of the architecture consists of Core Complex (CCX) consisting of three cores (can extend upto four on high end models) each having it's own private L1 and L2 cache. The L3 cache is shared between a core complex and is non-inclusive victim cache. A single socket of \EPY consists of eight such CCX.}
 	
 \end{itemize}
-The details of architectures along with the measured bandwidths are given in \cref{tab:test_bed}. The bandwidths are measured using \likwidBench suite.
+The details of architectures along with the measured bandwidths are given in \cref{tab:test_bed}. {\GW The bandwidths are measured using \likwidBench suite.}
 
 \begin{table}[tbhp]
 \footnotesize
@@ -29,13 +30,12 @@ The details of architectures along with the measured bandwidths are given in \cr
 		{Main Memory} & {32 GB} & {45 GB} & {4 $\times$ 16 GB}\\
 		{Bandwidth per socket - load only} & {47 GB/s} & {115 GB/s} & {130 GB/s }\\ %TODO
 		{Bandwidth per socket - copy} & {40 GB/s} & {104 GB/s} & {114 GB/s }\\
-		{Architecture specific flag} & {-} & {-xCORE-AVX512} & {-}\\
 		\bottomrule
 	\end{tabular}
 \end{center}
 \end{table} 
 
-All the code used was compiled with Intel compiler version 17 and the following compiler flags were set {\tt -fno-alias -xHost -O3}. Furthermore all the measurements were done with  \CPU clock speeds fixed at frequencies indicated in \cref{tab:test_bed}.
+Furthermore all the measurements were done with  \CPU clock speeds fixed at frequencies indicated in \cref{tab:test_bed}.
 
 
 \subsection{External Tolls and Software}
@@ -46,6 +46,7 @@ Following external libraries are used in this paper. The application of these li
 	\item \COLPACK \cite{COLPACK} is used for pre-processing matrix by \MCfull.
 	\item \SPMP \cite{SpMP} is used to perform \RCMfull (\RCM).
 	\item \METIS\cite{METIS} is used for graph partitioning.
+	\item All the code used was compiled with Intel compiler version 17 and the following compiler flags were set {\tt -fno-alias -xHost -O3} for Ivy-Bridge system and {\tt -fno-alias -xCORE-AVX512 -O3} for Skylake system {\GW Christie please check and specify exact Compiler version}
 	\item \MKL \cite{MKL} is used for performing some reference sparse matrix computations.
 \end{itemize}
 
@@ -63,14 +64,18 @@ All the test matrices are taken from SuiteSparse Matrix Collection (former Unive
 \end{table}
 
 \subsection{Kernels} \label{subsec:test_kernels}
-To test the performance we choose algorithms that are exact as well as iterative. Also we include kernels from both distance-1 and distance-2 dependency classes. All the kernels shown below are based on \CRS matrix storage format.
+We evaluate our methods by parallelizing two simple but important kernels showing distance-2 dependencies. In the context of parallelization of symmetric sparse matrix vector (\SymmSpmv) the distance-2 coloring procedure prevents from concurrent update of the same vector entries by different threads resulting in the same result as the serial code ("exact kernel").  {\GW To be done As an example for an iterative solver with distance2 dependency we have chosen the \KACZ ...}
+
+Both algorithms are closely related by structure and computational intensity to the widely used \SpMV kernel applicable to general matrices. Thus, we start with presenting the \SpMV kernel and its known computational intensity. We extend this discussion towards the \SymmSpmv and \KACZ and show how to derive upper realistic performance bounds. We chose the widely used \CRS matrix storage format for the serial implementation of the kernel and assume square matrices.
 
 \subsubsection{\SpMV}
-Sparse Matrix Vector (\SpMV) is a kernel that do not have any dependencies. It  acts as a good reference for other kernels to determine their performance upper bound.
+The \SpMV has no loop carried dependencies and parallelization of outer ($row$) loop using, e.g. OpenMP, is straightforward. 
 \begin{algorithm}[H]
 	\caption{SpMV Find $b$ : $b=A x$} 
 	\label{alg:SpMV}
 	\begin{algorithmic}[1]
+	        \STATE{$double:: A[nnz], b[nrows], x[nrows]$}
+	        \STATE{$integer:: col[nnz], rowPtr[nrows+1]$}
 		\FOR{$row=1:nrows$}
 		\FOR{$idx=rowPtr[row]:rowPtr[row+1]$}
 		\STATE{$b[row] += A[idx]*x[col[idx]]$} 
@@ -78,13 +83,14 @@ Sparse Matrix Vector (\SpMV) is a kernel that do not have any dependencies. It  
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
-The arithmetic intensity of the \SpMV kernel $I_\mathrm{\SpMV}$ is as follows:
+Following the discussion in~\cite{Moritz_sell} the computational intensity of the above kernel $I_\mathrm{\SpMV}$  is as follows:
 \begin{equation}
 \label{eq:SpMV_intensity}
-I_\mathrm{\SpMV} = \frac{2}{8+4+8*\alpha+\frac{16}{\NNZRmath}} \\
+I_\mathrm{\SpMV} = \frac{2}{8+4+8*\alpha+\frac{20}{\NNZRmath}} \frac{Flop}{Byte} \\
 \end{equation}
+Here we assume that matrix data  ($A[], col[]$), left hand side vector ($b[]$) and row pointer information ($rowPtr[]$) are loaded once from main memory as these data structures are consecutively accessed. All quantities are calculated for the average costs of computing one non-zero element of the matrix. Thus, contributions which are independent of the inner (short) loop are rescaled by $\NNZRmath$ which is the average number of non-zeros per row (i.e. the average length of the inner loop).
 
-where $\alpha$ represents the data locality factor and \NNZR non-zeros per row. $\alpha$ depends on the sparsity pattern of the matrix and varies from matrix to matrix. Ideal value of $\alpha$ for sufficiently large matrix is $\frac{1}{\NNZRmath}$. The $\alpha$ factor takes into account indirect accesses of the $x$ vector seen in \cref{alg:SpMV}. More details on factor $\alpha$ could be found in \cite{Moritz_sell}.
+The $8*\alpha$ term represents contribution of accessing the right hand side (RHS) vector ($x[]$) irregularly. The value of $\alpha$ depends on the matrix structure (access pattern) as well as on the RHS vector data set size compared to the largest cache size. The smallest value of $\alpha=\frac{1}{\NNZRmath}$ is attained if the RHS vector is only loaded once from main memory to the cache and all subsequent accesses in the same \SpMV are cache hits. This limit is typically realized for matrices with low bandwidth (high access locality) or if the cache is large enough to hold the full RHS data during one \SpMV. The factor $\alpha$ can be determined by measuring the data traffic when executing the \SpMV; please see~\cite{Moritz_sell} for more details~\footnote{In~\cite{Moritz_sell} the traffic for the row pointer was not accounted, i.e. the denominator increases by $\frac{4}{\NNZRmath} Byte$.}.
 
 \begin{comment}
 \subsubsection{\SpMTV}
@@ -105,12 +111,11 @@ In comparison to SpMV operation, the kernel requires an extra scatter operation,
 \label{eq:SpMTV_intensity}
 I_\mathrm{\SpMTV} = \frac{2}{8+4+16*\alpha+\frac{8}{\NNZRmath}} \\
 \end{equation}
-
 In ideal case data traffic for this kernel should remain close to that of SpMV, if \NNZR are sufficiently high, and $\alpha$ factor is small enough.
 \end{comment}
 
 \subsubsection{\SymmSpmv}
-Symmetric Sparse Matrix Vector (\SymmSpmv) makes use of the symmetric property of the matrix to perform the matrix  vector multiplication.
+Symmetric Sparse Matrix Vector (\SymmSpmv) exploits the symmetry in the underlying matrix to reduce storage size for matrix data and reduce overall memory traffic by  operating on the upper (or lower) half of the matrix. Thus for every non-zero matrix entry we need to update two entries in the RHS vector as shown in~\cref{alg:SymmSpMV}.
 \begin{algorithm}[H]
 	\caption{SymmSpMV Find $b$ : $b=Ax$, where $A$ is an upper triangular matrix} 
 	\label{alg:SymmSpMV}
@@ -125,13 +130,12 @@ Symmetric Sparse Matrix Vector (\SymmSpmv) makes use of the symmetric property o
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
-To operate on this kernel we just use the upper triangular part of the sparse matrix. The kernel requires only half the data traffic compared to SpMV but requires the same amount of Flops, leading to almost twice the intensity of SpMV operations.
+In line with the discussion above the computational intensity of \SymmSpmv can be calculated as:
 \begin{equation}
 \label{eq:SymmSpMV_intensity}
-I_\mathrm{\SymmSpmv} = \frac{4}{8+4+24*\alpha+\frac{4}{\NNZRmathSYMM}} \\
+I_\mathrm{\SymmSpmv} = \frac{4}{8+4+24*\alpha+\frac{4}{\NNZRmathSYMM}} \frac{Flop}{Byte}\\
 \end{equation}
-
-Note that \NNZRSYMM is the number of non-zeros per row in upper triangular part of the matrix.
+For a given non-zero matrix element ($8 Byte + 4 Byte$) of the triangular matrix twice the amount of Flops ($4 Flops$)  are performed. In addition we have indirect access to the LHS vector (read and write) which increases the $alpha$ contribution by $3x$. The only term left scaling with \NNZRSYMM (number of non-zeros per row in upper triangular part of the matrix) is the consecutively accessed row pointer. Please note, the $alpha$ value for \SpMV and \SymmSpmv may be different (even for the same matrix and the same compute device) as in the latter case the two vectors are accessed irregularly and compete for the same amount of cache. 
 
 \begin{comment}
 \subsubsection{\GS and \SYMMGS}
