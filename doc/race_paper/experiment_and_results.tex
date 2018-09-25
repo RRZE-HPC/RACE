@@ -55,7 +55,7 @@ In the case of \emph{parabolic\_fem} matrix we theoretically have a good efficie
 
  From the figure one can observe that in some cases roofline performance is lower than that of actual measured performance. This is due to the fact that these are small matrices and some of the data can fit in the cache, since \SKX has cumulatively larger cache compared to \IVB we observe more matrices showing this kind of behavior.
  
- The figure also makes it clear that eventhough we bring in only operate with upper triangle part of the matrix, it is not always the case we get a factor of two in performance. There are basically two reasons for it as suggested by roofline model:
+ The figure also makes it clear that eventhough we only operate with upper triangle part of the matrix, it is not always the case we get a factor of two in performance. There are basically two reasons for it as suggested by roofline model:
  \begin{enumerate}
  	\item Small non-zeros per row \NNZR: If \NNZR its symmetric variant \NNZRSYMM will be even smaller, since this term enters into denominator of $I_{\SymmSpmv}$ as shown in \cref{eq:SymmSpMV_intensity} it decreases the performance even more.
  	\item $\alpha$ factor: The effect of $\alpha$ on \SymmSpmv kernel is more than that of \SpMV. One can observe this by comparing \cref{eq:SpMV_intensity,eq:SymmSpMV_intensity}, where the  pre-factor of $\alpha$ is three times bigger for \SymmSpmv.
