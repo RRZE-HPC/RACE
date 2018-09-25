@@ -11,7 +11,7 @@ SPMV_DELIM="|"
 
 OUT_FILE=../RLM/result.txt
 
-bw=43.8
+bw=44.5
 
 #prepare nnz table
 col1=$(echo $NNZ_COL | cut -d" " -f1) 
