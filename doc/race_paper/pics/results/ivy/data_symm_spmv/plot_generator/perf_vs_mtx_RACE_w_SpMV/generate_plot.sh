@@ -28,7 +28,6 @@ mtx_name_file="sorted_file.txt"
 
 
 cut -f$col_mtx_name $mtx_name_file > col0.txt
-
 sed -i -- "s/|//g" col0.txt
 sed -i -- "s/_/-/g" col0.txt
 
@@ -41,7 +40,7 @@ fi
 
 for file in $perf_files ; do
 	#sort perf files
-	sort -k$col_mtx_name $file>temp.txt
+	sort -t"|" -k$col_mtx_name $file>temp.txt
 	file="temp.txt"
 	curr_col=$(echo $col_perf_1 | cut -d " " -f  $counter)
 	cut -d "|" -f$curr_col $file | grep   -Eo '[0-9]*\.?[0-9]+'>"col_1_$counter.txt"
@@ -221,7 +220,7 @@ rm sorted_file.txt
 rm temp_coo.txt
 rm col0.txt
 
-make
+#make
 rm *.aux
 rm *.bbl
 rm *.blg

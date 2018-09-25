@@ -1,8 +1,8 @@
 COL_MTX_NAMES = 2
-COL_PERF_1 = 5 3
-PERF_FILES = ../../RACE/result.txt ../../MKL/result.txt 
-COLORS =  orange magenta
-LEGEND = RACE-SymmSpMV MKL-SpMV
+COL_PERF_1 = 5 3 5
+PERF_FILES = ../../RACE/result.txt ../../MKL/result.txt ../../RLM/result.txt
+COLORS =  orange magenta gray
+LEGEND = RACE-SymmSpMV MKL-SpMV RLM
 TEMPLATE = template.tex
 GENERATED = perf.tex
 YLABEL = Perf (GFlop/s)
