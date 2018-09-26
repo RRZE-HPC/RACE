@@ -1,15 +1,18 @@
 \subsection{Test bed}
 {\GW ToDo: EPYC raus;}
-The tests are conducted on three different multi-core architectures. Two of them being Intel's \IVB and modern \SKX architecture, the choice of these architectures enable study of the method on two extreme generation of Intel's processor currently being used on \HPC systems. As a third choice we select AMD's recent \EPY architecture, which is competitive to Intel \SKX architecture. This choice enables us to study the effect of our method on chips based on completely different microarchitecture, enabling us to demonstrate the applicability of our method on wide range of architectures. All the tests are conducted on a single socket of these architectures. 
+The tests are conducted on two different multi-core architectures. One being Intel's \IVB and the other \SKX architecture, the choice of these architectures enable study of the method on two extreme generation of Intel's processor currently being used on \HPC systems. All the tests are conducted on a single socket of these architectures. 
 
 \begin{itemize}
 	\item \Intel \IVB architecture belongs to class of classic Intel's cache-based architecture, which has three inclusive cache  hierarchies. All the cache are scalable and the \LLC (L3) being shared among all the cores on one socket. The processor is capable of delivering one full four wide \SIMD add, multiply and load in one cycle. 
 	\item \Intel \SKX architecture belongs to recent generation of Intel family. Contrary to it's predecessors (like \IVB), L3 cache is now changed to a non-inclusive victim cache shared by all the cores on a socket. The architecture comes with support for eight wide \SIMD operations (AVX-512). The processor is capable of doing two AVX-512 add, multiply and load operations per cycle.
+	\begin{comment}
 	\item {\GW \AMD \EPY is based on AMD's Zen microarchitecture. The basic building block of the architecture consists of Core Complex (CCX) consisting of three cores (can extend upto four on high end models) each having it's own private L1 and L2 cache. The L3 cache is shared between a core complex and is non-inclusive victim cache. A single socket of \EPY consists of eight such CCX.}
+	\end{comment}
 	
 \end{itemize}
 The details of architectures along with the measured bandwidths are given in \cref{tab:test_bed}. {\GW The bandwidths are measured using \likwidBench suite.}
 
+\begin{comment}
 \begin{table}[tbhp]
 \footnotesize
 \caption{Test bed}\label{tab:test_bed}
@@ -34,6 +37,32 @@ The details of architectures along with the measured bandwidths are given in \cr
 	\end{tabular}
 \end{center}
 \end{table} 
+\end{comment}
+
+\begin{table}[tbhp]
+	\footnotesize
+	\caption{Test bed}\label{tab:test_bed}
+	\begin{center}
+		%	\setlength{\tabcolsep}{3em}
+		\begin{tabular}{|l| c  c |}
+			\toprule
+			{Model name} & {Xeon\textsuperscript{\textregistered} E5-2660} & {Xeon\textsuperscript{\textregistered} Gold 6148} \\
+			\midrule
+			{Microarchitecture} & {Ivy Bridge} & {Skylake} \\
+			\midrule
+			{Clock} & {2.2 GHz} & {2.4 GHz}\\
+			{Physical Cores per socket} & {10} & {20} \\
+			{L1d Cache} & {10 $\times$ 32 \KB} & {20 $\times$ 32 \KB}\\
+			{L2 Cache} & {10 $\times$ 256 \KB} & {20 $\times$ 1 \MB} \\
+			{L3 Cache} & {25 \MB} & {27.5 \MB}\\
+			{L3 type} & {inclusive} & {non-inclusive}\\
+			{Main Memory} & {32 GB} & {45 GB}\\
+			{Bandwidth per socket - load only} & {47 GB/s} & {115 GB/s}\\ %TODO
+			{Bandwidth per socket - copy} & {40 GB/s} & {104 GB/s}\\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+\end{table} 
 
 Furthermore all the measurements were done with  \CPU clock speeds fixed at frequencies indicated in \cref{tab:test_bed}.
 
@@ -46,7 +75,7 @@ Following external libraries are used in this paper. The application of these li
 	\item \COLPACK \cite{COLPACK} is used for pre-processing matrix by \MCfull.
 	\item \SPMP \cite{SpMP} is used to perform \RCMfull (\RCM).
 	\item \METIS\cite{METIS} is used for graph partitioning.
-	\item All the code used was compiled with Intel compiler version 17 and the following compiler flags were set {\tt -fno-alias -xHost -O3} for Ivy-Bridge system and {\tt -fno-alias -xCORE-AVX512 -O3} for Skylake system {\GW Christie please check and specify exact Compiler version}
+	\item All the code used was compiled with Intel compiler version 17 update 3 and the following compiler flags were set {\tt -fno-alias -xHost -O3} for Ivy-Bridge system and {\tt -fno-alias -xCORE-AVX512 -O3} for Skylake system {\GW Christie please check and specify exact Compiler version}
 	\item \MKL \cite{MKL} is used for performing some reference sparse matrix computations.
 \end{itemize}
 
@@ -187,7 +216,7 @@ Kaczmarz (\KACZ) is an iterative solver based on row-projection based methods. T
 In-core has a mixed behavior of both SpMV and SpMTV similar to SymmSpMV. The solver also requires a divide per  row of the matrix. In ideal case the data traffic from memory should remain same as that of SpMTV. But the solver requires thrice the flops compared to SpMTV per non-zero. For brevity of the results we ignore the flops used in $rownorm$ computations since, one could also row normalize the sparse matrix before performing the KACZ operation. This leads to an almost two fold higher Arithmetic Intensity compared to SpMTV.
 \begin{equation}
 \label{eq:KACZ_intensity}
-I_\mathrm{KACZ} =  \frac{4}{8+4+16*\alpha+\frac{8}{nnzr}} \\%= 2*I_\mathrm{SpMTV}\\
+I_\mathrm{KACZ} =  \frac{4}{8+4+16*\alpha+\frac{12}{nnzr}} \\%= 2*I_\mathrm{SpMTV}\\
 \end{equation}
 
 In general for most of the algorithms one is interested in symmetric operator therefore commonly one would encounter symmetric variant of \KACZ, so called symmetric Kaczmarz (\SYMMKACZ). The algorithm remains same except that instead of just doing forward sweep shown in \cref{alg:KACZ} one would follow it with a backward sweep \ie {\tt row=nrows:-1:1}. The intensity of \SYMMKACZ remains same as of \KACZ, as we do two times more flops and bring in proportional data.
