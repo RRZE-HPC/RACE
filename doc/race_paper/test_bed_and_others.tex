@@ -138,13 +138,13 @@ Sparse Matrix Transpose Vector (\SpMTV) is a kernel having \DTWO dependency.
 In comparison to SpMV operation, the kernel requires an extra scatter operation, which causes dependency. The arithmetic intensity of the kernel $I_\mathrm{\SpMTV}$ is given as:
 \begin{equation}
 \label{eq:SpMTV_intensity}
-I_\mathrm{\SpMTV} = \frac{2}{8+4+16*\alpha+\frac{8}{\NNZRmath}} \\
+I_\mathrm{\SpMTV} (\alpha)= \frac{2}{8+4+16*\alpha+\frac{8}{\NNZRmath}} \\
 \end{equation}
 In ideal case data traffic for this kernel should remain close to that of SpMV, if \NNZR are sufficiently high, and $\alpha$ factor is small enough.
 \end{comment}
 
 \subsubsection{\SymmSpmv}
-Symmetric Sparse Matrix Vector (\SymmSpmv) exploits the symmetry in the underlying matrix to reduce storage size for matrix data and reduce overall memory traffic by  operating on the upper (or lower) half of the matrix. Thus for every non-zero matrix entry we need to update two entries in the RHS vector as shown in~\cref{alg:SymmSpMV}.
+Symmetric Sparse Matrix Vector (\SymmSpmv) exploits the symmetry in the underlying matrix to reduce storage size for matrix data and reduce overall memory traffic by  operating on the upper (or lower) half of the matrix. Thus for every non-zero matrix entry we need to update two entries in the LHS vector ($b[]$) as shown in~\cref{alg:SymmSpMV}.
 \begin{algorithm}[H]
 	\caption{SymmSpMV Find $b$ : $b=Ax$, where $A$ is an upper triangular matrix} 
 	\label{alg:SymmSpMV}
@@ -162,9 +162,11 @@ Symmetric Sparse Matrix Vector (\SymmSpmv) exploits the symmetry in the underlyi
 In line with the discussion above the computational intensity of \SymmSpmv can be calculated as:
 \begin{equation}
 \label{eq:SymmSpMV_intensity}
-I_\mathrm{\SymmSpmv} = \frac{4}{8+4+24*\alpha+\frac{4}{\NNZRmathSYMM}} \frac{Flop}{Byte}\\
+I_\mathrm{\SymmSpmv} (\alpha)= \frac{4}{8+4+24*\alpha+\frac{4}{\NNZRmathSYMM}} \frac{Flop}{Byte}\\
 \end{equation}
-For a given non-zero matrix element ($8 Byte + 4 Byte$) of the triangular matrix twice the amount of Flops ($4 Flops$)  are performed. In addition we have indirect access to the LHS vector (read and write) which increases the $alpha$ contribution by $3x$. The only term left scaling with \NNZRSYMM (number of non-zeros per row in upper triangular part of the matrix) is the consecutively accessed row pointer. Please note, the $alpha$ value for \SpMV and \SymmSpmv may be different (even for the same matrix and the same compute device) as in the latter case the two vectors are accessed irregularly and compete for the same amount of cache. 
+For a given non-zero matrix element ($8 Byte + 4 Byte$) of the triangular matrix twice the amount of Flops ($4 Flops$)  are performed. In addition we have indirect access to the LHS vector (read and write) which increases the $alpha$ contribution by $3x$. The only term left scaling with \NNZRSYMM (number of non-zeros per row in upper triangular part of the matrix) is the consecutively accessed row pointer. Please note, the $alpha$ value for \SpMV and \SymmSpmv may be different (even for the same matrix and the same compute device) as in the latter case the two vectors are accessed irregularly and compete for the same amount of cache. Thus, we can assume that the $\alpha$ value measured for \SpMV can be considered as a lower bound for \SymmSpmv. As performance is the product of computational intensity and the main memory bandwidth this approach gives an upper performance bound for \SymmSpmv for a given matrix structure.  Using this approach we can test the quality of \SymmSpmv implementations. 
+
+Comparing~\cref{eq:SymmSpMV_intensity} and~\cref{eq:SpMV_intensity} it is obvious that the perfect speed-up of 2x when using \SymmSpmv instead of \SpMV is only attainable in the limit of small $\alpha$, i.e. for regularly structured matrices or low bandwidth matrices. Considering the large pre-factor of the $\alpha$ contribution, any implementation of \SymmSpmv must aim at ensuring high data locality. The indirect update of the LHS has also large impact on parallelization strategy as two rows which have a non-zero in the same column can not be computed in parallel. If using a graph based approach to this problem this is equivalent to the constraint that only vertices can be computed in parallel which have at least a distance of 2.
 
 \begin{comment}
 \subsubsection{\GS and \SYMMGS}
@@ -189,13 +191,16 @@ Regarding the in-core execution the kernel has same properties as of \SpMV, but 
 I_\mathrm{GS} = I_\mathrm{SPMV}
 \end{equation}
 
+
+
 In general for most of the algorithms one is interested in symmetric operator therefore commonly one would encounter symmetric variant of Gauss-Seidel, so called symmetric Gauss-Seidel (\SYMMGS). The algorithm remains same except that instead of just doing forward sweep shown in \cref{alg:GS} one would follow it with a backward sweep \ie {\tt row=nrows:-1:1}. The intensity of \SYMMGS remains same as of \GS, as we do two times more flops and bring in proportional data.
 \end{comment}
 
+
 \subsubsection{KACZ and \SYMMKACZ}
-Kaczmarz (\KACZ) is an iterative solver based on row-projection based methods. The solver has a distance-2 dependency.
+The iterative Kaczmarz solver is a row-projection approach which inhibits a data dependency. The basic kernel (\KACZ) is  presented in~\cref{alg:KACZ}. For its parallelization one typically uses a distance-2 coloring of the graph representing the matrix. As this does not lead to the exact result as for the serial execution of the kernel, the actual coloring scheme may impact convergence of iterative scheme.
 \begin{algorithm}[H]
-	\caption{KACZ Solve for $x$ : $Ax=b$} 
+	\caption{KACZ kernel used for solving $Ax=b$; outer iteration loop not shown} 
 	\label{alg:KACZ}
 	\begin{algorithmic}[1]
 		\FOR{$row=1:nrows$}
@@ -212,12 +217,13 @@ Kaczmarz (\KACZ) is an iterative solver based on row-projection based methods. T
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
-
-In-core has a mixed behavior of both SpMV and SpMTV similar to SymmSpMV. The solver also requires a divide per  row of the matrix. In ideal case the data traffic from memory should remain same as that of SpMTV. But the solver requires thrice the flops compared to SpMTV per non-zero. For brevity of the results we ignore the flops used in $rownorm$ computations since, one could also row normalize the sparse matrix before performing the KACZ operation. This leads to an almost two fold higher Arithmetic Intensity compared to SpMTV.
+From a computational perspective the kernel is closely related to \SpMV and \SymmSpmv but performs an in-place indirect vector update ($x[col[]]$). This vector update is the only contribution to the $\alpha$ value (leading to a pre-factor of $16$) and the computational intensity can be calculated as follows:
 \begin{equation}
 \label{eq:KACZ_intensity}
-I_\mathrm{KACZ} =  \frac{4}{8+4+16*\alpha+\frac{12}{nnzr}} \\%= 2*I_\mathrm{SpMTV}\\
+I_\mathrm{KACZ} (\alpha)=  \frac{4}{8+4+16*\alpha+\frac{12}{nnzr}} \\%= 2*I_\mathrm{SpMTV}\\
 \end{equation}
+Having two short inner loops does not impact the overall memory traffic (and also the computational intensity) as the data can be held in inner cache levels between the two inner loops. We can also ignore the impact of the divide operation as it is only done once per row and its cost is negligible for main memory bandwidth or latency bound scenarios.  
 
-In general for most of the algorithms one is interested in symmetric operator therefore commonly one would encounter symmetric variant of \KACZ, so called symmetric Kaczmarz (\SYMMKACZ). The algorithm remains same except that instead of just doing forward sweep shown in \cref{alg:KACZ} one would follow it with a backward sweep \ie {\tt row=nrows:-1:1}. The intensity of \SYMMKACZ remains same as of \KACZ, as we do two times more flops and bring in proportional data.
+Most iterative algorithms use a symmetric operator, so called symmetric Kaczmarz (\SYMMKACZ), where the forward sweep shown in \cref{alg:KACZ} is followed by a backward sweep \ie {\tt row=nrows:-1:1} for the two inner loops in~\cref{alg:KACZ}. The intensity of \SYMMKACZ remains same as of \KACZ. 
+
 %Symmetric variant of \KACZ is denoted by \SYMMKACZ, and similar to \SYMMGS this requires forward sweep followed by a backward sweep. 
