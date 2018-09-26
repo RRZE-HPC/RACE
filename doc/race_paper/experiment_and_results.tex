@@ -51,6 +51,15 @@ In the case of \emph{parabolic\_fem} matrix we theoretically have a good efficie
 	\label{fig:SpMV_vs_SymmSpMV}
 \end{figure}
 \subsection{RACE performance in comparison to SpMV}
+\begin{table}[ht]
+	\footnotesize
+	\caption{$\alpha$ values of SpMV measured using \LIKWID for both architectures }
+	\label{table:alpha_values}
+	\begin{center}
+		\input{pics/results/alpha_table_generator/table.tex}
+	\end{center}
+\end{table}
+
 \Cref{fig:SpMV_vs_SymmSpMV} provides performance of SymmSpMV compared to SpMV. Roofline \cite{Williams_roofline} model for each of the matrices is also shown in the figure. The model takes into account the alpha factor, which is derived based on SpMV performance.
 
  From the figure one can observe that in some cases roofline performance is lower than that of actual measured performance. This is due to the fact that these are small matrices and some of the data can fit in the cache, since \SKX has cumulatively larger cache compared to \IVB we observe more matrices showing this kind of behavior.
