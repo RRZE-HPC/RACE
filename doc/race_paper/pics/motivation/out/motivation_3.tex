@@ -53,31 +53,31 @@
 		
 		\pgfkeys{/pgf/fpu}
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SPMV
-		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval/(\NNZ*1e-7)} %change to SpMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)} %change to SpMV
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SPMVMC
-		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SYMMSPMV
-		\pgfmathsetmacro{\memSYMMSPMV}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSYMMSPMV}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 		
 		\addplot[pattern=horizontal lines]%style={ppurple,fill=ppurple}]
 		coordinates {(SpMV,\memSPMV) (SpMV MC,\memSPMVMC) (SymmSpMV MC,\memSYMMSPMV)};
 		
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMV
-		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval/(\NNZ*1e-7)} %change to SpMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)} %change to SpMV
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMVMC
-		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SYMMSPMV
-		\pgfmathsetmacro{\memSYMMSPMV}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSYMMSPMV}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 				
 		\addplot[fill=gray!180]%style={ppurple,fill=ppurple}]
 		coordinates {(SpMV,\memSPMV) (SpMV MC,\memSPMVMC) (SymmSpMV MC,\memSYMMSPMV)};
 		
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMV
-		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval/(\NNZ*1e-7)} %change to SpMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)} %change to SpMV
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMVMC
-		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SYMMSPMV
-		\pgfmathsetmacro{\memSYMMSPMV}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSYMMSPMV}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 			
 		\addplot[pattern=vertical lines]%style={bblue,fill=bblue}]
 		coordinates {(SpMV,\memSPMV) (SpMV MC,\memSPMVMC) (SymmSpMV MC,\memSYMMSPMV)};

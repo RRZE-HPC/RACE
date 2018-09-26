@@ -51,37 +51,37 @@
 		
 		\pgfkeys{/pgf/fpu}
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SPMV
-		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval/(\NNZ*1e-7)} %change to SpMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)} %change to SpMV
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SYMMSPMVMC
-		\pgfmathsetmacro{\memMC}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memMC}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SYMMSPMVABMC
-		\pgfmathsetmacro{\memABMC}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memABMC}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SYMMSPMVRACE
-		\pgfmathsetmacro{\memRACE}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memRACE}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 		
 		\addplot[pattern=horizontal lines]%style={ppurple,fill=ppurple}]
 		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memMC) (SymmSpMV-ABMC,\memABMC) (SymmSpMV-RACE,\memRACE)};
 		
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMV
-		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval/(\NNZ*1e-7)} %change to SpMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)} %change to SpMV
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SYMMSPMVMC
-		\pgfmathsetmacro{\memMC}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memMC}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SYMMSPMVABMC
-		\pgfmathsetmacro{\memABMC}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memABMC}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SYMMSPMVRACE
-		\pgfmathsetmacro{\memRACE}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memRACE}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 				
 		\addplot[fill=gray!180]%style={ppurple,fill=ppurple}]
 		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memMC) (SymmSpMV-ABMC,\memABMC) (SymmSpMV-RACE,\memRACE)};
 		
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMV
-		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval/(\NNZ*1e-7)} %change to SpMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)} %change to SpMV
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SYMMSPMVMC
-		\pgfmathsetmacro{\memMC}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memMC}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SYMMSPMVABMC
-		\pgfmathsetmacro{\memABMC}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memABMC}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SYMMSPMVRACE
-		\pgfmathsetmacro{\memRACE}{\pgfplotsretval/(\NNZ*1e-7)}	
+		\pgfmathsetmacro{\memRACE}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}	
 				
 		\addplot[pattern=vertical lines]%style={bblue,fill=bblue}]
 		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memMC) (SymmSpMV-ABMC,\memABMC) (SymmSpMV-RACE,\memRACE)};

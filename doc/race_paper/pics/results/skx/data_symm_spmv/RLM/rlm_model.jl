@@ -28,7 +28,6 @@ function calc_alpha_from_spmv(id, bw)
 	return ((2*bw/perf)-(12+16/nnzr[id]))/8.0
 end
 
-
 function perf_symm_spmv(id, bw, opt)
 	nnzr_symm=(nnzr[id]-1)/2+1
 	alpha = 0
@@ -44,12 +43,25 @@ function perf_symm_spmv(id, bw, opt)
 	return (4/(8+4+24*alpha+(4)/nnzr_symm))*bw
 end
 
+alphas=zeros(length(nnzr))
+for i in 1:length(nnzr)
+	nnzr_symm=(nnzr[i]-1)/2+1
+	alpha=calc_alpha_from_spmv(i, bw)
+	if(alpha < (1/nnzr_symm))
+		info("For matrix ", spmv_names[i], " alpha = ", alpha, " but opt alpha =", 1/nnzr_symm)
+		alpha = 1/nnzr_symm #reset it
+	end
+	alphas[i]=alpha
+end
+
 id=Array{Int64,1}(length(nnzr))
 for i in 1:length(nnzr)
 	id[i] = i
 end
 
+
 symm_spmv_perf_alpha=perf_symm_spmv.(id,bw,false)
 symm_spmv_perf_opt=perf_symm_spmv.(id,bw,true)
 
-writedlm(string(filename),[1:length(names) names nnzr symm_spmv_perf_opt symm_spmv_perf_alpha],"|")
+writedlm(string(filename),[0:length(names)-1 names nnzr symm_spmv_perf_opt symm_spmv_perf_alpha],"|")
+writedlm(string("alpha.txt"),[0:length(names)-1 names nnzr alphas],",\t")
