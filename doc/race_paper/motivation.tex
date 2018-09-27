@@ -3,8 +3,23 @@
 % supplement. If no supplement is required, then this information can
 % be included directly in the main document.
 
-As pointed out in the previous section parallelization of \SymmSpmv and \KACZ kernels can be done on basis of a distance-2 coloring of the corresponding graph and the computational intensity, i.e., the performance, depends on the data access patterns of the kernels. As coloring schemes change data access patterns and thus may interact with the computational intensity we investigate this effect in more detail now. We apply  the basic multi-coloring approach as implemented in COLPACK {\GW Refrenz!!!} to \SymmSpmv and compare it with \SpMV which serves as our yardstick. In~\cref{fig:motivation} we present performance measurements and data transfer volumes for the Spin-26 matrix on a single socket ({\GW welchen Term wollen wir verwenden? processor? Chip?}) of the \IVB system. 
+As pointed out in the previous section parallelization of \SymmSpmv and \KACZ kernels can be done on basis of a distance-2 coloring of the corresponding graph and the computational intensity, i.e., the performance, depends on the data access patterns of the kernels. As coloring schemes change data access patterns and thus may interact with the computational intensity we investigate this effect in more detail now. We apply  the basic multi-coloring approach as implemented in COLPACK {\GW Refrenz!!!} to \SymmSpmv and compare it with \SpMV which serves as our yardstick. In~\cref{fig:motivation} we present performance measurements and data transfer volumes for the Spin-26 matrix on a single socket ({\GW welchen Term wollen wir verwenden? processor? Chip?}) of the \IVB system. For basic \SpMV we recover the well know-memory bandwidth saturation effect as we fill the chip (~\cref{fig:motivation_a}). Measuring the actual data volume using \LIKWID we find a value of $17.2$ Byte per non-zero matrix entries. This value corresponds to the denominator of $I_\mathrm{\SpMV}$ in~\cref{eq:SpMV_intensity} and we can calculate $\alpha=0.456$ . Along the discussion in~\cref{sect:SymmSpmv} using the load-only bandwidth of \IVB (see~\cref{tab:test_bed}) we find a maximum attainable performance for this matrix of $8.1$ \GF. While this value indicates a speed-up of approximately 1.5x compared to \SpMV, the \SymmSpmv implementation using multi-coloring (MC) only achieves a fraction of that and is more than three times slower than basic \SpMV. 
 
+
+
+  \begin{figure}[thbp]
+  	\centering
+  	\subfloat[Performance]{\label{fig:motivation_a}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_1}}
+  	\hspace{1em}
+  	\subfloat[Data Traffic]{\label{fig:motivation_b}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_3}}
+  	
+  %	\subfloat[False sharing]{\label{fig:motivation_c}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_2}}
+  %	\hspace{1em}
+  %	\subfloat[Barrier effect]{\label{fig:motivation_d}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_4}}
+  	\caption{Overall performance for different thread counts (a) and average data traffic per non-zero entry (b) for \SpMV with original matrix, \SpMV using MC and \SymmSpmv using MC on one socket of \IVB. Data traffic is shown for all cache levels and main memory. Spin-26 after RCM reordering has been used.}
+  	\label{fig:motivation}
+  \end{figure}
+ 
 {\GW Original Text - bitte auskommentieren
 Motivation for developing an alternative method stems from the ESSEX (Equipping Sparse Solvers for Exascale) project \cite{ESSEX}
  where we investigate into solving large eigen-value problems from quantum mechanics field. In this context having a robust iterative solver was inevitable, due to the poor condition number of the matrices that appear in this field. Kaczmarz (\KACZ) solver was found to be satisfactory but parallelizing this solver was deemed challenging because of the loop-carried dependencies in the kernel. Previous work on parallelizing the \KACZ kernel used \MCfull (\MC) \cite{feast_mc} but it was soon found that the kernels do not scale efficiently with this approach.
@@ -20,18 +35,6 @@ Motivation for developing an alternative method stems from the ESSEX (Equipping 
   %	\label{fig:motivation}
   %\end{figure}
  
-   \begin{figure}[thbp]
-  	\centering
-  	\subfloat[$\alpha$ effect]{\label{fig:motivation_a}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_1}}
-  	\hspace{1em}
-  	\subfloat[Data Traffic]{\label{fig:motivation_b}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_3}}
-  	
-  %	\subfloat[False sharing]{\label{fig:motivation_c}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_2}}
-  %	\hspace{1em}
-  %	\subfloat[Barrier effect]{\label{fig:motivation_d}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_4}}
-  	\caption{Effect of Multicoloring}
-  	\label{fig:motivation}
-  \end{figure}
   
 
  \Cref{fig:motivation_a} shows the performance of \SpMV kernel on original unpermuted matrix and matrix with \MC permutation. Here we see the performance of \SpMV on multicolored matrix is  four times  worse than that of  \SpMV on unpermuted matrix. One of the major reason for this drop is due to the increase in $\alpha$ factor seen in the intensity equation \cref{eq:SpMV_intensity}  Since the kernels like \SpMV  are mainly memory bound increase in $\alpha$ lowers intensity $I_\mathrm{\SpMV}$ leading to a drop of performance as predicted by \roofline model \cite{Williams_roofline}. This could easily be demonstrated by measuring the data traffic between different memory hierarchies.  We do this using the \LIKWID tool \cite{LIKWID}, and the measurements can be seen in \cref{fig:motivation_b}. One can see an increase in data-traffic from all the memory hierarchy compared to \SpMV on normal unpermuted matrix. This is basically caused by the bad data locality introduced by \MCfull permutation.

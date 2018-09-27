@@ -115,7 +115,7 @@ The \SpMV has no loop carried dependencies and parallelization of outer ($row$) 
 Following the discussion in~\cite{Moritz_sell} the computational intensity of the above kernel $I_\mathrm{\SpMV}$  is as follows:
 \begin{equation}
 \label{eq:SpMV_intensity}
-I_\mathrm{\SpMV} = \frac{2}{8+4+8*\alpha+\frac{20}{\NNZRmath}} \frac{Flop}{Byte} \\
+I_\mathrm{\SpMV} (\alpha)= \frac{2}{8+4+8*\alpha+\frac{20}{\NNZRmath}} \frac{Flop}{Byte} \\
 \end{equation}
 Here we assume that matrix data  ($A[], col[]$), left hand side vector ($b[]$) and row pointer information ($rowPtr[]$) are loaded once from main memory as these data structures are consecutively accessed. All quantities are calculated for the average costs of computing one non-zero element of the matrix. Thus, contributions which are independent of the inner (short) loop are rescaled by $\NNZRmath$ which is the average number of non-zeros per row (i.e. the average length of the inner loop).
 
@@ -144,6 +144,7 @@ In ideal case data traffic for this kernel should remain close to that of SpMV, 
 \end{comment}
 
 \subsubsection{\SymmSpmv}
+\label{sect:SymmSpmv}
 Symmetric Sparse Matrix Vector (\SymmSpmv) exploits the symmetry in the underlying matrix to reduce storage size for matrix data and reduce overall memory traffic by  operating on the upper (or lower) half of the matrix. Thus for every non-zero matrix entry we need to update two entries in the LHS vector ($b[]$) as shown in~\cref{alg:SymmSpMV}.
 \begin{algorithm}[H]
 	\caption{SymmSpMV Find $b$ : $b=Ax$, where $A$ is an upper triangular matrix} 
