@@ -13,6 +13,11 @@
 
 \definecolor{amber}{rgb}{1.0, 0.49, 0.0}
 \definecolor{carmine}{rgb}{0.59, 0.0, 0.09}
+
+\newenvironment{conditions}
+{\par\vspace{\abovedisplayskip}\noindent\begin{tabular}{>{$}l<{$} @{${}={}$} l}}
+	{\end{tabular}\par\vspace{\belowdisplayskip}}
+
 % Information that is shared between the article and the supplement
 % (title and author information, macros, packages, etc.) goes into
 % ex_shared.tex. If there is no supplement, this file can be included
@@ -47,6 +52,7 @@
 %</funding-group>
 
 \def\GW{\color{blue}}
+\def\CA{\color{red}}
 
 \newcommand{\RAC}{RAC \xspace}
 \newcommand{\RACfull}{Recursive Algebraic Coloring \xspace}
