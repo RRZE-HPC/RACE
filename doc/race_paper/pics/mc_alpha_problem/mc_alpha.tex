@@ -2,11 +2,31 @@
 \usepackage{tikz}
 
 \begin{document}
+
+\begin{minipage}{0.55\textwidth}
+	\centering
+	\def\rowperm{{0, 1, 2, 3, 4, 5, 6}}
+	%\def\colperm{{0, 1, 2, 3, 4, 5, 6}}
+	\def\colperm{{0, 1, 2, 3, 4, 5, 6}}
+	\scalebox{0.7}{\begin{tikzpicture}
+		\foreach \x in {0,1}
+		\fill[gray] (\colperm[\x]-1,6) rectangle (\colperm[\x],7);
+		\foreach \y in {0,1,2,3,4}  
+			\foreach \x in {0,1,2}
+				\fill[gray] (\colperm[\x]-1+\y,5-\y) rectangle (\colperm[\x]+\y,6-\y);   
+		\foreach \x in {0,1}
+			\fill[gray] (\colperm[5+\x]-1,0) rectangle (\colperm[5+\x],1); 	
+		\draw[step=1cm,black,very thin] (-1,-0) grid (6,7);
+		\end{tikzpicture}}
+	\hspace{0.3cm}
+	\scalebox{0.7}{\begin{tikzpicture}
+		\draw[step=1cm,black,very thin] (8,-0) grid (9,7);
+	\end{tikzpicture}}
+\end{minipage}
 \def\rowperm{{0, 1, 2, 3, 4, 5, 6}}
 %\def\colperm{{0, 1, 2, 3, 4, 5, 6}}
 \def\colperm{{0, 3, 5, 1, 4, 6, 2}}
-
-\begin{minipage}{0.75\textwidth}
+\begin{minipage}{0.55\textwidth}
 \centering
 \scalebox{0.7}{\begin{tikzpicture}
 	\foreach \x in {0,1}
@@ -28,7 +48,7 @@
 	
 	\draw[step=1cm,black,very thin] (-1,-0) grid (6,7);
 \end{tikzpicture}}
-\hspace{1cm}
+\hspace{0.3cm}
 \scalebox{0.7}{\begin{tikzpicture}
 	\foreach \x in {0,1,2,3,4,5,6}
 	\fill[red] (8,\x) rectangle (9,\x+1);  
@@ -42,7 +62,7 @@
 	\node at (8.5,6.5-\colperm[6]) {\Large{3}}; 
 \end{tikzpicture}}
 \end{minipage}
-\begin{minipage}{0.75\textwidth}
+\begin{minipage}{0.55\textwidth}
 	\centering
 	\scalebox{0.7}{\begin{tikzpicture}
 
@@ -59,7 +79,7 @@
 	\node at (\colperm[4]-0.5,2.5) {\Large{2}}; 
 	\node at (\colperm[5]-0.5,2.5) {\Large{2}}; 
 	\end{tikzpicture}}
-	\hspace{1cm}
+	\hspace{0.3cm}
 	\scalebox{0.7}{\begin{tikzpicture}
 		\foreach \x in {0,1,2,3,4,5}
 		\fill[green] (8,6-\colperm[\x]) rectangle (9,6-\colperm[\x]+1);  
@@ -72,7 +92,7 @@
 		\node at (8.5,6.5-\colperm[5]) {\Large{2}}; 
 		\end{tikzpicture}}
 \end{minipage}
-\begin{minipage}{0.75\textwidth}
+\begin{minipage}{0.55\textwidth}
 	\centering
 	\scalebox{0.7}{\begin{tikzpicture}	
 		\foreach \x in {0,1,2}
@@ -88,7 +108,7 @@
 		\node at (\colperm[5]-0.5,0.5) {\Large{2}}; 
 		\node at (\colperm[6]-0.5,0.5) {\Large{2}}; 
 		\end{tikzpicture}}
-	\hspace{1cm}
+	\hspace{0.3cm}
 	\scalebox{0.7}{\begin{tikzpicture}
 		\foreach \x in {0,1,2,3,4,5}
 		\fill[blue] (8,\x) rectangle (9,\x+1);  
