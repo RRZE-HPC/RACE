@@ -9,16 +9,16 @@ As pointed out in the previous section parallelization of \SymmSpmv and \KACZ ke
 
   \begin{figure}[thbp]
   	\centering
-  	\subfloat[SpMV]{\label{fig:motivation_spmv}\includegraphics[width=0.26\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_spmv}}
-  	\hspace{1em}
-    \subfloat[SymmSpMV]{\label{fig:motivation_symm_spmv}\includegraphics[width=0.26\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_symm_spmv}}
+ % 	\subfloat[SpMV]{\label{fig:motivation_spmv}\includegraphics[width=0.26\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_spmv}}
+  %	\hspace{1em}
+    \subfloat[SymmSpMV]{\label{fig:motivation_symm_spmv}\includegraphics[width=0.38\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_symm_spmv}}
     \hspace{1em}
   	\subfloat[Data Traffic]{\label{fig:motivation_data}\includegraphics[width=0.4\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_data}}
   	
   %	\subfloat[False sharing]{\label{fig:motivation_c}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_2}}
   %	\hspace{1em}
   %	\subfloat[Barrier effect]{\label{fig:motivation_d}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_4}}
-  	\caption{\Cref{fig:motivation_spmv} Overall scaling performance of \SpMV with different permutations, \cref{fig:motivation_symm_spmv} performance of \SymmSpmv with \MC and \ABMC compared to \SpMV performance, \cref{fig:motivation_data} average data traffic per non-zero entry as measured with \LIKWID for all cache levels and main memory. Note that all the measurements were done on \IVB socket at 2.2GHz. For all the methods matrix was pre-permuted with \RCM }
+  	\caption{\Cref{fig:motivation_symm_spmv} performance of \SymmSpmv with \MC and \ABMC compared to \SpMV performance, \cref{fig:motivation_data} average data traffic per non-zero entry as measured with \LIKWID for all cache levels and main memory. Note that all the measurements were done on \IVB socket at 2.2GHz. For all the methods matrix was pre-permuted with \RCM }
   	\label{fig:motivation}
   \end{figure}
  

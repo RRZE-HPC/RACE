@@ -26,7 +26,7 @@
 	
 		\begin{tikzpicture}
 		\begin{axis}[
-		width  = 14cm,
+		width  = 13cm,
 		height = 11cm,
 		major x tick style = transparent,
 		minor ytick={1, 5, 10, 15, 20, 25, 30 ,35,40},
@@ -36,12 +36,12 @@
 		ymajorgrids = true,
 		grid style={dashed, gray!40},
 		ylabel = {\Large{Bytes/NNZ}},
-		symbolic x coords={SpMV, SpMV-MC, SpMV-ABMC, SymmSpMV-MC, SymmSpMV-ABMC},
-		x tick label style={rotate=35,font={\arge}},
+		symbolic x coords={SpMV, SymmSpMV-MC, SymmSpMV-ABMC},
+		x tick label style={rotate=0,font={\large}},
 		y tick label style={font={\Large}},
 		xtick = data,
 		scaled y ticks = false,
-		enlarge x limits=0.12,
+		enlarge x limits=0.25,
 		ymin=0,% ymax=42,
 		legend cell align=left,
 		legend style={
@@ -67,7 +67,7 @@
 		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 		
 		\addplot[pattern=horizontal lines]%style={ppurple,fill=ppurple}]
-		coordinates {(SpMV,\memSPMV) (SpMV-MC,\memSPMVMC) (SpMV-ABMC,\memSPMVABMC) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC)};
+		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC)};
 
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMV
 		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)} %change to SpMV
@@ -81,7 +81,7 @@
 		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 
 		\addplot[fill=gray!180]%style={ppurple,fill=ppurple}]
-		coordinates {(SpMV,\memSPMV) (SpMV-MC,\memSPMVMC) (SpMV-ABMC,\memSPMVABMC) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC)};
+		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC)};
 
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMV
 		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)} %change to SpMV
@@ -95,7 +95,7 @@
 		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1.024*1.024/(\NNZ*1e-7)}
 		
 		\addplot[pattern=vertical lines]%style={ppurple,fill=ppurple}]
-		coordinates {(SpMV,\memSPMV) (SpMV-MC,\memSPMVMC) (SpMV-ABMC,\memSPMVABMC) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC)};
+		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC)};
 	
 	
 		\pgfkeys{/pgf/fpu=false}
