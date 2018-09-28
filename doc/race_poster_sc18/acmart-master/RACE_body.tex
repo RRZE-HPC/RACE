@@ -87,7 +87,9 @@ executes in parallel as a callback, using the thread pool.
 \section{Performance}
 
 The test setup for the performance measurements is available in the
-artifacts description. We show the performance of \SymmSpmv % and \KACZ
+artifacts description. Since in normal applications pre-processing is done
+only once during matrix creation phase we compare only pure processing time.
+We show the performance of \SymmSpmv % and \KACZ
 for a range of matrices on Intel Ivy Bridge EP and Skylake SP,
 comparing \RACE against \ABMC, \MC, and \MKL implementations. \RACE is
 faster than the alternatives (by up to 2.5$\times$) for almost all
