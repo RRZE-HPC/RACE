@@ -122,6 +122,7 @@ for file in $perf_files ; do
 		fi
 	fi
 
+	path=$(echo $legends | cut -d " " -f  $col_counter)
 	if [ $type == "SCATTER" ]; then
 		let xshift=($col_counter-1)*30
 		curr_mark=$(echo $mark | cut -d " " -f  $col_counter)
@@ -130,7 +131,7 @@ for file in $perf_files ; do
 			curr_mark=
 		fi
 		echo $curr_mark
-		echo "\\\addplot[xshift=$xshift, mark="$curr_mark*", only marks, mark size=10pt, fill=$curr_color,draw=$curr_color $y_scale_code] plot coordinates{$coo};">>temp_coo.txt
+		echo "\\\addplot[name path=$path, xshift=$xshift, mark="$curr_mark*", only marks, mark size=10pt, fill=$curr_color,draw=$curr_color $y_scale_code] plot coordinates{$coo};">>temp_coo.txt
 	elif [ $type == "LINE" ]; then
 		let xshift=($col_counter-1)*30
 		curr_mark=$(echo $mark | cut -d " " -f  $col_counter)
@@ -139,10 +140,10 @@ for file in $perf_files ; do
 			curr_mark=
 		fi
 		echo $curr_mark
-		echo "\\\addplot[mark="$curr_mark*", mark size=10pt, mark options={$curr_color}, draw=$curr_color $y_scale_code] plot coordinates{$coo};">>temp_coo.txt
+		echo "\\\addplot[name path=$path, mark="$curr_mark*", mark size=10pt, mark options={$curr_color}, draw=$curr_color $y_scale_code] plot coordinates{$coo};">>temp_coo.txt
 
 	else
-		echo "\\\addplot[ybar,bar width=0.7cm,fill=$curr_color,draw=$curr_color $y_scale_code] plot coordinates{$coo};">>temp_coo.txt
+		echo "\\\addplot[name path=$path,ybar,bar width=0.7cm,fill=$curr_color,draw=$curr_color $y_scale_code] plot coordinates{$coo};">>temp_coo.txt
 	fi
 
 	let col_counter=col_counter+1

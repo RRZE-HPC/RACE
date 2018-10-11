@@ -16,6 +16,7 @@ yscale=`cat $1 | grep Y_SCALE | awk '{print $3}'`
 yscale_file=`cat $1 | grep Y_SCALE_FILE | awk '{print $3}'`
 yscale_col=`cat $1 | grep Y_SCALE_COL | awk '{print $3}'`
 yscale_op=`cat $1 | grep Y_SCALE_OP | awk '{print $3}'`
+path=`cat $1 | grep PATH | awk '{ for(i=3;i<=NF;i++) {print $i} }'`
 
 mark="default triangle square diamond otimes"
 
@@ -124,6 +125,12 @@ for file in $perf_files ; do
 		fi
 	fi
 
+	name_path=""
+	if [[ ! -z "$path" ]]; then
+		curr_path=$(echo $legends | cut -d " " -f  $col_counter)
+		name_path="name path="$curr_path","
+	fi
+
 	if [ $type == "SCATTER" ]; then
 		let xshift=($col_counter-1)*30
 		curr_mark=$(echo $mark | cut -d " " -f  $col_counter)
@@ -132,7 +139,7 @@ for file in $perf_files ; do
 			curr_mark=
 		fi
 		echo $curr_mark
-		echo "\\\addplot[xshift=$xshift, mark="$curr_mark*", only marks, mark size=10pt, fill=$curr_color,draw=$curr_color $y_scale_code] plot coordinates{$coo};">>temp_coo.txt
+		echo "\\\addplot[$name_path xshift=$xshift, mark="$curr_mark*", only marks, mark size=10pt, fill=$curr_color,draw=$curr_color $y_scale_code] plot coordinates{$coo};">>temp_coo.txt
 	elif [ $type == "LINE" ]; then
 		let xshift=($col_counter-1)*30
 		curr_mark=$(echo $mark | cut -d " " -f  $col_counter)
@@ -141,14 +148,21 @@ for file in $perf_files ; do
 			curr_mark=
 		fi
 		echo $curr_mark
-		echo "\\\addplot[mark="$curr_mark*", mark size=10pt, mark options={$curr_color}, draw=$curr_color $y_scale_code] plot coordinates{$coo};">>temp_coo.txt
+		echo "\\\addplot[$name_path mark="$curr_mark*", mark size=10pt, mark options={$curr_color}, draw=$curr_color $y_scale_code] plot coordinates{$coo};">>temp_coo.txt
 
 	else
-		echo "\\\addplot[ybar,bar width=0.7cm,fill=$curr_color,draw=$curr_color $y_scale_code] plot coordinates{$coo};">>temp_coo.txt
+		echo "\\\addplot[$name_path ybar,bar width=0.7cm,fill=$curr_color,draw=$curr_color $y_scale_code] plot coordinates{$coo};">>temp_coo.txt
 	fi
 
 	let col_counter=col_counter+1
 done
+
+	if [[ ! -z "$path" ]]; then
+		path1=$(echo $path | cut -d " " -f  1)
+		path2=$(echo $path | cut -d " " -f  2)
+		echo "\\\addplot[fill=lightgray,opacity=0.5]">>temp_coo.txt
+		echo  "fill between[of= $path1 and $path2];">>temp_coo.txt
+	fi
 
 	coo=$(cat temp_coo.txt)
 

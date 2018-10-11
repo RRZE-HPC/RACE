@@ -233,6 +233,6 @@ I_\mathrm{KACZ} (\alpha)=  \frac{4}{8+4+16*\alpha+\frac{12}{nnzr}} \\%= 2*I_\mat
 \end{equation}
 Having two short inner loops does not impact the overall memory traffic (and also the computational intensity) as the data can be held in inner cache levels between the two inner loops. We can also ignore the impact of the divide operation as it is only done once per row and its cost is negligible for main memory bandwidth or latency bound scenarios.  
 
-Most iterative algorithms use a symmetric operator, so called symmetric Kaczmarz (\SYMMKACZ), where the forward sweep shown in \cref{alg:KACZ} is followed by a backward sweep, where the outermost loop is traversed in reverse order  \ie {\tt row=nrows:-1:1} in~\cref{alg:KACZ}. The intensity of \SYMMKACZ remains same as of \KACZ. 
+Most iterative algorithms use a symmetric operator, so called symmetric Kaczmarz (\SYMMKACZ), where the forward sweep shown in \cref{alg:KACZ} is followed by a backward sweep, where the outermost loop is traversed in reverse order  \ie { \tt row=nrows:-1:1} in~\cref{alg:KACZ}. The intensity of \SYMMKACZ remains same as of \KACZ. 
 
 %Symmetric variant of \KACZ is denoted by \SYMMKACZ, and similar to \SYMMGS this requires forward sweep followed by a backward sweep. 

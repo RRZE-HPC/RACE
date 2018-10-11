@@ -15,7 +15,8 @@ ALPHA_DELIM="|"
 
 OUT_FILE=../RLM/result.txt
 
-bw=47.25
+bw_copy=40
+bw_load=47
 
 #prepare nnz table
 col1=$(echo $NNZ_COL | cut -d" " -f1) 
@@ -49,9 +50,9 @@ sort -k1 -t"," tmp3.txt > sorted_measured_alpha.txt
 
 rm tmp1.txt tmp2.txt tmp3.txt
 
-echo "Id | Matrix | NNZR | SymmSpMV measured alpha | SymmSpMV opt alpha | SymmSpMV SpMV alpha " > $OUT_FILE
-printf "Id,\t Matrix,\t\t\t NNZR,\t Measured alpha,\t Alpha from SpMV\t Deviation(%%)\n" > alphas.txt
-julia rlm_model.jl $bw sorted_nnz.txt sorted_spmv.txt sorted_measured_alpha.txt tmp.txt
+echo "Id | Matrix | NNZR | SymmSpMV measured alpha copy | SymmSpMV opt alpha copy | SymmSpMV SpMV alpha copy | SymmSpMV measured alpha ld | SymmSpMV opt alpha ld | SymmSpMV SpMV alpha ld" > $OUT_FILE
+printf "Id,\t Matrix,\t\t\t NNZR,\t Measured alpha\n" > alphas.txt
+julia rlm_model.jl $bw_copy $bw_load sorted_nnz.txt sorted_spmv.txt sorted_measured_alpha.txt tmp.txt
 cat tmp.txt >> $OUT_FILE
 cat alpha.txt >> alphas.txt
 rm sorted_nnz.txt sorted_spmv.txt tmp.txt alpha.txt

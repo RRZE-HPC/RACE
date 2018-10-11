@@ -3,16 +3,17 @@
 using StatsBase
 const prgm = basename(Base.source_path())
 
-if length(ARGS) < 5
-   println("Usage: ", prgm, " bw table_nnz table_spmv table_measured_alpha filename")
+if length(ARGS) < 6
+   println("Usage: ", prgm, " bw_copy bw_load table_nnz table_spmv table_measured_alpha filename")
    exit(1)
 end
 
-bw=parse(Float64,ARGS[1])
-table_nnz=ARGS[2]
-table_spmv=ARGS[3]
-table_measured_alpha=ARGS[4]
-filename=ARGS[5]
+bw_copy=parse(Float64,ARGS[1])
+bw_load=parse(Float64,ARGS[2])
+table_nnz=ARGS[3]
+table_spmv=ARGS[4]
+table_measured_alpha=ARGS[5]
+filename=ARGS[6]
 
 nnz=readdlm(table_nnz)
 
@@ -65,16 +66,16 @@ function perf_symm_spmv_from_spmv_perf(id, bw, opt)
 	return (4/(8+4+24*alpha+(4)/nnzr_symm))*bw
 end
 
-alphas=zeros(length(nnzr))
-for i in 1:length(nnzr)
-	nnzr_symm=(nnzr[i]-1)/2+1
-	alpha=calc_alpha_from_spmv(i, bw)
-	if(alpha < (1/nnzr_symm))
-		info("For matrix ", spmv_names[i], " alpha = ", alpha, " but opt alpha =", 1/nnzr_symm)
-		alpha = 1/nnzr_symm #reset it
-	end
-	alphas[i]=alpha
-end
+#alphas=zeros(length(nnzr))
+#for i in 1:length(nnzr)
+#	nnzr_symm=(nnzr[i]-1)/2+1
+#	alpha=calc_alpha_from_spmv(i, bw)
+#	if(alpha < (1/nnzr_symm))
+#		info("For matrix ", spmv_names[i], " alpha = ", alpha, " but opt alpha =", 1/nnzr_symm)
+#		alpha = 1/nnzr_symm #reset it
+#	end
+#	alphas[i]=alpha
+#end
 
 measured_alphas=zeros(length(nnzr))
 for i in 1:length(nnzr)
@@ -93,11 +94,15 @@ for i in 1:length(nnzr)
 	id[i] = i
 end
 
-symm_spmv_perf_alpha=perf_symm_spmv_from_spmv_perf.(id,bw,false)
-symm_spmv_perf_opt=perf_symm_spmv_from_spmv_perf.(id,bw,true)
-symm_spmv_measured_alpha=perf_symm_spmv_from_measured_alpha.(id,bw)
+symm_spmv_perf_alpha_copy=perf_symm_spmv_from_spmv_perf.(id,bw_copy,false)
+symm_spmv_perf_opt_copy=perf_symm_spmv_from_spmv_perf.(id,bw_copy,true)
+symm_spmv_measured_alpha_copy=perf_symm_spmv_from_measured_alpha.(id,bw_copy)
 
-deviation=100*(alphas-measured_alphas)./measured_alphas
+symm_spmv_perf_alpha_load=perf_symm_spmv_from_spmv_perf.(id,bw_load,false)
+symm_spmv_perf_opt_load=perf_symm_spmv_from_spmv_perf.(id,bw_load,true)
+symm_spmv_measured_alpha_load=perf_symm_spmv_from_measured_alpha.(id,bw_load)
 
-writedlm(string(filename),[0:length(names)-1 names nnzr symm_spmv_measured_alpha symm_spmv_perf_opt symm_spmv_perf_alpha],"|")
-writedlm(string("alpha.txt"),[0:length(names)-1 names nnzr measured_alphas alphas deviation],",\t")
+#deviation=100*(alphas-measured_alphas)./measured_alphas
+
+writedlm(string(filename),[0:length(names)-1 names nnzr symm_spmv_measured_alpha_copy symm_spmv_perf_opt_copy symm_spmv_perf_alpha_copy symm_spmv_measured_alpha_load symm_spmv_perf_opt_load symm_spmv_perf_alpha_load],"|")
+writedlm(string("alpha.txt"),[0:length(names)-1 names nnzr measured_alphas],",\t")
