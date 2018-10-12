@@ -7,6 +7,7 @@ curr_folder=$PWD
 
 for arch in ivy skx; do
 	for kernel in symm_kacz symm_spmv; do 
+	#for kernel in symm_spmv_combined; do 
 		echo "ARCH = $arch"
 		cd $arch/data_"$kernel"/plot_generator/
 
