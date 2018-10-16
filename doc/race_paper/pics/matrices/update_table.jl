@@ -22,9 +22,11 @@ for i in 1:length(mtx_name)
 			println(curr_mtx_name)
 			row = Any[]
 			push!(row, string("{",i,"}"))
-			for l in 1:length(reqd_field)
+			k=reqd_field[1]
+			push!(row, string("& {",verbose[j,k],"}"))
+			for l in 2:length(reqd_field)
 				k=reqd_field[l]
-				push!(row, string("& {",verbose[j,k],"}"))
+				push!(row, string("& ",verbose[j,k],""))
 			end
 			push!(row, string("& {} &"))
 			push!(row,string("\\\\"))

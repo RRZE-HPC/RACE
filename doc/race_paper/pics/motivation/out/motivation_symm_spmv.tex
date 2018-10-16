@@ -16,6 +16,7 @@
 	\pgfplotstableread[col sep=comma] {\matrixFileMKL/spmv_rcm.txt} \SPMV
 	\pgfplotstableread[col sep=comma] {\matrixFile/MC_RCM/\matrix/symm_spmv.txt} \SYMMSPMVMC
 	\pgfplotstableread[col sep=comma] {\matrixFile/ABMC_RCM/\matrix/symm_spmv.txt} \SYMMSPMVABMC
+	\pgfplotstableread[col sep=comma] {\matrixFile/RACE/\matrix/symm_spmv.txt} \SYMMSPMVRACE
 	\pgfplotstableread[col sep=space] {\matrixFileMKL/nnz} \NNZfile
 		
 	\pgfplotstablegetelem{0}{nnz}\of\NNZfile
@@ -51,6 +52,9 @@
 
    \addplot+[line width=2, color=cyan, mark options={cyan}] table[x =THREAD,y =PERF (GFlop/s),col sep=comma] {\SYMMSPMVABMC}; \label{plot_three}
    \addlegendentry{SymmSpMV ABMC}
+   
+   \addplot+[line width=2, color=orange, mark options={orange}] table[x =THREAD,y =PERF (GFlop/s),col sep=comma] {\SYMMSPMVRACE}; \label{plot_four}
+   \addlegendentry{SymmSpMV RACE}
    
    
  \end{axis}

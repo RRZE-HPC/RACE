@@ -1,6 +1,6 @@
 \subsection{Test bed}
 {\GW ToDo: EPYC raus;}
-The tests are conducted on two different multi-core architectures. One being Intel's \IVB and the other \SKX architecture, the choice of these architectures enable study of the method on two extreme generation of Intel's processor currently being used on \HPC systems. All the tests are conducted on a single socket of these architectures. 
+The tests are conducted on two different multi-core architectures. One being Intel's \IVB and the other \SKX architecture, the choice of these architectures enable study of the method on two extreme generation of Intel's processor currently being used on \HPC systems. All the tests are conducted on a single socket (chip) of these architectures using all its available cores. 
 
 \begin{itemize}
 	\item \Intel \IVB architecture belongs to class of classic Intel's cache-based architecture, which has three inclusive cache  hierarchies. All the cache are scalable and the \LLC (L3) being shared among all the cores on one socket. The processor is capable of delivering one full four wide \SIMD add, multiply and load in one cycle. 
@@ -10,7 +10,7 @@ The tests are conducted on two different multi-core architectures. One being Int
 	\end{comment}
 	
 \end{itemize}
-The details of architectures along with the measured bandwidths are given in \cref{tab:test_bed}. {\GW The bandwidths are measured using \likwidBench suite.}
+The details of architectures along with the measured bandwidths are given in \cref{tab:test_bed}. The bandwidths are measured using \likwidBench suite.
 
 \begin{comment}
 \begin{table}[tbhp]
@@ -74,28 +74,29 @@ Following external libraries are used in this paper. The application of these li
 	\item \LIKWID \cite{LIKWID} \text{\tt{likwid-perfctr}} is used for measuring hardware performance counters and \text{\tt{likwid-bench}}  for measuring bandwidth.
 	\item \COLPACK \cite{COLPACK} is used for pre-processing matrix by \MCfull.
 	\item \SPMP \cite{SpMP} is used to perform \RCMfull (\RCM).
-	\item \METIS\cite{METIS} is used for graph partitioning.
-	\item All the code used was compiled with Intel compiler version 17 update 3 and the following compiler flags were set {\tt -fno-alias -xHost -O3} for Ivy-Bridge system and {\tt -fno-alias -xCORE-AVX512 -O3} for Skylake system {\GW Christie please check and specify exact Compiler version}
-	\item \MKL \cite{MKL} is used for performing some reference sparse matrix computations.
+	\item \METIS\cite{METIS} is used for graph partitioning in \ABMC approach.
+	\item All the code used was compiled with Intel compiler version 17.0.3 and the following compiler flags were set {\tt -fno-alias -xHost -O3} for Ivy-Bridge system and {\tt -fno-alias -xCORE-AVX512 -O3} for Skylake system.
+	\item \MKL \cite{MKL} version 17 is used for performing some reference sparse matrix computations.
 \end{itemize}
 
 \subsection{Benchmark Matrices}
-All the test matrices are taken from SuiteSparse Matrix Collection (former University of Florida Sparse Matrix Collection) \cite{UOF} and quantum mechanics field (see \ESSEX project \cite{ESSEX} for more details). The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by combining the test matrices from two papers \cite{RSB,park_ls}. This enables easy comparison of results. Matrices from \ESSEX project are some of the matrices that are of interest in the iterative FEAST eigen value solver that internally uses Kaczmarz solver.  Only matrices having undirected graphs are considered due to scope of the paper as mentioned in \cref{Sec:contribution}. Matrices along with some of their parameters are given in \cref{table:bench_matrices}.  Matrices that have been marked with an * symbol indicate they are corner cases and will be discussed in detail.
+All the test matrices are taken from SuiteSparse Matrix Collection (former University of Florida Sparse Matrix Collection) \cite{UOF} and quantum physics field (see \ESSEX project \cite{ESSEX} for more details). The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by combining the test matrices from two papers \cite{RSB,park_ls}. This enables easy comparison of results. Matrices from \ESSEX project are some of the matrices that are of interest in the iterative FEAST eigen value solver that internally uses Kaczmarz solver, these matrices can be generated using \SCAMACTfull open source library (\SCAMACT).{\CA but Graphene not} %TODO cite SCAMACT
+  Only matrices having undirected graphs are considered due to scope of the paper as mentioned in \cref{Sec:contribution}. Matrices along with some of their parameters are given in \cref{table:bench_matrices}.  Matrices that have been marked with an * symbol indicate they are corner cases and will be discussed in detail.
 
 \begin{table}[ht]
 	\footnotesize
-	\caption{Benchmark matrices}\label{tab:test_mtx}
+	\caption{Details of benchmark matrices. Matrices with an * symbol in the column `C' indicates that they are chosen corner cases. Column `S' shows the source of the matrix, matrix without any label indicates they come from SuiteSparse Matrix Collection and one marked with * indicate they come from \SCAMACT matrix collection. {\CA maybe it's better to mention ESSEX since Graphene cannot be generated with SCAMACT} }\label{tab:test_mtx}
 	\label{table:bench_matrices}
 	\begin{center}
 		\input{pics/matrices/table.tex}
 	\end{center}
-
 \end{table}
 
 \subsection{Kernels} \label{subsec:test_kernels}
-We evaluate our methods by parallelizing two simple but important kernels showing distance-2 dependencies. In the context of parallelization of symmetric sparse matrix vector (\SymmSpmv) the distance-2 coloring procedure prevents from concurrent update of the same vector entries by different threads resulting in the same result as the serial code ("exact kernel").  {\GW To be done As an example for an iterative solver with distance2 dependency we have chosen the \KACZ ...}
+We evaluate our methods by parallelizing two simple but important kernels showing distance-2 dependencies. In the context of parallelization of symmetric sparse matrix vector (\SymmSpmv) the distance-2 coloring procedure prevents from concurrent update of the same vector entries by different threads resulting in the same result as the serial code (``exact kernel''). As an example of iterative solver we have chosen symmetric Kaczmarz (\SYMMKACZ). Here in addition to writes we also read from the same vector having dependency, which leads to change in convergence depending on the permutation (``inexact kernel'').
+% {\GW To be done As an example for an iterative solver with distance2 dependency we have chosen the \KACZ ...}
 
-Both algorithms are closely related by structure and computational intensity to the widely used \SpMV kernel applicable to general matrices. Thus, we start with presenting the \SpMV kernel and its known computational intensity. We extend this discussion towards the \SymmSpmv and \KACZ and show how to derive upper realistic performance bounds. We chose the widely used \CRS matrix storage format for the serial implementation of the kernel and assume square matrices.
+Both algorithms are closely related by structure and computational intensity to the widely used \SpMV kernel applicable to general matrices. Thus, we start with presenting the \SpMV kernel and its known computational intensity. We extend this discussion towards the \SymmSpmv and \SYMMKACZ and show how to derive upper realistic performance bounds. We chose the widely used \CRS matrix storage format for the serial implementation of the kernel and assume square matrices.
 
 \subsubsection{\SpMV}
 The \SpMV has no loop carried dependencies and parallelization of outer ($row$) loop using, e.g. OpenMP, is straightforward. 
@@ -165,10 +166,10 @@ In line with the discussion above the computational intensity of \SymmSpmv can b
 \label{eq:SymmSpMV_intensity}
 I_\mathrm{\SymmSpmv} (\alpha) &= \frac{4}{8+4+24*\alpha+\frac{4}{\NNZRmathSYMM}} \frac{Flop}{Byte}\\
 \label{eq:NNZR_symm}
-\text{\CA where,  } {\CA \NNZRmathSYMM} &= {\CA(\NNZRmath-1)/2 + 1}
+\text{ where,  } \NNZRmathSYMM &= (\NNZRmath-1)/2 + 1
 \end{align}
 
-For a given non-zero matrix element ($8 Byte + 4 Byte$) of the triangular matrix twice the amount of Flops ($4 Flops$)  are performed. In addition we have indirect access to the LHS vector (read and write) which increases the $alpha$ {\CA (Do we need to write here with $alpha$ or $\alpha$)} contribution by $3\times$ {\CA (I have changed all $x$ to $\times$ is it OK?) }. The only term left scaling with \NNZRSYMM (number of non-zeros per row in upper triangular part of the matrix) is the consecutively accessed row pointer. Please note, the $alpha$ value for \SpMV and \SymmSpmv may be different (even for the same matrix and the same compute device) as in the latter case the two vectors are accessed irregularly and compete for the same amount of cache. Thus, we can assume that the $\alpha$ value measured for \SpMV ($\alpha_\mathrm{\SpMV}$) can be considered as a lower bound for \SymmSpmv. As performance is the product of computational intensity and the main memory bandwidth ($b_S$; see~\cref{tab:test_bed} for typical values) this approach provides an upper performance bound for \SymmSpmv for a given matrix structure:
+For a given non-zero matrix element ($8 Byte + 4 Byte$) of the triangular matrix twice the amount of Flops ($4 Flops$)  are performed. In addition we have indirect access to the LHS vector (read and write) which increases the $\alpha$ contribution by $3\times$. The only term left scaling with \NNZRSYMM (number of non-zeros per row in upper triangular part of the matrix) is the consecutively accessed row pointer. Please note, the $alpha$ value for \SpMV and \SymmSpmv may be different (even for the same matrix and the same compute device) as in the latter case the two vectors are accessed irregularly and compete for the same amount of cache. Thus, we can assume that the $\alpha$ value measured for \SpMV ($\alpha_\mathrm{\SpMV}$) can be considered as a lower bound for \SymmSpmv. As performance is the product of computational intensity and the main memory bandwidth ($b_S$; see~\cref{tab:test_bed} for typical values) this approach provides an upper performance bound for \SymmSpmv for a given matrix structure:
  \begin{align}
 \label{eq:SymmSpMV_performance}
 P^{max}_\mathrm{\SymmSpmv}  &= I_\mathrm{\SymmSpmv} (\alpha_\mathrm{\SpMV})  \times b_S
