@@ -81,11 +81,10 @@ Following external libraries are used in this paper. The application of these li
 
 \subsection{Benchmark Matrices}
 All the test matrices are taken from SuiteSparse Matrix Collection (former University of Florida Sparse Matrix Collection) \cite{UOF} and quantum physics field (see \ESSEX project \cite{ESSEX} for more details). The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by combining the test matrices from two papers \cite{RSB,park_ls}. This enables easy comparison of results. Matrices from \ESSEX project are some of the matrices that are of interest in the iterative FEAST eigen value solver that internally uses Kaczmarz solver, these matrices can be generated using \SCAMACTfull open source library (\SCAMACT).{\CA but Graphene not} %TODO cite SCAMACT
-  Only matrices having undirected graphs are considered due to scope of the paper as mentioned in \cref{Sec:contribution}. Matrices along with some of their parameters are given in \cref{table:bench_matrices}.  Matrices that have been marked with an * symbol indicate they are corner cases and will be discussed in detail.
-
+  Only matrices having undirected graphs are considered due to scope of the paper as mentioned in \cref{Sec:contribution}. Matrices along with some of their parameters are given in \cref{table:bench_matrices}. 
 \begin{table}[ht]
 	\footnotesize
-	\caption{Details of benchmark matrices. Matrices with an * symbol in the column `C' indicates that they are chosen corner cases. Column `S' shows the source of the matrix, matrix without any label indicates they come from SuiteSparse Matrix Collection and one marked with * indicate they come from \SCAMACT matrix collection. {\CA maybe it's better to mention ESSEX since Graphene cannot be generated with SCAMACT} }\label{tab:test_mtx}
+	\caption{Details of benchmark matrices. Matrices with an * symbol in the column `C' indicates that they are chosen corner cases and will be discussed in detail. Column `S' shows the source of the matrix, matrix without any label indicates they come from SuiteSparse Matrix Collection and one marked with * indicate they come from \SCAMACT matrix collection. {\CA maybe it's better to mention ESSEX since Graphene cannot be generated with SCAMACT} }\label{tab:test_mtx}
 	\label{table:bench_matrices}
 	\begin{center}
 		\input{pics/matrices/table.tex}

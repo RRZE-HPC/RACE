@@ -6,18 +6,18 @@
 \usetikzlibrary{patterns}
 \usepackage{pgfplotstable}
 
-\def\matrixFile{../data/motivation}
+\def\matrixFile{../data}
 \def\matrix{Spin-26}
-\def\matrixFileNowait{../data/motivation_nowait/Spin-26}
-\def\matrixFileMKL{../data/motivation_mkl/Spin-26}
+%\def\matrixFileNowait{../data/motivation_nowait/Spin-26}
+%\def\matrixFileMKL{../data/motivation_mkl/Spin-26}
 \def\matrixName{Spin-26 }
 
 \begin{document}
-	\pgfplotstableread[col sep=comma] {\matrixFileMKL/spmv_rcm.txt} \SPMV
+	\pgfplotstableread[col sep=comma] {\matrixFile/MKL/\matrix/spmv.txt} \SPMV
 	\pgfplotstableread[col sep=comma] {\matrixFile/MC_RCM/\matrix/symm_spmv.txt} \SYMMSPMVMC
 	\pgfplotstableread[col sep=comma] {\matrixFile/ABMC_RCM/\matrix/symm_spmv.txt} \SYMMSPMVABMC
 	\pgfplotstableread[col sep=comma] {\matrixFile/RACE/\matrix/symm_spmv.txt} \SYMMSPMVRACE
-	\pgfplotstableread[col sep=space] {\matrixFileMKL/nnz} \NNZfile
+	\pgfplotstableread[col sep=space] {\matrixFile/nnz} \NNZfile
 		
 	\pgfplotstablegetelem{0}{nnz}\of\NNZfile
 	\pgfmathsetmacro{\NNZ}{\pgfplotsretval}

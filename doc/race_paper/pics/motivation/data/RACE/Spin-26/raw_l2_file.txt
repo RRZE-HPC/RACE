@@ -1,0 +1,1880 @@
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz
+CPU type:	Intel Xeon IvyBridge EN/EP/EX processor
+CPU clock:	2.20 GHz
+--------------------------------------------------------------------------------
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 3, ], Parent: -1, nthreads: 1, idealNThreads:1, stage:0, subBLocks:1, effRow: 10400600, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 5200300, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 5200300, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[5200300, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 5200300, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+coloring efficiency = 1.000000
+max. stage depth = 1
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 0.975465 GFlop/s
+SpMTV: 0.957499 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 1.318248 GFlop/s
+--------------------------------------------------------------------------------
+STRUCT,Info,3
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,
+CPU clock:,2.199980251 GHz,
+TABLE,Region MKL_SpMV,Group 1 Raw,L2,6
+Region Info,Core 0,
+RDTSC Runtime [s],1.491995,
+call count,1,
+Event,Counter,Core 0
+INSTR_RETIRED_ANY,FIXC0,6448383000
+CPU_CLK_UNHALTED_CORE,FIXC1,3268237000
+CPU_CLK_UNHALTED_REF,FIXC2,3268237000
+L1D_REPLACEMENT,PMC0,200836300
+L1D_M_EVICT,PMC1,6610077
+ICACHE_MISSES,PMC2,2581
+TABLE,Region MKL_SpMV,Group 1 Metric,L2,10
+Metric,Core 0,
+Runtime (RDTSC) [s],1.4920,
+Runtime unhalted [s],1.4856,
+Clock [MHz],2199.9803,
+CPI,0.5068,
+L2D load bandwidth [MBytes/s],8614.9908,
+L2D load data volume [GBytes],12.8535,
+L2D evict bandwidth [MBytes/s],283.5431,
+L2D evict data volume [GBytes],0.4230,
+L2 bandwidth [MBytes/s],8898.6446,
+L2 data volume [GBytes],13.2767,
+STRUCT,Info,3
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,
+CPU clock:,2.199980251 GHz,
+TABLE,Region SpMTV,Group 1 Raw,L2,6
+Region Info,Core 0,
+RDTSC Runtime [s],1.520086,
+call count,1,
+Event,Counter,Core 0
+INSTR_RETIRED_ANY,FIXC0,6203241000
+CPU_CLK_UNHALTED_CORE,FIXC1,3329835000
+CPU_CLK_UNHALTED_REF,FIXC2,3329835000
+L1D_REPLACEMENT,PMC0,200984900
+L1D_M_EVICT,PMC1,53916360
+ICACHE_MISSES,PMC2,6045
+TABLE,Region SpMTV,Group 1 Metric,L2,10
+Metric,Core 0,
+Runtime (RDTSC) [s],1.5201,
+Runtime unhalted [s],1.5136,
+Clock [MHz],2199.9803,
+CPI,0.5368,
+L2D load bandwidth [MBytes/s],8462.0433,
+L2D load data volume [GBytes],12.8630,
+L2D evict bandwidth [MBytes/s],2270.0341,
+L2D evict data volume [GBytes],3.4506,
+L2 bandwidth [MBytes/s],10732.3319,
+L2 data volume [GBytes],16.3141,
+STRUCT,Info,3
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,
+CPU clock:,2.199980251 GHz,
+TABLE,Region SymmSpMV,Group 1 Raw,L2,6
+Region Info,Core 0,
+RDTSC Runtime [s],1.103899,
+call count,1,
+Event,Counter,Core 0
+INSTR_RETIRED_ANY,FIXC0,5252324000
+CPU_CLK_UNHALTED_CORE,FIXC1,2418837000
+CPU_CLK_UNHALTED_REF,FIXC2,2418837000
+L1D_REPLACEMENT,PMC0,141332800
+L1D_M_EVICT,PMC1,29011800
+ICACHE_MISSES,PMC2,3904
+TABLE,Region SymmSpMV,Group 1 Metric,L2,10
+Metric,Core 0,
+Runtime (RDTSC) [s],1.1039,
+Runtime unhalted [s],1.0995,
+Clock [MHz],2199.9803,
+CPI,0.4605,
+L2D load bandwidth [MBytes/s],8193.9554,
+L2D load data volume [GBytes],9.0453,
+L2D evict bandwidth [MBytes/s],1681.9974,
+L2D evict data volume [GBytes],1.8568,
+L2 bandwidth [MBytes/s],9876.1791,
+L2 data volume [GBytes],10.9023,
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz
+CPU type:	Intel Xeon IvyBridge EN/EP/EX processor
+CPU clock:	2.20 GHz
+--------------------------------------------------------------------------------
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 5, ], Parent: -1, nthreads: 2, idealNThreads:2, stage:0, subBLocks:1, effRow: 5409260, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 4991340, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 4991340, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[4991340, 5409260, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 417920, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[5409260, 10267496, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 4858236, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[10267496, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 133104, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+coloring efficiency = 0.961370
+max. stage depth = 1
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 1.741033 GFlop/s
+SpMTV: 1.809432 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 2.487781 GFlop/s
+--------------------------------------------------------------------------------
+STRUCT,Info,3,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,
+CPU clock:,2.199805174 GHz,,,,
+TABLE,Region MKL_SpMV,Group 1 Raw,L2,6,
+Region Info,Core 0,Core 1,,,
+RDTSC Runtime [s],0.811203,0.756562,,,
+call count,1,1,,,
+Event,Counter,Core 0,Core 1,,
+INSTR_RETIRED_ANY,FIXC0,3315803000,3224880000,,
+CPU_CLK_UNHALTED_CORE,FIXC1,1766305000,1654688000,,
+CPU_CLK_UNHALTED_REF,FIXC2,1766305000,1654688000,,
+L1D_REPLACEMENT,PMC0,100449800,100397600,,
+L1D_M_EVICT,PMC1,3310064,3307650,,
+ICACHE_MISSES,PMC2,4710,3772,,
+TABLE,Region MKL_SpMV,Group 1 Raw STAT,L2,6,
+Event,Counter,Sum,Min,Max,Avg
+INSTR_RETIRED_ANY STAT,FIXC0,6540683000,3224880000,3315803000,3270341500
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,3420993000,1654688000,1766305000,1710496500
+CPU_CLK_UNHALTED_REF STAT,FIXC2,3420993000,1654688000,1766305000,1710496500
+L1D_REPLACEMENT STAT,PMC0,200847400,100397600,100449800,100423700
+L1D_M_EVICT STAT,PMC1,6617714,3307650,3310064,3308857
+ICACHE_MISSES STAT,PMC2,8482,3772,4710,4241
+TABLE,Region MKL_SpMV,Group 1 Metric,L2,10,
+Metric,Core 0,Core 1,,,
+Runtime (RDTSC) [s],0.8112,0.7566,,,
+Runtime unhalted [s],0.8029,0.7522,,,
+Clock [MHz],2199.8052,2199.8052,,,
+CPI,0.5327,0.5131,,,
+L2D load bandwidth [MBytes/s],7925.0003,8492.9519,,,
+L2D load data volume [GBytes],6.4288,6.4254,,,
+L2D evict bandwidth [MBytes/s],261.1479,279.8046,,,
+L2D evict data volume [GBytes],0.2118,0.2117,,,
+L2 bandwidth [MBytes/s],8186.5198,8773.0756,,,
+L2 data volume [GBytes],6.6409,6.6374,,,
+TABLE,Region MKL_SpMV,Group 1 Metric STAT,L2,10,
+Metric,Sum,Min,Max,Avg,
+Runtime (RDTSC) [s] STAT,1.5678,0.7566,0.8112,0.7839,
+Runtime unhalted [s] STAT,1.5551,0.7522,0.8029,0.7775,
+Clock [MHz] STAT,4399.6104,2199.8052,2199.8052,2199.8052,
+CPI STAT,1.0458,0.5131,0.5327,0.5229,
+L2D load bandwidth [MBytes/s] STAT,16417.9522,7925.0003,8492.9519,8208.9761,
+L2D load data volume [GBytes] STAT,12.8542,6.4254,6.4288,6.4271,
+L2D evict bandwidth [MBytes/s] STAT,540.9525,261.1479,279.8046,270.4762,
+L2D evict data volume [GBytes] STAT,0.4235,0.2117,0.2118,0.2117,
+L2 bandwidth [MBytes/s] STAT,16959.5954,8186.5198,8773.0756,8479.7977,
+L2 data volume [GBytes] STAT,13.2783,6.6374,6.6409,6.6392,
+STRUCT,Info,3,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,
+CPU clock:,2.199805174 GHz,,,,
+TABLE,Region SpMTV,Group 1 Raw,L2,6,
+Region Info,Core 0,Core 1,,,
+RDTSC Runtime [s],0.803960,0.803961,,,
+call count,1,1,,,
+Event,Counter,Core 0,Core 1,,
+INSTR_RETIRED_ANY,FIXC0,3222594000,3077609000,,
+CPU_CLK_UNHALTED_CORE,FIXC1,1760788000,1755310000,,
+CPU_CLK_UNHALTED_REF,FIXC2,1760788000,1755310000,,
+L1D_REPLACEMENT,PMC0,104740600,96265980,,
+L1D_M_EVICT,PMC1,28167920,25803090,,
+ICACHE_MISSES,PMC2,8304,3479,,
+TABLE,Region SpMTV,Group 1 Raw STAT,L2,6,
+Event,Counter,Sum,Min,Max,Avg
+INSTR_RETIRED_ANY STAT,FIXC0,6300203000,3077609000,3222594000,3150101500
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,3516098000,1755310000,1760788000,1758049000
+CPU_CLK_UNHALTED_REF STAT,FIXC2,3516098000,1755310000,1760788000,1758049000
+L1D_REPLACEMENT STAT,PMC0,201006580,96265980,104740600,100503290
+L1D_M_EVICT STAT,PMC1,53971010,25803090,28167920,26985505
+ICACHE_MISSES STAT,PMC2,11783,3479,8304,5891.5000
+TABLE,Region SpMTV,Group 1 Metric,L2,10,
+Metric,Core 0,Core 1,,,
+Runtime (RDTSC) [s],0.8040,0.8040,,,
+Runtime unhalted [s],0.8004,0.7979,,,
+Clock [MHz],2199.8052,2199.8052,,,
+CPI,0.5464,0.5703,,,
+L2D load bandwidth [MBytes/s],8337.9698,7663.3372,,,
+L2D load data volume [GBytes],6.7034,6.1610,,,
+L2D evict bandwidth [MBytes/s],2242.3327,2054.0775,,,
+L2D evict data volume [GBytes],1.8027,1.6514,,,
+L2 bandwidth [MBytes/s],10580.9635,9717.6916,,,
+L2 data volume [GBytes],8.5067,7.8126,,,
+TABLE,Region SpMTV,Group 1 Metric STAT,L2,10,
+Metric,Sum,Min,Max,Avg,
+Runtime (RDTSC) [s] STAT,1.6080,0.8040,0.8040,0.8040,
+Runtime unhalted [s] STAT,1.5983,0.7979,0.8004,0.7992,
+Clock [MHz] STAT,4399.6104,2199.8052,2199.8052,2199.8052,
+CPI STAT,1.1167,0.5464,0.5703,0.5584,
+L2D load bandwidth [MBytes/s] STAT,16001.3070,7663.3372,8337.9698,8000.6535,
+L2D load data volume [GBytes] STAT,12.8644,6.1610,6.7034,6.4322,
+L2D evict bandwidth [MBytes/s] STAT,4296.4102,2054.0775,2242.3327,2148.2051,
+L2D evict data volume [GBytes] STAT,3.4541,1.6514,1.8027,1.7270,
+L2 bandwidth [MBytes/s] STAT,20298.6551,9717.6916,10580.9635,10149.3275,
+L2 data volume [GBytes] STAT,16.3193,7.8126,8.5067,8.1596,
+STRUCT,Info,3,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,
+CPU clock:,2.199805174 GHz,,,,
+TABLE,Region SymmSpMV,Group 1 Raw,L2,6,
+Region Info,Core 0,Core 1,,,
+RDTSC Runtime [s],0.584514,0.584508,,,
+call count,1,1,,,
+Event,Counter,Core 0,Core 1,,
+INSTR_RETIRED_ANY,FIXC0,2769671000,2576659000,,
+CPU_CLK_UNHALTED_CORE,FIXC1,1280361000,1272736000,,
+CPU_CLK_UNHALTED_REF,FIXC2,1280360000,1272735000,,
+L1D_REPLACEMENT,PMC0,75049840,66244180,,
+L1D_M_EVICT,PMC1,15489500,13505800,,
+ICACHE_MISSES,PMC2,5170,2987,,
+TABLE,Region SymmSpMV,Group 1 Raw STAT,L2,6,
+Event,Counter,Sum,Min,Max,Avg
+INSTR_RETIRED_ANY STAT,FIXC0,5346330000,2576659000,2769671000,2673165000
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,2553097000,1272736000,1280361000,1276548500
+CPU_CLK_UNHALTED_REF STAT,FIXC2,2553095000,1272735000,1280360000,1276547500
+L1D_REPLACEMENT STAT,PMC0,141294020,66244180,75049840,70647010
+L1D_M_EVICT STAT,PMC1,28995300,13505800,15489500,14497650
+ICACHE_MISSES STAT,PMC2,8157,2987,5170,4078.5000
+TABLE,Region SymmSpMV,Group 1 Metric,L2,10,
+Metric,Core 0,Core 1,,,
+Runtime (RDTSC) [s],0.5845,0.5845,,,
+Runtime unhalted [s],0.5820,0.5786,,,
+Clock [MHz],2199.8069,2199.8069,,,
+CPI,0.4623,0.4939,,,
+L2D load bandwidth [MBytes/s],8217.4047,7253.3268,,,
+L2D load data volume [GBytes],4.8032,4.2396,,,
+L2D evict bandwidth [MBytes/s],1695.9862,1478.8013,,,
+L2D evict data volume [GBytes],0.9913,0.8644,,,
+L2 bandwidth [MBytes/s],9913.9570,8732.4551,,,
+L2 data volume [GBytes],5.7948,5.1042,,,
+TABLE,Region SymmSpMV,Group 1 Metric STAT,L2,10,
+Metric,Sum,Min,Max,Avg,
+Runtime (RDTSC) [s] STAT,1.1690,0.5845,0.5845,0.5845,
+Runtime unhalted [s] STAT,1.1606,0.5786,0.5820,0.5803,
+Clock [MHz] STAT,4399.6138,2199.8069,2199.8069,2199.8069,
+CPI STAT,0.9562,0.4623,0.4939,0.4781,
+L2D load bandwidth [MBytes/s] STAT,15470.7315,7253.3268,8217.4047,7735.3657,
+L2D load data volume [GBytes] STAT,9.0428,4.2396,4.8032,4.5214,
+L2D evict bandwidth [MBytes/s] STAT,3174.7875,1478.8013,1695.9862,1587.3938,
+L2D evict data volume [GBytes] STAT,1.8557,0.8644,0.9913,0.9278,
+L2 bandwidth [MBytes/s] STAT,18646.4121,8732.4551,9913.9570,9323.2061,
+L2 data volume [GBytes] STAT,10.8990,5.1042,5.7948,5.4495,
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz
+CPU type:	Intel Xeon IvyBridge EN/EP/EX processor
+CPU clock:	2.20 GHz
+--------------------------------------------------------------------------------
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 7, ], Parent: -1, nthreads: 3, idealNThreads:3, stage:0, subBLocks:1, effRow: 3766658, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 1883329, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1883329, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[1883329, 3570691, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1687362, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[3570691, 5200300, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1629609, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[5200300, 6829909, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1629609, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[6829909, 8517271, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1687362, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[8517271, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1883329, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+coloring efficiency = 0.920409
+max. stage depth = 1
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 2.325082 GFlop/s
+SpMTV: 2.677308 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 3.709192 GFlop/s
+--------------------------------------------------------------------------------
+STRUCT,Info,3,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,
+CPU clock:,2.200037064 GHz,,,,
+TABLE,Region MKL_SpMV,Group 1 Raw,L2,6,
+Region Info,Core 0,Core 1,Core 2,,
+RDTSC Runtime [s],0.577994,0.546551,0.523244,,
+call count,1,1,1,,
+Event,Counter,Core 0,Core 1,Core 2,
+INSTR_RETIRED_ANY,FIXC0,2240247000,2246969000,2149918000,
+CPU_CLK_UNHALTED_CORE,FIXC1,1254263000,1192378000,1141474000,
+CPU_CLK_UNHALTED_REF,FIXC2,1254263000,1192378000,1141474000,
+L1D_REPLACEMENT,PMC0,65610020,69656790,65572680,
+L1D_M_EVICT,PMC1,2199021,2203044,2201656,
+ICACHE_MISSES,PMC2,4082,3029,2767,
+TABLE,Region MKL_SpMV,Group 1 Raw STAT,L2,6,
+Event,Counter,Sum,Min,Max,Avg
+INSTR_RETIRED_ANY STAT,FIXC0,6637134000,2149918000,2246969000,2212378000
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,3588115000,1141474000,1254263000,1.196038e+09
+CPU_CLK_UNHALTED_REF STAT,FIXC2,3588115000,1141474000,1254263000,1.196038e+09
+L1D_REPLACEMENT STAT,PMC0,200839490,65572680,69656790,6.694650e+07
+L1D_M_EVICT STAT,PMC1,6603721,2199021,2203044,2.201240e+06
+ICACHE_MISSES STAT,PMC2,9878,2767,4082,3292.6667
+TABLE,Region MKL_SpMV,Group 1 Metric,L2,10,
+Metric,Core 0,Core 1,Core 2,,
+Runtime (RDTSC) [s],0.5780,0.5466,0.5232,,
+Runtime unhalted [s],0.5701,0.5420,0.5188,,
+Clock [MHz],2200.0371,2200.0371,2200.0371,,
+CPI,0.5599,0.5307,0.5309,,
+L2D load bandwidth [MBytes/s],7264.8552,8156.6641,8020.4546,,
+L2D load data volume [GBytes],4.1990,4.4580,4.1967,,
+L2D evict bandwidth [MBytes/s],243.4928,257.9718,269.2933,,
+L2D evict data volume [GBytes],0.1407,0.1410,0.1409,,
+L2 bandwidth [MBytes/s],7508.8000,8414.9906,8290.0863,,
+L2 data volume [GBytes],4.3400,4.5992,4.3377,,
+TABLE,Region MKL_SpMV,Group 1 Metric STAT,L2,10,
+Metric,Sum,Min,Max,Avg,
+Runtime (RDTSC) [s] STAT,1.6478,0.5232,0.5780,0.5493,
+Runtime unhalted [s] STAT,1.6309,0.5188,0.5701,0.5436,
+Clock [MHz] STAT,6600.1113,2200.0371,2200.0371,2200.0371,
+CPI STAT,1.6215,0.5307,0.5599,0.5405,
+L2D load bandwidth [MBytes/s] STAT,23441.9739,7264.8552,8156.6641,7813.9913,
+L2D load data volume [GBytes] STAT,12.8537,4.1967,4.4580,4.2846,
+L2D evict bandwidth [MBytes/s] STAT,770.7579,243.4928,269.2933,256.9193,
+L2D evict data volume [GBytes] STAT,0.4226,0.1407,0.1410,0.1409,
+L2 bandwidth [MBytes/s] STAT,24213.8769,7508.8000,8414.9906,8071.2923,
+L2 data volume [GBytes] STAT,13.2769,4.3377,4.5992,4.4256,
+STRUCT,Info,3,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,
+CPU clock:,2.200037064 GHz,,,,
+TABLE,Region SpMTV,Group 1 Raw,L2,6,
+Region Info,Core 0,Core 1,Core 2,,
+RDTSC Runtime [s],0.543113,0.543113,0.543113,,
+call count,1,1,1,,
+Event,Counter,Core 0,Core 1,Core 2,
+INSTR_RETIRED_ANY,FIXC0,2116857000,2053176000,2123770000,
+CPU_CLK_UNHALTED_CORE,FIXC1,1185392000,1183477000,1187000000,
+CPU_CLK_UNHALTED_REF,FIXC2,1185393000,1183476000,1187000000,
+L1D_REPLACEMENT,PMC0,67771510,65516430,67711100,
+L1D_M_EVICT,PMC1,18044570,17934080,17988140,
+ICACHE_MISSES,PMC2,8674,3418,3407,
+TABLE,Region SpMTV,Group 1 Raw STAT,L2,6,
+Event,Counter,Sum,Min,Max,Avg
+INSTR_RETIRED_ANY STAT,FIXC0,6293803000,2053176000,2123770000,2.097934e+09
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,3555869000,1183477000,1187000000,1.185290e+09
+CPU_CLK_UNHALTED_REF STAT,FIXC2,3555869000,1183476000,1187000000,1.185290e+09
+L1D_REPLACEMENT STAT,PMC0,200999040,65516430,67771510,66999680
+L1D_M_EVICT STAT,PMC1,53966790,17934080,18044570,17988930
+ICACHE_MISSES STAT,PMC2,15499,3407,8674,5166.3333
+TABLE,Region SpMTV,Group 1 Metric,L2,10,
+Metric,Core 0,Core 1,Core 2,,
+Runtime (RDTSC) [s],0.5431,0.5431,0.5431,,
+Runtime unhalted [s],0.5388,0.5379,0.5395,,
+Clock [MHz],2200.0352,2200.0389,2200.0371,,
+CPI,0.5600,0.5764,0.5589,,
+L2D load bandwidth [MBytes/s],7986.1403,7720.4035,7979.0187,,
+L2D load data volume [GBytes],4.3374,4.1931,4.3335,,
+L2D evict bandwidth [MBytes/s],2126.3576,2113.3376,2119.7072,,
+L2D evict data volume [GBytes],1.1549,1.1478,1.1512,,
+L2 bandwidth [MBytes/s],10113.5201,9834.1439,10099.1274,,
+L2 data volume [GBytes],5.4928,5.3411,5.4850,,
+TABLE,Region SpMTV,Group 1 Metric STAT,L2,10,
+Metric,Sum,Min,Max,Avg,
+Runtime (RDTSC) [s] STAT,1.6293,0.5431,0.5431,0.5431,
+Runtime unhalted [s] STAT,1.6162,0.5379,0.5395,0.5387,
+Clock [MHz] STAT,6600.1112,2200.0352,2200.0389,2200.0371,
+CPI STAT,1.6953,0.5589,0.5764,0.5651,
+L2D load bandwidth [MBytes/s] STAT,23685.5625,7720.4035,7986.1403,7895.1875,
+L2D load data volume [GBytes] STAT,12.8640,4.1931,4.3374,4.2880,
+L2D evict bandwidth [MBytes/s] STAT,6359.4024,2113.3376,2126.3576,2119.8008,
+L2D evict data volume [GBytes] STAT,3.4539,1.1478,1.1549,1.1513,
+L2 bandwidth [MBytes/s] STAT,30046.7914,9834.1439,10113.5201,10015.5971,
+L2 data volume [GBytes] STAT,16.3189,5.3411,5.4928,5.4396,
+STRUCT,Info,3,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,
+CPU clock:,2.200037064 GHz,,,,
+TABLE,Region SymmSpMV,Group 1 Raw,L2,6,
+Region Info,Core 0,Core 1,Core 2,,
+RDTSC Runtime [s],0.391815,0.391815,0.391816,,
+call count,1,1,1,,
+Event,Counter,Core 0,Core 1,Core 2,
+INSTR_RETIRED_ANY,FIXC0,1818837000,1731671000,1777397000,
+CPU_CLK_UNHALTED_CORE,FIXC1,857144400,853485000,854364400,
+CPU_CLK_UNHALTED_REF,FIXC2,857144100,853484300,854364300,
+L1D_REPLACEMENT,PMC0,48897010,46056820,46253100,
+L1D_M_EVICT,PMC1,10037580,9593749,9358024,
+ICACHE_MISSES,PMC2,5035,3150,3083,
+TABLE,Region SymmSpMV,Group 1 Raw STAT,L2,6,
+Event,Counter,Sum,Min,Max,Avg
+INSTR_RETIRED_ANY STAT,FIXC0,5327905000,1731671000,1818837000,1.775968e+09
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,2564993800,853485000,857144400,8.549979e+08
+CPU_CLK_UNHALTED_REF STAT,FIXC2,2564992700,853484300,857144100,8.549976e+08
+L1D_REPLACEMENT STAT,PMC0,141206930,46056820,48897010,4.706898e+07
+L1D_M_EVICT STAT,PMC1,28989353,9358024,10037580,9.663118e+06
+ICACHE_MISSES STAT,PMC2,11268,3083,5035,3756
+TABLE,Region SymmSpMV,Group 1 Metric,L2,10,
+Metric,Core 0,Core 1,Core 2,,
+Runtime (RDTSC) [s],0.3918,0.3918,0.3918,,
+Runtime unhalted [s],0.3896,0.3879,0.3883,,
+Clock [MHz],2200.0378,2200.0389,2200.0373,,
+CPI,0.4713,0.4929,0.4807,,
+L2D load bandwidth [MBytes/s],7986.9628,7523.0331,7555.0805,,
+L2D load data volume [GBytes],3.1294,2.9476,2.9602,,
+L2D evict bandwidth [MBytes/s],1639.5640,1567.0663,1528.5597,,
+L2D evict data volume [GBytes],0.6424,0.6140,0.5989,,
+L2 bandwidth [MBytes/s],9627.3493,9090.6140,9084.1438,,
+L2 data volume [GBytes],3.7721,3.5618,3.5593,,
+TABLE,Region SymmSpMV,Group 1 Metric STAT,L2,10,
+Metric,Sum,Min,Max,Avg,
+Runtime (RDTSC) [s] STAT,1.1754,0.3918,0.3918,0.3918,
+Runtime unhalted [s] STAT,1.1658,0.3879,0.3896,0.3886,
+Clock [MHz] STAT,6600.1140,2200.0373,2200.0389,2200.0380,
+CPI STAT,1.4449,0.4713,0.4929,0.4816,
+L2D load bandwidth [MBytes/s] STAT,23065.0764,7523.0331,7986.9628,7688.3588,
+L2D load data volume [GBytes] STAT,9.0372,2.9476,3.1294,3.0124,
+L2D evict bandwidth [MBytes/s] STAT,4735.1900,1528.5597,1639.5640,1578.3967,
+L2D evict data volume [GBytes] STAT,1.8553,0.5989,0.6424,0.6184,
+L2 bandwidth [MBytes/s] STAT,27802.1071,9084.1438,9627.3493,9267.3690,
+L2 data volume [GBytes] STAT,10.8932,3.5593,3.7721,3.6311,
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz
+CPU type:	Intel Xeon IvyBridge EN/EP/EX processor
+CPU clock:	2.20 GHz
+--------------------------------------------------------------------------------
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 9, ], Parent: -1, nthreads: 4, idealNThreads:4, stage:0, subBLocks:1, effRow: 2747954, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 1373977, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1373977, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[1373977, 2659632, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1285655, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[2659632, 3964245, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1304613, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[3964245, 5200300, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1236055, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[5200300, 6436355, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1236055, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[6436355, 7740968, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1304613, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+7. Range:[7740968, 9026623, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1285655, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+8. Range:[9026623, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1373977, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+coloring efficiency = 0.946213
+max. stage depth = 1
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 2.793310 GFlop/s
+SpMTV: 3.514324 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 4.940636 GFlop/s
+--------------------------------------------------------------------------------
+STRUCT,Info,3,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,
+CPU clock:,2.200039219 GHz,,,,
+TABLE,Region MKL_SpMV,Group 1 Raw,L2,6,
+Region Info,Core 0,Core 1,Core 2,Core 3,
+RDTSC Runtime [s],0.450512,0.398529,0.442292,0.419038,
+call count,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3
+INSTR_RETIRED_ANY,FIXC0,1683848000,1652653000,1723338000,1635082000
+CPU_CLK_UNHALTED_CORE,FIXC1,974573100,871008600,961082300,910926200
+CPU_CLK_UNHALTED_REF,FIXC2,974571400,871008200,961082600,910926800
+L1D_REPLACEMENT,PMC0,48398140,52046470,51983590,48405300
+L1D_M_EVICT,PMC1,1659328,1647499,1646726,1645457
+ICACHE_MISSES,PMC2,4421,2474,2584,2721
+TABLE,Region MKL_SpMV,Group 1 Raw STAT,L2,6,
+Event,Counter,Sum,Min,Max,Avg
+INSTR_RETIRED_ANY STAT,FIXC0,6694921000,1635082000,1723338000,1673730250
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,3717590200,871008600,974573100,929397550
+CPU_CLK_UNHALTED_REF STAT,FIXC2,3717589000,871008200,974571400,929397250
+L1D_REPLACEMENT STAT,PMC0,200833500,48398140,52046470,50208375
+L1D_M_EVICT STAT,PMC1,6599010,1645457,1659328,1.649752e+06
+ICACHE_MISSES STAT,PMC2,12200,2474,4421,3050
+TABLE,Region MKL_SpMV,Group 1 Metric,L2,10,
+Metric,Core 0,Core 1,Core 2,Core 3,
+Runtime (RDTSC) [s],0.4505,0.3985,0.4423,0.4190,
+Runtime unhalted [s],0.4430,0.3959,0.4368,0.4140,
+Clock [MHz],2200.0431,2200.0402,2200.0385,2200.0378,
+CPI,0.5788,0.5270,0.5577,0.5571,
+L2D load bandwidth [MBytes/s],6875.4698,8358.1661,7522.0646,7392.9880,
+L2D load data volume [GBytes],3.0975,3.3310,3.3269,3.0979,
+L2D evict bandwidth [MBytes/s],235.7252,264.5726,238.2825,251.3122,
+L2D evict data volume [GBytes],0.1062,0.1054,0.1054,0.1053,
+L2 bandwidth [MBytes/s],7111.8230,8623.1360,7760.7210,7644.7158,
+L2 data volume [GBytes],3.2040,3.4366,3.4325,3.2034,
+TABLE,Region MKL_SpMV,Group 1 Metric STAT,L2,10,
+Metric,Sum,Min,Max,Avg,
+Runtime (RDTSC) [s] STAT,1.7103,0.3985,0.4505,0.4276,
+Runtime unhalted [s] STAT,1.6897,0.3959,0.4430,0.4224,
+Clock [MHz] STAT,8800.1596,2200.0378,2200.0431,2200.0399,
+CPI STAT,2.2206,0.5270,0.5788,0.5552,
+L2D load bandwidth [MBytes/s] STAT,30148.6885,6875.4698,8358.1661,7537.1721,
+L2D load data volume [GBytes] STAT,12.8533,3.0975,3.3310,3.2133,
+L2D evict bandwidth [MBytes/s] STAT,989.8925,235.7252,264.5726,247.4731,
+L2D evict data volume [GBytes] STAT,0.4223,0.1053,0.1062,0.1056,
+L2 bandwidth [MBytes/s] STAT,31140.3958,7111.8230,8623.1360,7785.0989,
+L2 data volume [GBytes] STAT,13.2765,3.2034,3.4366,3.3191,
+STRUCT,Info,3,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,
+CPU clock:,2.200039219 GHz,,,,
+TABLE,Region SpMTV,Group 1 Raw,L2,6,
+Region Info,Core 0,Core 1,Core 2,Core 3,
+RDTSC Runtime [s],0.413554,0.413556,0.413552,0.413556,
+call count,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3
+INSTR_RETIRED_ANY,FIXC0,1563042000,1567602000,1573058000,1573783000
+CPU_CLK_UNHALTED_CORE,FIXC1,901743400,902078700,902172900,901608500
+CPU_CLK_UNHALTED_REF,FIXC2,901743300,902078500,902172700,901608200
+L1D_REPLACEMENT,PMC0,49630900,50889800,50885350,49584060
+L1D_M_EVICT,PMC1,13101020,13905080,13902640,13056740
+ICACHE_MISSES,PMC2,8323,3354,3404,3373
+TABLE,Region SpMTV,Group 1 Raw STAT,L2,6,
+Event,Counter,Sum,Min,Max,Avg
+INSTR_RETIRED_ANY STAT,FIXC0,6277485000,1563042000,1573783000,1569371250
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,3607603500,901608500,902172900,901900875
+CPU_CLK_UNHALTED_REF STAT,FIXC2,3607602700,901608200,902172700,901900675
+L1D_REPLACEMENT STAT,PMC0,200990110,49584060,50889800,5.024753e+07
+L1D_M_EVICT STAT,PMC1,53965480,13056740,13905080,13491370
+ICACHE_MISSES STAT,PMC2,18454,3354,8323,4613.5000
+TABLE,Region SpMTV,Group 1 Metric,L2,10,
+Metric,Core 0,Core 1,Core 2,Core 3,
+Runtime (RDTSC) [s],0.4136,0.4136,0.4136,0.4136,
+Runtime unhalted [s],0.4099,0.4100,0.4101,0.4098,
+Clock [MHz],2200.0395,2200.0397,2200.0397,2200.0400,
+CPI,0.5769,0.5755,0.5735,0.5729,
+L2D load bandwidth [MBytes/s],7680.6785,7875.4608,7874.8502,7673.3963,
+L2D load data volume [GBytes],3.1764,3.2569,3.2567,3.1734,
+L2D evict bandwidth [MBytes/s],2027.4612,2151.8833,2151.5270,2020.5998,
+L2D evict data volume [GBytes],0.8385,0.8899,0.8898,0.8356,
+L2 bandwidth [MBytes/s],9709.4276,10027.8631,10026.9040,9694.5180,
+L2 data volume [GBytes],4.0154,4.1471,4.1466,4.0092,
+TABLE,Region SpMTV,Group 1 Metric STAT,L2,10,
+Metric,Sum,Min,Max,Avg,
+Runtime (RDTSC) [s] STAT,1.6544,0.4136,0.4136,0.4136,
+Runtime unhalted [s] STAT,1.6398,0.4098,0.4101,0.4099,
+Clock [MHz] STAT,8800.1589,2200.0395,2200.0400,2200.0397,
+CPI STAT,2.2988,0.5729,0.5769,0.5747,
+L2D load bandwidth [MBytes/s] STAT,31104.3858,7673.3963,7875.4608,7776.0965,
+L2D load data volume [GBytes] STAT,12.8634,3.1734,3.2569,3.2158,
+L2D evict bandwidth [MBytes/s] STAT,8351.4713,2020.5998,2151.8833,2087.8678,
+L2D evict data volume [GBytes] STAT,3.4538,0.8356,0.8899,0.8635,
+L2 bandwidth [MBytes/s] STAT,39458.7127,9694.5180,10027.8631,9864.6782,
+L2 data volume [GBytes] STAT,16.3183,4.0092,4.1471,4.0796,
+STRUCT,Info,3,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,
+CPU clock:,2.200039219 GHz,,,,
+TABLE,Region SymmSpMV,Group 1 Raw,L2,6,
+Region Info,Core 0,Core 1,Core 2,Core 3,
+RDTSC Runtime [s],0.293948,0.293945,0.293942,0.293945,
+call count,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3
+INSTR_RETIRED_ANY,FIXC0,1348471000,1326736000,1317311000,1309716000
+CPU_CLK_UNHALTED_CORE,FIXC1,642040900,641876500,641456500,640679800
+CPU_CLK_UNHALTED_REF,FIXC2,642040700,641875500,641456100,640679500
+L1D_REPLACEMENT,PMC0,35961090,36059180,35469480,33666640
+L1D_M_EVICT,PMC1,7344647,7524470,7365133,6754026
+ICACHE_MISSES,PMC2,5029,3108,3071,3094
+TABLE,Region SymmSpMV,Group 1 Raw STAT,L2,6,
+Event,Counter,Sum,Min,Max,Avg
+INSTR_RETIRED_ANY STAT,FIXC0,5302234000,1309716000,1348471000,1325558500
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,2566053700,640679800,642040900,641513425
+CPU_CLK_UNHALTED_REF STAT,FIXC2,2566051800,640679500,642040700,641512950
+L1D_REPLACEMENT STAT,PMC0,141156390,33666640,36059180,3.528910e+07
+L1D_M_EVICT STAT,PMC1,28988276,6754026,7524470,7247069
+ICACHE_MISSES STAT,PMC2,14302,3071,5029,3575.5000
+TABLE,Region SymmSpMV,Group 1 Metric,L2,10,
+Metric,Core 0,Core 1,Core 2,Core 3,
+Runtime (RDTSC) [s],0.2939,0.2939,0.2939,0.2939,
+Runtime unhalted [s],0.2918,0.2918,0.2916,0.2912,
+Clock [MHz],2200.0399,2200.0426,2200.0406,2200.0402,
+CPI,0.4761,0.4838,0.4869,0.4892,
+L2D load bandwidth [MBytes/s],7829.6413,7851.0808,7722.7656,7330.1587,
+L2D load data volume [GBytes],2.3015,2.3078,2.2700,2.1547,
+L2D evict bandwidth [MBytes/s],1599.1159,1638.2852,1603.6095,1470.5383,
+L2D evict data volume [GBytes],0.4701,0.4816,0.4714,0.4323,
+L2 bandwidth [MBytes/s],9429.8522,9490.0427,9327.0438,8801.3706,
+L2 data volume [GBytes],2.7719,2.7896,2.7416,2.5871,
+TABLE,Region SymmSpMV,Group 1 Metric STAT,L2,10,
+Metric,Sum,Min,Max,Avg,
+Runtime (RDTSC) [s] STAT,1.1756,0.2939,0.2939,0.2939,
+Runtime unhalted [s] STAT,1.1664,0.2912,0.2918,0.2916,
+Clock [MHz] STAT,8800.1633,2200.0399,2200.0426,2200.0408,
+CPI STAT,1.9360,0.4761,0.4892,0.4840,
+L2D load bandwidth [MBytes/s] STAT,30733.6464,7330.1587,7851.0808,7683.4116,
+L2D load data volume [GBytes] STAT,9.0340,2.1547,2.3078,2.2585,
+L2D evict bandwidth [MBytes/s] STAT,6311.5489,1470.5383,1638.2852,1577.8872,
+L2D evict data volume [GBytes] STAT,1.8554,0.4323,0.4816,0.4638,
+L2 bandwidth [MBytes/s] STAT,37048.3093,8801.3706,9490.0427,9262.0773,
+L2 data volume [GBytes] STAT,10.8902,2.5871,2.7896,2.7226,
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz
+CPU type:	Intel Xeon IvyBridge EN/EP/EX processor
+CPU clock:	2.20 GHz
+--------------------------------------------------------------------------------
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 11, ], Parent: -1, nthreads: 5, idealNThreads:5, stage:0, subBLocks:1, effRow: 2314836, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 1157418, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1157418, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[1157418, 2175873, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1018455, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[2175873, 3192307, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1016434, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[3192307, 4165658, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 973351, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[4165658, 5200300, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1034642, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[5200300, 6234942, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1034642, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+7. Range:[6234942, 7208293, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 973351, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+8. Range:[7208293, 8224727, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1016434, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+9. Range:[8224727, 9243182, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1018455, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+10. Range:[9243182, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1157418, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+coloring efficiency = 0.898604
+max. stage depth = 1
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 3.036719 GFlop/s
+SpMTV: 4.197830 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 5.711866 GFlop/s
+--------------------------------------------------------------------------------
+STRUCT,Info,3,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,
+CPU clock:,2.199943542 GHz,,,,,
+TABLE,Region MKL_SpMV,Group 1 Raw,L2,6,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,
+RDTSC Runtime [s],0.431769,0.328481,0.351346,0.383318,0.376060,
+call count,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4
+INSTR_RETIRED_ANY,FIXC0,1440339000,1321063000,1364265000,1407005000,1354063000
+CPU_CLK_UNHALTED_CORE,FIXC1,924640800,716084400,763383100,826261500,811035300
+CPU_CLK_UNHALTED_REF,FIXC2,924640500,716084300,763382200,826260800,811035800
+L1D_REPLACEMENT,PMC0,38188920,41351750,41808830,41352680,38133740
+L1D_M_EVICT,PMC1,1332299,1317809,1318971,1317749,1326817
+ICACHE_MISSES,PMC2,4573,2564,2618,2648,2888
+TABLE,Region MKL_SpMV,Group 1 Raw STAT,L2,6,,
+Event,Counter,Sum,Min,Max,Avg,
+INSTR_RETIRED_ANY STAT,FIXC0,6886735000,1321063000,1440339000,1377347000,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,4041405100,716084400,924640800,808281020,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,4041403600,716084300,924640500,808280720,
+L1D_REPLACEMENT STAT,PMC0,200835920,38133740,41808830,40167184,
+L1D_M_EVICT STAT,PMC1,6613645,1317749,1332299,1322729,
+ICACHE_MISSES STAT,PMC2,15291,2564,4573,3058.2000,
+TABLE,Region MKL_SpMV,Group 1 Metric,L2,10,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,
+Runtime (RDTSC) [s],0.4318,0.3285,0.3513,0.3833,0.3761,
+Runtime unhalted [s],0.4203,0.3255,0.3470,0.3756,0.3687,
+Clock [MHz],2199.9443,2199.9438,2199.9461,2199.9454,2199.9422,
+CPI,0.6420,0.5421,0.5596,0.5872,0.5990,
+L2D load bandwidth [MBytes/s],5660.6433,8056.8069,7615.7552,6904.3740,6489.8120,
+L2D load data volume [GBytes],2.4441,2.6465,2.6758,2.6466,2.4406,
+L2D evict bandwidth [MBytes/s],197.4832,256.7565,240.2593,220.0155,225.8051,
+L2D evict data volume [GBytes],0.0853,0.0843,0.0844,0.0843,0.0849,
+L2 bandwidth [MBytes/s],5858.8044,8314.0630,7856.4914,7124.8316,6716.1086,
+L2 data volume [GBytes],2.5297,2.7310,2.7603,2.7311,2.5257,
+TABLE,Region MKL_SpMV,Group 1 Metric STAT,L2,10,,
+Metric,Sum,Min,Max,Avg,,
+Runtime (RDTSC) [s] STAT,1.8710,0.3285,0.4318,0.3742,,
+Runtime unhalted [s] STAT,1.8371,0.3255,0.4203,0.3674,,
+Clock [MHz] STAT,10999.7218,2199.9422,2199.9461,2199.9444,,
+CPI STAT,2.9299,0.5421,0.6420,0.5860,,
+L2D load bandwidth [MBytes/s] STAT,34727.3914,5660.6433,8056.8069,6945.4783,,
+L2D load data volume [GBytes] STAT,12.8536,2.4406,2.6758,2.5707,,
+L2D evict bandwidth [MBytes/s] STAT,1140.3196,197.4832,256.7565,228.0639,,
+L2D evict data volume [GBytes] STAT,0.4232,0.0843,0.0853,0.0846,,
+L2 bandwidth [MBytes/s] STAT,35870.2990,5858.8044,8314.0630,7174.0598,,
+L2 data volume [GBytes] STAT,13.2778,2.5257,2.7603,2.6556,,
+STRUCT,Info,3,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,
+CPU clock:,2.199943542 GHz,,,,,
+TABLE,Region SpMTV,Group 1 Raw,L2,6,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,
+RDTSC Runtime [s],0.346069,0.346065,0.346071,0.346065,0.346069,
+call count,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4
+INSTR_RETIRED_ANY,FIXC0,1267549000,1237309000,1272238000,1241478000,1271355000
+CPU_CLK_UNHALTED_CORE,FIXC1,753661300,752825100,754731500,752967800,753928500
+CPU_CLK_UNHALTED_REF,FIXC2,753661500,752824900,754731300,752967800,753928700
+L1D_REPLACEMENT,PMC0,40106380,39586580,41657250,39579470,40052830
+L1D_M_EVICT,PMC1,10519990,10780440,11416800,10774570,10470210
+ICACHE_MISSES,PMC2,8523,3501,3485,3525,3526
+TABLE,Region SpMTV,Group 1 Raw STAT,L2,6,,
+Event,Counter,Sum,Min,Max,Avg,
+INSTR_RETIRED_ANY STAT,FIXC0,6289929000,1237309000,1272238000,1257985800,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,3768114200,752825100,754731500,753622840,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,3768114200,752824900,754731300,753622840,
+L1D_REPLACEMENT STAT,PMC0,200982510,39579470,41657250,40196502,
+L1D_M_EVICT STAT,PMC1,53962010,10470210,11416800,10792402,
+ICACHE_MISSES STAT,PMC2,22560,3485,8523,4512,
+TABLE,Region SpMTV,Group 1 Metric,L2,10,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,
+Runtime (RDTSC) [s],0.3461,0.3461,0.3461,0.3461,0.3461,
+Runtime unhalted [s],0.3426,0.3422,0.3431,0.3423,0.3427,
+Clock [MHz],2199.9430,2199.9441,2199.9441,2199.9435,2199.9430,
+CPI,0.5946,0.6084,0.5932,0.6065,0.5930,
+L2D load bandwidth [MBytes/s],7417.0485,7320.9978,7703.7998,7319.6829,7407.1345,
+L2D load data volume [GBytes],2.5668,2.5335,2.6661,2.5331,2.5634,
+L2D evict bandwidth [MBytes/s],1945.5078,1993.6953,2111.3430,1992.6097,1936.2990,
+L2D evict data volume [GBytes],0.6733,0.6899,0.7307,0.6896,0.6701,
+L2 bandwidth [MBytes/s],9364.1325,9315.3406,9815.7872,9312.9446,9344.0856,
+L2 data volume [GBytes],3.2406,3.2237,3.3970,3.2229,3.2337,
+TABLE,Region SpMTV,Group 1 Metric STAT,L2,10,,
+Metric,Sum,Min,Max,Avg,,
+Runtime (RDTSC) [s] STAT,1.7305,0.3461,0.3461,0.3461,,
+Runtime unhalted [s] STAT,1.7129,0.3422,0.3431,0.3426,,
+Clock [MHz] STAT,10999.7177,2199.9430,2199.9441,2199.9435,,
+CPI STAT,2.9957,0.5930,0.6084,0.5991,,
+L2D load bandwidth [MBytes/s] STAT,37168.6635,7319.6829,7703.7998,7433.7327,,
+L2D load data volume [GBytes] STAT,12.8629,2.5331,2.6661,2.5726,,
+L2D evict bandwidth [MBytes/s] STAT,9979.4548,1936.2990,2111.3430,1995.8910,,
+L2D evict data volume [GBytes] STAT,3.4536,0.6701,0.7307,0.6907,,
+L2 bandwidth [MBytes/s] STAT,47152.2905,9312.9446,9815.7872,9430.4581,,
+L2 data volume [GBytes] STAT,16.3179,3.2229,3.3970,3.2636,,
+STRUCT,Info,3,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,
+CPU clock:,2.199943542 GHz,,,,,
+TABLE,Region SymmSpMV,Group 1 Raw,L2,6,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,
+RDTSC Runtime [s],0.254152,0.254150,0.254152,0.254150,0.254153,
+call count,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4
+INSTR_RETIRED_ANY,FIXC0,1113209000,1071339000,1081046000,1059311000,1082539000
+CPU_CLK_UNHALTED_CORE,FIXC1,553320200,551710500,554061500,551230100,551809200
+CPU_CLK_UNHALTED_REF,FIXC2,553320300,551710300,554061000,551229800,551810500
+L1D_REPLACEMENT,PMC0,29128620,28174470,29267280,27422290,27095940
+L1D_M_EVICT,PMC1,5927357,5871059,6108717,5672609,5408359
+ICACHE_MISSES,PMC2,4983,3193,3165,3173,3296
+TABLE,Region SymmSpMV,Group 1 Raw STAT,L2,6,,
+Event,Counter,Sum,Min,Max,Avg,
+INSTR_RETIRED_ANY STAT,FIXC0,5407444000,1059311000,1113209000,1081488800,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,2762131500,551230100,554061500,552426300,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,2762131900,551229800,554061000,552426380,
+L1D_REPLACEMENT STAT,PMC0,141088600,27095940,29267280,28217720,
+L1D_M_EVICT STAT,PMC1,28988101,5408359,6108717,5.797620e+06,
+ICACHE_MISSES STAT,PMC2,17810,3165,4983,3562,
+TABLE,Region SymmSpMV,Group 1 Metric,L2,10,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,
+Runtime (RDTSC) [s],0.2542,0.2541,0.2542,0.2541,0.2542,
+Runtime unhalted [s],0.2515,0.2508,0.2519,0.2506,0.2508,
+Clock [MHz],2199.9431,2199.9443,2199.9455,2199.9447,2199.9384,
+CPI,0.4970,0.5150,0.5125,0.5204,0.5097,
+L2D load bandwidth [MBytes/s],7335.0937,7094.9003,7370.0194,6905.4781,6823.2080,
+L2D load data volume [GBytes],1.8642,1.8032,1.8731,1.7550,1.7341,
+L2D evict bandwidth [MBytes/s],1492.6117,1478.4512,1538.2831,1428.4758,1361.9147,
+L2D evict data volume [GBytes],0.3794,0.3757,0.3910,0.3630,0.3461,
+L2 bandwidth [MBytes/s],8828.9603,8574.1556,8909.0996,8334.7529,8185.9527,
+L2 data volume [GBytes],2.2439,2.1791,2.2643,2.1183,2.0805,
+TABLE,Region SymmSpMV,Group 1 Metric STAT,L2,10,,
+Metric,Sum,Min,Max,Avg,,
+Runtime (RDTSC) [s] STAT,1.2708,0.2541,0.2542,0.2542,,
+Runtime unhalted [s] STAT,1.2556,0.2506,0.2519,0.2511,,
+Clock [MHz] STAT,10999.7160,2199.9384,2199.9455,2199.9432,,
+CPI STAT,2.5546,0.4970,0.5204,0.5109,,
+L2D load bandwidth [MBytes/s] STAT,35528.6995,6823.2080,7370.0194,7105.7399,,
+L2D load data volume [GBytes] STAT,9.0296,1.7341,1.8731,1.8059,,
+L2D evict bandwidth [MBytes/s] STAT,7299.7365,1361.9147,1538.2831,1459.9473,,
+L2D evict data volume [GBytes] STAT,1.8552,0.3461,0.3910,0.3710,,
+L2 bandwidth [MBytes/s] STAT,42832.9211,8185.9527,8909.0996,8566.5842,,
+L2 data volume [GBytes] STAT,10.8861,2.0805,2.2643,2.1772,,
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz
+CPU type:	Intel Xeon IvyBridge EN/EP/EX processor
+CPU clock:	2.20 GHz
+--------------------------------------------------------------------------------
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 13, ], Parent: -1, nthreads: 6, idealNThreads:6, stage:0, subBLocks:1, effRow: 1883329, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 965636, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 965636, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[965636, 1883329, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 917693, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[1883329, 2659632, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 776303, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[2659632, 3570691, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 911059, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[3570691, 4369557, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 798866, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[4369557, 5200300, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 830743, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+7. Range:[5200300, 6031043, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 830743, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+8. Range:[6031043, 6829909, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 798866, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+9. Range:[6829909, 7740968, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 911059, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+10. Range:[7740968, 8654163, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 913195, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+11. Range:[8654163, 9521863, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 867700, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+12. Range:[9521863, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 878737, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+coloring efficiency = 0.920409
+max. stage depth = 1
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 3.147656 GFlop/s
+SpMTV: 4.494044 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 6.693796 GFlop/s
+--------------------------------------------------------------------------------
+STRUCT,Info,3,,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,,
+CPU clock:,2.200036921 GHz,,,,,,
+TABLE,Region MKL_SpMV,Group 1 Raw,L2,6,,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,
+RDTSC Runtime [s],0.414675,0.287169,0.310385,0.333472,0.341915,0.341915,
+call count,1,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5
+INSTR_RETIRED_ANY,FIXC0,1264657000,1096074000,1144786000,1179991000,1185840000,1150444000
+CPU_CLK_UNHALTED_CORE,FIXC1,886260700,625255100,673372100,720613200,737469600,737045500
+CPU_CLK_UNHALTED_REF,FIXC2,886261400,625255300,673371300,720613000,737469100,737044400
+L1D_REPLACEMENT,PMC0,31470760,34136330,34829640,34819000,34122640,31441280
+L1D_M_EVICT,PMC1,1109722,1098826,1098403,1098886,1099318,1098077
+ICACHE_MISSES,PMC2,4671,2601,2661,2657,2979,2999
+TABLE,Region MKL_SpMV,Group 1 Raw STAT,L2,6,,,
+Event,Counter,Sum,Min,Max,Avg,,
+INSTR_RETIRED_ANY STAT,FIXC0,7021792000,1096074000,1264657000,1.170299e+09,,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,4380016200,625255100,886260700,730002700,,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,4380014500,625255300,886261400,7.300024e+08,,
+L1D_REPLACEMENT STAT,PMC0,200819650,31441280,34829640,3.346994e+07,,
+L1D_M_EVICT STAT,PMC1,6603232,1098077,1109722,1.100539e+06,,
+ICACHE_MISSES STAT,PMC2,18568,2601,4671,3094.6667,,
+TABLE,Region MKL_SpMV,Group 1 Metric,L2,10,,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,
+Runtime (RDTSC) [s],0.4147,0.2872,0.3104,0.3335,0.3419,0.3419,
+Runtime unhalted [s],0.4028,0.2842,0.3061,0.3275,0.3352,0.3350,
+Clock [MHz],2200.0352,2200.0362,2200.0395,2200.0375,2200.0384,2200.0402,
+CPI,0.7008,0.5704,0.5882,0.6107,0.6219,0.6407,
+L2D load bandwidth [MBytes/s],4857.1293,7607.7922,7181.7231,6682.4661,6387.1014,5885.2041,
+L2D load data volume [GBytes],2.0141,2.1847,2.2291,2.2284,2.1838,2.0122,
+L2D evict bandwidth [MBytes/s],171.2721,244.8898,226.4860,210.8983,205.7712,205.5389,
+L2D evict data volume [GBytes],0.0710,0.0703,0.0703,0.0703,0.0704,0.0703,
+L2 bandwidth [MBytes/s],5029.1223,7853.2617,7408.7578,6893.8743,6593.4302,6091.3044,
+L2 data volume [GBytes],2.0854,2.2552,2.2996,2.2989,2.2544,2.0827,
+TABLE,Region MKL_SpMV,Group 1 Metric STAT,L2,10,,,
+Metric,Sum,Min,Max,Avg,,,
+Runtime (RDTSC) [s] STAT,2.0296,0.2872,0.4147,0.3383,,,
+Runtime unhalted [s] STAT,1.9908,0.2842,0.4028,0.3318,,,
+Clock [MHz] STAT,13200.2270,2200.0352,2200.0402,2200.0378,,,
+CPI STAT,3.7327,0.5704,0.7008,0.6221,,,
+L2D load bandwidth [MBytes/s] STAT,38601.4162,4857.1293,7607.7922,6433.5694,,,
+L2D load data volume [GBytes] STAT,12.8523,2.0122,2.2291,2.1420,,,
+L2D evict bandwidth [MBytes/s] STAT,1264.8563,171.2721,244.8898,210.8094,,,
+L2D evict data volume [GBytes] STAT,0.4226,0.0703,0.0710,0.0704,,,
+L2 bandwidth [MBytes/s] STAT,39869.7507,5029.1223,7853.2617,6644.9585,,,
+L2 data volume [GBytes] STAT,13.2762,2.0827,2.2996,2.2127,,,
+STRUCT,Info,3,,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,,
+CPU clock:,2.200036921 GHz,,,,,,
+TABLE,Region SpMTV,Group 1 Raw,L2,6,,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,
+RDTSC Runtime [s],0.323233,0.323226,0.323224,0.323224,0.323226,0.323228,
+call count,1,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5
+INSTR_RETIRED_ANY,FIXC0,1096120000,1057337000,1040811000,1044097000,1109357000,1054010000
+CPU_CLK_UNHALTED_CORE,FIXC1,702998600,701453300,701183200,701006200,704470800,700021100
+CPU_CLK_UNHALTED_REF,FIXC2,702998300,701453300,701182900,701005500,704470700,700021400
+L1D_REPLACEMENT,PMC0,34395910,33366030,32749570,32759190,36012990,31689970
+L1D_M_EVICT,PMC1,8980953,9059888,8961699,8971861,9768167,8219966
+ICACHE_MISSES,PMC2,8458,3330,3412,3361,3561,3428
+TABLE,Region SpMTV,Group 1 Raw STAT,L2,6,,,
+Event,Counter,Sum,Min,Max,Avg,,
+INSTR_RETIRED_ANY STAT,FIXC0,6401732000,1040811000,1109357000,1.066955e+09,,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,4211133200,700021100,704470800,7.018555e+08,,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,4211132100,700021400,704470700,701855350,,
+L1D_REPLACEMENT STAT,PMC0,200973660,31689970,36012990,33495610,,
+L1D_M_EVICT STAT,PMC1,53962534,8219966,9768167,8.993756e+06,,
+ICACHE_MISSES STAT,PMC2,25550,3330,8458,4258.3333,,
+TABLE,Region SpMTV,Group 1 Metric,L2,10,,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,
+Runtime (RDTSC) [s],0.3232,0.3232,0.3232,0.3232,0.3232,0.3232,
+Runtime unhalted [s],0.3195,0.3188,0.3187,0.3186,0.3202,0.3182,
+Clock [MHz],2200.0379,2200.0369,2200.0379,2200.0391,2200.0372,2200.0360,
+CPI,0.6414,0.6634,0.6737,0.6714,0.6350,0.6642,
+L2D load bandwidth [MBytes/s],6810.3717,6606.5970,6484.5778,6486.4927,7130.7203,6274.7019,
+L2D load data volume [GBytes],2.2013,2.1354,2.0960,2.0966,2.3048,2.0282,
+L2D evict bandwidth [MBytes/s],1778.2239,1793.8913,1774.4610,1776.4759,1934.1373,1627.5760,
+L2D evict data volume [GBytes],0.5748,0.5798,0.5735,0.5742,0.6252,0.5261,
+L2 bandwidth [MBytes/s],8590.2703,8401.1477,8259.7144,8263.6340,9065.5627,7902.9567,
+L2 data volume [GBytes],2.7767,2.7155,2.6697,2.6710,2.9302,2.5545,
+TABLE,Region SpMTV,Group 1 Metric STAT,L2,10,,,
+Metric,Sum,Min,Max,Avg,,,
+Runtime (RDTSC) [s] STAT,1.9392,0.3232,0.3232,0.3232,,,
+Runtime unhalted [s] STAT,1.9140,0.3182,0.3202,0.3190,,,
+Clock [MHz] STAT,13200.2250,2200.0360,2200.0391,2200.0375,,,
+CPI STAT,3.9491,0.6350,0.6737,0.6582,,,
+L2D load bandwidth [MBytes/s] STAT,39793.4614,6274.7019,7130.7203,6632.2436,,,
+L2D load data volume [GBytes] STAT,12.8623,2.0282,2.3048,2.1437,,,
+L2D evict bandwidth [MBytes/s] STAT,10684.7654,1627.5760,1934.1373,1780.7942,,,
+L2D evict data volume [GBytes] STAT,3.4536,0.5261,0.6252,0.5756,,,
+L2 bandwidth [MBytes/s] STAT,50483.2858,7902.9567,9065.5627,8413.8810,,,
+L2 data volume [GBytes] STAT,16.3176,2.5545,2.9302,2.7196,,,
+STRUCT,Info,3,,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,,
+CPU clock:,2.200036921 GHz,,,,,,
+TABLE,Region SymmSpMV,Group 1 Raw,L2,6,,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,
+RDTSC Runtime [s],0.216752,0.216749,0.216748,0.216750,0.216750,0.216748,
+call count,1,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5
+INSTR_RETIRED_ANY,FIXC0,947712700,897681300,878533100,861115800,931190900,874663300
+CPU_CLK_UNHALTED_CORE,FIXC1,472419500,470779800,470237500,471040000,472153200,468843800
+CPU_CLK_UNHALTED_REF,FIXC2,472419400,470779400,470237200,471039800,472153900,468843500
+L1D_REPLACEMENT,PMC0,25019040,23810090,23114690,22867720,24841610,21341310
+L1D_M_EVICT,PMC1,5078210,4956809,4830826,4762429,5126113,4231135
+ICACHE_MISSES,PMC2,4875,3104,3170,3077,3318,3160
+TABLE,Region SymmSpMV,Group 1 Raw STAT,L2,6,,,
+Event,Counter,Sum,Min,Max,Avg,,
+INSTR_RETIRED_ANY STAT,FIXC0,5390897100,861115800,947712700,898482850,,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,2825473800,468843800,472419500,470912300,,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,2825473200,468843500,472419400,470912200,,
+L1D_REPLACEMENT STAT,PMC0,140994460,21341310,25019040,2.349908e+07,,
+L1D_M_EVICT STAT,PMC1,28985522,4231135,5126113,4.830920e+06,,
+ICACHE_MISSES STAT,PMC2,20704,3077,4875,3450.6667,,
+TABLE,Region SymmSpMV,Group 1 Metric,L2,10,,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,
+Runtime (RDTSC) [s],0.2168,0.2167,0.2167,0.2167,0.2167,0.2167,
+Runtime unhalted [s],0.2147,0.2140,0.2137,0.2141,0.2146,0.2131,
+Clock [MHz],2200.0374,2200.0388,2200.0383,2200.0379,2200.0337,2200.0383,
+CPI,0.4985,0.5244,0.5353,0.5470,0.5070,0.5360,
+L2D load bandwidth [MBytes/s],7387.3334,7030.4562,6825.1712,6752.1819,7335.0116,6301.5175,
+L2D load data volume [GBytes],1.6012,1.5238,1.4793,1.4635,1.5899,1.3658,
+L2D evict bandwidth [MBytes/s],1499.4353,1463.6076,1426.4182,1406.2087,1513.5935,1249.3409,
+L2D evict data volume [GBytes],0.3250,0.3172,0.3092,0.3048,0.3281,0.2708,
+L2 bandwidth [MBytes/s],8888.2081,8494.9803,8252.5254,8159.2992,8849.5848,7551.7915,
+L2 data volume [GBytes],1.9265,1.8413,1.7887,1.7685,1.9181,1.6368,
+TABLE,Region SymmSpMV,Group 1 Metric STAT,L2,10,,,
+Metric,Sum,Min,Max,Avg,,,
+Runtime (RDTSC) [s] STAT,1.3003,0.2167,0.2168,0.2167,,,
+Runtime unhalted [s] STAT,1.2842,0.2131,0.2147,0.2140,,,
+Clock [MHz] STAT,13200.2244,2200.0337,2200.0388,2200.0374,,,
+CPI STAT,3.1482,0.4985,0.5470,0.5247,,,
+L2D load bandwidth [MBytes/s] STAT,41631.6718,6301.5175,7387.3334,6938.6120,,,
+L2D load data volume [GBytes] STAT,9.0235,1.3658,1.6012,1.5039,,,
+L2D evict bandwidth [MBytes/s] STAT,8558.6042,1249.3409,1513.5935,1426.4340,,,
+L2D evict data volume [GBytes] STAT,1.8551,0.2708,0.3281,0.3092,,,
+L2 bandwidth [MBytes/s] STAT,50196.3893,7551.7915,8888.2081,8366.0649,,,
+L2 data volume [GBytes] STAT,10.8799,1.6368,1.9265,1.8133,,,
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz
+CPU type:	Intel Xeon IvyBridge EN/EP/EX processor
+CPU clock:	2.20 GHz
+--------------------------------------------------------------------------------
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 15, ], Parent: -1, nthreads: 7, idealNThreads:7, stage:0, subBLocks:1, effRow: 1687794, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 965636, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 965636, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[965636, 1615905, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 650269, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[1615905, 2492623, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 876718, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[2492623, 3192307, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 699684, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[3192307, 3964245, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 771938, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[3964245, 4575466, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 611221, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+7. Range:[4575466, 5409260, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 833794, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+8. Range:[5409260, 6031043, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 621783, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+9. Range:[6031043, 6829909, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 798866, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+10. Range:[6829909, 7390837, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 560928, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+11. Range:[7390837, 8224727, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 833890, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+12. Range:[8224727, 8784695, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 559968, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+13. Range:[8784695, 9678442, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 893747, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+14. Range:[9678442, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 722158, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+coloring efficiency = 0.880321
+max. stage depth = 1
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 3.149158 GFlop/s
+SpMTV: 4.664569 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 7.059944 GFlop/s
+--------------------------------------------------------------------------------
+STRUCT,Info,3,,,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,,,
+CPU clock:,2.200044156 GHz,,,,,,,
+TABLE,Region MKL_SpMV,Group 1 Raw,L2,6,,,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,
+RDTSC Runtime [s],0.393036,0.310350,0.294868,0.323896,0.370156,0.323896,0.271987,
+call count,1,1,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6
+INSTR_RETIRED_ANY,FIXC0,1102060000,1003848000,984948700,1032663000,1102714000,1024109000,909166100
+CPU_CLK_UNHALTED_CORE,FIXC1,838105700,670292900,638647200,698713800,793654500,698200100,590474700
+CPU_CLK_UNHALTED_REF,FIXC2,838105600,670293200,638646700,698712500,793653900,698200400,590474800
+L1D_REPLACEMENT,PMC0,26694240,29075770,29717090,29881040,29674410,29092080,26667810
+L1D_M_EVICT,PMC1,954367,942985,943395,943306,943094,942681,942463
+ICACHE_MISSES,PMC2,4719,2673,2640,2672,2876,2697,2845
+TABLE,Region MKL_SpMV,Group 1 Raw STAT,L2,6,,,,
+Event,Counter,Sum,Min,Max,Avg,,,
+INSTR_RETIRED_ANY STAT,FIXC0,7159508800,909166100,1102714000,1.022787e+09,,,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,4928088900,590474700,838105700,704012700,,,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,4928087100,590474800,838105600,7.040124e+08,,,
+L1D_REPLACEMENT STAT,PMC0,200802440,26667810,29881040,2.868606e+07,,,
+L1D_M_EVICT STAT,PMC1,6612291,942463,954367,944613,,,
+ICACHE_MISSES STAT,PMC2,21122,2640,4719,3017.4286,,,
+TABLE,Region MKL_SpMV,Group 1 Metric,L2,10,,,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,
+Runtime (RDTSC) [s],0.3930,0.3104,0.2949,0.3239,0.3702,0.3239,0.2720,
+Runtime unhalted [s],0.3809,0.3047,0.2903,0.3176,0.3607,0.3174,0.2684,
+Clock [MHz],2200.0444,2200.0432,2200.0459,2200.0482,2200.0458,2200.0432,2200.0438,
+CPI,0.7605,0.6677,0.6484,0.6766,0.7197,0.6818,0.6495,
+L2D load bandwidth [MBytes/s],4346.7510,5995.9603,6449.9814,5904.3229,5130.7035,5748.4289,6275.0857,
+L2D load data volume [GBytes],1.7084,1.8608,1.9019,1.9124,1.8992,1.8619,1.7067,
+L2D evict bandwidth [MBytes/s],155.4042,194.4609,204.7603,186.3919,163.0609,186.2684,221.7668,
+L2D evict data volume [GBytes],0.0611,0.0604,0.0604,0.0604,0.0604,0.0603,0.0603,
+L2 bandwidth [MBytes/s],4502.9236,6190.9724,6655.3147,6091.2427,5294.2617,5935.2302,6497.5219,
+L2 data volume [GBytes],1.7698,1.9214,1.9624,1.9729,1.9597,1.9224,1.7672,
+TABLE,Region MKL_SpMV,Group 1 Metric STAT,L2,10,,,,
+Metric,Sum,Min,Max,Avg,,,,
+Runtime (RDTSC) [s] STAT,2.2883,0.2720,0.3930,0.3269,,,,
+Runtime unhalted [s] STAT,2.2400,0.2684,0.3809,0.3200,,,,
+Clock [MHz] STAT,15400.3145,2200.0432,2200.0482,2200.0449,,,,
+CPI STAT,4.8042,0.6484,0.7605,0.6863,,,,
+L2D load bandwidth [MBytes/s] STAT,39851.2337,4346.7510,6449.9814,5693.0334,,,,
+L2D load data volume [GBytes] STAT,12.8513,1.7067,1.9124,1.8359,,,,
+L2D evict bandwidth [MBytes/s] STAT,1312.1134,155.4042,221.7668,187.4448,,,,
+L2D evict data volume [GBytes] STAT,0.4233,0.0603,0.0611,0.0605,,,,
+L2 bandwidth [MBytes/s] STAT,41167.4672,4502.9236,6655.3147,5881.0667,,,,
+L2 data volume [GBytes] STAT,13.2758,1.7672,1.9729,1.8965,,,,
+STRUCT,Info,3,,,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,,,
+CPU clock:,2.200044156 GHz,,,,,,,
+TABLE,Region SpMTV,Group 1 Raw,L2,6,,,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,
+RDTSC Runtime [s],0.311376,0.311372,0.311372,0.311373,0.311373,0.311374,0.311382,
+call count,1,1,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6
+INSTR_RETIRED_ANY,FIXC0,935687900,950802700,888682300,914022000,882276300,887206600,938850500
+CPU_CLK_UNHALTED_CORE,FIXC1,676808800,678338200,674499400,676529700,674213500,673996700,676878500
+CPU_CLK_UNHALTED_REF,FIXC2,676808600,678338300,674499100,676530000,674213200,673997700,676878400
+L1D_REPLACEMENT,PMC0,29209910,30990130,27724190,29315660,27200570,27353030,29171110
+L1D_M_EVICT,PMC1,7582712,8393893,7579129,8039868,7421094,7400561,7547749
+ICACHE_MISSES,PMC2,8233,3340,3494,3397,3872,3492,3377
+TABLE,Region SpMTV,Group 1 Raw STAT,L2,6,,,,
+Event,Counter,Sum,Min,Max,Avg,,,
+INSTR_RETIRED_ANY STAT,FIXC0,6397528300,882276300,950802700,9.139326e+08,,,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,4731264800,673996700,678338200,6.758950e+08,,,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,4731265300,673997700,678338300,6.758950e+08,,,
+L1D_REPLACEMENT STAT,PMC0,200964600,27200570,30990130,2.870923e+07,,,
+L1D_M_EVICT STAT,PMC1,53965006,7400561,8393893,7.709287e+06,,,
+ICACHE_MISSES STAT,PMC2,29205,3340,8233,4172.1429,,,
+TABLE,Region SpMTV,Group 1 Metric,L2,10,,,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,
+Runtime (RDTSC) [s],0.3114,0.3114,0.3114,0.3114,0.3114,0.3114,0.3114,
+Runtime unhalted [s],0.3076,0.3083,0.3066,0.3075,0.3065,0.3064,0.3077,
+Clock [MHz],2200.0448,2200.0438,2200.0451,2200.0432,2200.0451,2200.0409,2200.0445,
+CPI,0.7233,0.7134,0.7590,0.7402,0.7642,0.7597,0.7210,
+L2D load bandwidth [MBytes/s],6003.7840,6369.7628,5698.4870,6025.5778,5590.8449,5622.1673,5995.6993,
+L2D load data volume [GBytes],1.8694,1.9834,1.7743,1.8762,1.7408,1.7506,1.8670,
+L2D evict bandwidth [MBytes/s],1558.5452,1725.2947,1557.8298,1652.5246,1525.3425,1521.1182,1551.3305,
+L2D evict data volume [GBytes],0.4853,0.5372,0.4851,0.5146,0.4750,0.4736,0.4831,
+L2 bandwidth [MBytes/s],7564.0214,8095.7440,7257.0349,7678.8007,7116.9833,7144.0033,7547.7239,
+L2 data volume [GBytes],2.3553,2.5208,2.2596,2.3910,2.2160,2.2245,2.3502,
+TABLE,Region SpMTV,Group 1 Metric STAT,L2,10,,,,
+Metric,Sum,Min,Max,Avg,,,,
+Runtime (RDTSC) [s] STAT,2.1798,0.3114,0.3114,0.3114,,,,
+Runtime unhalted [s] STAT,2.1506,0.3064,0.3083,0.3072,,,,
+Clock [MHz] STAT,15400.3074,2200.0409,2200.0451,2200.0439,,,,
+CPI STAT,5.1808,0.7134,0.7642,0.7401,,,,
+L2D load bandwidth [MBytes/s] STAT,41306.3231,5590.8449,6369.7628,5900.9033,,,,
+L2D load data volume [GBytes] STAT,12.8617,1.7408,1.9834,1.8374,,,,
+L2D evict bandwidth [MBytes/s] STAT,11091.9855,1521.1182,1725.2947,1584.5694,,,,
+L2D evict data volume [GBytes] STAT,3.4539,0.4736,0.5372,0.4934,,,,
+L2 bandwidth [MBytes/s] STAT,52404.3115,7116.9833,8095.7440,7486.3302,,,,
+L2 data volume [GBytes] STAT,16.3174,2.2160,2.5208,2.3311,,,,
+STRUCT,Info,3,,,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,,,
+CPU clock:,2.200044156 GHz,,,,,,,
+TABLE,Region SymmSpMV,Group 1 Raw,L2,6,,,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,
+RDTSC Runtime [s],0.205439,0.205437,0.205435,0.205436,0.205438,0.205435,0.205434,
+call count,1,1,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6
+INSTR_RETIRED_ANY,FIXC0,815653300,818796200,753282700,774837600,740526200,745330600,789651400
+CPU_CLK_UNHALTED_CORE,FIXC1,446819800,447356400,444667100,446012800,444049000,443929600,445640100
+CPU_CLK_UNHALTED_REF,FIXC2,446819900,447356400,444666900,446012400,444048000,443929700,445639900
+L1D_REPLACEMENT,PMC0,21268480,22149440,19606050,20546350,18892910,18784470,19599810
+L1D_M_EVICT,PMC1,4304606,4608891,4099046,4295305,3928444,3866976,3880222
+ICACHE_MISSES,PMC2,4789,3081,3120,3098,3463,3221,3216
+TABLE,Region SymmSpMV,Group 1 Raw STAT,L2,6,,,,
+Event,Counter,Sum,Min,Max,Avg,,,
+INSTR_RETIRED_ANY STAT,FIXC0,5438078000,740526200,818796200,7.768683e+08,,,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,3118474800,443929600,447356400,445496400,,,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,3118473200,443929700,447356400,4.454962e+08,,,
+L1D_REPLACEMENT STAT,PMC0,140847510,18784470,22149440,2.012107e+07,,,
+L1D_M_EVICT STAT,PMC1,28983490,3866976,4608891,4.140499e+06,,,
+ICACHE_MISSES STAT,PMC2,23988,3081,4789,3426.8571,,,
+TABLE,Region SymmSpMV,Group 1 Metric,L2,10,,,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,
+Runtime (RDTSC) [s],0.2054,0.2054,0.2054,0.2054,0.2054,0.2054,0.2054,
+Runtime unhalted [s],0.2031,0.2033,0.2021,0.2027,0.2018,0.2018,0.2026,
+Clock [MHz],2200.0437,2200.0442,2200.0451,2200.0461,2200.0491,2200.0437,2200.0451,
+CPI,0.5478,0.5464,0.5903,0.5756,0.5996,0.5956,0.5644,
+L2D load bandwidth [MBytes/s],6625.7302,6900.2378,6107.9494,6400.8536,5885.6876,5852.0022,6106.0322,
+L2D load data volume [GBytes],1.3612,1.4176,1.2548,1.3150,1.2091,1.2022,1.2544,
+L2D evict bandwidth [MBytes/s],1341.0059,1435.8126,1276.9918,1338.1266,1223.8239,1204.6947,1208.8260,
+L2D evict data volume [GBytes],0.2755,0.2950,0.2623,0.2749,0.2514,0.2475,0.2483,
+L2 bandwidth [MBytes/s],7968.2280,8337.0102,7385.9132,7739.9454,7110.5903,7057.7004,7315.8601,
+L2 data volume [GBytes],1.6370,1.7127,1.5173,1.5901,1.4608,1.4499,1.5029,
+TABLE,Region SymmSpMV,Group 1 Metric STAT,L2,10,,,,
+Metric,Sum,Min,Max,Avg,,,,
+Runtime (RDTSC) [s] STAT,1.4378,0.2054,0.2054,0.2054,,,,
+Runtime unhalted [s] STAT,1.4174,0.2018,0.2033,0.2025,,,,
+Clock [MHz] STAT,15400.3170,2200.0437,2200.0491,2200.0453,,,,
+CPI STAT,4.0197,0.5464,0.5996,0.5742,,,,
+L2D load bandwidth [MBytes/s] STAT,43878.4930,5852.0022,6900.2378,6268.3561,,,,
+L2D load data volume [GBytes] STAT,9.0143,1.2022,1.4176,1.2878,,,,
+L2D evict bandwidth [MBytes/s] STAT,9029.2815,1204.6947,1435.8126,1289.8974,,,,
+L2D evict data volume [GBytes] STAT,1.8549,0.2475,0.2950,0.2650,,,,
+L2 bandwidth [MBytes/s] STAT,52915.2476,7057.7004,8337.0102,7559.3211,,,,
+L2 data volume [GBytes] STAT,10.8707,1.4499,1.7127,1.5530,,,,
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz
+CPU type:	Intel Xeon IvyBridge EN/EP/EX processor
+CPU clock:	2.20 GHz
+--------------------------------------------------------------------------------
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 17, ], Parent: -1, nthreads: 8, idealNThreads:8, stage:0, subBLocks:1, effRow: 1444316, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 722158, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 722158, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[722158, 1373977, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 651819, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[1373977, 2026503, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 652526, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[2026503, 2659632, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 633129, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[2659632, 3379402, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 719770, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[3379402, 3964245, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 584843, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+7. Range:[3964245, 4575466, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 611221, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+8. Range:[4575466, 5200300, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 624834, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+9. Range:[5200300, 5825134, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 624834, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+10. Range:[5825134, 6436355, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 611221, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+11. Range:[6436355, 7021198, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 584843, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+12. Range:[7021198, 7740968, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 719770, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+13. Range:[7740968, 8374097, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 633129, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+14. Range:[8374097, 9026623, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 652526, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+15. Range:[9026623, 9678442, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 651819, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+16. Range:[9678442, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 722158, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+coloring efficiency = 0.900132
+max. stage depth = 1
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 3.029775 GFlop/s
+SpMTV: 4.534813 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 7.059331 GFlop/s
+--------------------------------------------------------------------------------
+STRUCT,Info,3,,,,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,,,,
+CPU clock:,2.200046375 GHz,,,,,,,,
+TABLE,Region MKL_SpMV,Group 1 Raw,L2,6,,,,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,
+RDTSC Runtime [s],0.410876,0.265881,0.388045,0.341740,0.310072,0.318108,0.286199,0.364948,
+call count,1,1,1,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7
+INSTR_RETIRED_ANY,FIXC0,1034395000,817451200,1020511000,956569700,899507100,910655100,852062700,959970500
+CPU_CLK_UNHALTED_CORE,FIXC1,884075200,577214600,822726600,737827200,668955200,686100800,619283800,785794600
+CPU_CLK_UNHALTED_REF,FIXC2,884075700,577214400,822726300,737829000,668954900,686100800,619283400,785793800
+L1D_REPLACEMENT,PMC0,23109370,25276690,25906160,26129620,26092920,25880050,25310180,23087850
+L1D_M_EVICT,PMC1,833161,826296,826294,827020,826602,827119,826582,829729
+ICACHE_MISSES,PMC2,4760,2599,2828,2642,2824,2666,2646,3013
+TABLE,Region MKL_SpMV,Group 1 Raw STAT,L2,6,,,,,
+Event,Counter,Sum,Min,Max,Avg,,,,
+INSTR_RETIRED_ANY STAT,FIXC0,7451122300,817451200,1034395000,9.313903e+08,,,,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,5781978000,577214600,884075200,722747250,,,,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,5781978300,577214400,884075700,7.227473e+08,,,,
+L1D_REPLACEMENT STAT,PMC0,200792840,23087850,26129620,25099105,,,,
+L1D_M_EVICT STAT,PMC1,6622803,826294,833161,827850.3750,,,,
+ICACHE_MISSES STAT,PMC2,23978,2599,4760,2997.2500,,,,
+TABLE,Region MKL_SpMV,Group 1 Metric,L2,10,,,,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,
+Runtime (RDTSC) [s],0.4109,0.2659,0.3880,0.3417,0.3101,0.3181,0.2862,0.3649,
+Runtime unhalted [s],0.4018,0.2624,0.3740,0.3354,0.3041,0.3119,0.2815,0.3572,
+Clock [MHz],2200.0451,2200.0471,2200.0472,2200.0410,2200.0474,2200.0464,2200.0478,2200.0486,
+CPI,0.8547,0.7061,0.8062,0.7713,0.7437,0.7534,0.7268,0.8186,
+L2D load bandwidth [MBytes/s],3599.6228,6084.3361,4272.6866,4893.4693,5385.6676,5206.8017,5659.8803,4048.8540,
+L2D load data volume [GBytes],1.4790,1.6177,1.6580,1.6723,1.6699,1.6563,1.6199,1.4776,
+L2D evict bandwidth [MBytes/s],129.7770,198.8972,136.2801,154.8816,170.6135,166.4079,184.8409,145.5073,
+L2D evict data volume [GBytes],0.0533,0.0529,0.0529,0.0529,0.0529,0.0529,0.0529,0.0531,
+L2 bandwidth [MBytes/s],3730.1412,6283.8589,4409.4332,5048.8457,5556.8640,5373.7460,5845.3129,4194.8898,
+L2 data volume [GBytes],1.5326,1.6708,1.7111,1.7254,1.7230,1.7094,1.6729,1.5309,
+TABLE,Region MKL_SpMV,Group 1 Metric STAT,L2,10,,,,,
+Metric,Sum,Min,Max,Avg,,,,,
+Runtime (RDTSC) [s] STAT,2.6858,0.2659,0.4109,0.3357,,,,,
+Runtime unhalted [s] STAT,2.6283,0.2624,0.4018,0.3285,,,,,
+Clock [MHz] STAT,17600.3706,2200.0410,2200.0486,2200.0463,,,,,
+CPI STAT,6.1808,0.7061,0.8547,0.7726,,,,,
+L2D load bandwidth [MBytes/s] STAT,39151.3184,3599.6228,6084.3361,4893.9148,,,,,
+L2D load data volume [GBytes] STAT,12.8507,1.4776,1.6723,1.6063,,,,,
+L2D evict bandwidth [MBytes/s] STAT,1287.2055,129.7770,198.8972,160.9007,,,,,
+L2D evict data volume [GBytes] STAT,0.4238,0.0529,0.0533,0.0530,,,,,
+L2 bandwidth [MBytes/s] STAT,40443.0917,3730.1412,6283.8589,5055.3865,,,,,
+L2 data volume [GBytes] STAT,13.2761,1.5309,1.7254,1.6595,,,,,
+STRUCT,Info,3,,,,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,,,,
+CPU clock:,2.200046375 GHz,,,,,,,,
+TABLE,Region SpMTV,Group 1 Raw,L2,6,,,,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,
+RDTSC Runtime [s],0.320267,0.320269,0.320269,0.320268,0.320267,0.320266,0.320266,0.320277,
+call count,1,1,1,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7
+INSTR_RETIRED_ANY,FIXC0,821703100,813846100,827358000,802524000,805908300,834168800,813479100,824089500
+CPU_CLK_UNHALTED_CORE,FIXC1,693592200,694086600,694808500,693858000,693898200,694401400,694586400,694050900
+CPU_CLK_UNHALTED_REF,FIXC2,693592300,694086400,694807900,693857700,693897300,694400800,694585700,694051100
+L1D_REPLACEMENT,PMC0,24563030,25061830,26018730,24863960,24875060,26002480,25049900,24527370
+L1D_M_EVICT,PMC1,6336556,6762650,7096231,6808874,6820265,7082700,6753090,6305799
+ICACHE_MISSES,PMC2,8434,3444,3447,3497,3753,3414,3399,3413
+TABLE,Region SpMTV,Group 1 Raw STAT,L2,6,,,,,
+Event,Counter,Sum,Min,Max,Avg,,,,
+INSTR_RETIRED_ANY STAT,FIXC0,6543076900,802524000,834168800,8.178846e+08,,,,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,5553282200,693592200,694808500,694160275,,,,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,5553279200,693592300,694807900,694159900,,,,
+L1D_REPLACEMENT STAT,PMC0,200962360,24527370,26018730,25120295,,,,
+L1D_M_EVICT STAT,PMC1,53966165,6305799,7096231,6.745771e+06,,,,
+ICACHE_MISSES STAT,PMC2,32801,3399,8434,4100.1250,,,,
+TABLE,Region SpMTV,Group 1 Metric,L2,10,,,,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,
+Runtime (RDTSC) [s],0.3203,0.3203,0.3203,0.3203,0.3203,0.3203,0.3203,0.3203,
+Runtime unhalted [s],0.3153,0.3155,0.3158,0.3154,0.3154,0.3156,0.3157,0.3155,
+Clock [MHz],2200.0461,2200.0470,2200.0483,2200.0473,2200.0492,2200.0483,2200.0486,2200.0457,
+CPI,0.8441,0.8528,0.8398,0.8646,0.8610,0.8324,0.8538,0.8422,
+L2D load bandwidth [MBytes/s],4908.5074,5008.1623,5199.3688,4968.6339,4970.8706,5196.1751,5005.8142,4901.2344,
+L2D load data volume [GBytes],1.5720,1.6040,1.6652,1.5913,1.5920,1.6642,1.6032,1.5698,
+L2D evict bandwidth [MBytes/s],1266.2539,1351.3957,1418.0524,1360.6361,1362.9175,1415.3630,1349.4950,1260.0698,
+L2D evict data volume [GBytes],0.4055,0.4328,0.4542,0.4358,0.4365,0.4533,0.4322,0.4036,
+L2 bandwidth [MBytes/s],6176.4467,6360.2462,6618.1100,6329.9688,6334.5381,6612.2203,6355.9884,6161.9863,
+L2 data volume [GBytes],1.9781,2.0370,2.1196,2.0273,2.0287,2.1177,2.0356,1.9735,
+TABLE,Region SpMTV,Group 1 Metric STAT,L2,10,,,,,
+Metric,Sum,Min,Max,Avg,,,,,
+Runtime (RDTSC) [s] STAT,2.5624,0.3203,0.3203,0.3203,,,,,
+Runtime unhalted [s] STAT,2.5242,0.3153,0.3158,0.3155,,,,,
+Clock [MHz] STAT,17600.3805,2200.0457,2200.0492,2200.0476,,,,,
+CPI STAT,6.7907,0.8324,0.8646,0.8488,,,,,
+L2D load bandwidth [MBytes/s] STAT,40158.7667,4901.2344,5199.3688,5019.8458,,,,,
+L2D load data volume [GBytes] STAT,12.8617,1.5698,1.6652,1.6077,,,,,
+L2D evict bandwidth [MBytes/s] STAT,10784.1834,1260.0698,1418.0524,1348.0229,,,,,
+L2D evict data volume [GBytes] STAT,3.4539,0.4036,0.4542,0.4317,,,,,
+L2 bandwidth [MBytes/s] STAT,50949.5048,6161.9863,6618.1100,6368.6881,,,,,
+L2 data volume [GBytes] STAT,16.3175,1.9735,2.1196,2.0397,,,,,
+STRUCT,Info,3,,,,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,,,,
+CPU clock:,2.200046375 GHz,,,,,,,,
+TABLE,Region SymmSpMV,Group 1 Raw,L2,6,,,,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,
+RDTSC Runtime [s],0.205468,0.205468,0.205475,0.205465,0.205468,0.205467,0.205468,0.205472,
+call count,1,1,1,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7
+INSTR_RETIRED_ANY,FIXC0,704450900,690146600,698035100,673287600,673431700,691905300,678224900,685481600
+CPU_CLK_UNHALTED_CORE,FIXC1,445512000,445314500,445056200,444960300,444652300,445318700,444810800,444268200
+CPU_CLK_UNHALTED_REF,FIXC2,445512200,445313800,445056400,444960900,444652400,445318600,444810800,444267700
+L1D_REPLACEMENT,PMC0,17895280,17937140,18442730,17493330,17348150,17992980,17135170,16400670
+L1D_M_EVICT,PMC1,3614048,3728868,3854885,3667368,3623589,3740796,3522009,3230072
+ICACHE_MISSES,PMC2,5063,3131,3115,3155,3395,3084,3152,3127
+TABLE,Region SymmSpMV,Group 1 Raw STAT,L2,6,,,,,
+Event,Counter,Sum,Min,Max,Avg,,,,
+INSTR_RETIRED_ANY STAT,FIXC0,5494963700,673287600,704450900,6.868705e+08,,,,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,3559893000,444268200,445512000,444986625,,,,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,3559892800,444267700,445512200,444986600,,,,
+L1D_REPLACEMENT STAT,PMC0,140645450,16400670,18442730,1.758068e+07,,,,
+L1D_M_EVICT STAT,PMC1,28981635,3230072,3854885,3.622704e+06,,,,
+ICACHE_MISSES STAT,PMC2,27222,3084,5063,3402.7500,,,,
+TABLE,Region SymmSpMV,Group 1 Metric,L2,10,,,,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,
+Runtime (RDTSC) [s],0.2055,0.2055,0.2055,0.2055,0.2055,0.2055,0.2055,0.2055,
+Runtime unhalted [s],0.2025,0.2024,0.2023,0.2023,0.2021,0.2024,0.2022,0.2019,
+Clock [MHz],2200.0454,2200.0498,2200.0454,2200.0434,2200.0459,2200.0469,2200.0464,2200.0489,
+CPI,0.6324,0.6452,0.6376,0.6609,0.6603,0.6436,0.6558,0.6481,
+L2D load bandwidth [MBytes/s],5574.1047,5587.1272,5744.4341,5448.9645,5403.6821,5604.5504,5337.3240,5108.4523,
+L2D load data volume [GBytes],1.1453,1.1480,1.1803,1.1196,1.1103,1.1516,1.0967,1.0496,
+L2D evict bandwidth [MBytes/s],1125.7204,1161.4817,1200.6971,1142.3416,1128.6923,1165.2033,1097.0479,1006.0972,
+L2D evict data volume [GBytes],0.2313,0.2386,0.2467,0.2347,0.2319,0.2394,0.2254,0.2067,
+L2 bandwidth [MBytes/s],6701.4022,6749.5841,6946.1014,6592.2888,6533.4319,6770.7143,6435.3537,6115.5235,
+L2 data volume [GBytes],1.3769,1.3868,1.4272,1.3545,1.3424,1.3912,1.3223,1.2566,
+TABLE,Region SymmSpMV,Group 1 Metric STAT,L2,10,,,,,
+Metric,Sum,Min,Max,Avg,,,,,
+Runtime (RDTSC) [s] STAT,1.6440,0.2055,0.2055,0.2055,,,,,
+Runtime unhalted [s] STAT,1.6181,0.2019,0.2025,0.2023,,,,,
+Clock [MHz] STAT,17600.3721,2200.0434,2200.0498,2200.0465,,,,,
+CPI STAT,5.1839,0.6324,0.6609,0.6480,,,,,
+L2D load bandwidth [MBytes/s] STAT,43808.6393,5108.4523,5744.4341,5476.0799,,,,,
+L2D load data volume [GBytes] STAT,9.0014,1.0496,1.1803,1.1252,,,,,
+L2D evict bandwidth [MBytes/s] STAT,9027.2815,1006.0972,1200.6971,1128.4102,,,,,
+L2D evict data volume [GBytes] STAT,1.8547,0.2067,0.2467,0.2318,,,,,
+L2 bandwidth [MBytes/s] STAT,52844.3999,6115.5235,6946.1014,6605.5500,,,,,
+L2 data volume [GBytes] STAT,10.8579,1.2566,1.4272,1.3572,,,,,
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz
+CPU type:	Intel Xeon IvyBridge EN/EP/EX processor
+CPU clock:	2.20 GHz
+--------------------------------------------------------------------------------
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 19, ], Parent: -1, nthreads: 9, idealNThreads:9, stage:0, subBLocks:1, effRow: 1249668, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 587283, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 587283, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[587283, 1157418, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 570135, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[1157418, 1746437, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 589019, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[1746437, 2331299, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 584862, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[2331299, 2832106, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 500807, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[2832106, 3379402, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 547296, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+7. Range:[3379402, 3964245, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 584843, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+8. Range:[3964245, 4575466, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 611221, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+9. Range:[4575466, 5200300, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 624834, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+10. Range:[5200300, 5825134, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 624834, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+11. Range:[5825134, 6436355, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 611221, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+12. Range:[6436355, 7021198, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 584843, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+13. Range:[7021198, 7568494, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 547296, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+14. Range:[7568494, 8069301, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 500807, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+15. Range:[8069301, 8654163, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 584862, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+16. Range:[8654163, 9243182, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 589019, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+17. Range:[9243182, 9813317, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 570135, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+18. Range:[9813317, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 587283, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+coloring efficiency = 0.924743
+max. stage depth = 1
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 2.855836 GFlop/s
+SpMTV: 4.665607 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 7.233632 GFlop/s
+--------------------------------------------------------------------------------
+STRUCT,Info,3,,,,,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,,,,,
+CPU clock:,2.200048205 GHz,,,,,,,,,
+TABLE,Region MKL_SpMV,Group 1 Raw,L2,6,,,,,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8,
+RDTSC Runtime [s],0.462342,0.319389,0.264528,0.287769,0.318777,0.319389,0.311439,0.390963,0.390953,
+call count,1,1,1,1,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8
+INSTR_RETIRED_ANY,FIXC0,1035625000,823339400,732243000,776626000,832988800,832675700,813224300,947208800,892366800
+CPU_CLK_UNHALTED_CORE,FIXC1,992785100,693816200,573960900,625332000,694406800,694827200,677361600,850561400,802465400
+CPU_CLK_UNHALTED_REF,FIXC2,992787200,693816100,573960500,625332000,694406700,694827100,677361600,850561500,802466000
+L1D_REPLACEMENT,PMC0,20398880,22337150,22858990,23145390,23328650,23171990,22853250,22332040,20369980
+L1D_M_EVICT,PMC1,740556,736594,736976,736705,737436,736448,736012,738954,739025
+ICACHE_MISSES,PMC2,4598,2725,2596,2605,20616,2677,2615,3044,3191
+TABLE,Region MKL_SpMV,Group 1 Raw STAT,L2,6,,,,,,
+Event,Counter,Sum,Min,Max,Avg,,,,,
+INSTR_RETIRED_ANY STAT,FIXC0,7686297800,732243000,1035625000,8.540331e+08,,,,,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,6605516600,573960900,992785100,7.339463e+08,,,,,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,6605518700,573960500,992787200,7.339465e+08,,,,,
+L1D_REPLACEMENT STAT,PMC0,200796320,20369980,23328650,2.231070e+07,,,,,
+L1D_M_EVICT STAT,PMC1,6638706,736012,740556,737634,,,,,
+ICACHE_MISSES STAT,PMC2,44667,2596,20616,4963,,,,,
+TABLE,Region MKL_SpMV,Group 1 Metric,L2,10,,,,,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8,
+Runtime (RDTSC) [s],0.4623,0.3194,0.2645,0.2878,0.3188,0.3194,0.3114,0.3910,0.3910,
+Runtime unhalted [s],0.4513,0.3154,0.2609,0.2842,0.3156,0.3158,0.3079,0.3866,0.3647,
+Clock [MHz],2200.0436,2200.0485,2200.0497,2200.0482,2200.0485,2200.0485,2200.0482,2200.0479,2200.0466,
+CPI,0.9586,0.8427,0.7838,0.8052,0.8336,0.8345,0.8329,0.8980,0.8993,
+L2D load bandwidth [MBytes/s],2823.7255,4475.9721,5530.5060,5147.5523,4683.6347,4643.2623,4696.2889,3655.7163,3334.6141,
+L2D load data volume [GBytes],1.3055,1.4296,1.4630,1.4813,1.4930,1.4830,1.4626,1.4293,1.3037,
+L2D evict bandwidth [MBytes/s],102.5118,147.6005,178.3040,163.8438,148.0532,147.5713,151.2487,120.9655,120.9801,
+L2D evict data volume [GBytes],0.0474,0.0471,0.0472,0.0471,0.0472,0.0471,0.0471,0.0473,0.0473,
+L2 bandwidth [MBytes/s],2926.8739,4624.1186,5709.4382,5311.9754,4835.8269,4791.3700,4848.0750,3777.1801,3456.1166,
+L2 data volume [GBytes],1.3532,1.4769,1.5103,1.5286,1.5415,1.5303,1.5099,1.4767,1.3512,
+TABLE,Region MKL_SpMV,Group 1 Metric STAT,L2,10,,,,,,
+Metric,Sum,Min,Max,Avg,,,,,,
+Runtime (RDTSC) [s] STAT,3.0656,0.2645,0.4623,0.3406,,,,,,
+Runtime unhalted [s] STAT,3.0024,0.2609,0.4513,0.3336,,,,,,
+Clock [MHz] STAT,19800.4297,2200.0436,2200.0497,2200.0477,,,,,,
+CPI STAT,7.6886,0.7838,0.9586,0.8543,,,,,,
+L2D load bandwidth [MBytes/s] STAT,38991.2722,2823.7255,5530.5060,4332.3636,,,,,,
+L2D load data volume [GBytes] STAT,12.8510,1.3037,1.4930,1.4279,,,,,,
+L2D evict bandwidth [MBytes/s] STAT,1281.0789,102.5118,178.3040,142.3421,,,,,,
+L2D evict data volume [GBytes] STAT,0.4248,0.0471,0.0474,0.0472,,,,,,
+L2 bandwidth [MBytes/s] STAT,40280.9747,2926.8739,5709.4382,4475.6639,,,,,,
+L2 data volume [GBytes] STAT,13.2786,1.3512,1.5415,1.4754,,,,,,
+STRUCT,Info,3,,,,,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,,,,,
+CPU clock:,2.200048205 GHz,,,,,,,,,
+TABLE,Region SpMTV,Group 1 Raw,L2,6,,,,,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8,
+RDTSC Runtime [s],0.311287,0.311283,0.311281,0.311285,0.311306,0.311281,0.311282,0.311284,0.311284,
+call count,1,1,1,1,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8
+INSTR_RETIRED_ANY,FIXC0,706928100,728737700,693244200,744579500,766250900,747623900,692394600,732133100,711110000
+CPU_CLK_UNHALTED_CORE,FIXC1,672387700,675439200,672664500,676840800,677949200,677043500,673181600,675448700,672431400
+CPU_CLK_UNHALTED_REF,FIXC2,672387300,675438900,672664500,676840800,677948800,677043100,673181200,675448200,672431600
+L1D_REPLACEMENT,PMC0,20442020,22706260,20783320,23989060,25172000,23985060,20782930,22687770,20409960
+L1D_M_EVICT,PMC1,5237120,6105953,5652657,6560395,6903467,6557460,5654114,6089592,5205731
+ICACHE_MISSES,PMC2,8543,3460,3516,3515,3637,3445,3581,3478,3625
+TABLE,Region SpMTV,Group 1 Raw STAT,L2,6,,,,,,
+Event,Counter,Sum,Min,Max,Avg,,,,,
+INSTR_RETIRED_ANY STAT,FIXC0,6523002000,692394600,766250900,724778000,,,,,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,6073386600,672387700,677949200,6.748207e+08,,,,,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,6073384400,672387300,677948800,6.748205e+08,,,,,
+L1D_REPLACEMENT STAT,PMC0,200958380,20409960,25172000,2.232871e+07,,,,,
+L1D_M_EVICT STAT,PMC1,53966489,5205731,6903467,5.996277e+06,,,,,
+ICACHE_MISSES STAT,PMC2,36800,3445,8543,4088.8889,,,,,
+TABLE,Region SpMTV,Group 1 Metric,L2,10,,,,,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8,
+Runtime (RDTSC) [s],0.3113,0.3113,0.3113,0.3113,0.3113,0.3113,0.3113,0.3113,0.3113,
+Runtime unhalted [s],0.3056,0.3070,0.3057,0.3076,0.3082,0.3077,0.3060,0.3070,0.3056,
+Clock [MHz],2200.0495,2200.0492,2200.0482,2200.0482,2200.0495,2200.0495,2200.0495,2200.0498,2200.0476,
+CPI,0.9511,0.9269,0.9703,0.9090,0.8848,0.9056,0.9723,0.9226,0.9456,
+L2D load bandwidth [MBytes/s],4202.8448,4668.4288,4273.0924,4932.1309,5174.9899,4931.3718,4273.0026,4664.6062,4196.2938,
+L2D load data volume [GBytes],1.3083,1.4532,1.3301,1.5353,1.6110,1.5350,1.3301,1.4520,1.3062,
+L2D evict bandwidth [MBytes/s],1076.7430,1255.3898,1162.1977,1348.8118,1419.2504,1348.2257,1162.4946,1252.0203,1070.2998,
+L2D evict data volume [GBytes],0.3352,0.3908,0.3618,0.4199,0.4418,0.4197,0.3619,0.3897,0.3332,
+L2 bandwidth [MBytes/s],5281.3443,5924.5299,5436.0130,6281.6653,6594.9881,6280.3058,5436.2335,5917.3416,5267.3389,
+L2 data volume [GBytes],1.6440,1.8442,1.6921,1.9554,2.0531,1.9549,1.6922,1.8420,1.6396,
+TABLE,Region SpMTV,Group 1 Metric STAT,L2,10,,,,,,
+Metric,Sum,Min,Max,Avg,,,,,,
+Runtime (RDTSC) [s] STAT,2.8017,0.3113,0.3113,0.3113,,,,,,
+Runtime unhalted [s] STAT,2.7604,0.3056,0.3082,0.3067,,,,,,
+Clock [MHz] STAT,19800.4410,2200.0476,2200.0498,2200.0490,,,,,,
+CPI STAT,8.3882,0.8848,0.9723,0.9320,,,,,,
+L2D load bandwidth [MBytes/s] STAT,41316.7612,4196.2938,5174.9899,4590.7512,,,,,,
+L2D load data volume [GBytes] STAT,12.8612,1.3062,1.6110,1.4290,,,,,,
+L2D evict bandwidth [MBytes/s] STAT,11095.4331,1070.2998,1419.2504,1232.8259,,,,,,
+L2D evict data volume [GBytes] STAT,3.4540,0.3332,0.4418,0.3838,,,,,,
+L2 bandwidth [MBytes/s] STAT,52419.7604,5267.3389,6594.9881,5824.4178,,,,,,
+L2 data volume [GBytes] STAT,16.3175,1.6396,2.0531,1.8131,,,,,,
+STRUCT,Info,3,,,,,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,,,,,
+CPU clock:,2.200048205 GHz,,,,,,,,,
+TABLE,Region SymmSpMV,Group 1 Raw,L2,6,,,,,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8,
+RDTSC Runtime [s],0.200484,0.200498,0.200483,0.200485,0.200489,0.200485,0.200486,0.200495,0.200486,
+call count,1,1,1,1,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8
+INSTR_RETIRED_ANY,FIXC0,603669300,620383900,580429600,630110200,647202000,625137200,574199700,608105700,588941200
+CPU_CLK_UNHALTED_CORE,FIXC1,433279100,435325500,433431900,435959200,436716700,435866700,433101400,434557500,432018700
+CPU_CLK_UNHALTED_REF,FIXC2,433279000,435325200,433431300,435959000,436716500,435866300,433101400,434557200,432018100
+L1D_REPLACEMENT,PMC0,14907500,16276630,14757860,16916730,17627320,16649640,14305460,15464950,13593760
+L1D_M_EVICT,PMC1,2998933,3379726,3086110,3543781,3692994,3473739,2969898,3170962,2663398
+ICACHE_MISSES,PMC2,4785,3096,3130,3070,3259,3127,3432,3110,3328
+TABLE,Region SymmSpMV,Group 1 Raw STAT,L2,6,,,,,,
+Event,Counter,Sum,Min,Max,Avg,,,,,
+INSTR_RETIRED_ANY STAT,FIXC0,5478178800,574199700,647202000,6.086865e+08,,,,,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,3910256700,432018700,436716700,4.344730e+08,,,,,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,3910254000,432018100,436716500,4.344727e+08,,,,,
+L1D_REPLACEMENT STAT,PMC0,140499850,13593760,17627320,1.561109e+07,,,,,
+L1D_M_EVICT STAT,PMC1,28979541,2663398,3692994,3219949,,,,,
+ICACHE_MISSES STAT,PMC2,30337,3070,4785,3370.7778,,,,,
+TABLE,Region SymmSpMV,Group 1 Metric,L2,10,,,,,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8,
+Runtime (RDTSC) [s],0.2005,0.2005,0.2005,0.2005,0.2005,0.2005,0.2005,0.2005,0.2005,
+Runtime unhalted [s],0.1969,0.1979,0.1970,0.1982,0.1985,0.1981,0.1969,0.1975,0.1964,
+Clock [MHz],2200.0487,2200.0497,2200.0513,2200.0492,2200.0492,2200.0502,2200.0482,2200.0497,2200.0513,
+CPI,0.7177,0.7017,0.7467,0.6919,0.6748,0.6972,0.7543,0.7146,0.7336,
+L2D load bandwidth [MBytes/s],4758.8954,5195.5716,4711.1308,5400.2499,5626.9900,5315.0092,4566.6434,4936.5562,4339.4648,
+L2D load data volume [GBytes],0.9541,1.0417,0.9445,1.0827,1.1281,1.0656,0.9155,0.9898,0.8700,
+L2D evict bandwidth [MBytes/s],957.3442,1078.8234,985.1745,1131.2649,1178.8769,1108.9101,948.0621,1012.2006,850.2226,
+L2D evict data volume [GBytes],0.1919,0.2163,0.1975,0.2268,0.2364,0.2223,0.1901,0.2029,0.1705,
+L2 bandwidth [MBytes/s],5717.7671,6275.3832,5697.3045,6532.4948,6806.9073,6424.9176,5515.8011,5949.7495,5190.7498,
+L2 data volume [GBytes],1.1463,1.2582,1.1422,1.3097,1.3647,1.2881,1.1058,1.1929,1.0407,
+TABLE,Region SymmSpMV,Group 1 Metric STAT,L2,10,,,,,,
+Metric,Sum,Min,Max,Avg,,,,,,
+Runtime (RDTSC) [s] STAT,1.8045,0.2005,0.2005,0.2005,,,,,,
+Runtime unhalted [s] STAT,1.7774,0.1964,0.1985,0.1975,,,,,,
+Clock [MHz] STAT,19800.4475,2200.0482,2200.0513,2200.0497,,,,,,
+CPI STAT,6.4325,0.6748,0.7543,0.7147,,,,,,
+L2D load bandwidth [MBytes/s] STAT,44850.5113,4339.4648,5626.9900,4983.3901,,,,,,
+L2D load data volume [GBytes] STAT,8.9920,0.8700,1.1281,0.9991,,,,,,
+L2D evict bandwidth [MBytes/s] STAT,9250.8793,850.2226,1178.8769,1027.8755,,,,,,
+L2D evict data volume [GBytes] STAT,1.8547,0.1705,0.2364,0.2061,,,,,,
+L2 bandwidth [MBytes/s] STAT,54111.0749,5190.7498,6806.9073,6012.3417,,,,,,
+L2 data volume [GBytes] STAT,10.8486,1.0407,1.3647,1.2054,,,,,,
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz
+CPU type:	Intel Xeon IvyBridge EN/EP/EX processor
+CPU clock:	2.20 GHz
+--------------------------------------------------------------------------------
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 21, ], Parent: -1, nthreads: 10, idealNThreads:10, stage:0, subBLocks:1, effRow: 1190291, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 652112, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 652112, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[652112, 1157418, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 505306, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[1157418, 1746437, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 589019, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[1746437, 2175873, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 429436, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[2175873, 2832106, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 656233, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[2832106, 3192307, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 360201, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+7. Range:[3192307, 3765774, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 573467, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+8. Range:[3765774, 4165658, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 399884, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+9. Range:[4165658, 4782895, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 617237, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+10. Range:[4782895, 5200300, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 417405, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+11. Range:[5200300, 5825134, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 624834, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+12. Range:[5825134, 6234942, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 409808, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+13. Range:[6234942, 6829909, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 594967, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+14. Range:[6829909, 7208293, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 378384, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+15. Range:[7208293, 7740968, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 532675, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+16. Range:[7740968, 8224727, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 483759, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+17. Range:[8224727, 8784695, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 559968, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+18. Range:[8784695, 9243182, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 458487, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+19. Range:[9243182, 9928167, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 684985, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+20. Range:[9928167, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 472433, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+coloring efficiency = 0.873786
+max. stage depth = 1
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 2.717759 GFlop/s
+SpMTV: 4.656078 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 7.184472 GFlop/s
+--------------------------------------------------------------------------------
+STRUCT,Info,3,,,,,,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,,,,,,
+CPU clock:,2.20004446 GHz,,,,,,,,,,
+TABLE,Region MKL_SpMV,Group 1 Raw,L2,6,,,,,,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8,Core 9,
+RDTSC Runtime [s],0.464372,0.266051,0.289031,0.321116,0.393209,0.369548,0.313500,0.440837,0.393210,0.345042,
+call count,1,1,1,1,1,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8,Core 9
+INSTR_RETIRED_ANY,FIXC0,960610800,652949700,700253700,759225300,881423400,843783900,744227200,959183500,871545800,780995800
+CPU_CLK_UNHALTED_CORE,FIXC1,986487100,576364800,627385100,697806800,855421000,803712200,681225600,953437700,854722500,746137400
+CPU_CLK_UNHALTED_REF,FIXC2,986487800,576364600,627385200,697806700,855420700,803712200,681225600,953436000,854722800,746136600
+L1D_REPLACEMENT,PMC0,18227300,19951480,20520130,20820550,20896410,20900790,20766400,20576340,19915330,18206590
+L1D_M_EVICT,PMC1,670654,663639,663681,663598,664188,663517,663266,666687,663611,666730
+ICACHE_MISSES,PMC2,5531,2691,2579,2600,2924,2657,2597,3011,2937,8665
+TABLE,Region MKL_SpMV,Group 1 Raw STAT,L2,6,,,,,,,
+Event,Counter,Sum,Min,Max,Avg,,,,,,
+INSTR_RETIRED_ANY STAT,FIXC0,8154199100,652949700,960610800,815419910,,,,,,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,7782700200,576364800,986487100,778270020,,,,,,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,7782698200,576364600,986487800,778269820,,,,,,
+L1D_REPLACEMENT STAT,PMC0,200781320,18206590,20900790,20078132,,,,,,
+L1D_M_EVICT STAT,PMC1,6649571,663266,670654,664957.1000,,,,,,
+ICACHE_MISSES STAT,PMC2,36192,2579,8665,3619.2000,,,,,,
+TABLE,Region MKL_SpMV,Group 1 Metric,L2,10,,,,,,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8,Core 9,
+Runtime (RDTSC) [s],0.4644,0.2661,0.2890,0.3211,0.3932,0.3695,0.3135,0.4408,0.3932,0.3450,
+Runtime unhalted [s],0.4484,0.2620,0.2852,0.3172,0.3888,0.3653,0.3096,0.4334,0.3885,0.3391,
+Clock [MHz],2200.0429,2200.0452,2200.0441,2200.0448,2200.0452,2200.0445,2200.0445,2200.0484,2200.0437,2200.0468,
+CPI,1.0269,0.8827,0.8959,0.9191,0.9705,0.9525,0.9153,0.9940,0.9807,0.9554,
+L2D load bandwidth [MBytes/s],2512.0969,4799.4287,4543.7660,4149.6420,3401.1655,3619.6937,4239.3873,2987.2390,3241.4802,3377.0384,
+L2D load data volume [GBytes],1.1665,1.2769,1.3133,1.3325,1.3374,1.3377,1.3290,1.3169,1.2746,1.1652,
+L2D evict bandwidth [MBytes/s],92.4299,159.6417,146.9587,132.2585,108.1053,114.9109,135.4034,96.7885,108.0114,123.6680,
+L2D evict data volume [GBytes],0.0429,0.0425,0.0425,0.0425,0.0425,0.0425,0.0424,0.0427,0.0425,0.0427,
+L2 bandwidth [MBytes/s],2605.2891,4959.7177,4691.2957,4282.4187,3509.7467,3735.0647,4375.3208,3084.4646,3349.9696,3502.3136,
+L2 data volume [GBytes],1.2098,1.3195,1.3559,1.3752,1.3801,1.3803,1.3717,1.3597,1.3172,1.2084,
+TABLE,Region MKL_SpMV,Group 1 Metric STAT,L2,10,,,,,,,
+Metric,Sum,Min,Max,Avg,,,,,,,
+Runtime (RDTSC) [s] STAT,3.5958,0.2661,0.4644,0.3596,,,,,,,
+Runtime unhalted [s] STAT,3.5375,0.2620,0.4484,0.3538,,,,,,,
+Clock [MHz] STAT,22000.4501,2200.0429,2200.0484,2200.0450,,,,,,,
+CPI STAT,9.4930,0.8827,1.0269,0.9493,,,,,,,
+L2D load bandwidth [MBytes/s] STAT,36870.9377,2512.0969,4799.4287,3687.0938,,,,,,,
+L2D load data volume [GBytes] STAT,12.8500,1.1652,1.3377,1.2850,,,,,,,
+L2D evict bandwidth [MBytes/s] STAT,1218.1763,92.4299,159.6417,121.8176,,,,,,,
+L2D evict data volume [GBytes] STAT,0.4257,0.0424,0.0429,0.0426,,,,,,,
+L2 bandwidth [MBytes/s] STAT,38095.6012,2605.2891,4959.7177,3809.5601,,,,,,,
+L2 data volume [GBytes] STAT,13.2778,1.2084,1.3803,1.3278,,,,,,,
+STRUCT,Info,3,,,,,,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,,,,,,
+CPU clock:,2.20004446 GHz,,,,,,,,,,
+TABLE,Region SpMTV,Group 1 Raw,L2,6,,,,,,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8,Core 9,
+RDTSC Runtime [s],0.311925,0.311940,0.311917,0.311918,0.311929,0.311917,0.311917,0.311918,0.311918,0.311934,
+call count,1,1,1,1,1,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8,Core 9
+INSTR_RETIRED_ANY,FIXC0,673963600,642776000,651631000,634802100,655996400,655377300,640851500,652327600,646986700,677140100
+CPU_CLK_UNHALTED_CORE,FIXC1,676458700,676025300,675490200,675522400,677188600,677313800,675243500,675538200,675643400,676610800
+CPU_CLK_UNHALTED_REF,FIXC2,676458400,676025200,675490300,675521400,677187800,677314400,675243900,675538600,675644200,676610500
+L1D_REPLACEMENT,PMC0,20443260,19659020,20098110,19484940,20819850,20831580,19469090,20104310,19638840,20408610
+L1D_M_EVICT,PMC1,5236335,5285101,5457221,5324748,5703233,5714947,5309573,5465316,5264967,5206559
+ICACHE_MISSES,PMC2,8577,3452,3423,3434,3650,3440,3427,3487,3691,3377
+TABLE,Region SpMTV,Group 1 Raw STAT,L2,6,,,,,,,
+Event,Counter,Sum,Min,Max,Avg,,,,,,
+INSTR_RETIRED_ANY STAT,FIXC0,6531852300,634802100,677140100,653185230,,,,,,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,6761034900,675243500,677313800,676103490,,,,,,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,6761034700,675243900,677314400,676103470,,,,,,
+L1D_REPLACEMENT STAT,PMC0,200957610,19469090,20831580,20095761,,,,,,
+L1D_M_EVICT STAT,PMC1,53968000,5206559,5714947,5396800,,,,,,
+ICACHE_MISSES STAT,PMC2,39958,3377,8577,3995.8000,,,,,,
+TABLE,Region SpMTV,Group 1 Metric,L2,10,,,,,,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8,Core 9,
+Runtime (RDTSC) [s],0.3119,0.3119,0.3119,0.3119,0.3119,0.3119,0.3119,0.3119,0.3119,0.3119,
+Runtime unhalted [s],0.3075,0.3073,0.3070,0.3070,0.3078,0.3079,0.3069,0.3071,0.3071,0.3075,
+Clock [MHz],2200.0454,2200.0448,2200.0441,2200.0477,2200.0471,2200.0425,2200.0432,2200.0432,2200.0419,2200.0454,
+CPI,1.0037,1.0517,1.0366,1.0641,1.0323,1.0335,1.0537,1.0356,1.0443,0.9992,
+L2D load bandwidth [MBytes/s],4194.5016,4033.3951,4123.7863,3997.9564,4271.7119,4274.2817,3994.7260,4125.0438,4029.5455,4187.2673,
+L2D load data volume [GBytes],1.3084,1.2582,1.2863,1.2470,1.3325,1.3332,1.2460,1.2867,1.2569,1.3062,
+L2D evict bandwidth [MBytes/s],1074.3793,1084.3318,1119.7278,1092.5417,1170.1606,1172.6088,1089.4340,1121.3848,1080.2789,1068.2381,
+L2D evict data volume [GBytes],0.3351,0.3382,0.3493,0.3408,0.3650,0.3658,0.3398,0.3498,0.3370,0.3332,
+L2 bandwidth [MBytes/s],5270.6407,5118.4352,5244.2164,5091.2027,5442.6214,5447.5963,5084.8632,5247.1441,5110.5817,5256.1982,
+L2 data volume [GBytes],1.6440,1.5966,1.6358,1.5880,1.6977,1.6992,1.5861,1.6367,1.5941,1.6396,
+TABLE,Region SpMTV,Group 1 Metric STAT,L2,10,,,,,,,
+Metric,Sum,Min,Max,Avg,,,,,,,
+Runtime (RDTSC) [s] STAT,3.1190,0.3119,0.3119,0.3119,,,,,,,
+Runtime unhalted [s] STAT,3.0731,0.3069,0.3079,0.3073,,,,,,,
+Clock [MHz] STAT,22000.4453,2200.0419,2200.0477,2200.0445,,,,,,,
+CPI STAT,10.3547,0.9992,1.0641,1.0355,,,,,,,
+L2D load bandwidth [MBytes/s] STAT,41232.2156,3994.7260,4274.2817,4123.2216,,,,,,,
+L2D load data volume [GBytes] STAT,12.8614,1.2460,1.3332,1.2861,,,,,,,
+L2D evict bandwidth [MBytes/s] STAT,11073.0858,1068.2381,1172.6088,1107.3086,,,,,,,
+L2D evict data volume [GBytes] STAT,3.4540,0.3332,0.3658,0.3454,,,,,,,
+L2 bandwidth [MBytes/s] STAT,52313.4999,5084.8632,5447.5963,5231.3500,,,,,,,
+L2 data volume [GBytes] STAT,16.3178,1.5861,1.6992,1.6318,,,,,,,
+STRUCT,Info,3,,,,,,,,,
+CPU name:,Intel(R) Xeon(R) CPU E5-2660 v2 @ 2.20GHz,,,,,,,,,,
+CPU type:,Intel Xeon IvyBridge EN/EP/EX processor,,,,,,,,,,
+CPU clock:,2.20004446 GHz,,,,,,,,,,
+TABLE,Region SymmSpMV,Group 1 Raw,L2,6,,,,,,,
+Region Info,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8,Core 9,
+RDTSC Runtime [s],0.201822,0.201846,0.201826,0.201822,0.201855,0.201827,0.201824,0.201823,0.201825,0.201835,
+call count,1,1,1,1,1,1,1,1,1,1,
+Event,Counter,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8,Core 9
+INSTR_RETIRED_ANY,FIXC0,584025500,545735700,550486200,534219300,553018800,552337300,531131500,546367500,539802800,568121400
+CPU_CLK_UNHALTED_CORE,FIXC1,437836400,437353500,436907400,436680500,437886400,437600700,436328200,435982200,435991400,436414000
+CPU_CLK_UNHALTED_REF,FIXC2,437835700,437353700,436907700,436680000,437886900,437600500,436328300,435981900,435991800,436413500
+L1D_REPLACEMENT,PMC0,14897740,14079260,14280080,13743020,14611120,14503070,13468830,13802660,13366290,13579540
+L1D_M_EVICT,PMC1,3001088,2925623,2986027,2883032,3068884,3037237,2810360,2861632,2742975,2663181
+ICACHE_MISSES,PMC2,4765,3109,3066,3118,3398,3118,3143,3160,3455,3109
+TABLE,Region SymmSpMV,Group 1 Raw STAT,L2,6,,,,,,,
+Event,Counter,Sum,Min,Max,Avg,,,,,,
+INSTR_RETIRED_ANY STAT,FIXC0,5505246000,531131500,584025500,550524600,,,,,,
+CPU_CLK_UNHALTED_CORE STAT,FIXC1,4368980700,435982200,437886400,436898070,,,,,,
+CPU_CLK_UNHALTED_REF STAT,FIXC2,4368980000,435981900,437886900,436898000,,,,,,
+L1D_REPLACEMENT STAT,PMC0,140331610,13366290,14897740,14033161,,,,,,
+L1D_M_EVICT STAT,PMC1,28980039,2663181,3068884,2.898004e+06,,,,,,
+ICACHE_MISSES STAT,PMC2,33441,3066,4765,3344.1000,,,,,,
+TABLE,Region SymmSpMV,Group 1 Metric,L2,10,,,,,,,
+Metric,Core 0,Core 1,Core 2,Core 3,Core 4,Core 5,Core 6,Core 7,Core 8,Core 9,
+Runtime (RDTSC) [s],0.2018,0.2018,0.2018,0.2018,0.2019,0.2018,0.2018,0.2018,0.2018,0.2018,
+Runtime unhalted [s],0.1990,0.1988,0.1986,0.1985,0.1990,0.1989,0.1983,0.1982,0.1982,0.1984,
+Clock [MHz],2200.0480,2200.0435,2200.0429,2200.0470,2200.0419,2200.0455,2200.0440,2200.0460,2200.0424,2200.0470,
+CPI,0.7497,0.8014,0.7937,0.8174,0.7918,0.7923,0.8215,0.7980,0.8077,0.7682,
+L2D load bandwidth [MBytes/s],4724.2320,4464.1656,4528.2734,4358.0580,4632.5819,4598.9640,4271.0671,4376.9639,4238.5383,4305.9457,
+L2D load data volume [GBytes],0.9535,0.9011,0.9139,0.8796,0.9351,0.9282,0.8620,0.8834,0.8554,0.8691,
+L2D evict bandwidth [MBytes/s],951.6770,927.6386,946.8817,914.2401,973.0162,963.1163,891.1862,907.4526,869.8154,844.4699,
+L2D evict data volume [GBytes],0.1921,0.1872,0.1911,0.1845,0.1964,0.1944,0.1799,0.1831,0.1756,0.1704,
+L2 bandwidth [MBytes/s],5677.4199,5392.7901,5476.1274,5273.2868,5606.6755,5563.0690,5163.2500,5285.4186,5109.4492,5151.4015,
+L2 data volume [GBytes],1.1458,1.0885,1.1052,1.0643,1.1317,1.1228,1.0421,1.0667,1.0312,1.0397,
+TABLE,Region SymmSpMV,Group 1 Metric STAT,L2,10,,,,,,,
+Metric,Sum,Min,Max,Avg,,,,,,,
+Runtime (RDTSC) [s] STAT,2.0181,0.2018,0.2019,0.2018,,,,,,,
+Runtime unhalted [s] STAT,1.9859,0.1982,0.1990,0.1986,,,,,,,
+Clock [MHz] STAT,22000.4482,2200.0419,2200.0480,2200.0448,,,,,,,
+CPI STAT,7.9417,0.7497,0.8215,0.7942,,,,,,,
+L2D load bandwidth [MBytes/s] STAT,44498.7899,4238.5383,4724.2320,4449.8790,,,,,,,
+L2D load data volume [GBytes] STAT,8.9813,0.8554,0.9535,0.8981,,,,,,,
+L2D evict bandwidth [MBytes/s] STAT,9189.4940,844.4699,973.0162,918.9494,,,,,,,
+L2D evict data volume [GBytes] STAT,1.8547,0.1704,0.1964,0.1855,,,,,,,
+L2 bandwidth [MBytes/s] STAT,53698.8880,5109.4492,5677.4199,5369.8888,,,,,,,
+L2 data volume [GBytes] STAT,10.8380,1.0312,1.1458,1.0838,,,,,,,

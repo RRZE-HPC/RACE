@@ -6,20 +6,19 @@
 \usetikzlibrary{patterns}
 \usepackage{pgfplotstable}
 
-\def\matrixFile{../data/motivation/}
+\def\matrixFile{../data/}
 \def\matrix{Spin-26}
-\def\matrixFileNowait{../data/motivation_nowait/Spin-26}
-\def\matrixFileMKL{../data/motivation_mkl/Spin-26}
 \def\matrixName{Spin-26 }
+\newcommand{\ideal}{11.25}
 
 \begin{document}
-	\pgfplotstableread[col sep=comma] {\matrixFileMKL/spmv_rcm.txt} \SPMV
+	\pgfplotstableread[col sep=comma] {\matrixFile/MKL/\matrix/spmv.txt} \SPMV
 	\pgfplotstableread[col sep=comma] {\matrixFile/MC_RCM/\matrix/spmv.txt} \SPMVMC
 	\pgfplotstableread[col sep=comma] {\matrixFile/MC_RCM/\matrix/symm_spmv.txt} \SYMMSPMVMC
 	\pgfplotstableread[col sep=comma] {\matrixFile/ABMC_RCM/\matrix/spmv.txt} \SPMVABMC
 	\pgfplotstableread[col sep=comma] {\matrixFile/ABMC_RCM/\matrix/symm_spmv.txt} \SYMMSPMVABMC
 	\pgfplotstableread[col sep=comma] {\matrixFile/RACE/\matrix/symm_spmv.txt} \SYMMSPMVRACE
-	\pgfplotstableread[col sep=space] {\matrixFileMKL/nnz} \NNZfile
+	\pgfplotstableread[col sep=space] {\matrixFile/nnz} \NNZfile
 		
 	\pgfplotstablegetelem{0}{nnz}\of\NNZfile
 	\pgfmathsetmacro{\NNZ}{\pgfplotsretval}
@@ -50,61 +49,62 @@
 			%anchor=south east,
 			%column sep=1ex,
 			legend pos=north west
-		}
+		},
 		]
 		
 
 		\pgfkeys{/pgf/fpu}
 
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SPMV
-		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*1e-7)} %change to SpMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)} %change to SpMV
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SPMVMC
-		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1*1/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SPMVABMC
-		\pgfmathsetmacro{\memSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SYMMSPMVMC
-		\pgfmathsetmacro{\memSYMMSPMVMC}{\pgfplotsretval*1*1/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSYMMSPMVMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SYMMSPMVABMC
-		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SYMMSPMVRACE
-		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 		
 		\addplot[pattern=horizontal lines]%style={ppurple,fill=ppurple}]
 		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC) (SymmSpMV-RACE,\memSYMMSPMVRACE)};
 
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMV
-		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*1e-7)} %change to SpMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)} %change to SpMV
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMVMC
-		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1*1/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMVABMC
-		\pgfmathsetmacro{\memSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SYMMSPMVMC
-		\pgfmathsetmacro{\memSYMMSPMVMC}{\pgfplotsretval*1*1/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSYMMSPMVMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SYMMSPMVABMC
-		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SYMMSPMVRACE
-		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 
 		\addplot[fill=gray!180]%style={ppurple,fill=ppurple}]
 		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC) (SymmSpMV-RACE,\memSYMMSPMVRACE)};
 
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMV
-		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*1e-7)} %change to SpMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)} %change to SpMV
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMVMC
-		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1*1/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMVABMC
-		\pgfmathsetmacro{\memSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SYMMSPMVMC
-		\pgfmathsetmacro{\memSYMMSPMVMC}{\pgfplotsretval*1*1/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSYMMSPMVMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SYMMSPMVABMC
-		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SYMMSPMVRACE
-		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*1e-7)}
+		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 				
 		\addplot[pattern=vertical lines]%style={ppurple,fill=ppurple}]
 		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC) (SymmSpMV-RACE,\memSYMMSPMVRACE)};
 	
-	
+		\addplot[draw=red,smooth,dashed, line width=3pt] coordinates { (SymmSpMV-MC,\ideal) (SymmSpMV-ABMC,\ideal) (SymmSpMV-RACE,\ideal)};
+		
 		\pgfkeys{/pgf/fpu=false}
 		
 		\legend{MEM, L3, L2}
