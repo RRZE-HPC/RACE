@@ -2,7 +2,7 @@
 % This is information that is shared between the main document and any
 % supplement. If no supplement is required, then this information can
 % be included directly in the main document.
-Keeping in mind the observations from previous \cref{Sec:motivation}, one could observe that it would be best to maintain the non-zeros of matrix close to the diagonal. This has been observed previously in the regard of normal sparse matrix computations like \SpMV and has led to the pre-processing of matrix by applying bandwidth reduction algorithms like ``\RCMfull" (\RCM) \cite{RCM,RCM_Sparse_computation}. Now we aim to develop a method that does not distort this ideal permutations to a large extent but at the same time resolve \DK dependencies. 
+Keeping in mind the observations from previous \cref{Sec:motivation}, one can observe that it would be best to maintain the non-zeros of matrix close to the diagonal. This was recognized previously for normal sparse matrix computations like \SpMV, and has led to the pre-processing of matrix by applying bandwidth reduction algorithms like ``\RCMfull" (\RCM) \cite{RCM,RCM_Sparse_computation}. Here, we aim to develop a method that does not distort this ideal permutations to a large extent and at the same time resolves \DK dependencies. 
  
 Our approach can be seen as a recursive level based method. Each step of the method basically consists of four steps namely:
 \begin{enumerate}
@@ -11,9 +11,9 @@ Our approach can be seen as a recursive level based method. Each step of the met
 	\item Distance-k coloring
 	\item Load balancing
 \end{enumerate}
-The method is strongly coupled to the hardware underneath and exploits only the parallelism as required by the hardware. If at the end of all these four steps one does not achieve sufficient parallelism, all the steps are recursively applied to selected sub-graphs of the matrix until sufficient parallelism is attained. This recursive nature of our coloring method led to the naming of the method as ``\RACfullNoSpace" in short \RAC.
+The method is strongly coupled to the hardware underneath and exploits only the parallelism as required by the hardware. If at the end of all these four steps one does not achieve sufficient parallelism, all the steps are recursively applied to selected sub-graphs of the matrix until sufficient parallelism is attained. Due to this recursive nature of our coloring method we cal it as ``\RACfullNoSpace" (\RAC).
 
-To explain the method in an easier and illustrative way we choose a simple matrix namely the sparse matrix associated with \STEX. The sparsity pattern and the corresponding graph of the matrix is as shown in \cref{fig:2d-7pt}.
+To explain the method in an easier and illustrative way we choose a simple matrix namely the sparse matrix associated with \STEX. The stencil, sparsity pattern and the corresponding graph of the matrix is shown in \cref{fig:2d-7pt}.
 
 \begin{figure}[tbhp]
 	\centering
@@ -30,19 +30,19 @@ To explain the method in an easier and illustrative way we choose a simple matri
 \subsection*{Definitions}
 The following basic definitions from graph theory are used in the following sections:
 \begin{itemize}
-	\item \textbf{Graph : } $G = (V,E)$ represents a graph where $V(G)$ belongs to set of vertices and $E(G)$ represents the edges in the graph. Note that here we specifically denote $G$ for irreducible undirected graphs.
+	\item \textbf{Graph : } $G = (V,E)$ represents a graph where $V(G)$ belongs to set of vertices and $E(G)$ represents the edges in the graph. Note that we use $G$ for irreducible undirected graphs.
 	\item \textbf{Neighborhood :} Neighborhood of vertex $u$ represented as $N(u)$ is defined as:
 	\begin{equation*}
 	  N(u) = \set{ v : uv \in E}
 	\end{equation*}
-	\item \textbf{Subgraph :} A subgraph $H$ of graph $G$ in this paper specifically refers to subgraph induced by vertices $V' \subseteq V(G)$ and is defined as
+	\item \textbf{Subgraph :} In this paper a subgraph $H$ of graph $G$ specifically refers to the subgraph induced by vertices $V' \subseteq V(G)$ and is defined as
 	\begin{equation*}
 		H = (V', \set{ uv : uv \in E(G) \text{ and } u,v \in V'})
 	\end{equation*}
 \end{itemize}
 
 \subsection{Level Construction}\label{subsec:LEVEL_CONST}
-The first step of the \RACE method is level construction. The step concerns with finding different \levels in the graph, \levels used here are same to the ones found in ``Breadth First Search" (\BFS) algorithm \cite{BFS}. First \level ($L(0)$) is chosen to consist of a selected root vertex. Rest of the levels ($L(i)$ for $i > 0$) are defined to  contain vertices that are in neighborhood of vertices in previous \level ($L(i-1)$) and not in $L(i-2)$ \cite{BFS_level_def} \ie
+The first step of the \RACE method is level construction. The step concerns with finding different \levels in the graph \levels used here are same to the ones found in ``Breadth First Search" (\BFS) algorithm \cite{BFS}. First \level ($L(0)$) is chosen to consist of a selected root vertex. Rest of the levels ($L(i)$ for $i > 0$) are defined to  contain vertices that are in neighborhood of vertices in previous \level ($L(i-1)$) but not in level $L(i-2)$ \cite{BFS_level_def} \ie
 \begin{equation}\label{eq:level}
 L(i) = 
 \begin{cases}
@@ -51,7 +51,7 @@ L(i) =
 \end{cases}   
 \end{equation}
 
- One could easily observe from \cref{eq:level} $i$-th \level consist of all vertices that have a minimum distance of $i$ from the root node. \Cref{alg:BFS} shows an algorithm to find each nodes minimum distance from root. Total number of levels obtained with this graph traversal will be denoted as \totalLvl. \Cref{fig:2d_7pt_level_construction} shows \levels on the \STEX (\totalLvl = 14), the main number on each vertex ($v$) refers to the vertex number and the superscript shows the \level number, \ie
+From \cref{eq:level} one finds that the $i$-th \level consist of all vertices that have a minimum distance of $i$ from the root node. \Cref{alg:BFS} gives an algorithm to find each nodes minimum distance from the root. The total number of levels obtained with this graph traversal will be denoted as \totalLvl. \Cref{fig:2d_7pt_level_construction} shows \levels on the \STEX (\totalLvl = 14), where the main number on each vertex ($v$) refers to the vertex number and the superscript shows the \level number, \ie
 \begin{equation}\label{eq:node_notation}
 	v^i \implies v \in L(i)
 \end{equation}

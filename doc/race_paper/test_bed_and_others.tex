@@ -1,5 +1,4 @@
 \subsection{Test bed}
-{\GW ToDo: EPYC raus;}
 The tests are conducted on two different multi-core architectures. One being Intel's \IVB and the other \SKX architecture, the choice of these architectures enable study of the method on two extreme generation of Intel's processor currently being used on \HPC systems. All the tests are conducted on a single socket (chip) of these architectures using all its available cores. 
 
 \begin{itemize}
@@ -10,7 +9,7 @@ The tests are conducted on two different multi-core architectures. One being Int
 	\end{comment}
 	
 \end{itemize}
-The details of architectures along with the measured bandwidths are given in \cref{tab:test_bed}. The bandwidths are measured using \likwidBench suite.
+The details of architectures along with the measured bandwidths are given in \cref{tab:test_bed}. 
 
 \begin{comment}
 \begin{table}[tbhp]
@@ -71,7 +70,7 @@ Furthermore all the measurements were done with  \CPU clock speeds fixed at freq
 Following external libraries are used in this paper. The application of these libraries will be stated at the point it is needed.
 \begin{itemize}
 	%TODO
-	\item \LIKWID \cite{LIKWID} \text{\tt{likwid-perfctr}} is used for measuring hardware performance counters and \text{\tt{likwid-bench}}  for measuring bandwidth.
+	\item \LIKWID \cite{LIKWID}  \text{\tt{likwid-perfctr}} is used for measuring hardware performance counters. The bandwidths shown in \cref{tab:test_bed} are measured using \likwidBench suite. All measurements are done using \LIKWID version 4.3.2.
 	\item \COLPACK \cite{COLPACK} is used for pre-processing matrix by \MCfull.
 	\item \SPMP \cite{SpMP} is used to perform \RCMfull (\RCM).
 	\item \METIS\cite{METIS} is used for graph partitioning in \ABMC approach.
@@ -80,11 +79,10 @@ Following external libraries are used in this paper. The application of these li
 \end{itemize}
 
 \subsection{Benchmark Matrices}
-All the test matrices are taken from SuiteSparse Matrix Collection (former University of Florida Sparse Matrix Collection) \cite{UOF} and quantum physics field (see \ESSEX project \cite{ESSEX} for more details). The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by combining the test matrices from two papers \cite{RSB,park_ls}. This enables easy comparison of results. Matrices from \ESSEX project are some of the matrices that are of interest in the iterative FEAST eigen value solver that internally uses Kaczmarz solver, these matrices can be generated using \SCAMACTfull open source library (\SCAMACT).{\CA but Graphene not} %TODO cite SCAMACT
-  Only matrices having undirected graphs are considered due to scope of the paper as mentioned in \cref{Sec:contribution}. Matrices along with some of their parameters are given in \cref{table:bench_matrices}. 
+All the test matrices are taken from SuiteSparse Matrix Collection (former University of Florida Sparse Matrix Collection) \cite{UOF} and quantum physics field, see \ESSEX project \cite{ESSEX} for more details. The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by combining the test matrices from two papers \cite{RSB,park_ls}. This enables easy comparison of results. Matrices from \ESSEX project are some of the matrices that are of interest in the iterative FEAST eigen value solver that internally uses Kaczmarz solver. Only matrices having undirected graphs are considered due to scope of the paper as mentioned in \cref{Sec:contribution}. Matrices along with some of their parameters are given in \cref{table:bench_matrices}. 
 \begin{table}[ht]
 	\footnotesize
-	\caption{Details of benchmark matrices. Matrices with an * symbol in the column `C' indicates that they are chosen corner cases and will be discussed in detail. Column `S' shows the source of the matrix, matrix without any label indicates they come from SuiteSparse Matrix Collection and one marked with * indicate they come from \SCAMACT matrix collection. {\CA maybe it's better to mention ESSEX since Graphene cannot be generated with SCAMACT} }\label{tab:test_mtx}
+	\caption{Details of benchmark matrices. Matrices with an * symbol in the column `C' indicates that they are chosen corner cases and will be discussed in detail. Column `S' shows the source of the matrix, matrix without any label indicates they come from SuiteSparse Matrix Collection and ones marked with * indicate they come from \ESSEX project.} \label{tab:test_mtx}
 	\label{table:bench_matrices}
 	\begin{center}
 		\input{pics/matrices/table.tex}
@@ -98,7 +96,7 @@ We evaluate our methods by parallelizing two simple but important kernels showin
 Both algorithms are closely related by structure and computational intensity to the widely used \SpMV kernel applicable to general matrices. Thus, we start with presenting the \SpMV kernel and its known computational intensity. We extend this discussion towards the \SymmSpmv and \SYMMKACZ and show how to derive upper realistic performance bounds. We chose the widely used \CRS matrix storage format for the serial implementation of the kernel and assume square matrices.
 
 \subsubsection{\SpMV}
-The \SpMV has no loop carried dependencies and parallelization of outer ($row$) loop using, e.g. OpenMP, is straightforward. 
+The \SpMV has no loop carried dependencies and parallelization of outer ($row$) loop using, \eg OpenMP, is straightforward. 
 \begin{algorithm}[H]
 	\caption{SpMV Find $b$ : $b=A x$} 
 	\label{alg:SpMV}
@@ -119,7 +117,7 @@ I_\mathrm{\SpMV} (\alpha)= \frac{2}{8+4+8*\alpha+\frac{20}{\NNZRmath}} \frac{Flo
 \end{equation}
 Here we assume that matrix data  ($A[], col[]$), left hand side vector ($b[]$) and row pointer information ($rowPtr[]$) are loaded once from main memory as these data structures are consecutively accessed. All quantities are calculated for the average costs of computing one non-zero element of the matrix. Thus, contributions which are independent of the inner (short) loop are rescaled by $\NNZRmath$ which is the average number of non-zeros per row (i.e. the average length of the inner loop).
 
-The $8*\alpha$ term represents contribution of accessing the right hand side (RHS) vector ($x[]$) irregularly. The value of $\alpha$ depends on the matrix structure (access pattern) as well as on the RHS vector data set size compared to the largest cache size. The smallest value of $\alpha=\frac{1}{\NNZRmath}$ is attained if the RHS vector is only loaded once from main memory to the cache and all subsequent accesses in the same \SpMV are cache hits. This limit is typically realized for matrices with low bandwidth (high access locality) or if the cache is large enough to hold the full RHS data during one \SpMV. The factor $\alpha$ can be determined by measuring the data traffic when executing the \SpMV; please see~\cite{Moritz_sell} for more details~\footnote{In~\cite{Moritz_sell} the traffic for the row pointer was not accounted, i.e. the denominator increases by $\frac{4}{\NNZRmath} Byte$.}.
+The $8*\alpha$ term represents contribution of accessing the right hand side (RHS) vector ($x[]$) irregularly. The value of $\alpha$ depends on the matrix structure (access pattern) as well as on the RHS vector data set size compared to the largest cache size. The smallest value of $\alpha=\frac{1}{\NNZRmath}$ is attained if the RHS vector is only loaded once from main memory to the cache and all subsequent accesses in the same \SpMV are cache hits. This limit is typically realized for matrices with low bandwidth (high access locality) or if the cache is large enough to hold the full RHS data during one \SpMV. The factor $\alpha$ can be determined by measuring the data traffic when executing the \SpMV; please see~\cite{Moritz_sell} for more details~\footnote{In~\cite{Moritz_sell} the traffic for the row pointer was not accounted, \ie the denominator increases by $\frac{4}{\NNZRmath} Byte$.}.
 
 \begin{comment}
 \subsubsection{\SpMTV}
@@ -168,14 +166,14 @@ I_\mathrm{\SymmSpmv} (\alpha) &= \frac{4}{8+4+24*\alpha+\frac{4}{\NNZRmathSYMM}}
 \text{ where,  } \NNZRmathSYMM &= (\NNZRmath-1)/2 + 1
 \end{align}
 
-For a given non-zero matrix element ($8 Byte + 4 Byte$) of the triangular matrix twice the amount of Flops ($4 Flops$)  are performed. In addition we have indirect access to the LHS vector (read and write) which increases the $\alpha$ contribution by $3\times$. The only term left scaling with \NNZRSYMM (number of non-zeros per row in upper triangular part of the matrix) is the consecutively accessed row pointer. Please note, the $alpha$ value for \SpMV and \SymmSpmv may be different (even for the same matrix and the same compute device) as in the latter case the two vectors are accessed irregularly and compete for the same amount of cache. Thus, we can assume that the $\alpha$ value measured for \SpMV ($\alpha_\mathrm{\SpMV}$) can be considered as a lower bound for \SymmSpmv. As performance is the product of computational intensity and the main memory bandwidth ($b_S$; see~\cref{tab:test_bed} for typical values) this approach provides an upper performance bound for \SymmSpmv for a given matrix structure:
+For a given non-zero matrix element ($8 Byte + 4 Byte$) of the triangular matrix twice the amount of Flops ($4 Flops$)  are performed. In addition we have indirect access to the LHS vector (read and write) which increases the $\alpha$ contribution by $3\times$. The only term left scaling with \NNZRSYMM (number of non-zeros per row in upper triangular part of the matrix) is the consecutively accessed row pointer. Please note, the $alpha$ value for \SpMV and \SymmSpmv may be different (even for the same matrix and the same compute device) as in the latter case the two vectors are accessed irregularly and compete for the same amount of cache. Thus we can assume that the $\alpha$ value measured for \SpMV ($\alpha_\mathrm{\SpMV}$) can be considered as a lower bound for \SymmSpmv. As performance is the product of computational intensity and the main memory bandwidth ($b_S$; see~\cref{tab:test_bed} for typical values) this approach provides an upper performance bound for \SymmSpmv for a given matrix structure:
  \begin{align}
 \label{eq:SymmSpMV_performance}
 P^{max}_\mathrm{\SymmSpmv}  &= I_\mathrm{\SymmSpmv} (\alpha_\mathrm{\SpMV})  \times b_S
 \end{align}
 As most matrices have a considerable number of non-zeros per row, we chose $b_S$ to be the optimistic (load-only) value  from~\cref{tab:test_bed}.
 
-Comparing~\cref{eq:SymmSpMV_intensity} and~\cref{eq:SpMV_intensity} it is obvious that the perfect speed-up of 2$\times$ when using \SymmSpmv instead of \SpMV is only attainable in the limit of small $\alpha$, i.e. for regularly structured matrices or low bandwidth matrices. Considering the large pre-factor of the $\alpha$ contribution, any implementation of \SymmSpmv must aim at ensuring high data locality. The indirect update of the LHS has also large impact on parallelization strategy as two rows which have a non-zero in the same column can not be computed in parallel. If using a graph based approach to this problem this is equivalent to the constraint that only vertices can be computed in parallel which have at least a distance of 2.
+Comparing~\cref{eq:SymmSpMV_intensity} and~\cref{eq:SpMV_intensity} it is obvious that the perfect speed-up of 2$\times$ when using \SymmSpmv instead of \SpMV is only attainable in the limit of small $\alpha$, \ie for regularly structured matrices or low bandwidth matrices. Considering the large pre-factor of the $\alpha$ contribution, any implementation of \SymmSpmv must aim at ensuring high data locality. The indirect update of the LHS has also large impact on parallelization strategy as two rows which have a non-zero in the same column can not be computed in parallel. If using a graph based approach to this problem this is equivalent to the constraint that only vertices can be computed in parallel which have at least distance 2.
 
 \begin{comment}
 \subsubsection{\GS and \SYMMGS}
@@ -229,7 +227,7 @@ The iterative Kaczmarz solver is a row-projection approach which inhibits a data
 From a computational perspective the kernel is closely related to \SpMV and \SymmSpmv but performs an in-place indirect vector update ($x[col[]]$). This vector update is the only contribution to the $\alpha$ value (leading to a pre-factor of $16$) and the computational intensity can be calculated as follows:
 \begin{equation}
 \label{eq:KACZ_intensity}
-I_\mathrm{KACZ} (\alpha)=  \frac{4}{8+4+16*\alpha+\frac{12}{nnzr}} \\%= 2*I_\mathrm{SpMTV}\\
+I_\mathrm{KACZ} (\alpha)=  \frac{4}{8+4+16*\alpha+\frac{12}{nnzr}} \frac{Flop}{Byte}\\
 \end{equation}
 Having two short inner loops does not impact the overall memory traffic (and also the computational intensity) as the data can be held in inner cache levels between the two inner loops. We can also ignore the impact of the divide operation as it is only done once per row and its cost is negligible for main memory bandwidth or latency bound scenarios.  
 
