@@ -5,9 +5,12 @@
 The method stated above was implemented and consolidated into a library called \RACE. The library provides easy interface for parallelizing kernels, user typically just needs to supply the serial code (with dependency) and hardware settings. Library will then parallelize, pin and run the code in parallel. The library is publicly available in the git repository. %TODO
 
 \subsection{Test setup}
-In the following we present the performance and convergence results obtained using the library, and compare it against state of art methods. Hardware and matrices as described in \cref{Sec:test_bed} is used for the following benchmarks. As mentioned in \cref{Sec:param_study} parameter $\epsilon_s$ is set to 0.8 and \RCM is used in level construction stage. All the experiments conducted here are using warmed up caches \ie we run the kernel for 100 times initially for warm-up and then we measure performance for the next 500 iteration of the same kernel. Mean performance of this 500 iterations is used to plot the results. 
+In the following we present the performance and convergence results obtained using the library, and compare it against state of art methods. \SymmSpmv and \SYMMKACZ are chosen as representative benchmark kernels. Hardware and matrices as described in \cref{Sec:test_bed} is used for the following benchmarks. As mentioned in \cref{Sec:param_study} parameter $\epsilon_s$ is set to 0.8 and \RCM is used in level construction stage. The matrix is pre-processed with \RCM for all the cases (even for \SpMV). \SPMP \cite{SpMP} library was used to do this \RCM pre-processing.
 
-The matrix is per-processed with \RCM for all the cases (even for \SpMV), except for \MC and \ABMC methods. The exclusion of \MC and \ABMC method is due to the fact that in most of the cases performance does not improve with \RCM pre-processing since they have their own re-ordering while in some case applying \MC/\ABMC on top of \RCM re-ordering leads to performance degradation. \SPMP \cite{SpMP} library was used to do this \RCM pre-processing.
+The test setup is so constructed that it replicates the behavior of these kernels in actual practical scenarios. Normally matrix vector multiplication is followed by different calls to other kernels that use other helper data. This may lead to eviction of residual data from matrix vector multiplication. In order to replicate this behavior for \SymmSpmv and \SpMV (used as reference) we use  two ring buffers holding vectors of size \nrows. Number of vectors in this ring buffer is chosen such that these two ring buffer occupy a size of 100 \MB, which is at least two times bigger that the combined cache size of the two architectures considered. The kernels are then run two times over these ring buffer, and mean performance of the runs is taken into account.
+
+For \SYMMKACZ there are two use cases. In one it is used as a plain iterative solver where the kernel is called successively. The other use case of this iterative solver is in algorithms like CGMN~\cite{CGMN, CGMN_gordon} or CARP-CG~\cite{CARP-CG} where \SYMMKACZ is used like a preconditioner, where an approach similar to \SymmSpmv have to be used for benchmarking. In this paper the benchmark is constructed to replicate the behavior of the former case, \ie we call the \SYMMKACZ kernel 500 times in succession and report the mean performance. It has to be noted that the difference in performance measurements between these two benchmarks is very small and only affects small matrices.
+
 
 \subsection{Corner Cases}
 
@@ -121,7 +124,7 @@ was used for multicoloring (\MC). \METIS \cite{METIS}  was used for graph partit
 \subsubsection{Iterative kernel}
 Here we compare  \RACE with \ABMC and \MC for Symm\KACZ kernel. Inverse runtime of Symm\KACZ kernel is shown in \cref{fig:symmkacz_dp}.
 
- Since each of the matrices reorder rows of the matrices they change convergence of each kernels, therefore we need to also study the convergence behavior. \Cref{fig:symmkacz_convergence} shows the plain performance and iterations required on \SKX (20 threads) architecture.
+ Since each of the matrix reordering changes convergence of the kernel, it is necessary here to also study the convergence behavior. \Cref{fig:symmkacz_convergence} shows the plain performance and iterations required on \SKX (20 threads) architecture.
 
 Note that matrices only compatible with the \KACZ solvers are shown in performance results.
 
