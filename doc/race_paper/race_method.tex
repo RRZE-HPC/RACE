@@ -2,28 +2,35 @@
 % This is information that is shared between the main document and any
 % supplement. If no supplement is required, then this information can
 % be included directly in the main document.
-Keeping in mind the observations from previous \cref{Sec:motivation}, one can observe that it would be best to maintain the non-zeros of matrix close to the diagonal. This was recognized previously for normal sparse matrix computations like \SpMV, and has led to the pre-processing of matrix by applying bandwidth reduction algorithms like ``\RCMfull" (\RCM) \cite{RCM,RCM_Sparse_computation}. Here, we aim to develop a method that does not distort this ideal permutations to a large extent and at the same time resolves \DK dependencies. 
+%Keeping in mind the observations from previous \cref{Sec:motivation}, one can observe that it would be best to maintain the non-zeros of matrix close to the diagonal. 
+Improving data locality for sparse matrix computations like \SpMV  is closely related to bandwidth reduction of the matrix. This was recognized previously and has led to the pre-processing of matrix by applying bandwidth reduction algorithms like ``\RCMfull" (\RCM) \cite{RCM,RCM_Sparse_computation}. Thus we start  with a bandwidth reduction approach and then apply a coloring scheme which conserves data locality. If necessary this scheme is applied recursively to obtain sufficient level of parallelism. Within this recursive step we further avoid the problem of global synchronization between threads.
+
+%Here, we aim to develop a method that does not distort this ideal permutations to a large extent and at the same time resolves \DK dependencies. 
  
-Our approach can be seen as a recursive level based method. Each step of the method basically consists of four steps namely:
+Our method can be divided into four steps:
 \begin{enumerate}
 	\item Level construction
 	\item Permutation
 	\item Distance-k coloring
 	\item Load balancing
 \end{enumerate}
-The method is strongly coupled to the hardware underneath and exploits only the parallelism as required by the hardware. If at the end of all these four steps one does not achieve sufficient parallelism, all the steps are recursively applied to selected sub-graphs of the matrix until sufficient parallelism is attained. Due to this recursive nature of our coloring method we cal it as ``\RACfullNoSpace" (\RAC).
+
+In the first two steps we basically apply bandwidth reduction algorithm including matrix reordering and level construction. We then use the information from the level construction step to form subsets of levels which allow for hardware efficient \DK coloring of the graph. Finally we present a concept to ensure load balancing between threads. As we apply these four steps recursively and work on the graph of the matrix we call this method  ``\RACfullNoSpace" (\RAC).
+
+
+%The method is strongly coupled to the hardware underneath and exploits only the parallelism as required by the hardware. If at the end of all these four steps one does not achieve sufficient parallelism, all the steps are recursively applied to selected sub-graphs of the matrix until sufficient parallelism is attained. Due to this recursive nature of our coloring method we cal it as ``\RACfullNoSpace" (\RAC).
 
 To explain the method in an easier and illustrative way we choose a simple matrix namely the sparse matrix associated with \STEX. The stencil, sparsity pattern and the corresponding graph of the matrix is shown in \cref{fig:2d-7pt}.
 
 \begin{figure}[tbhp]
 	\centering
-	\subfloat[Example stencil]{\label{fig:2d-7pt-a}\includegraphics[width=0.2\textwidth , height=0.13\textheight]{pics/2d-7pt/stencil.pdf}}
-	\hspace{1em}
+	\subfloat[\STEX]{\label{fig:2d-7pt-a}\includegraphics[width=0.17\textwidth , height=0.17\textheight]{pics/2d-7pt/stencil.pdf}}
+	\hspace{0.8em}
 	\subfloat[Sparsity
 	 pattern]{\label{fig:2d-7pt-b}\includegraphics[width=0.38\textwidth , height=0.19\textheight]{pics/2d-7pt/2d_7pt_bw.eps}}
 	\hspace{1em}
 	\subfloat[Graph]{\label{fig:2d-7pt-c}\includegraphics[width=0.32\textwidth , height=0.18\textheight]{pics/2d-7pt/stencil_2d_7pt.pdf}}
-	\caption{2d-7pt Stencil}
+	\caption{Shows basic stencil structure, sparsity pattern and graph of the \STEX on $8 \times 8$ lattice with Dirichlet boundary}
 	\label{fig:2d-7pt}
 \end{figure}
 
@@ -42,18 +49,19 @@ The following basic definitions from graph theory are used in the following sect
 \end{itemize}
 
 \subsection{Level Construction}\label{subsec:LEVEL_CONST}
-The first step of the \RACE method is level construction. The step concerns with finding different \levels in the graph \levels used here are same to the ones found in ``Breadth First Search" (\BFS) algorithm \cite{BFS}. First \level ($L(0)$) is chosen to consist of a selected root vertex. Rest of the levels ($L(i)$ for $i > 0$) are defined to  contain vertices that are in neighborhood of vertices in previous \level ($L(i-1)$) but not in level $L(i-2)$ \cite{BFS_level_def} \ie
+The first step of our \RACE method is finding different \levels in the graph. For presentation purpose we use the same \levels as determined by ``Breadth First Search" (\BFS) algorithm \cite{BFS}. \BFS can also be replaced with better bandwidth reduction algorithms like ``(Reverse) \CMfull".  In this process we first choose a root vertex to be the first level ($L(0)$). Rest of the levels ($L(i)$ for $i > 0$) are defined to  contain vertices that are in neighborhood of vertices in previous \level $L(i-1)$ but not in level $L(i-2)$ \cite{BFS_level_def} \ie
 \begin{equation}\label{eq:level}
 L(i) = 
 \begin{cases}
 	  u : u \in N(L(i-1)) \cap \overline{N(L(i-2))}  & \text{ if } i \neq 0 \\
 	 root & otherwise
 \end{cases}   
+ .
 \end{equation}
 
-From \cref{eq:level} one finds that the $i$-th \level consist of all vertices that have a minimum distance of $i$ from the root node. \Cref{alg:BFS} gives an algorithm to find each nodes minimum distance from the root. The total number of levels obtained with this graph traversal will be denoted as \totalLvl. \Cref{fig:2d_7pt_level_construction} shows \levels on the \STEX (\totalLvl = 14), where the main number on each vertex ($v$) refers to the vertex number and the superscript shows the \level number, \ie
+From \cref{eq:level} one finds that the $i$-th \level consist of all vertices that have a minimum distance of $i$ from the root node. \Cref{alg:BFS} gives an algorithm to determine each nodes minimum distance from the root. The total number of levels obtained with this graph traversal will be denoted as \totalLvl. \Cref{fig:2d_7pt_level_construction} shows the 14 \levels on the \STEX (\totalLvl = 14), where the main number on each vertex ($v$) refers to the vertex number and the superscript represents the \level number, \ie
 \begin{equation}\label{eq:node_notation}
-	v^i \implies v \in L(i)
+	v^i \implies v \in L(i).
 \end{equation}
 Note that this is substantially different to the \levels in methods like ``level-scheduling" \cite{saad} where depth (maximum distance) is sought after.
 
@@ -70,9 +78,11 @@ Note that this is substantially different to the \levels in methods like ``level
 
 
 \subsection{Permutation}\label{subsec:PERM}
-Once the \levels are known one has to permute the matrix in the order of its \levels, such that vertices in $L(i)$ appears before that of $L(i-1)$. Till this step the procedure is similar to that of \BFS pre-processing for bandwidth reduction. One could also replace \BFS with better bandwidth reduction algorithms like ``(Reverse) \CMfull". \Cref{fig:2d-7pt_step_1_2} shows the graph ($G' = P(G)$) of \STEX matrix after this permutation ($P$) is applied. Observe the difference in node numbering between original lexicographic ordering in \cref{fig:2d_7pt_level_construction} and \cref{fig:2d_7pt_perm}. Now the most important step for resolving dependencies (coloring) is to store the information about \levels. \Inorder to do this we use a data structure called \levelPtr. It stores the starting vector of each \levels, which implies that \levels on $G'$ can be identified as:
+Once the \levels are known one has to permute the matrix in the order of its \levels, such that the vertices in $L(i)$ appears before that of $L(i-1)$.  \Cref{fig:2d-7pt_step_1_2} displays the graph ($G' = P(G)$) of \STEX example after applying corresponding permutation ($P$). One observes a difference in node numbering between original lexicographic ordering in \cref{fig:2d_7pt_level_construction} and \cref{fig:2d_7pt_perm}. 
+
+Up to this step the procedure is similar to that of bandwidth reduction algorithms like \BFS or \RCM.Now the most important step for resolving dependencies (coloring) is to store the information about \levels. \Inorder to do this we use a data structure called \levelPtr. It stores the starting vector of each \levels, which implies that \levels on $G'$ can be identified as:
 \begin{equation*}
-	L(i) = \set{ u : u \in [\levelPtr[i]:(\levelPtr[i+1]-1)] \text{ and } u \in V(G')}
+	L(i) = \set{ u : u \in [\levelPtr[i]:(\levelPtr[i+1]-1)] \text{ and } u \in V(G')} .
 \end{equation*}
 
  \levelPtr for \STEX example is shown in \cref{fig:2d_7pt_levelPtr}, and one could easily read from \levelPtr that vertices from $\levelPtr(4)=7$ to $\levelPtr(5)-1=10$ belongs to $L(4)$.
