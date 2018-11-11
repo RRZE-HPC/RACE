@@ -89,6 +89,22 @@ All the test matrices are taken from SuiteSparse Matrix Collection (former Unive
 	\end{center}
 \end{table}
 
+\begin{table}[ht]
+	\footnotesize
+	\caption{Scamac matrices} \label{tab:test_mtx_scamac}
+	\begin{center}
+		\input{pics/matrices_scamac/table.tex}
+	\end{center}
+\end{table}
+
+\begin{table}[ht]
+	\footnotesize
+	\caption{nlpkkt matrices} \label{tab:test_mtx_nlpkkt}
+	\begin{center}
+		\input{pics/matrices_nlpkkt/table.tex}
+	\end{center}
+\end{table}
+
 \subsection{Kernels} \label{subsec:test_kernels}
 We evaluate our methods by parallelizing two simple but important kernels showing distance-2 dependencies. In the context of parallelization of symmetric sparse matrix vector (\SymmSpmv) the distance-2 coloring procedure prevents from concurrent update of the same vector entries by different threads resulting in the same result as the serial code (``exact kernel''). As an example of iterative solver we have chosen symmetric Kaczmarz (\SYMMKACZ). Here in addition to writes we also read from the same vector having dependency, which leads to change in convergence depending on the permutation (``inexact kernel'').
 % {\GW To be done As an example for an iterative solver with distance2 dependency we have chosen the \KACZ ...}

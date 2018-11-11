@@ -40,11 +40,11 @@ The following basic definitions from graph theory are used in the following sect
 	\item \textbf{Graph : } $G = (V,E)$ represents a graph where $V(G)$ belongs to set of vertices and $E(G)$ represents the edges in the graph. Note that we use $G$ for irreducible undirected graphs.
 	\item \textbf{Neighborhood :} Neighborhood of vertex $u$ represented as $N(u)$ is defined as:
 	\begin{equation*}
-	  N(u) = \set{ v : uv \in E}
+	  N(u) = \set{ v : uv \in E}.
 	\end{equation*}
 	\item \textbf{Subgraph :} In this paper a subgraph $H$ of graph $G$ specifically refers to the subgraph induced by vertices $V' \subseteq V(G)$ and is defined as
 	\begin{equation*}
-		H = (V', \set{ uv : uv \in E(G) \text{ and } u,v \in V'})
+		H = (V', \set{ uv : uv \in E(G) \text{ and } u,v \in V'}).
 	\end{equation*}
 \end{itemize}
 
@@ -80,7 +80,7 @@ Note that this is substantially different to the \levels in methods like ``level
 \subsection{Permutation}\label{subsec:PERM}
 Once the \levels are known one has to permute the matrix in the order of its \levels, such that the vertices in $L(i)$ appears before that of $L(i-1)$.  \Cref{fig:2d-7pt_step_1_2} displays the graph ($G' = P(G)$) of \STEX example after applying corresponding permutation ($P$). One observes a difference in node numbering between original lexicographic ordering in \cref{fig:2d_7pt_level_construction} and \cref{fig:2d_7pt_perm}. 
 
-Up to this step the procedure is similar to that of bandwidth reduction algorithms like \BFS or \RCM.Now the most important step for resolving dependencies (coloring) is to store the information about \levels. \Inorder to do this we use a data structure called \levelPtr. It stores the starting vector of each \levels, which implies that \levels on $G'$ can be identified as:
+Up to this step the procedure is similar to that of bandwidth reduction algorithms like \BFS or \RCM. Now the most important step for resolving dependencies (coloring) is to store the information about \levels. \Inorder to do this we use a data structure called \levelPtr. It stores the starting vector of each \levels, which implies that \levels on $G'$ can be identified as:
 \begin{equation*}
 	L(i) = \set{ u : u \in [\levelPtr[i]:(\levelPtr[i+1]-1)] \text{ and } u \in V(G')} .
 \end{equation*}
@@ -89,22 +89,24 @@ Up to this step the procedure is similar to that of bandwidth reduction algorith
  
  
  \subsection{Distance-k coloring} \label{subsec:DK}
- Two vertices are called \DK neighbours if the shortest path connecting them consists of at most $k$ edges \cite{dist_k_def}. This implies $u$ is a \DK neighbour of $v$ (denoted as $u\xrightarrow{k}v$)  if
+In this section we introduce the idea of \DK neighbor and show how this idea can be used to color the matrix with the help of the level information that we already have in hand.
+
+ Two vertices are called \DK neighbors if the shortest path connecting them consists of at most $k$ edges \cite{dist_k_def}. This implies $u$ is a \DK neighbor of $v$ (denoted as $u\xrightarrow{k}v$)  if
  \begin{equation}\label{eq:dk}
-	  u\xrightarrow{k}v  \iff  v \in \set{ u \cup N(u) \cup N^2(u) \cup ... N^k(u) }	 
+	  u\xrightarrow{k}v  \iff  v \in \set{ u \cup N(u) \cup N^2(u) \cup ... N^k(u) }.	 
  \end{equation}
  Since we consider only undirected graph $u\xrightarrow{k}v$ also implies $v\xrightarrow{k}u$. 
-  After having the permuted graph $G'$ one can show that $L(i)$ and $L(i+k+j)$ where $j\geq1$ are \DK independent as shown in the following \cref{corollary_dk}:
+Having the permuted graph $G'$ one can show that $L(i)$ and $L(i+k+j)$  are \DK independent for all $j\geq1$ as shown in the following.
   \begin{corollary}\label{corollary_dk}
    $L(i)$ and $L(i\pm(k+j))$ are \DK independent $\forall j\geq1$. 
   \end{corollary}
   \begin{proof}
-  	We prove by contradiction. Let there exist $u,v \in V(G')$ such that  $u \in L(i)$ and $v \in  L(i \pm (k+j)) \forall j\geq1$. Assume $u,v$ are \DK neighbours ($u\xrightarrow{k}v$). From \cref{eq:level}, \cref{eq:dk} and the fact $G'$ is undirected we get 
+  	We prove by contradiction. Let there exist $u,v \in V(G')$ such that  $u \in L(i)$ and $v \in  L(i \pm (k+j)) \forall j\geq1$. Assume $u,v$ are \DK neighbors ($u\xrightarrow{k}v$). From \cref{eq:level}, \cref{eq:dk} and the fact $G'$ is undirected we get 
   	\begin{align*}
 	  	u\xrightarrow{k}v \iff & v \in \set{L(i) \cup L(i \pm 1) \cup ... \cup L(i \pm k)} \\
 	  	\implies & v \notin L(i \pm (k+j) \text{  } \forall j \geq 1
   	\end{align*}
-  	which is a contradiction to the fact $v \in L(i \pm (k+j) ) \forall j \geq 1$, this implies $u$ and $v$ are \DK independent.
+  	which contradicts to $v \in L(i \pm (k+j) ) \forall j \geq 1$. This implies $u$ and $v$ are \DK independent.
   \end{proof}
 
 \Cref{corollary_dk} implies that if we leave a gap of \emph{\atleast} one \level between any two \levels ($L(i), L(i+2)$ for example) all the vertices between them are \DONE independent. Similarly if there is a gap of \emph{\atleast} two \levels between any two \levels ($L(i), L(i+3)$ for example) we get \DTWO independent levels.
@@ -118,18 +120,18 @@ Up to this step the procedure is similar to that of bandwidth reduction algorith
  	\label{fig:2d-7pt_d1_d2}
  \end{figure}
  
-  Due to this weak definition in \cref{corollary_dk} there exists many possibility to make \levels independent of each other and \cref{fig:2d-7pt_d1_d2} shows one such possibility each for \DONE and \DTWO independent \levels. One could also group some more of nearby \levels together to form a \levelGroup, and make this \DONE or \DTWO independent of other \levelGroups. The $i$-th \levelGroup would be denoted by $T(i)$. Difference between \level and  \levelGroup can be seen in \cref{fig:2d_7pt_d2}, for \cref{fig:2d_7pt_d1} \levelGroup and \level coincides.
+  {\CA Maybe more explanation is required.} Due to this weak definition in \cref{corollary_dk} there exists many possibility to make \levels independent of each other. \Cref{fig:2d-7pt_d1_d2} illustrates one such possibility each for \DONE and \DTWO independent \levels. One could also group some more of nearby \levels together to form a \levelGroup, and make this \DONE or \DTWO independent of other \levelGroups. The $i$-th \levelGroup would be denoted by $T(i)$. Difference between \level and  \levelGroup can be seen in \cref{fig:2d_7pt_d2}, for \cref{fig:2d_7pt_d1} \levelGroup and \level coincides.
   
-  In principle one could compute on all independent \levelGroups in parallel, but sequentially within a \levelGroup, i.e. for example in \cref{fig:2d_7pt_d2} $T(0)$, $T(2)$, $T(4)$, $T(6)$ can be operated by four different threads in parallel and in the next sweep rest \levelGroups. For the configurations seen in \cref{fig:2d-7pt_d1_d2} this would mean we have $\frac{\totalLvlMATH}{2}$ and $\frac{\totalLvlMATH}{4}$ parallelism for \DONE and \DTWO kernels respectively.
+  In principle one could compute on all independent \levelGroups in parallel, but sequentially within a \levelGroup, \ie for example in \cref{fig:2d_7pt_d2} $T(0)$, $T(2)$, $T(4)$, $T(6)$ can be operated by four different threads in parallel and in the next sweep rest \levelGroups. For the configurations seen in \cref{fig:2d-7pt_d1_d2} then we have $\frac{\totalLvlMATH}{2}$ and $\frac{\totalLvlMATH}{4}$ parallelism for \DONE and \DTWO kernels respectively.
   
-  But the problem with the configurations like the one seen in \cref{fig:2d-7pt_d1_d2} is that there is load imbalances between threads as the number of rows (\nrows) per \levelGroup is not distributed evenly. As seen here in the case of \STEX the threads working on extreme ends of graph (\eg $T(1), T(7)$) have small amount of work compared to the threads working on middle (\eg $T(3), T(4)$). 
+ However the problem with the configurations like the one seen in \cref{fig:2d-7pt_d1_d2} {\CA is that there, check Holger's comment} is load imbalances between threads because the number of rows (\nrows) per \levelGroup is not distributed evenly. As seen here in the case of \STEX the threads working on extreme ends of graph (\eg $T(1), T(7)$) have a small amount of work compared to the threads working on middle (\eg $T(3), T(4)$). 
   
   \subsection{Load balancing}\label{subsec:LB}
-  Depending on the matrix each \levelGroup would contain different number of rows, which leads to load imbalances as seen above in \cref{subsec:DK}. \Inorder to avoid this problem we employ a load balancing scheme. At this step  we plug in detail from hardware side like for example total parallelism. The idea is to exploit only the parallelism as required by the hardware while at the same time maintain \DK constraint seen in \cref{corollary_dk}. To balance the load more nearby \levels would be added to a \levelGroup which has less number of \nrows and at \levelGroup where we have considerably big \levels only sufficient amount of \levels to maintain \DK constraint would be assigned. Assigning nearby levels instead of a random level further helps in preserving data locality. 
+  Depending on the matrix each \levelGroup contains different number of rows, that leads to load imbalances as {\CA seen above} in \cref{subsec:DK}. \Inorder to avoid this problem we employ a load balancing scheme. At this step  we plug in details from the hardware side  namely the total parallelism required by the hardware. The idea is to exploit only the required parallelism while at the same time maintain \DK constraint seen in \cref{corollary_dk}. To balance the load more nearby \levels would be added to a \levelGroup ($T(x)$) which has less number of rows ($\nrowsMath(T(x))$) and at \levelGroup where we have considerably big \levels only sufficient amount of \levels to maintain \DK constraint would be assigned. Assigning nearby levels instead of others further helps in preserving data locality. 
   
-  An algorithm for load balancing can be found in \cref{alg:LB}. The aim of the algorithm is to reduce combined variance of number of rows ($\nrowsMath(T(i))$) in each \levelGroup $T(i)$. It does this by calculating mean and variance of $T\_size$ in each parallel sweeps, where $T\_size(i)=\nrowsMath(T(i))$. For example in \cref{fig:2d_7pt_d2} we need to calculate mean of $T\_size$ of all \levelGroups in red sweep and blue sweep separately. The combined variance is then found by summing up the variances in each parallel sweep. \Inorder to reduce this combined variance we select the \levelGroup that has biggest absolute deviation from mean and try to add/remove levels to/from this \levelGroup from/to a \levelGroup that has biggest/least signed deviation. While removing \levels from a \levelGroup one has to take care that the \DK coloring is not violated, for example in case of \DTWO and two sweep scheme as seen in \cref{fig:2d_7pt_d2} we need to ensure at least two levels remain in a \levelGroup. To aid this shifting of \levels to/from \levelGroup we use the pointers to \levelGroup denoted by $T\_ptr$. Doing this process in an iterative way finally we end up in a state with lowest combined variance at which no further moves are possible either due to violation of \DK dependency or due to increase in combined variance. \Cref{fig:lb_alg} shows step by step procedure involved in load balancing and \cref{fig:2d_7pt_lb} shows \levelGroups after load balancing applied on \STEX example of size $16 \times 16.$
+  An algorithm for load balancing can be found in \cref{alg:LB}. The aim of the algorithm is to reduce combined variance of number of rows ($\nrowsMath(T(i))$) in each \levelGroup $T(i)$. It does this by calculating mean and variance of $T\_size$ in each parallel sweeps, where $T\_size(i)$ is $\nrowsMath(T(i))$(number of rows in $T(i)$). For example in \cref{fig:2d_7pt_d2} we need to calculate mean of $T\_size$ of all \levelGroups in red sweep and blue sweep separately. The combined variance is then found by summing up the variances in each parallel sweep. \Inorder to reduce this combined variance we select the \levelGroup that has biggest absolute deviation from mean and try to add/remove levels to/from this \levelGroup from/to a \levelGroup that has biggest/least signed deviation. While removing \levels from a \levelGroup one has to take care that the \DK coloring is not violated, for example in case of \DTWO and two sweep scheme as seen in \cref{fig:2d_7pt_d2} we need to ensure at least two levels remain in a \levelGroup. To aid this shifting of \levels we use a pointer denoted as $T\_ptr$. $T\_ptr$ points to the beginning of each \levelGroup, therefore shifting them changes the size of \levelGroups. Doing this process in an iterative way finally we end up in a state with lowest combined variance at which no further moves are possible either due to violation of \DK dependency or due to increase in combined variance. \Cref{fig:lb_alg} shows step by step procedure involved in load balancing and \cref{fig:2d_7pt_lb} shows \levelGroups after load balancing applied on \STEX example of size $16 \times 16.$
 
-  One could also do this entire load balancing based on number of non-zeros (\nnz) rather than \nrows, in this case $T\_size(i)=\nnzMath(T(i))$.
+  One could also do this entire load balancing based on number of non-zeros (\nnz) rather than \nrows, in this case $T\_size(i)=\nnzMath(T(i))$ (non-zeros in $T(i)$).
   
    \begin{figure}[tbhp]
    	\centering
@@ -151,10 +153,10 @@ Up to this step the procedure is similar to that of bandwidth reduction algorith
      
 
 	\subsection{Recursion}\label{subsec:REC}
-	As seen above in \cref{subsec:DK} maximum amount of parallelism by the above approach depends on \totalLvl, also for most of the graphs as we approach the limit of parallelism there is not much room for load balancing, leading to imbalances. Depending on matrix and hardware underneath this might lead to inefficient utilization of resources. \Inorder to avoid this problem we use the concept of recursion and exploit further parallelism if required by the hardware. Idea here is to intelligently select sub-graph(s) of the entire matrix and apply all the four steps recursively on this \subgraph. In the following we will show this concept in the context of \DONE and  later we will extent it to \DK dependencies. Further we will discuss on the method employed to select proper sub-graph and to have a globally balanced load.
+	As seen above in \cref{subsec:DK} maximum amount of parallelism by the above approach depends on total number of levels (\totalLvl), also for most of the graphs as we approach the limit of parallelism there is not much room for load balancing, leading to imbalances. Depending on matrix and hardware underneath this might lead to inefficient utilization of resources. \Inorder to avoid this problem we use the concept of recursion and exploit further parallelism if required by the hardware. Idea here is to intelligently select sub-graph(s) of the entire matrix and apply all the four steps recursively on this \subgraph. In the following we will show this concept in the context of \DONE and  later we will extent it to \DK dependencies. Further we will discuss on the method employed to select proper sub-graph and to have a globally balanced load.
 	
 	\subsubsection{Distance-$1$}
-	\LevelGroups which we constructed till now belongs to stage 1 of recursion and to make the explanations easier the stage number of recursion would be denoted as subscript \ie for example $L_s(i)$ denotes \level $i$ of stage $s$. Contrary to methods like \MCfull we didn't require each nodes in a color to be \DONE independent of each other, rather we had a weak constraint as prescribed by \cref{corollary_dk}. Due to this there can exist more parallelism within a \levelGroup. For example in \cref{fig:rec_d1_s1} we see that within third \levelGroup (T$_1$(3)=L$_1$(3)) vertices $4 \not\xrightarrow{1} 5$ ($4$  \DONE independent to $5$), $4 \not\xrightarrow{1} 6$, $4 \not\xrightarrow{1} 7$ and $5 \not\xrightarrow{1} 7$, implying each of these pairs can be computed in parallel without any \DONE conflicts. This parallelism couldn't be exploited in stage 1 since vertices in $L_1(i)$ (here $i=3$) were connected to preceding \level $L_1(i-1)$ although some of them were not \DONE dependent within $L_1(i)$. \Inorder to exploit this parallelism we use the concept of recursion.
+	\LevelGroups which we constructed till now belong to first stage of recursion. Stage number of recursion is denoted using subscript, \ie for example $L_s(i)$ denotes \level $i$ of stage $s$. Contrary to methods like \MCfull we didn't require each nodes in a color to be \DONE independent of each other, rather we had a weak constraint as prescribed by \cref{corollary_dk}. Due to this there can exist more parallelism within a \levelGroup. For example in \cref{fig:rec_d1_s1} we see that within third \levelGroup of first stage (T$_1$(3)) vertices $4 \not\xrightarrow{1} 5$ ($4$  \DONE independent to $5$), $4 \not\xrightarrow{1} 6$, $4 \not\xrightarrow{1} 7$ and $5 \not\xrightarrow{1} 7$, implying each of these pairs can be computed in parallel without any \DONE conflicts. This parallelism couldn't be exploited in stage 1 since vertices in $L_1(i)$ (here $i=3$) were connected to preceding \level $L_1(i-1)$ although some of them were not \DONE dependent within $L_1(i)$. \Inorder to exploit this parallelism we use the concept of recursion.
 	
      \begin{figure}[thbp]
      	\centering
@@ -185,17 +187,17 @@ Up to this step the procedure is similar to that of bandwidth reduction algorith
      	\label{fig:rec_d1_s2}
      \end{figure}
      
-     \Cref{fig:rec_d1_s2} shows an illustration of applying stage 2 of recursion on $T_1(3)$ to find more parallelism. To incorporate the information of levels after recursion we extent the definition in \cref{eq:node_notation} to the following:
+     \Cref{fig:rec_d1_s2} shows an illustration of applying stage 2 of recursion on $T_1(3)$. To incorporate the information of levels in different stages of recursion onto the vertices we extent the definition in \cref{eq:node_notation} to the following:
 	 \begin{equation}
 	    v^{i,j,k...} \implies v \in \set{L_1(i) \cap L_2(j) \cap L_3(k) \cap ...} 
 	 \end{equation}
-     
-     Note that the \subgraphs might have multiple islands (group of vertices in a graph that are not connected to rest of the graph). For example vertex 4 in \cref{fig:rec_d1_s2_b} is an island in the considered \subgraph, similarly vertices 5,6,7 combine to form an island. Since an island is totally disconnected from the rest of the graph it can be executed in parallel to rest of the graph. To take advantage of this the starting node in next island is assigned with an increment of two levels, as seen in \cref{fig:rec_d1_s2_c}. Due to this there exists multiple valid \DONE configuration (here \cref{fig:rec_d1_s2_d,fig:rec_d1_s2_e}) and the selection of the optimal one will be done in the final load balancing step of a particular stage as described in \cref{subsec:LB}.    
+	 
+     In this case at the end of recursion (\cf \cref{fig:rec_d1_s2_d}, \cref{fig:rec_d1_s2_e}) on $T_1(3)$ we obtain parallelism for two more threads. Note that the \subgraphs might have multiple islands (group of vertices in a graph that are not connected to rest of the graph). For example vertex 4 in \cref{fig:rec_d1_s2_b} is an island in the considered \subgraph, similarly vertices 5,6,7 combine to form an island. Since an island is totally disconnected from the rest of the graph it can be executed in parallel to rest of the graph. To take advantage of this the starting node in next island is assigned with an increment of two levels, as seen in \cref{fig:rec_d1_s2_c}. Due to this there exists multiple valid \DONE configuration (\cf \cref{fig:rec_d1_s2_d,fig:rec_d1_s2_e}) and the selection of the optimal one will be done in the final load balancing step of a particular stage as described in \cref{subsec:LB}.    
      
      With this recursive process we were able to find independent \levelGroups ($T_{s+1}$) within \levelGroup of previous stage ($T_s$) and therefore the thread which works on $T_s$ has to spawn threads to parallelize within $T_{s+1}$.
      
 	\subsubsection{Distance-$k$}
-	For \DK the same procedure as \DONE applies, except with a slight difference in selecting the \subgraph. In \DONE we considered \subgraphs induced by \levelGroups, but for \DK coloring this is not sufficient. As seen in \cref{fig:rec_d2_wrong} for \DTWO coloring the selection of $T_1(2)$ as \subgraph did not guarantee \DTWO independency between \levelGroup $T_2$ within the \subgraph. This is due to the fact for $k>1$ dependency vertices $a,b$ within a \subgraph might be connected to a common vertex ($c$) outside the \subgraph leading to a \DK dependency between $a$ and $b$. In \cref{fig:rec_d2_wrong} we see 	$4 \xrightarrow{1} 2 \text{ \& } 7 \xrightarrow{1} 2 	\implies 4 \xrightarrow{2} 7$, but since vertex 2 was not in the \subgraph considered we missed this dependency. 
+	For \DK the same procedure as \DONE applies, except with a slight difference in selecting the \subgraph. In \DONE we considered \subgraphs induced by \levelGroups, but for \DK coloring this is not sufficient. As seen in \cref{fig:rec_d2_wrong} for \DTWO coloring the selection of $T_1(2)$ as \subgraph did not guarantee \DTWO independency within \levelGroup $T_2$ of the \subgraph, $T_2(1)$ and $T_2(3)$ not independent (\cf \cref{fig:rec_d2_wrong_d}). This is due to the fact for $k>1$ dependency vertices $a,b$ within a \subgraph might be connected to a common vertex ($c$) outside the \subgraph leading to a \DK dependency between $a$ and $b$. In \cref{fig:rec_d2_wrong} we see 	$4 \xrightarrow{1} 2 \text{ \& } 7 \xrightarrow{1} 2 	\implies 4 \xrightarrow{2} 7$, but since vertex 2 was not in the \subgraph considered we missed this dependency. 
 
 	
      \begin{figure}[thbp]
@@ -211,11 +213,12 @@ Up to this step the procedure is similar to that of bandwidth reduction algorith
      	\label{fig:rec_d2_wrong}
      \end{figure}
    
-   \Inorder to resolve such dependency we have to consider an extra $(k-1)^{th}$ interface level(s) of the selected \subgraph for the level construction step. $k^{th}$ interface level of subgraph $L_s(j)$, denoted as $I^k(L_s(j))$, is defined as follows:
+   \Inorder to resolve such dependency we have to consider an extra $(k-1)^{th}$ interface level(s) of the selected \subgraph for the level construction step. The $k^{th}$ interface level(s) of subgraph $L_s(j)$, denoted as $I^k(L_s(j))$, is defined as follows:
    \begin{equation*}
 	   I^k(L_s(j)) = \set{u : u \xrightarrow{k} v \text{  } \forall v \in L_s(j) \text { and } u \notin L_s(j)}
    \end{equation*}
-   For \DTWO this would mean we have to include 1 interface level, the new selection is illustrated in \cref{fig:rec_d2_correct}. With the new \subgraph selection for \DTWO coloring as seen in \cref{fig:rec_d2_correct_a}, the result after third step remains correct with respect to \DTWO coloring. In the example vertices 4 and 7 which had same color previously now gets a different color in (see \cref{fig:rec_d2_correct_d}). 
+   For \DTWO this would mean we have to include $1^{st}$ interface level, the new selection is illustrated in \cref{fig:rec_d2_correct}. If we then do all the four steps with the newly created \subgraph, the final result will preserve \DTWO coloring (see \cref{fig:rec_d2_correct_c}). In the example it can be observed vertices 4 and 7 which previously had same color now get assigned to different colors (see \cref{fig:rec_d2_correct_d}). Note that the interface levels have to be considered only in the first step namely level construction in the rest of the steps we just need to consider target \subgraphs induced by \levelGroups \ie in \cref{fig:rec_d2_correct} the \subgraph induced by $T_1(2)$. 
+   
      
      \begin{figure}[thbp]
      	\centering
@@ -231,8 +234,7 @@ Up to this step the procedure is similar to that of bandwidth reduction algorith
      	\label{fig:rec_d2_correct}
      \end{figure}
      
-     Note that the interface levels have to be considered only in the first step namely level construction in the rest of the steps we just need to consider target \subgraphs induced by \levelGroups \ie in \cref{fig:rec_d2_correct} the \subgraph induced by $T_1(2)$. 
-   
+
        \begin{figure}[H]
        	\begin{minipage}[c]{0.62\textwidth}
        		\includegraphics[height=0.25\textheight,width=0.9\textwidth]{pics/recursion/2d-7pt_example/2d-7pt/stencil_2d_7pt}
@@ -251,9 +253,9 @@ Up to this step the procedure is similar to that of bandwidth reduction algorith
        	\end{minipage}
        \end{figure}
      
-     \Cref{fig:rec_2d-7pt_graph} (left) shows \DTWO coloring of \STEX example for eight threads. Here we see recursion is applied to \levelGroups $T_1(5),T_1(6),T_1(7)$ and $T_1(8)$. In this case each of the \levelGroups where recursion is applied spawns parallelism for two threads. The choice of \levelGroups to refine and number of threads needed from each recursion are determined using a global load balancing technique as will be explained in \cref{subsec:subgraph_selection}.
+     \Cref{fig:rec_2d-7pt_graph} (left) shows \DTWO coloring of \STEX example for eight threads. Here we see recursion is applied to \levelGroups $T_1(5),T_1(6),T_1(7)$ and $T_1(8)$. In this case each of the \levelGroups where recursion is applied spawns parallelism for two threads. The selection of \levelGroups to refine and number of threads needed from each recursion are determined using a global load balancing technique as will be explained in \cref{subsec:subgraph_selection}.
      
-      \Cref{fig:rec_2d-7pt_graph} (right) shows the execution order of different \levelGroups. Note the usage of nested parallelism \ie for example thread responsible for $T_1(5)$ spawns two child threads to execute $T_2(1) \subset T_1(5)$ and $T_2(3) \subset T_1(5)$ in parallel, as well as $T_2(2) \subset T_1(5)$ and $T_2(4) \subset T_1(5)$ in parallel. At the end of each {\tt for parallel all color} there is synchronization between threads assigned to \levelGroup of corresponding color. Since each of the leaf need to synchronize only with it's siblings (leaves of same parent)  we use simple point to point synchronization scheme. 
+      \Cref{fig:rec_2d-7pt_graph} (right) shows the execution order of different \levelGroups. Note the usage of nested parallelism, \ie for example thread responsible for $T_1(5)$ spawns two child threads to execute $T_2(1) \subset T_1(5)$ and $T_2(3) \subset T_1(5)$ in one parallel sweep, and $T_2(2) \subset T_1(5)$ and $T_2(4) \subset T_1(5)$ in next parallel sweep. At the end of each {\tt for parallel all color} there is synchronization between threads assigned to \levelGroup of corresponding color. Since each of the leaf need to synchronize only with it's siblings (leaves of same parent)  we use simple point to point synchronization scheme. 
           
        
 	\subsubsection{Internal representation of recursively generated \boldmath{\levelGroups}} \label{subsec:level_tree}
@@ -261,7 +263,7 @@ Up to this step the procedure is similar to that of bandwidth reduction algorith
 	
 	 \begin{figure}[thbp]
 		 \includegraphics[width=\textwidth, height=0.2\textheight]{pics/recursion/2d-7pt_example/tree/tree}
-	 	\caption{\levelTree corresponding to \STEX example for domain size $16 \times 16$, and 8 threads. The range (square brackets) specified in each leaves represent the vertices belonging to each \levelGroup, the \nrowsEff (see \cref{Sec:param_study}) is represented within angle brackets, and the id refers to the thread id assigned to each \levelGroups in fill type pinning .}
+	 	\caption{\levelTree corresponding to \STEX example for domain size $16 \times 16$, and 8 threads. The range (square brackets) specified in each leaves represent the vertices belonging to each \levelGroup, the \nrowsEff (see \cref{Sec:param_study}) is represented within angle brackets, and the id refers to the thread id assigned to each \levelGroups assuming compact pinning .}
 	 	\label{fig:rec_2d-7pt_tree}
 	 \end{figure}
 

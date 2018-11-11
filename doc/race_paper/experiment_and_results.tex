@@ -82,6 +82,23 @@ In the case of \emph{parabolic\_fem} matrix we theoretically have a good efficie
 	\label{fig:symm_spmv}
 \end{figure}
 
+\begin{figure}[thbp]
+	\centering
+	\subfloat[\SymmSpmv on 1 socket of \IVB]{\label{fig:symm_spmv_ivy_nlpkkt}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx/ivy_nlpkkt}}
+	\hspace{1em}
+	\subfloat[\SymmSpmv on 1 socket of \SKX]{\label{fig:symm_spmv_skx_nlpkkt}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx/skx_nlpkkt}}
+	\caption{\SymmSpmv performance for nlpkkt matrices}
+	\label{fig:symm_spmv_nlpkkt}
+\end{figure}
+
+\begin{figure}[thbp]
+	\centering
+	\subfloat[\SymmSpmv on 1 socket of \IVB]{\label{fig:symm_spmv_ivy_scamac}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx/ivy_scamac}}
+	\hspace{1em}
+	\subfloat[\SymmSpmv on 1 socket of \SKX]{\label{fig:symm_spmv_skx_scamac}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx/skx_scamac}}
+	\caption{\SymmSpmv performance for SCAMAC matrices}
+	\label{fig:symm_spmv_scamac}
+\end{figure}
 
 %\begin{figure}[thbp]
 %	\centering
