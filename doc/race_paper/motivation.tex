@@ -1,3 +1,4 @@
+{\CA I am not convinced in putting this section with previous one, since this is not related to test bed, section name could be changed}
 % SIAM Shared Information Template
 % This is information that is shared between the main document and any
 % supplement. If no supplement is required, then this information can
@@ -55,7 +56,7 @@ In order to get a better understanding of the underlying problem it's convenient
 
 %Overall for all the matrix in our test-suite it was seen that average drop in performance by \MCfull was almost a factor of two on a single socket of \IVB. Although for most of them performance could be improved by \ABMCfull (\ABMC), still the results we obtained were not optimal (especially for large matrices) when compared to performance models which we will see later in \cref{Sec:expt}. This led to the development of a method which works on a common data format like \CRS in which most of the other kernels are written and at the same time preserves data locality, reduce synchronization overheads and false sharing. 
 
-In the following we address the above mentioned problems and formulate an improved hardware friendly coloring method called \RACfull (\RAC) to alleviate these issues. This leads to substantial performance improvements, as seen in the case of Spin-26 matrix. Here we achieve close to optimal data traffic and a performance of 7.3 \GF(see \cref{fig:motivation}) which corresponds to 82 \% of our performance model using load-only bandwidth.
+In the following we address the above mentioned problems and formulate an improved hardware friendly coloring method called \RACE to alleviate these issues. This leads to substantial performance improvements, as seen in the case of Spin-26 matrix. Here we achieve close to optimal data traffic and a performance of 7.3 \GF(see \cref{fig:motivation}) which corresponds to 82 \% of our performance model using load-only bandwidth.
 
  
 

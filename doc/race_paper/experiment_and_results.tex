@@ -2,7 +2,7 @@
 % This is information that is shared between the main document and any
 % supplement. If no supplement is required, then this information can
 % be included directly in the main document.
-The method stated above was implemented and consolidated into a library called \RACE. The library provides easy interface for parallelizing kernels, user typically just needs to supply the serial code (with dependency) and hardware settings. Library will then parallelize, pin and run the code in parallel. The library is publicly available in the git repository. %TODO
+The method stated above was implemented and consolidated into \RACE library. The library provides easy interface for parallelizing kernels, user typically just needs to supply the serial code (with dependency) and hardware settings. Library will then parallelize, pin and run the code in parallel. The library is publicly available in the git repository. %TODO
 
 \subsection{Test setup}
 In the following we present the performance and convergence results obtained using the library, and compare it against state of art methods. \SymmSpmv and \SYMMKACZ are chosen as representative benchmark kernels. Hardware and matrices as described in \cref{Sec:test_bed} is used for the following benchmarks. As mentioned in \cref{Sec:param_study} parameter $\epsilon_s$ is set to 0.8 and \RCM is used in level construction stage. The matrix is pre-processed with \RCM for all the cases (even for \SpMV). \SPMP \cite{SpMP} library was used to do this \RCM pre-processing.
@@ -14,15 +14,7 @@ For \SYMMKACZ there are two use cases. In one it is used as a plain iterative so
 
 \subsection{Corner Cases}
 
-\begin{figure}[tbhp]
-	\centering
-	\subfloat[\emph{crankseg\_1}]{\label{fig:crankseg_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/crankseg_1}}
-	\subfloat[\emph{inline\_1}]{\label{fig:inline_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/inline_1}}	
-	\subfloat[\emph{parabolic\_fem}]{\label{fig:parabolic_fem_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/parabolic_fem}}
-	\subfloat[\emph{Graphene-4096}]{\label{fig:Graphene-4096_scaling} \includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/Graphene-4096}}	
-	\caption{Scaling of \SymmSpmv with RACE compared to \SpMV on one socket of \SKX architecture, for corner case matrices.}
-	\label{fig:corner_cases_scaling}
-\end{figure}
+
 
 \Cref{fig:corner_cases_scaling} shows the scaling performance of \SymmSpmv and \SpMV (baseline) kernel for corner case matrices on one socket of \SKX architecture. Chosen corner case matrices represent different aspects and bottlenecks that appear either due to \RACE method or because of hardware capabilities.
 

@@ -23,7 +23,7 @@ Once the information is propagated up the tree and as it reaches the root we hav
 	\eta &= \frac{\threadEffMath}{\nthreadsMath} \label{eq:eta}
 \end{align}
 
-For example in our \STEX example, \cref{fig:rec_2d-7pt_tree} shows \nrowsEff for each leaves in angular brackets and here $\threadEffMath = 5.8$ and $\eta = 0.725$. The value of $\eta = 1$ implies there is perfect load balancing which is almost impossible. In general $0 < \eta \leq 1$. This parameter $\eta$ will be used as a measure of quality in parameter study.
+For example in our \stex, \cref{fig:rec_2d-7pt_tree} shows \nrowsEff for each leaves in angular brackets and here $\threadEffMath = 5.8$ and $\eta = 0.725$. The value of $\eta = 1$ implies there is perfect load balancing which is almost impossible. In general $0 < \eta \leq 1$. This parameter $\eta$ will be used as a measure of quality in parameter study.
 
 \subsection{Case study}
 A given matrix has a fixed amount of parallelism and as the amount of required parallelism (\nthreads) increases load balancing degrades due to more threads per stage and imbalances between stages. The rate of degradation can however be controlled to certain extent by the tolerance $\epsilon_s$ (see \cref{eq:epsilon}) specified while choosing a \levelGroup. Typical value of $\epsilon_s$ is in range of [0.4,0.9]. Having a small $\epsilon_s$ (for example 0.4) implies we utilize the current stage `s' to maximum and do not impose high load balancing constraint, a high value on the other hand requires more balanced load from current stage `s'. 
@@ -68,6 +68,14 @@ In practice for a given matrix it's difficult to precisely determine the optimal
 	\caption{\threadEff and $\eta$ vs \nthreads for corner case matrices, with the same settings used in experiment runs. \threadEff is defined as $\eta$ * \nthreads.}
 	\label{fig:corner_cases_param}
 \end{figure}
-
+\begin{figure}[tbhp]
+	\centering
+	\subfloat[\emph{crankseg\_1}]{\label{fig:crankseg_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/crankseg_1}}
+	\subfloat[\emph{inline\_1}]{\label{fig:inline_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/inline_1}}	
+	\subfloat[\emph{parabolic\_fem}]{\label{fig:parabolic_fem_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/parabolic_fem}}
+	\subfloat[\emph{Graphene-4096}]{\label{fig:Graphene-4096_scaling} \includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/Graphene-4096}}	
+	\caption{Scaling of \SymmSpmv with RACE compared to \SpMV on one socket of \SKX architecture, for corner case matrices.}
+	\label{fig:corner_cases_scaling}
+\end{figure}
  In \cref{fig:corner_cases_param} we have plotted \threadEff and $\eta$ vs \nthreads for corner case matrices with the settings used in experiment runs. Here we set $\epsilon_{1,2}=0.8$ and use \RCM (\RCMfull) in the \emph{level construction} stage (\cref{subsec:LEVEL_CONST}). Big fluctuation in \emph{crankseg\_1} is due to the fact that we set high load balancing requirement (high $\epsilon_s$ factor) and as seen in the example of \emph{inline\_1} matrix this is not optimal when we reach the limit of parallelism. The theoretical estimates obtained in \cref{fig:corner_cases_param} will be directly used to compare with experiment runs in the next section (\cref{Sec:expt}).
 
