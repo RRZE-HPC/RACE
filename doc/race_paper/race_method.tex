@@ -30,7 +30,7 @@ To explain the method in an easier and illustrative way we choose a simple matri
 	 pattern]{\label{fig:2d-7pt-b}\includegraphics[width=0.38\textwidth , height=0.19\textheight]{pics/2d-7pt/2d_7pt_bw.eps}}
 	\hspace{1em}
 	\subfloat[Graph]{\label{fig:2d-7pt-c}\includegraphics[width=0.32\textwidth , height=0.18\textheight]{pics/2d-7pt/stencil_2d_7pt.pdf}}
-	\caption{Shows basic stencil structure, sparsity pattern and graph of the \stex on $8 \times 8$ lattice with Dirichlet boundary}
+	\caption{Basic structure of an artificially designed stencil (a) as well as corresponding sparsity pattern of its matrix discretization (b) and graph representation (c). A $8 \times 8$ lattice in two dimensions with Dirichlet boundary conditions are chosen. The stencil structure is designed for illustration purpose and does not represent any specific application scenario.}
 	\label{fig:2d-7pt}
 \end{figure}
 
@@ -49,21 +49,22 @@ The following basic definitions from graph theory are used in the following sect
 \end{itemize}
 
 \subsection{Level Construction}\label{subsec:LEVEL_CONST}
-The first step of our \RACE method is finding different \levels in the graph. For presentation purpose we use the same \levels as determined by ``Breadth First Search" (\BFS) algorithm \cite{BFS}. \BFS can also be replaced with better bandwidth reduction algorithms like ``(Reverse) \CMfull".  In this process we first choose a root vertex to be the first level ($L(0)$). Rest of the levels ($L(i)$ for $i > 0$) are defined to  contain vertices that are in neighborhood of vertices in previous \level $L(i-1)$ but not in level $L(i-2)$ \cite{BFS_level_def} \ie
+The first step of \RACE is to determine different \levels in the graph followed by a related permutation of the graph data structure. This is equivalent to well-known bandwidth reduction algorithms such as ``(Reverse) \CMfull" or ``Breadth First Search" (\BFS) \cite{BFS} based approaches. Though the RCM method is implemented in \RACE, we use the  \BFS reordering in the following for better illustration purpose.
+%\BFS can also be replaced with better bandwidth reduction algorithms like ``(Reverse) \CMfull".  
+As a first step we choose a root vertex which is assigned to the first level ($L(0)$). All other levels ($L(i)$ for $i > 0$) are defined to  contain vertices that are in neighborhood of vertices in previous \level $L(i-1)$ but not in level $L(i-2)$ \cite{BFS_level_def} \ie
 \begin{equation}\label{eq:level}
 L(i) = 
 \begin{cases}
-	  u : u \in N(L(i-1)) \cap \overline{N(L(i-2))}  & \text{ if } i \neq 0 \\
-	 root & otherwise
+	  u : u \in N(L(i-1)) \cap \overline{N(L(i-2))}  & \text{ if } i \neq 0, \\
+	 root & otherwise.
 \end{cases}   
- .
 \end{equation}
 
-From \cref{eq:level} one finds that the $i$-th \level consist of all vertices that have a minimum distance of $i$ from the root node. \Cref{alg:BFS} gives an algorithm to determine each nodes minimum distance from the root. The total number of levels obtained with this graph traversal will be denoted as \totalLvl. \Cref{fig:2d_7pt_level_construction} shows the 14 \levels of the \stex (\totalLvl = 14), where the main number on each vertex ($v$) refers to the vertex number and the superscript represents the \level number, \ie
+From \cref{eq:level} one finds that the $i$-th \level consist of all vertices that have a minimum distance of $i$ from the root node. See \Cref{alg:BFS} on how to determine minimum distance of each node from the root. The total number of levels obtained with this graph traversal is denoted as \totalLvl. \Cref{fig:2d_7pt_level_construction} shows the \totalLvl=14 \levels of an artificial stencil discretization, where the index of each vertex ($v$) refers to the vertex number and the superscript represents the \level number, \ie
 \begin{equation}\label{eq:node_notation}
 	v^i \implies v \in L(i).
 \end{equation}
-Note that this is substantially different to the \levels in methods like ``level-scheduling" \cite{saad} where depth (maximum distance) is sought after.
+Note that this is substantially different to the \levels used in ``level-scheduling" \cite{saad} approach which applies a "Depth First Search".
 
 \begin{figure}[tbhp]
 	\centering
@@ -72,21 +73,21 @@ Note that this is substantially different to the \levels in methods like ``level
 	\subfloat[Permuted graph ($G'$)]{\label{fig:2d_7pt_perm}\includegraphics[height=0.18\textheight,width=0.32\textwidth]{pics/permutation/stencil_2d_7pt}}
 	\hspace{1em}
 	\subfloat[]{\label{fig:2d_7pt_levelPtr}\includegraphics[height=0.18\textheight,width=0.07\textwidth]{pics/permutation/levelPtr}}
-	\caption{(a) Levels in \stex, (b) shows graph $G'$ after permutation and (c) is the associated \levelPtr to $G'$.}
+	\caption{Levels of the original graph (a) and the permuted graph (b) for the \stex. The entries of  the \levelPtr associated with $G'$ are presented in (c).}
 	\label{fig:2d-7pt_step_1_2}
 \end{figure}
 
 
-\subsection{Permutation}\label{subsec:PERM}
-Once the \levels are known one has to permute the matrix in the order of its \levels, such that the vertices in $L(i)$ appears before that of $L(i-1)$.  \Cref{fig:2d-7pt_step_1_2} displays the graph ($G' = P(G)$) of \stex after applying corresponding permutation ($P$). One observes a difference in node numbering between original lexicographic ordering in \cref{fig:2d_7pt_level_construction} and \cref{fig:2d_7pt_perm}. 
+%\subsection{Permutation}\label{subsec:PERM}
+After the \levels have been determined, the matrix is permuted in the order of its \levels, such that the vertices in $L(i)$ are stored consecutively and appear before that of $L(i+1)$. \Cref{fig:2d-7pt_step_1_2} displays the graph ($G' = P(G)$) of \stex after applying this permutation ($P$) and demonstrates the enhanced spatial locality of the vertices within an level (see \cref{fig:2d_7pt_perm}) as compared to the original (lexicographic) numbering (see \cref{fig:2d_7pt_level_construction}).  Until now the procedure is the same as \BFS (or \RCM). 
 
-Up to this step the procedure is similar to that of bandwidth reduction algorithms like \BFS or \RCM. Now the most important step for resolving dependencies (coloring) is to store the information about \levels. \Inorder to do this we use a data structure called \levelPtr. It stores the starting vector of each \levels, which implies that \levels on $G'$ can be identified as:
+As \RACE uses information about the \levels for resolving dependencies in the coloring step, we store the entry point to each level in the permuted data structure (of $G'$) in an array $\levelPtr[0:$ \totalLvl$]$, i.e. \levels on $G'$ can be identified as:
 \begin{equation*}
 	L(i) = \set{ u : u \in [\levelPtr[i]:(\levelPtr[i+1]-1)] \text{ and } u \in V(G')} .
 \end{equation*}
 
- \levelPtr for \stex is shown in \cref{fig:2d_7pt_levelPtr}, and one could easily read from \levelPtr that vertices from $\levelPtr(4)=7$ to $\levelPtr(5)-1=10$ belongs to $L(4)$.
- 
+The entries of \levelPtr for \stex is shown in \cref{fig:2d_7pt_levelPtr}. 
+%, and one could easily read from \levelPtr that vertices from $\levelPtr(4)=7$ to $\levelPtr(5)-1=10$ belongs to $L(4)$.
  
  \subsection{Distance-k coloring} \label{subsec:DK}
 In this section we introduce the idea of \DK neighbor and show how this idea can be used to color the matrix with the help of the level information that we already have in hand.
