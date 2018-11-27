@@ -89,21 +89,21 @@ All the test matrices are taken from SuiteSparse Matrix Collection (former Unive
 	\end{center}
 \end{table}
 
-\begin{table}[ht]
-	\footnotesize
-	\caption{Scamac matrices} \label{tab:test_mtx_scamac}
-	\begin{center}
-		\input{pics/matrices_scamac/table.tex}
-	\end{center}
-\end{table}
+%\begin{table}[ht]
+%	\footnotesize
+%	\caption{Scamac matrices} \label{tab:test_mtx_scamac}
+%	\begin{center}
+%		\input{pics/matrices_scamac/table.tex}
+%	\end{center}
+%\end{table}
 
-\begin{table}[ht]
-	\footnotesize
-	\caption{nlpkkt matrices} \label{tab:test_mtx_nlpkkt}
-	\begin{center}
-		\input{pics/matrices_nlpkkt/table.tex}
-	\end{center}
-\end{table}
+%\begin{table}[ht]
+%	\footnotesize
+%	\caption{nlpkkt matrices} \label{tab:test_mtx_nlpkkt}
+%	\begin{center}
+%		\input{pics/matrices_nlpkkt/table.tex}
+%	\end{center}
+%\end{table}
 
 \subsection{Kernels} \label{subsec:test_kernels}
 We evaluate our methods by parallelizing two simple but important kernels showing distance-2 dependencies. In the context of parallelization of symmetric sparse matrix vector (\SymmSpmv) the distance-2 coloring procedure prevents from concurrent update of the same vector entries by different threads resulting in the same result as the serial code (``exact kernel''). As an example of iterative solver we have chosen symmetric Kaczmarz (\SYMMKACZ). Here in addition to writes we also read from the same vector having dependency, which leads to change in convergence depending on the permutation (``inexact kernel'').
@@ -221,11 +221,14 @@ In general for most of the algorithms one is interested in symmetric operator th
 
 
 \subsubsection{KACZ and \SYMMKACZ}
-The iterative Kaczmarz solver is a row-projection approach which inhibits{\CA inhibit might be a wrong word} a data dependency. The basic equation of this iterative solver for solving $x$ in $Ax = b$, is shown in \cref{eq:KACZ}, the method computes a new approximation $x^{k+1}$ to the unknown $x$ in each iteration $k$ by projecting  the current iterate $x^{k}$ to the $i$-th linear equation. The basic compute kernel (\KACZ) is  presented in~\cref{alg:KACZ}. For its parallelization one typically uses a distance-2 coloring of the graph representing the matrix. As this does not lead to the exact result as for the serial execution of the kernel, the actual coloring scheme may impact convergence of iterative scheme.
+The iterative Kaczmarz solver is a row-projection approach which has a data dependency. The basic equation of this iterative solver for solving $x$ in $Ax = b$, is shown in \cref{eq:KACZ}. The method computes a new approximation $x^{k+1}$ to the unknown $x$ in each iteration $k$ by projecting  the current iterate $x^{k}$ to the $i$-th linear equation. 
 \begin{equation}
 	\label{eq:KACZ}
 	x^{k+1} = x^{k} + \frac{b_i - \langle A_i, x_k \rangle}{\|A_i\|^2} \bar{A_i}
 \end{equation}
+
+The basic compute kernel (\KACZ) is  presented in~\cref{alg:KACZ}. For its parallelization one typically uses a distance-2 coloring of the graph representing the matrix. As this does not lead to the exact result as for the serial execution of the kernel, the actual coloring scheme may impact convergence of iterative scheme.
+
 \begin{algorithm}[H]
 	\caption{KACZ kernel used for solving $Ax=b$; outer iteration loop not shown} 
 	\label{alg:KACZ}
