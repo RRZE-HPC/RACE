@@ -45,7 +45,7 @@
 	\def\ymin{0}
 	\def\ymax{30}
 	
-	\begin{axis}[ xlabel={\LARGE{$\epsilon_1$}}, ylabel={\LARGE{$\eta$}},
+	\begin{axis}[ xlabel={\LARGE{$\epsilon_0$}}, ylabel={\LARGE{$\eta$}},
 	y label style={at={(axis description cs:-0.07,.5)},rotate=0,anchor=south},
 	x label style={at={(axis description cs:0.5,-0.13)},rotate=0,anchor=south}, ymode=linear, %ylabel shift =-0.25cm,
 	%xtick={1000, 2744, 5832, 10648, 17576, 27000, 39304, 54872, 74088},
@@ -70,7 +70,7 @@
 		
 		%MEASURE_START%
 		\addplot+[color=color_1, line width=2, mark options={color_1}] table[x =eps_1,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study//misc/matrix_inline_1eff_2_40/data/derived.txt}; \label{plot_one}
-		\addlegendentry{$\epsilon_2=0.40$}
+		\addlegendentry{$\epsilon_1=0.40$}
 		%MEASURE_STOP%
 		
 		%END_CODE%
@@ -82,7 +82,7 @@
 		
 		%MEASURE_START%
 		\addplot+[color=color_2, line width=2, mark options={color_2}] table[x =eps_1,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study//misc/matrix_inline_1eff_2_70/data/derived.txt}; \label{plot_one}
-		\addlegendentry{$\epsilon_2=0.70$}
+		\addlegendentry{$\epsilon_1=0.70$}
 		%MEASURE_STOP%
 		
 		%END_CODE%
@@ -94,7 +94,7 @@
 		
 		%MEASURE_START%
 		\addplot+[color=color_3, line width=2, mark options={color_3}] table[x =eps_1,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study//misc/matrix_inline_1eff_2_80/data/derived.txt}; \label{plot_one}
-		\addlegendentry{$\epsilon_2=0.80$}
+		\addlegendentry{$\epsilon_1=0.80$}
 		%MEASURE_STOP%
 		
 		%END_CODE%
@@ -106,7 +106,7 @@
 		
 		%MEASURE_START%
 		\addplot+[color=color_4, line width=2, mark options={color_4}] table[x =eps_1,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study//misc/matrix_inline_1eff_2_90/data/derived.txt}; \label{plot_one}
-		\addlegendentry{$\epsilon_2=0.90$}
+		\addlegendentry{$\epsilon_1=0.90$}
 		%MEASURE_STOP%
 		
 		%END_CODE%
