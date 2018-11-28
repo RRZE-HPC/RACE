@@ -16,15 +16,17 @@
 
 \newcommand{\scale}{1.5}%
 	\begin{tikzpicture}
-	\node[shape=circle,fill=gray] (b) at (9*\scale,-1*\scale) {2$^{2,2}$};
-	\node[shape=circle,fill=gray] (c) at (11*\scale,-1*\scale) {3$^{2,5}$};
-	\node[shape=circle,fill=carmine, text=white] (d) at (8.5*\scale,-2*\scale) {4$^{3,1}$};
-	\node[shape=circle,fill=cyan] (e) at (9.5*\scale,-2*\scale) {5$^{3,3}$};
-	\node[shape=circle,fill=cyan] (f) at (10.5*\scale,-2*\scale) {6$^{3,4}$};
-	\node[shape=circle,fill=cyan] (g) at (11.5*\scale,-2*\scale) {7$^{3,3}$};
-	\node[shape=circle,fill=carmine, text=white] (x) at (9*\scale,-3*\scale) {8$^{4,2}$};
-	\node[shape=circle,fill=cyan] (y) at (10*\scale,-3*\scale) {9$^{4,3}$};
-	\node[shape=circle,fill=carmine, text=white] (z) at (11*\scale,-3*\scale) {10$^{4,5}$};
+	\fill[color=blue,opacity=0.1,rounded corners=15pt] (8*\scale,-3.5*\scale) rectangle (12*\scale,-1.5*\scale);
+	
+	\node[shape=circle,fill=gray] (b) at (9*\scale,-1*\scale) {1$^{1,1}$};
+	\node[shape=circle,fill=gray] (c) at (11*\scale,-1*\scale) {2$^{1,4}$};
+	\node[shape=circle,fill=carmine, text=white] (d) at (8.5*\scale,-2*\scale) {3$^{2,0}$};
+	\node[shape=circle,fill=cyan] (e) at (9.5*\scale,-2*\scale) {4$^{2,2}$};
+	\node[shape=circle,fill=cyan] (f) at (10.5*\scale,-2*\scale) {5$^{2,3}$};
+	\node[shape=circle,fill=cyan] (g) at (11.5*\scale,-2*\scale) {6$^{2,2}$};
+	\node[shape=circle,fill=carmine, text=white] (x) at (9*\scale,-3*\scale) {7$^{3,1}$};
+	\node[shape=circle,fill=cyan] (y) at (10*\scale,-3*\scale) {8$^{3,2}$};
+	\node[shape=circle,fill=carmine, text=white] (z) at (11*\scale,-3*\scale) {9$^{3,4}$};
 	\draw 
 	(b) edge[<->] (d)  (b) edge[<->] (g)
 	(c) edge[<->] (f) (c) edge[<->] (g)
@@ -32,7 +34,6 @@
 	(d) edge[<->] (x) (e) edge[<->] (y) (f) edge[<->] (z) (f) edge[<->] (y)
 	(x) edge[<->] (y); 
 	
-	\fill[color=blue,opacity=0.1,rounded corners=15pt] (8*\scale,-3.5*\scale) rectangle (12*\scale,-1.5*\scale);
 	
 	\draw[dashed,rounded corners=5mm,color=red] (8*\scale,-1.65*\scale) -- (8.75*\scale,-3.4*\scale) -- (9.55*\scale,-3.4*\scale) -- (8.8*\scale,-1.65*\scale) --cycle;
 	
@@ -40,8 +41,8 @@
 	
 	\draw[dashed,color=red] (11*\scale,-3*\scale) circle [radius=0.68cm];
 	
-	\node[color=red] at (8.35*\scale,-3.2*\scale) {$T_2(1)$};
-	\node[color=blue] at (11.55*\scale,-1.5*\scale) {$T_2(2)$};
-	\node[color=red] at (11.72*\scale,-2.8*\scale) {$T_2(3)$};
+	\node[color=red] at (8.35*\scale,-3.2*\scale) {$T_1(0)$};
+	\node[color=blue] at (11.55*\scale,-1.5*\scale) {$T_1(1)$};
+	\node[color=red] at (11.72*\scale,-2.8*\scale) {$T_1(2)$};
 	\end{tikzpicture}
 \end{document}  

@@ -7,15 +7,14 @@ Improving data locality for sparse matrix computations like \SpMV  is closely re
 
 %Here, we aim to develop a method that does not distort this ideal permutations to a large extent and at the same time resolves \DK dependencies. 
  
-Our method can be divided into four steps:
+Our method can be divided into three steps:
 \begin{enumerate}
 	\item Level construction
-	\item Permutation
 	\item Distance-k coloring
 	\item Load balancing
 \end{enumerate}
 
-In the first two steps we basically apply bandwidth reduction algorithm including matrix reordering and level construction. We then use the information from the level construction step to form subsets of levels which allow for hardware efficient \DK coloring of the graph. Finally we present a concept to ensure load balancing between threads. As we apply these four steps recursively and work on the graph of the matrix we call this method  \RACE (\RACEfull) {\CA may be need modification}.
+In the first step we basically apply bandwidth reduction algorithm including matrix reordering and level construction. We then use the information from the level construction step to form subsets of levels which allow for hardware efficient \DK coloring of the graph. Finally we present a concept to ensure load balancing between threads. As we apply these three steps recursively and work on the graph of the matrix we call this method  \RACE (\RACEfull).
 
 
 %The method is strongly coupled to the hardware underneath and exploits only the parallelism as required by the hardware. If at the end of all these four steps one does not achieve sufficient parallelism, all the steps are recursively applied to selected sub-graphs of the matrix until sufficient parallelism is attained. Due to this recursive nature of our coloring method we cal it as ``\RACfullNoSpace" (\RAC).
@@ -30,7 +29,7 @@ To explain the method in an easier and illustrative way we choose a simple matri
 	 pattern]{\label{fig:2d-7pt-b}\includegraphics[width=0.38\textwidth , height=0.19\textheight]{pics/2d-7pt/2d_7pt_bw.eps}}
 	\hspace{1em}
 	\subfloat[Graph]{\label{fig:2d-7pt-c}\includegraphics[width=0.32\textwidth , height=0.18\textheight]{pics/2d-7pt/stencil_2d_7pt.pdf}}
-	\caption{Shows basic stencil structure, sparsity pattern and graph of the \stex on $8 \times 8$ lattice with Dirichlet boundary}
+	\caption{Basic structure of an artificially designed stencil (a) as well as corresponding sparsity pattern of its matrix discretization (b) and graph representation (c). A $8 \times 8$ lattice in two dimensions with Dirichlet boundary conditions are chosen. The stencil structure is designed for illustration purpose and does not represent any specific application scenario.}
 	\label{fig:2d-7pt}
 \end{figure}
 
@@ -49,21 +48,22 @@ The following basic definitions from graph theory are used in the following sect
 \end{itemize}
 
 \subsection{Level Construction}\label{subsec:LEVEL_CONST}
-The first step of our \RACE method is finding different \levels in the graph. For presentation purpose we use the same \levels as determined by ``Breadth First Search" (\BFS) algorithm \cite{BFS}. \BFS can also be replaced with better bandwidth reduction algorithms like ``(Reverse) \CMfull".  In this process we first choose a root vertex to be the first level ($L(0)$). Rest of the levels ($L(i)$ for $i > 0$) are defined to  contain vertices that are in neighborhood of vertices in previous \level $L(i-1)$ but not in level $L(i-2)$ \cite{BFS_level_def} \ie
+The first step of \RACE is to determine different \levels in the graph followed by a related permutation of the graph data structure. This is equivalent to well-known bandwidth reduction algorithms such as ``(Reverse) \CMfull" or ``Breadth First Search" (\BFS) \cite{BFS} based approaches. Though the RCM method is implemented in \RACE, we use the  \BFS reordering in the following for better illustration purpose.
+%\BFS can also be replaced with better bandwidth reduction algorithms like ``(Reverse) \CMfull".  
+As a first step we choose a root vertex which is assigned to the first level ($L(0)$). All other levels ($L(i)$ for $i > 0$) are defined to  contain vertices that are in neighborhood of vertices in previous \level $L(i-1)$ but not in level $L(i-2)$ \cite{BFS_level_def} \ie
 \begin{equation}\label{eq:level}
 L(i) = 
 \begin{cases}
-	  u : u \in N(L(i-1)) \cap \overline{N(L(i-2))}  & \text{ if } i \neq 0 \\
-	 root & otherwise
+	  u : u \in N(L(i-1)) \cap \overline{N(L(i-2))}  & \text{ if } i \neq 0, \\
+	 root & otherwise.
 \end{cases}   
- .
 \end{equation}
 
-From \cref{eq:level} one finds that the $i$-th \level consist of all vertices that have a minimum distance of $i$ from the root node. \Cref{alg:BFS} gives an algorithm to determine each nodes minimum distance from the root. The total number of levels obtained with this graph traversal will be denoted as \totalLvl. \Cref{fig:2d_7pt_level_construction} shows the 14 \levels of the \stex (\totalLvl = 14), where the main number on each vertex ($v$) refers to the vertex number and the superscript represents the \level number, \ie
+From \cref{eq:level} one finds that the $i$-th \level consist of all vertices that have a minimum distance of $i$ from the root node. See \Cref{alg:BFS} on how to determine minimum distance of each node from the root. The total number of levels obtained with this graph traversal is denoted as \totalLvl. \Cref{fig:2d_7pt_level_construction} shows the \totalLvl=14 \levels of an artificial stencil discretization, where the index of each vertex ($v$) refers to the vertex number and the superscript represents the \level number, \ie
 \begin{equation}\label{eq:node_notation}
 	v^i \implies v \in L(i).
 \end{equation}
-Note that this is substantially different to the \levels in methods like ``level-scheduling" \cite{saad} where depth (maximum distance) is sought after.
+Note that this is substantially different to the \levels used in ``level-scheduling" \cite{saad} approach which applies a "Depth First Search".
 
 \begin{figure}[tbhp]
 	\centering
@@ -72,21 +72,21 @@ Note that this is substantially different to the \levels in methods like ``level
 	\subfloat[Permuted graph ($G'$)]{\label{fig:2d_7pt_perm}\includegraphics[height=0.18\textheight,width=0.32\textwidth]{pics/permutation/stencil_2d_7pt}}
 	\hspace{1em}
 	\subfloat[]{\label{fig:2d_7pt_levelPtr}\includegraphics[height=0.18\textheight,width=0.07\textwidth]{pics/permutation/levelPtr}}
-	\caption{(a) Levels in \stex, (b) shows graph $G'$ after permutation and (c) is the associated \levelPtr to $G'$.}
+	\caption{Levels of the original graph (a) and the permuted graph (b) for the \stex. The entries of  the \levelPtr associated with $G'$ are presented in (c).}
 	\label{fig:2d-7pt_step_1_2}
 \end{figure}
 
 
-\subsection{Permutation}\label{subsec:PERM}
-Once the \levels are known one has to permute the matrix in the order of its \levels, such that the vertices in $L(i)$ appears before that of $L(i-1)$.  \Cref{fig:2d-7pt_step_1_2} displays the graph ($G' = P(G)$) of \stex after applying corresponding permutation ($P$). One observes a difference in node numbering between original lexicographic ordering in \cref{fig:2d_7pt_level_construction} and \cref{fig:2d_7pt_perm}. 
+%\subsection{Permutation}\label{subsec:PERM}
+After the \levels have been determined, the matrix is permuted in the order of its \levels, such that the vertices in $L(i)$ are stored consecutively and appear before that of $L(i+1)$. \Cref{fig:2d-7pt_step_1_2} displays the graph ($G' = P(G)$) of \stex after applying this permutation ($P$) and demonstrates the enhanced spatial locality of the vertices within an level (see \cref{fig:2d_7pt_perm}) as compared to the original (lexicographic) numbering (see \cref{fig:2d_7pt_level_construction}).  Until now the procedure is the same as \BFS (or \RCM). 
 
-Up to this step the procedure is similar to that of bandwidth reduction algorithms like \BFS or \RCM. Now the most important step for resolving dependencies (coloring) is to store the information about \levels. \Inorder to do this we use a data structure called \levelPtr. It stores the starting vector of each \levels, which implies that \levels on $G'$ can be identified as:
+As \RACE uses information about the \levels for resolving dependencies in the coloring step, we store the entry point to each level in the permuted data structure (of $G'$) in an array $\levelPtr[0:$ \totalLvl$]$, i.e. \levels on $G'$ can be identified as:
 \begin{equation*}
 	L(i) = \set{ u : u \in [\levelPtr[i]:(\levelPtr[i+1]-1)] \text{ and } u \in V(G')} .
 \end{equation*}
 
- \levelPtr for \stex is shown in \cref{fig:2d_7pt_levelPtr}, and one could easily read from \levelPtr that vertices from $\levelPtr(4)=7$ to $\levelPtr(5)-1=10$ belongs to $L(4)$.
- 
+The entries of \levelPtr for \stex is shown in \cref{fig:2d_7pt_levelPtr}. 
+%, and one could easily read from \levelPtr that vertices from $\levelPtr(4)=7$ to $\levelPtr(5)-1=10$ belongs to $L(4)$.
  
  \subsection{Distance-k coloring} \label{subsec:DK}
 In this section we introduce the idea of \DK neighbor and show how this idea can be used to color the matrix with the help of the level information that we already have in hand.
@@ -153,10 +153,10 @@ Having the permuted graph $G'$ one can show that $L(i)$ and $L(i+k+j)$  are \DK 
      
 
 	\subsection{Recursion}\label{subsec:REC}
-	As seen above in \cref{subsec:DK} maximum amount of parallelism by the above approach depends on total number of levels (\totalLvl), also for most of the graphs as we approach the limit of parallelism there is not much room for load balancing, leading to imbalances. Depending on matrix and hardware underneath this might lead to inefficient utilization of resources. \Inorder to avoid this problem we use the concept of recursion and exploit further parallelism if required by the hardware. Idea here is to intelligently select sub-graph(s) of the entire matrix and apply all the four steps recursively on this \subgraph. In the following we will show this concept in the context of \DONE and  later we will extent it to \DK dependencies. In order to explain the basic concepts easily and include all the corner cases we demonstrate the procedure on a simple graph as shown in \cref{fig:rec_d1_s1_a}, later we will show the results of applying recursion on \stex. Further we will discuss on the method employed to select proper sub-graph and to have a globally balanced load.
+	As seen above in \cref{subsec:DK} maximum amount of parallelism by the above approach depends on total number of levels (\totalLvl), also for most of the graphs as we approach the limit of parallelism there is not much room for load balancing, leading to imbalances. Depending on matrix and hardware underneath this might lead to inefficient utilization of resources. \Inorder to avoid this problem we use the concept of recursion and exploit further parallelism if required by the hardware. Idea here is to intelligently select sub-graph(s) of the entire matrix and apply all the three steps recursively on this \subgraph. In the following we will show this concept in the context of \DONE and  later we will extent it to \DK dependencies. In order to explain the basic concepts easily and include all the corner cases we demonstrate the procedure on a simple graph as shown in \cref{fig:rec_d1_s1_a}, later we will show the results of applying recursion on \stex. Further we will discuss on the method employed to select proper sub-graph and to have a globally balanced load.
 	
 	\subsubsection{Distance-$1$}
-	\LevelGroups which we constructed till now belong to first stage of recursion. Stage number of recursion is denoted using subscript, \ie for example $L_s(i)$ denotes \level $i$ of stage $s$. Contrary to methods like \MCfull we didn't require each nodes in a color to be \DONE independent of each other, rather we had a weak constraint as prescribed by \cref{corollary_dk}. Due to this there can exist more parallelism within a \levelGroup. For example in \cref{fig:rec_d1_s1} we see that within third \levelGroup of first stage (T$_1$(3)) vertices $4 \not\xrightarrow{1} 5$ ($4$  \DONE independent to $5$), $4 \not\xrightarrow{1} 6$, $4 \not\xrightarrow{1} 7$ and $5 \not\xrightarrow{1} 7$, implying each of these pairs can be computed in parallel without any \DONE conflicts. This parallelism couldn't be exploited in stage 1 since vertices in $L_1(i)$ (here $i=3$) were connected to preceding \level $L_1(i-1)$ although some of them were not \DONE dependent within $L_1(i)$. \Inorder to exploit this parallelism we use the concept of recursion.
+	\LevelGroups which we constructed till now belong to first stage of recursion ($s=0$). Stage number of recursion is denoted using subscript, \ie for example $L_s(i)$ denotes \level $i$ of stage $s$. Contrary to methods like \MCfull we didn't require each nodes in a color to be \DONE independent of each other, rather we had a weak constraint as prescribed by \cref{corollary_dk}. Due to this there can exist more parallelism within a \levelGroup. For example in \cref{fig:rec_d1_s1} we see that within third \levelGroup of first stage (T$_0$(2)) vertices $4 \not\xrightarrow{1} 5$ ($4$  \DONE independent to $5$), $4 \not\xrightarrow{1} 6$, $4 \not\xrightarrow{1} 7$ and $5 \not\xrightarrow{1} 7$, implying each of these pairs can be computed in parallel without any \DONE conflicts. This parallelism couldn't be exploited in first stage ($s=0$)  since vertices in $L_0(i)$ (here $i=2$) were connected to preceding \level $L_1(i-1)$ although some of them were not \DONE dependent within $L_0(i)$. \Inorder to exploit this parallelism we use the concept of recursion.
 	
      \begin{figure}[thbp]
      	\centering
@@ -165,11 +165,11 @@ Having the permuted graph $G'$ one can show that $L(i)$ and $L(i+k+j)$  are \DK 
      	\subfloat[Stage 1 levels in graph]{\label{fig:rec_d1_s1_b}\includegraphics[width=0.26\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s1/recursion_graph_2}}
      	\hspace{1.5em}
      	\subfloat[\DONE coloring]{\label{fig:rec_d1_s1_c}\includegraphics[width=0.26\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s1/recursion_graph_3}}
-        \caption{Shows potential for more parallelism. $T_1(2),T_1(3)$ and $T_1(4)$ has more parallelism. Note that this graph shown here is not related to the previous \stex.}
+        \caption{Shows potential for more parallelism. $T_0(1),T_0(2)$ and $T_0(3)$ has more parallelism. Note that the graph shown here is not related to the previous \stex.}
      	\label{fig:rec_d1_s1}
      \end{figure}
      
-     Recursion begins by selection of a \subgraph of the matrix. A typical choice is a \subgraph induced by vertices in a \levelGroup of previous stage, more on the selection of \subgraph will be seen later in \cref{subsec:subgraph_selection}. For example let's choose \subgraph induced by $T_1(3)$ for recursion. The chosen \subgraph can be isolated from rest of the graph since  \DONE coloring step in stage 1 has already made \levelGroups in a sweep independent of each other. Now we just need to repeat all the four step explained previously (\cref{subsec:LEVEL_CONST} - \cref{subsec:LB}) to exploit parallelism within this \subgraph.
+     Recursion begins by selection of a \subgraph of the matrix. A typical choice is a \subgraph induced by vertices in a \levelGroup of previous stage, more on the selection of \subgraph will be seen later in \cref{subsec:subgraph_selection}. For example let's choose \subgraph induced by $T_0(2)$ for recursion. The chosen \subgraph can be isolated from rest of the graph since  \DONE coloring step in stage 0 has already made \levelGroups in a sweep independent of each other. Now we just need to repeat all the three steps explained previously (\cref{subsec:LEVEL_CONST} - \cref{subsec:LB}) to exploit parallelism within this \subgraph.
    
      \begin{figure}[thbp]
      	\centering
@@ -182,22 +182,22 @@ Having the permuted graph $G'$ one can show that $L(i)$ and $L(i+k+j)$  are \DK 
      	\subfloat[]{\label{fig:rec_d1_s2_d}\includegraphics[width=0.07\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_4}}
 	     \hspace{1.75em}
 	     \subfloat[]{\label{fig:rec_d1_s2_e}\includegraphics[width=0.07\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_5}}
-     	\caption{Shows recursion being applied to $T_1(3)$. \Cref{fig:rec_d1_s2_b} shows the selected \subgraph, \cref{fig:rec_d1_s2_c} shows level construction step on the \subgraph, \cref{fig:rec_d1_s2_d,fig:rec_d1_s2_e} shows two possibility of \DONE coloring of the \subgraph}
+     	\caption{Shows recursion being applied to $T_0(2)$. \Cref{fig:rec_d1_s2_b} shows the selected \subgraph, \cref{fig:rec_d1_s2_c} shows level construction step on the \subgraph, \cref{fig:rec_d1_s2_d,fig:rec_d1_s2_e} shows two possibility of \DONE coloring of the \subgraph}
      	
      	\label{fig:rec_d1_s2}
      \end{figure}
      
-     \Cref{fig:rec_d1_s2} shows an illustration of applying stage 2 of recursion on $T_1(3)$. To incorporate the information of levels in different stages of recursion onto the vertices we extent the definition in \cref{eq:node_notation} to the following:
+     \Cref{fig:rec_d1_s2} shows an illustration of applying second stage ($s=1$) of recursion on $T_0(2)$. To incorporate the information of levels in different stages of recursion onto the vertices we extent the definition in \cref{eq:node_notation} to the following:
 	 \begin{equation}
 	    v^{i,j,k...} \implies v \in \set{L_1(i) \cap L_2(j) \cap L_3(k) \cap ...} 
 	 \end{equation}
 	 
-     In this case at the end of recursion (\cf \cref{fig:rec_d1_s2_d}, \cref{fig:rec_d1_s2_e}) on $T_1(3)$ we obtain parallelism for two more threads. Note that the \subgraphs might have multiple islands (group of vertices in a graph that are not connected to rest of the graph). For example vertex 4 in \cref{fig:rec_d1_s2_b} is an island in the considered \subgraph, similarly vertices 5,6,7 combine to form an island. Since an island is totally disconnected from the rest of the graph it can be executed in parallel to rest of the graph. To take advantage of this the starting node in next island is assigned with an increment of two levels, as seen in \cref{fig:rec_d1_s2_c}. Due to this there exists multiple valid \DONE configuration (\cf \cref{fig:rec_d1_s2_d,fig:rec_d1_s2_e}) and the selection of the optimal one will be done in the final load balancing step of a particular stage as described in \cref{subsec:LB}.    
+     In this case at the end of recursion (\cf \cref{fig:rec_d1_s2_d}, \cref{fig:rec_d1_s2_e}) on $T_0(2)$ we obtain parallelism for two more threads. Note that the \subgraphs might have multiple islands (group of vertices in a graph that are not connected to rest of the graph). For example vertex 3 in \cref{fig:rec_d1_s2_b} is an island in the considered \subgraph, similarly vertices 4,5,6 combine to form an island. Since an island is totally disconnected from the rest of the graph it can be executed in parallel to rest of the graph. To take advantage of this the starting node in next island is assigned with an increment of two levels, as seen in \cref{fig:rec_d1_s2_c}. Due to this there exists multiple valid \DONE configuration (\cf \cref{fig:rec_d1_s2_d,fig:rec_d1_s2_e}) and the selection of the optimal one will be done in the final load balancing step of a particular stage as described in \cref{subsec:LB}.    
      
      With this recursive process we were able to find independent \levelGroups ($T_{s+1}$) within \levelGroup of previous stage ($T_s$) and therefore the thread which works on $T_s$ has to spawn threads to parallelize within $T_{s+1}$.
      
 	\subsubsection{Distance-$k$}
-	For \DK the same procedure as \DONE applies, except with a slight difference in selecting the \subgraph. In \DONE we considered \subgraphs induced by \levelGroups, but for \DK coloring this is not sufficient. As seen in \cref{fig:rec_d2_wrong} for \DTWO coloring the selection of $T_1(2)$ as \subgraph did not guarantee \DTWO independency within \levelGroup $T_2$ of the \subgraph, $T_2(1)$ and $T_2(3)$ not independent (\cf \cref{fig:rec_d2_wrong_d}). This is due to the fact for $k>1$ dependency vertices $a,b$ within a \subgraph might be connected to a common vertex ($c$) outside the \subgraph leading to a \DK dependency between $a$ and $b$. In \cref{fig:rec_d2_wrong} we see 	$4 \xrightarrow{1} 2 \text{ \& } 7 \xrightarrow{1} 2 	\implies 4 \xrightarrow{2} 7$, but since vertex 2 was not in the \subgraph considered we missed this dependency. 
+	For \DK the same procedure as \DONE applies, except with a slight difference in selecting the \subgraph. In \DONE we considered \subgraphs induced by \levelGroups, but for \DK coloring this is not sufficient. As seen in \cref{fig:rec_d2_wrong} for \DTWO coloring the selection of $T_0(1)$ as \subgraph did not guarantee \DTWO independency within \levelGroup $T_1$ of the \subgraph, for \eg $T_1(0)$ and $T_1(2)$ are not \DTWO independent (\cf \cref{fig:rec_d2_wrong_d}). This is due to the fact that for $k>1$ dependencies two vertices $a,b$ within a \subgraph might be connected to a common vertex ($c$) outside the \subgraph leading to a \DK dependency between $a$ and $b$. In \cref{fig:rec_d2_wrong} we see 	$3 \xrightarrow{1} 1 \text{ \& } 6 \xrightarrow{1} 1 	\implies 3 \xrightarrow{2} 6$, but since vertex $2$ was not in the \subgraph considered we missed this dependency. 
 
 	
      \begin{figure}[thbp]
@@ -209,15 +209,15 @@ Having the permuted graph $G'$ one can show that $L(i)$ and $L(i+k+j)$  are \DK 
      	\subfloat[]{\label{fig:rec_d2_wrong_c}\includegraphics[width=0.23\textwidth, height=0.07\textheight]{pics/recursion/d2/wrong/recursion_graph_wrong_3}}
      	\hspace{0.6em}
      	\subfloat[]{\label{fig:rec_d2_wrong_d}\includegraphics[width=0.23\textwidth, height=0.13\textheight]{pics/recursion/d2/wrong/recursion_graph_wrong_4}}
-     	\caption{\Cref{fig:rec_d2_wrong_a,fig:rec_d2_wrong_b} shows \levelGroup induced \subgraph selected for recursion in case of \DTWO. But applying the four steps to this selected \subgraph does not guarantee a \DTWO independency between \levelGroup of same sweep (color) as seen in \cref{fig:rec_d2_wrong_d}}
+     	\caption{\Cref{fig:rec_d2_wrong_a,fig:rec_d2_wrong_b} shows \levelGroup induced \subgraph selected for recursion in case of \DTWO. But applying the three steps to this selected \subgraph does not guarantee a \DTWO independency between \levelGroup of same sweep (color) as seen in \cref{fig:rec_d2_wrong_d}}
      	\label{fig:rec_d2_wrong}
      \end{figure}
    
-   \Inorder to resolve such dependency we have to consider an extra $(k-1)^{th}$ interface level(s) of the selected \subgraph for the level construction step. The $k^{th}$ interface level(s) of subgraph $L_s(j)$, denoted as $I^k(L_s(j))$, is defined as follows:
+   \Inorder to resolve such dependency we have to consider an extra $(k-1)^{th}$ interface level(s) of the selected \subgraph for the level construction step. The $k^{th}$ interface level(s) of subgraph $T_s(j)$, denoted as $I^k(T_s(j))$, is defined as follows:
    \begin{equation*}
-	   I^k(L_s(j)) = \set{u : u \xrightarrow{k} v \text{  } \forall v \in L_s(j) \text { and } u \notin L_s(j)}
+	   I^k(T_s(j)) = \set{u : u \xrightarrow{k} v \text{  } \forall v \in T_s(j) \text { and } u \notin T_s(j)}
    \end{equation*}
-   For \DTWO this would mean we have to include $1^{st}$ interface level, the new selection is illustrated in \cref{fig:rec_d2_correct}. If we then do all the four steps with the newly created \subgraph, the final result will preserve \DTWO coloring (see \cref{fig:rec_d2_correct_c}). In the example it can be observed vertices 4 and 7 which previously had same color now get assigned to different colors (see \cref{fig:rec_d2_correct_d}). Note that the interface levels have to be considered only in the first step namely level construction in the rest of the steps we just need to consider target \subgraphs induced by \levelGroups \ie in \cref{fig:rec_d2_correct} the \subgraph induced by $T_1(2)$. 
+   For \DTWO this would mean we have to include $1^{st}$ interface level, the new selection is illustrated in \cref{fig:rec_d2_correct}. If we then do all the three steps with the newly created \subgraph, the final result will preserve \DTWO coloring (see \cref{fig:rec_d2_correct_c}). In the example it can be observed vertices $3$ and $6$ which previously had same color now get assigned to different colors (see \cref{fig:rec_d2_correct_d}). Note that the interface levels have to be considered only in the first step namely level construction in the rest of the steps we just need to consider target \subgraphs induced by \levelGroups \ie in \cref{fig:rec_d2_correct} the \subgraph induced by $T_0(1)$. 
    
      
      \begin{figure}[thbp]
@@ -230,36 +230,49 @@ Having the permuted graph $G'$ one can show that $L(i)$ and $L(i+k+j)$  are \DK 
      	\hspace{0.6em}
      	\subfloat[]{\label{fig:rec_d2_correct_d}\includegraphics[width=0.22\textwidth, height=0.105\textheight]{pics/recursion/d2/correct/recursion_graph_correct_4}}
      	\hspace{0.6em}
-     	\caption{Correct procedure of selecting \subgraph for \DTWO coloring. The \levelGroup $T_1(2)$ and it's $1^{st}$ interface level is chosen as the \subgraph as shown in \cref{fig:rec_d2_correct_a,fig:rec_d2_correct_b}. Level construction step is then applied to this \subgraph as seen in \cref{fig:rec_d2_correct_c}. Rest of the steps like permutation and \DK coloring is applied only to the \subgraph  chosen for recursion (here $T_1(2)$). Finally as seen in \cref{fig:rec_d2_correct_d} we get three \levelGroups at the end of recursion on $T_1(2)$.}
+     	\caption{Correct procedure of selecting \subgraph for \DTWO coloring. The \levelGroup $T_0(1)$ and it's $1^{st}$ interface level is chosen as the \subgraph as shown in \cref{fig:rec_d2_correct_a,fig:rec_d2_correct_b}. Level construction step is then applied to this \subgraph as seen in \cref{fig:rec_d2_correct_c}. Rest of the steps like permutation and \DK coloring is applied only to the \subgraph  chosen for recursion (here $T_0(1)$). Finally as seen in \cref{fig:rec_d2_correct_d} we get three \levelGroups at the end of recursion on $T_0(1)$.}
      	\label{fig:rec_d2_correct}
      \end{figure}
      
 
        \begin{figure}[H]
-       	\begin{minipage}[c]{0.62\textwidth}
-       		\includegraphics[height=0.25\textheight,width=0.9\textwidth]{pics/recursion/2d-7pt_example/2d-7pt/stencil_2d_7pt}
+       	\begin{minipage}[c]{0.6\textwidth}
+       		\includegraphics[height=0.3\textheight,width=0.89\textwidth]{pics/recursion/2d-7pt_example/2d-7pt/stencil_2d_7pt}
        	\end{minipage}\hfill
-       	\begin{minipage}[c]{0.38\textwidth}
-       		{\tt for parallel all \textcolor{red}{red}\\
-       			\hspace*{1em} for parallel all \textcolor{amber}{orange}\\
-       			\hspace*{1em} for parallel all \textcolor{magenta}{pink}\\
-       		}
-       		{\tt for parallel all \textcolor{blue}{blue}\\
-       			\hspace*{1em} for parallel all \textcolor{carmine}{brown}\\
-       			\hspace*{1em} for parallel all \textcolor{cyan}{cyan}\\
-       		}
-       		\caption{Recursion applied to \stex for eight threads. Here recursion is applied on \levelGroups $T_1(5-8)$, to get two threads each. The execution order of different \levelGroup is specified in the short code snippet on right. Note nested parallelism being used.}
+       	\begin{minipage}[c]{0.4\textwidth}
+       	%	{\tt for parallel all \textcolor{red}{red}\\
+       	%		\hspace*{1em} for parallel all \textcolor{amber}{orange}\\
+       	%		\hspace*{1em} for parallel all \textcolor{magenta}{pink}\\
+       	%	}
+       	%	{\tt for parallel all \textcolor{blue}{blue}\\
+       	%		\hspace*{1em} for parallel all \textcolor{carmine}{brown}\\
+       	%		\hspace*{1em} for parallel all \textcolor{cyan}{cyan}\\
+       	%	}
+	       	\begin{tabular}{l|l}
+	    %   		\toprule
+	       		{No recursion} & {$s=1$ recursion}\\
+	       		\midrule
+	       	   \multirow{2}{*}{\textcolor{red}{red}} & {\textcolor{amber}{orange}}\\
+	       	   \cmidrule(lr){2-2}
+	       		& {\textcolor{magenta}{pink}}\\
+	       		\midrule
+	       	   \multirow{2}{*}{\textcolor{blue}{blue}} & {\textcolor{carmine}{brown}}\\
+	       	   \cmidrule(lr){2-2}
+	       	   & {\textcolor{cyan}{cyan}}\\
+	       	   \bottomrule
+	       	\end{tabular}
+       		\caption{Recursion applied to \stex for eight threads. Here recursion is applied on \levelGroups $T_1(4-7)$, to get two threads each. The execution order of different \levelGroup is specified in the illustration towards right. Vertical line distinguishes between \levelGroups with and without recursion and each horizontal line denotes the required synchronization. Note the requirement of nested parallelism.}
        		\label{fig:rec_2d-7pt_graph}
        	\end{minipage}
        \end{figure}
      
-     \Cref{fig:rec_2d-7pt_graph} (left) shows \DTWO coloring of \stex example for eight threads. Here we see recursion is applied to \levelGroups $T_1(5),T_1(6),T_1(7)$ and $T_1(8)$. In this case each of the \levelGroups where recursion is applied spawns parallelism for two threads. The selection of \levelGroups to refine and number of threads needed from each recursion are determined using a global load balancing technique as will be explained in \cref{subsec:subgraph_selection}.
+     \Cref{fig:rec_2d-7pt_graph} (left) shows \DTWO coloring of \stex  for eight threads. Here we see recursion is applied to \levelGroups $T_0(4),T_0(5),T_0(6)$ and $T_0(7)$. In this case each of the \levelGroups where recursion is applied spawns parallelism for two threads. The selection of \levelGroups to refine and number of threads needed from each recursion are determined using a global load balancing technique as will be explained in \cref{subsec:subgraph_selection}.
      
-      \Cref{fig:rec_2d-7pt_graph} (right) shows the execution order of different \levelGroups. Note the usage of nested parallelism, \ie for example thread responsible for $T_1(5)$ spawns two child threads to execute $T_2(1) \subset T_1(5)$ and $T_2(3) \subset T_1(5)$ in one parallel sweep, and $T_2(2) \subset T_1(5)$ and $T_2(4) \subset T_1(5)$ in next parallel sweep. At the end of each {\tt for parallel all color} there is synchronization between threads assigned to \levelGroup of corresponding color. Since each of the leaf need to synchronize only with it's siblings (leaves of same parent)  we use simple point to point synchronization scheme. 
+      \Cref{fig:rec_2d-7pt_graph} (right) shows the execution order of different \levelGroups. Note the usage of nested parallelism, \ie for example thread responsible for $T_0(4)$ spawns two child threads to execute $T_1(0) \subset T_0(4)$ and $T_1(2) \subset T_0(4)$ in one parallel sweep, and $T_1(1) \subset T_0(4)$ and $T_1(3) \subset T_0(4)$ in next parallel sweep. At the end of each sweep there is synchronization between threads assigned to \levelGroup of similar color. Since each of the leaf need to synchronize only with it's siblings (leaves of same parent)  we use simple point to point synchronization scheme. 
           
        
 	\subsubsection{Internal representation of recursively generated \boldmath{\levelGroups}} \label{subsec:level_tree}
-	The recursive nature of our procedure allows to exploit more parallelism. However this introduces more complexity and one has to additionally respect the dependencies between stages and still observe the dependencies within one stage. The best idea is to have a data structure similar to the recursion, therefore we extent the \levelPtr data structure to a hierarchical tree data structure to store these informations. This data structure is called a \levelTree. The root of \levelTree contains information of entire domain, first child leaves of this root \ie leaves with depth 1 stores information about \levelGroups in stage 1 ($T_1(..)$), leaves with depth 2 stores information about \levelGroups in stage 2 ($T_2$) and so on. 
+	The recursive nature of our procedure allows to exploit more parallelism. However this introduces more complexity and one has to additionally respect the dependencies between stages and still observe the dependencies within one stage. The best idea is to have a data structure similar to the recursion, therefore we extent the \levelPtr data structure to a hierarchical tree data structure to store these informations. This data structure is called a \levelTree. The root of \levelTree contains information of entire domain, first child leaves of this root \ie leaves with depth 1 stores information about \levelGroups in first stage ($T_0(..)$), leaves with depth 2 stores information about \levelGroups in second stage ($T_1$) and so on. 
 	
 	 \begin{figure}[thbp]
 		 \includegraphics[width=\textwidth, height=0.2\textheight]{pics/recursion/2d-7pt_example/tree/tree}
@@ -268,26 +281,26 @@ Having the permuted graph $G'$ one can show that $L(i)$ and $L(i+k+j)$  are \DK 
 	 \end{figure}
 
  
- \Cref{fig:rec_2d-7pt_tree} shows a \levelTree corresponding for \stex  with 8 threads as seen in \cref{fig:rec_2d-7pt_graph}. The leaves in the tree that correspond to different \levelGroups and store various informations like the range of vertices or nodes that belong to this \levelGroup, the effective number of rows (\nrowsEff) that describes the quality which will be seen in \cref{Sec:param_study}, and other informations like threads assigned to specific \levelGroups.  Threads are assigned to each \levelGroup depending on the pinning strategy used. For example in \emph{fill} type pinning strategy one would pin thread 0 to $T_1(0)$ and $T_1(1)$, thread 1 to $T_1(2)$ and $T_1(3)$, thread 2 to $T_2(0)  \subset T_1(4)$, $T_2(1) \subset T_1(4)$, $T_2(0)  \subset T_1(5)$ and $T_2(1) \subset T_1(5)$, and so on as seen in \cref{fig:rec_2d-7pt_tree}. 
+ \Cref{fig:rec_2d-7pt_tree} shows a \levelTree corresponding for \stex  with 8 threads as seen in \cref{fig:rec_2d-7pt_graph}. The leaves in the tree correspond to different \levelGroups and store various informations like the range of vertices or nodes that belong to this \levelGroup, the effective number of rows (\nrowsEff) that describes the quality of the method (which we will see later in \cref{Sec:param_study}), and other informations like threads assigned to specific \levelGroups.  Threads are assigned to each \levelGroup depending on the pinning strategy used. For example in \emph{fill} type pinning strategy one would pin thread 0 to $T_0(0)$ and $T_0(1)$, thread 1 to $T_0(2)$ and $T_0(3)$, thread 2 to $T_1(0)  \subset T_0(4)$, $T_1(1) \subset T_0(4)$, $T_1(0)  \subset T_0(5)$ and $T_1(1) \subset T_0(5)$, and so on as seen in \cref{fig:rec_2d-7pt_tree}. 
  
- Note that the \levelTree data structure is an exact replica of the nested parallelism being used as seen in \cref{fig:rec_2d-7pt_graph} (right). Therefore threads are spawned based on this \levelTree allowing for easy implementation of point to point synchronizations.
+ Note that the \levelTree has a data structure that represents the nested parallelism being used as seen in \cref{fig:rec_2d-7pt_graph} (right). Therefore threads are spawned based on this \levelTree allowing for easy implementation of point to point synchronizations.
 
 \subsubsection{Sub-graph selection and global load balancing} \label{subsec:subgraph_selection}
 Parallelism required for hardware underneath can be obtained either by expanding the \levelTree horizontally \ie increasing \levelGroups within a stage or by expanding \levelTree vertically with the help of recursion. But as we have seen before in \cref{subsec:DK} the horizontal parallelism is limited and after a certain extent this would lead to load balancing. Similarly excessive usage of recursion is also not a good idea since data locality worsens due to local permutations within \subgraph. Therefore it is vital to find a proper balance and choose proper configuration. Furthermore just doing load balancing within a single stage is not the best, for example if we had equally balanced within stage 1 in \cref{fig:rec_2d-7pt_tree}, we would receive no benefit from recursion. Therefore a global load balancing becomes inevitable.
 
 \Inorder to select proper \subgraph and do global load balancing we employ a simple algorithm to find proper weights for each \levelGroup ($T_s(i)$) in a particular stage, then depending on this weights, denoted as $w(T_s(i))$, we do load balancing with weights in the particular stage (as seen in \cref{alg:LB}, except weightage is given to \levelGroups). Finally if $w(T_s(i)) > 1$ we use recursion to achieve $w(T_s(i))$ parallel work in the next stage of $T_s(i)$. The basic structure of the algorithm employed to find weights for the first stage is as follows:
 \begin{enumerate}
-	\item Find weights, $w(L_1(i))$ for each level in the current stage ($s$) by
+	\item Find weights, $w(L_0(i))$ for each level in the current stage ($s$) by
 		\begin{align*}
-			w(L_1(i)) &= (\levelPtr_1[i+1] - \levelPtr_1[i])*\frac{\nthreadsMath}{\nrowsMath^{total}}\\
+			w(L_0(i)) &= (\levelPtr_0[i+1] - \levelPtr_0[i])*\frac{\nthreadsMath}{\nrowsMath^{total}}\\
 			\nthreadsMath &: \text{total parallelism required by hardware}\\
 			\nrowsMath^{total} &: \text{number of vertices in graph}
 		\end{align*}
 	
-	\item Starting from $w(L_1(0))$ sum up weights till they form a number ($a$) close to whole number ($b$). The closeness can be controlled by an efficiency parameter for stage $s$, $\epsilon_s$ is defined as:
+	\item Starting from $w(L_0(0))$ sum up weights till they form a number ($a$) close to whole number ($b$). The closeness can be controlled by an efficiency parameter for stage $s$, $\epsilon_s$ is defined as:
 	\begin{equation} \label{eq:epsilon}
 		\epsilon_s =  1 - abs(a-b);
 	\end{equation}
-	All the \levels that are involved in the sum belongs to \levelGroups  operated by first thread in the current stage. The obtained number $b$ is chosen as weight for these \levelGroups \ie $w(T_1(0))=w(T_1(1))=b$. A local search is then done by increasing \levels in this \levelGroups to see if there is a better choice ($a$ close to $b$) with weight $b$, finally \levelGroups are formed with the best choice.  The weight for next \levelGroups are found by resetting the sum counter to zero and repeating the  procedure with \levels just after the current \levelGroups.
+	All the \levels that are involved in the sum belongs to \levelGroups  operated by first thread in the current stage. The obtained number $b$ is chosen as weight for these \levelGroups \ie $w(T_0(0))=w(T_0(1))=b$. A local search is then done by increasing \levels in this \levelGroups to see if there is a better choice ($a$ close to $b$) with weight $b$, finally \levelGroups are formed with the best choice.  The weight for next \levelGroups are found by resetting the sum counter to zero and repeating the  procedure with \levels just after the current \levelGroups.
 \end{enumerate}
-For other recursive stage ($s>1$) same procedure can be applied to find weights $w(T_s(i))$, except that now $\nthreadsMath$ and $\nrowsMath^{total}$ has to be substituted with the threads required and vertices in the \subgraph considered.
+For other recursive stage ($s\geq1$) same procedure can be applied to find weights $w(T_s(i))$, except that now $\nthreadsMath$ and $\nrowsMath^{total}$ has to be substituted with the threads required and vertices in the \subgraph considered.
