@@ -85,18 +85,17 @@ As \RACE uses information about the \levels for resolving dependencies in the co
 	L(i) = \set{ u : u \in [\levelPtr[i]:(\levelPtr[i+1]-1)] \text{ and } u \in V(G')} .
 \end{equation*}
 
-The entries of \levelPtr for \stex is shown in \cref{fig:2d_7pt_levelPtr}. 
+The entries of \levelPtr for \stex are shown in \cref{fig:2d_7pt_levelPtr}. 
 %, and one could easily read from \levelPtr that vertices from $\levelPtr(4)=7$ to $\levelPtr(5)-1=10$ belongs to $L(4)$.
  
  \subsection{Distance-k coloring} \label{subsec:DK}
-In this section we introduce the idea of \DK neighbor and show how this idea can be used to color the matrix with the help of the level information that we already have in hand.
-
- Two vertices are called \DK neighbors if the shortest path connecting them consists of at most $k$ edges \cite{dist_k_def}. This implies $u$ is a \DK neighbor of $v$ (denoted as $u\xrightarrow{k}v$)  if
+ The \levels generated above serve as the base for our \DK coloring procedure as they contain information about the neighborhood relation between the vertices of any two levels. Following the definition in~\cite{dist_k_def}, two vertices are called \DK neighbors if the shortest path connecting them consists of at most $k$ edges.
+%In this section we introduce the idea of \DK neighbor and show how this idea can be used to color the matrix with the help of the level information that we already have in hand.
+This implies $u$ is a \DK neighbor of $v$ (denoted as $u\xrightarrow{k}v$)  if
  \begin{equation}\label{eq:dk}
 	  u\xrightarrow{k}v  \iff  v \in \set{ u \cup N(u) \cup N^2(u) \cup ... N^k(u) }.	 
  \end{equation}
- Since we consider only undirected graph $u\xrightarrow{k}v$ also implies $v\xrightarrow{k}u$. 
-Having the permuted graph $G'$ one can show that $L(i)$ and $L(i+k+j)$  are \DK independent for all $j\geq1$ as shown in the following.
+ For undirected graphs as considered in this work  $u\xrightarrow{k}v$ also implies $v\xrightarrow{k}u$. Based on this definition we consider two vertices to be \DK independent if they are not \DK neighbors. Thus,  \levels $L(i)$ and $L(i+k+j)$  of the permuted graph $G'$ are \DK independent for all $j\geq1$ as shown in the following:
   \begin{corollary}\label{corollary_dk}
    $L(i)$ and $L(i\pm(k+j))$ are \DK independent $\forall j\geq1$. 
   \end{corollary}
@@ -109,22 +108,24 @@ Having the permuted graph $G'$ one can show that $L(i)$ and $L(i+k+j)$  are \DK 
   	which contradicts to $v \in L(i \pm (k+j) ) \forall j \geq 1$. This implies $u$ and $v$ are \DK independent.
   \end{proof}
 
-\Cref{corollary_dk} implies that if we leave a gap of \emph{\atleast} one \level between any two \levels ($L(i), L(i+2)$ for example) all the vertices between them are \DONE independent. Similarly if there is a gap of \emph{\atleast} two \levels between any two \levels ($L(i), L(i+3)$ for example) we get \DTWO independent levels.
+\Cref{corollary_dk} implies that if there is a gap of \emph{\atleast} one \level between any two \levels ($L(i), L(i+2)$ for example) all the vertices between them are \DONE independent. Similarly if the gap consists of \emph{\atleast} two \levels between any two \levels ($L(i), L(i+3)$ for example) we have \DTWO independent levels.
   
  \begin{figure}[tbhp]
  	\centering
  	\subfloat[\DONE independent \levelGroups]{\label{fig:2d_7pt_d1}\includegraphics[height=0.2\textheight,width=0.4\textwidth]{pics/dk_coloring/stencil_2d_7pt_d1}}
  	\hspace{2.5em}
  	\subfloat[\DTWO independent \levelGroups]{\label{fig:2d_7pt_d2}\includegraphics[height=0.23\textheight,width=0.48\textwidth]{pics/dk_coloring/stencil_2d_7pt_d2_with_lg}}
- 	\caption{\DONE and \DTWO independent \levelGroups.}
+ 	\caption{Forming \DONE and \DTWO independent \levelGroups for the \stex.}
  	\label{fig:2d-7pt_d1_d2}
  \end{figure}
  
-  {\CA Maybe more explanation is required.} Due to this weak definition in \cref{corollary_dk} there exists many possibility to make \levels independent of each other. \Cref{fig:2d-7pt_d1_d2} illustrates one such possibility each for \DONE and \DTWO independent \levels. One could also group some more of nearby \levels together to form a \levelGroup, and make this \DONE or \DTWO independent of other \levelGroups. The $i$-th \levelGroup would be denoted by $T(i)$. Difference between \level and  \levelGroup can be seen in \cref{fig:2d_7pt_d2}, for \cref{fig:2d_7pt_d1} \levelGroup and \level coincides.
-  
-  In principle one could compute on all independent \levelGroups in parallel, but sequentially within a \levelGroup, \ie for example in \cref{fig:2d_7pt_d2} $T(0)$, $T(2)$, $T(4)$, $T(6)$ can be operated by four different threads in parallel and in the next sweep rest \levelGroups. For the configurations seen in \cref{fig:2d-7pt_d1_d2} then we have $\frac{\totalLvlMATH}{2}$ and $\frac{\totalLvlMATH}{4}$ parallelism for \DONE and \DTWO kernels respectively.
-  
- However the problem with the configurations like the one seen in \cref{fig:2d-7pt_d1_d2} {\CA is that there, check Holger's comment} is load imbalances between threads because the number of rows (\nrows) per \levelGroup is not distributed evenly. As seen here in the case of \stex the threads working on extreme ends of graph (\eg $T(1), T(7)$) have a small amount of work compared to the threads working on middle (\eg $T(3), T(4)$). 
+ % {\CA Maybe more explanation is required.} 
+ The weak definition used in \cref{corollary_dk} offers many choices for forming \DK independent sets of vertices, which can then be executed in parallel. 
+ In  \Cref{fig:2d_7pt_d1}  and \Cref{fig:2d_7pt_d2} we present one example for \DONE and \DTWO coloring of our \stex, respectively. The \DONE coloring uses a straight forward approach by assigning two colors to alternating levels, i.e. \levels of a color can be calculated concurrently. In case of \DTWO independency we refrain from using three colors but instead aggregate two adjacent \levels to form a \levelGroup (denoted by $T(i)$) and perform a \DONE coloring on top of those groups. This guarantees that vertices of two \levelGroups of the same color are \DTWO independent and can be executed in parallel. Here, the vertices in $T(0)$, $T(2)$, $T(4)$, $T(6)$ can be operated by four different threads in parallel, i.e. one thread per \levelGroup.  After synchronisation the remaining four blue \levelGroups can also be executed in parallel. Note, that within a single \levelGroup all verticies are computed in their original order enabling high spatial locality for accessing them. This idea can be generalized such that for \DK coloring, \levelGroups containing at least $k$ adjacent \levels need to be formed and \DONE coloring of the \levelGroups is done on top. Then, all \levelGroups within a color can be executed in parallel. This simple approach allows to generate workload for $\frac{\totalLvlMATH}{2 k}$ threads if \DK coloring is requested.
+ 
+However, choosing the same number of \levels for each \levelGroup may lead to severe load imbalances as can be seen in \cref{fig:2d-7pt_d1_d2}. In particular the use of bandwidth reduction schemes such as BFS or RCM will further worsen that problem due to the shape like matrix structures generated leading to low workload for matrix rows at the top and bottom of the matrix. Compare \eg $T(1)$ and $T(7)$ with  $T(3)$ and $T(4)$ in \cref{fig:2d-7pt_d1_d2}.
+ %coloring by aggregating consecutive levels into \levelGroups (denoted by $T(i)$). In  \Cref{fig:2d_7pt_d1}  and \Cref{fig:2d_7pt_d2} we present one example for \DONE and \DTWO coloring of our \stex, respectively. The \DONE coloring uses straight forward approach by assigning two colors to alternating levels, i.e. \levelGroup and \level is equivalent here. For and applying a \DONE coloring on top of those groups as shown for \DTWO coloring in \cref{fig:2d_7pt_d2}.  In this context \Cref{fig:2d-7pt_d1_d2} contains two potential colorings for \DONE independent \levels as \DTWO coloring also solves \DONE dependencies.  One could also group some more of nearby \levels together to form a \levelGroup, and make this \DONE or \DTWO independent of other \levelGroups. The $i$-th \levelGroup would be denoted by $T(i)$. Difference between \level and  \levelGroup can be seen in \cref{fig:2d_7pt_d2}, for \cref{fig:2d_7pt_d1} \levelGroup and \level coincides. In principle one could compute on all independent \levelGroups in parallel, but sequentially within a \levelGroup, \ie for example in \cref{fig:2d_7pt_d2} $T(0)$, $T(2)$, $T(4)$, $T(6)$ can be operated by four different threads in parallel and in the next sweep rest \levelGroups. For the configurations seen in \cref{fig:2d-7pt_d1_d2} then we have $\frac{\totalLvlMATH}{2}$ and $\frac{\totalLvlMATH}{4}$ parallelism for \DONE and \DTWO kernels respectively.
+  %However the problem with the configurations like the one seen in \cref{fig:2d-7pt_d1_d2} {\CA is that there, check Holger's comment} is load imbalances between threads because the number of rows (\nrows) per \levelGroup is not distributed evenly. As seen here in the case of \stex the threads working on extreme ends of graph (\eg $T(1), T(7)$) have a small amount of work compared to the threads working on middle (\eg $T(3), T(4)$). 
   
   \subsection{Load balancing}\label{subsec:LB}
   Depending on the matrix each \levelGroup contains different number of rows, that leads to load imbalances as {\CA seen above} in \cref{subsec:DK}. \Inorder to avoid this problem we employ a load balancing scheme. At this step  we plug in details from the hardware side  namely the total parallelism required by the hardware. The idea is to exploit only the required parallelism while at the same time maintain \DK constraint seen in \cref{corollary_dk}. To balance the load more nearby \levels would be added to a \levelGroup ($T(x)$) which has less number of rows ($\nrowsMath(T(x))$) and at \levelGroup where we have considerably big \levels only sufficient amount of \levels to maintain \DK constraint would be assigned. Assigning nearby levels instead of others further helps in preserving data locality. 
