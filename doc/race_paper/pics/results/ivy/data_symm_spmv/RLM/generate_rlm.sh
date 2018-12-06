@@ -1,9 +1,9 @@
 #!/bin/bash
 
 
-NNZ_TABLE=table_nnz.txt
-NNZ_COL="1 2"
-NNZ_DELIM=" "
+NNZ_TABLE=SpMV_RCM/result.txt
+NNZ_COL="2 3"
+NNZ_DELIM="|"
 
 SPMV_TABLE=../MKL/result.txt
 SPMV_COL="2 3"
@@ -20,14 +20,15 @@ bw_load=47
 
 #prepare nnz table
 col1=$(echo $NNZ_COL | cut -d" " -f1) 
-a=$(cut -d"$NNZ_DELIM" -f $col1 $NNZ_TABLE)
+a=$(cut -d"$NNZ_DELIM" -f $col1 $NNZ_TABLE | tail -n +2)
 echo $a | tr " " "\n" > tmp1.txt
 col2=$(echo $NNZ_COL | cut -d" " -f2) 
-b=$(cut -d"$NNZ_DELIM" -f $col2 $NNZ_TABLE)
+b=$(cut -d"$NNZ_DELIM" -f $col2 $NNZ_TABLE | tail -n +2)
 echo $b | tr " " "\n" > tmp2.txt
 paste -d" " tmp1.txt tmp2.txt > tmp3.txt
 sort -k1 -t"," tmp3.txt > sorted_nnz.txt
 
+cat sorted_nnz.txt
 #prepare spmv table, with removed header
 col1=$(echo $SPMV_COL | cut -d" " -f1) 
 a=$(cut -d"$SPMV_DELIM" -f $col1 $SPMV_TABLE | tail -n +2)
