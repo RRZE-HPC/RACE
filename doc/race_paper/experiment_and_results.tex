@@ -39,9 +39,9 @@ In the case of \emph{parabolic\_fem} matrix we theoretically have a good efficie
 
 \begin{figure}[thbp]
 	\centering
-	\subfloat[Comparison of \SpMV and RACE \SymmSpmv on 1 socket of \IVB]{\label{fig:spmv_vs_symm_spmv_ivy}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV/perf}}
+	\subfloat[Comparison of \SpMV and RACE \SymmSpmv on 1 socket of \IVB]{\label{fig:spmv_vs_symm_spmv_ivy}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV/perf}}
 	\hspace{1em}
-	\subfloat[\SymmSpmv on 1 socket of \SKX]{\label{fig:spmv_vs_symm_spmv_skx}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV/perf}}
+	\subfloat[\SymmSpmv on 1 socket of \SKX]{\label{fig:spmv_vs_symm_spmv_skx}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV/perf}}
 	\caption{\SpMV vs RACE \SymmSpmv performance}
 	\label{fig:SpMV_vs_SymmSpMV}
 \end{figure}
@@ -67,12 +67,14 @@ In the case of \emph{parabolic\_fem} matrix we theoretically have a good efficie
 
 \begin{figure}[thbp]
 	\centering
-	\subfloat[\SymmSpmv on 1 socket of \IVB]{\label{fig:symm_spmv_ivy}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx/perf}}
+	\subfloat[\SymmSpmv on 1 socket of \IVB]{\label{fig:symm_spmv_ivy}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx/perf}}
 	\hspace{1em}
-	\subfloat[\SymmSpmv on 1 socket of \SKX]{\label{fig:symm_spmv_skx}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx/perf}}
+	\subfloat[\SymmSpmv on 1 socket of \SKX]{\label{fig:symm_spmv_skx}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx/perf}}
 	\caption{\SymmSpmv performance}
 	\label{fig:symm_spmv}
 \end{figure}
+
+\begin{comment}
 
 \begin{figure}[thbp]
 	\centering
@@ -91,6 +93,8 @@ In the case of \emph{parabolic\_fem} matrix we theoretically have a good efficie
 	\caption{\SymmSpmv performance for SCAMAC matrices}
 	\label{fig:symm_spmv_scamac}
 \end{figure}
+
+\end{comment}
 
 %\begin{figure}[thbp]
 %	\centering
@@ -115,18 +119,18 @@ was used for multicoloring (\MC). \METIS \cite{METIS}  was used for graph partit
 
 \begin{figure}[thbp]
 	\centering
-	\subfloat[1 socket \IVB] {\label{fig:derived_perf_kacz_ivb}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/data_symm_kacz/plot_generator/derived_perf_vs_mtx/derived_perf}}
+	\subfloat[1 socket \IVB] {\label{fig:derived_perf_kacz_ivb}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/ivy/data_symm_kacz/plot_generator/derived_perf_vs_mtx/derived_perf}}
 	\hspace{1em}
-	\subfloat[1 socket \SKX] {\label{fig:derived_perf_kacz_skx}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_kacz/plot_generator/derived_perf_vs_mtx/derived_perf}}
+	\subfloat[1 socket \SKX] {\label{fig:derived_perf_kacz_skx}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_kacz/plot_generator/derived_perf_vs_mtx/derived_perf}}
 	\caption{\SYMMKACZ inverse runtime (scaled)}
 	\label{fig:symmkacz_dp}
 \end{figure}
 
 \begin{figure}[thbp]
 	\centering
-	\subfloat[Plain performance] {\label{fig:perf_kacz_ivb}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_kacz/plot_generator/perf_vs_mtx/perf}}
+	\subfloat[Plain performance] {\label{fig:perf_kacz_ivb}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_kacz/plot_generator/perf_vs_mtx/perf}}
 	\hspace{1em}
-	\subfloat[Iterations compared to serial Symm\KACZ kernel] {\label{fig:iter_kacz_skx}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_kacz/plot_generator/iter_vs_mtx/iter}}
+	\subfloat[Iterations compared to serial Symm\KACZ kernel] {\label{fig:iter_kacz_skx}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_kacz/plot_generator/iter_vs_mtx/iter}}
 	\caption{\SYMMKACZ convergence study on \SKX}
 	\label{fig:symmkacz_convergence}
 \end{figure}
