@@ -12,6 +12,7 @@
 \usepackage{siunitx} 
 \usepackage{amssymb}
 
+
 \definecolor{amber}{rgb}{1.0, 0.49, 0.0}
 \definecolor{carmine}{rgb}{0.59, 0.0, 0.09}
 
@@ -120,11 +121,11 @@
 \newcommand{\atleast}{at least\xspace}
 \newcommand{\totalLvl}{$n_l$\xspace}
 \newcommand{\totalLvlMATH}{n_l}
-\newcommand{\level}{$level$\xspace}
-\newcommand{\levels}{$levels$\xspace}
-\newcommand{\levelGroup}{$level \text{  } group$\xspace}
-\newcommand{\levelGroups}{$level \text{  } groups$\xspace}
-\newcommand{\LevelGroups}{$Level \text{  } groups$\xspace}
+\newcommand{\level}{level\xspace}
+\newcommand{\levels}{levels\xspace}
+\newcommand{\levelGroup}{level group\xspace}
+\newcommand{\levelGroups}{level groups\xspace}
+\newcommand{\LevelGroups}{Level groups\xspace}
 \newcommand{\eg}{e.g.,\xspace}
 \newcommand{\aka}{a.k.a.\xspace}
 \newcommand{\subgraph}{sub-graph\xspace}
@@ -297,9 +298,9 @@ together this example manuscript and supplement.
 		\STATE {$mean\_b$ = sum($T\_size[1:num\_sweep:len]$) / $nthreads$}
 		\STATE {$diff[0:num\_sweep:len]$ = $T\_size[0:num\_sweep:len] .- mean\_r$}
 		\STATE {$diff[1:num\_sweep:len]$ = $T\_size[1:num\_sweep:len] .- mean\_b$}
-		\STATE\label{lb_line10} {$var$ = dot\_product($diff,diff$)}
+		\STATE\label{lb_line10} {$var$ = dot\_product($diff,diff$)/len}
 		\STATE {$absRankIdx$ = sortIdx(abs($diff$))  \textcolor{gray}{\% sortIdx returns permutation after}}
-		\STATE {\textcolor{gray}{\hspace{14.9em} \% sorting from bigger to larger}}
+		\STATE {\textcolor{gray}{\hspace{14.9em} \% sorting in descending order}}
 		\STATE {$rankIdx$ = sortIdx($diff$)}
 		\STATE {$currRank = 0, newVar = var$}
 		\STATE {$old\_T\_ptr$ = $T\_ptr$}
