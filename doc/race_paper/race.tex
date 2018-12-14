@@ -293,15 +293,18 @@ together this example manuscript and supplement.
 		\STATE {$minGap$ = 2  \textcolor{gray}{\hspace{7.6em} \%\DTWO}}
 		\STATE {$len$ = $num\_sweep*nthread$ \textcolor{gray}{\hspace{1em} \% constructing nthread parallel work}}
 		\WHILE{$!(exit)$} 
-		\STATE\label{lb_line5} {$T\_size$ = update($T\_ptr$) \textcolor{gray}{\hspace{1em} \%$T\_size$ contains non-zeros in each \levelGroup}}
+		\STATE\label{lb_line5} {$T\_size$ = update($T\_ptr$) \textcolor{gray}{\hspace{1em} \%$T\_size$ contains nrows in each \levelGroup}}
 		\STATE {$mean\_r$ = sum($T\_size[0:num\_sweep:len]$) / $nthreads$}
+		\textcolor{gray}{\% mean of red color}
 		\STATE {$mean\_b$ = sum($T\_size[1:num\_sweep:len]$) / $nthreads$}
+		\textcolor{gray}{\% mean of blue color}
 		\STATE {$diff[0:num\_sweep:len]$ = $T\_size[0:num\_sweep:len] .- mean\_r$}
 		\STATE {$diff[1:num\_sweep:len]$ = $T\_size[1:num\_sweep:len] .- mean\_b$}
-		\STATE\label{lb_line10} {$var$ = dot\_product($diff,diff$)/len}
-		\STATE {$absRankIdx$ = sortIdx(abs($diff$))  \textcolor{gray}{\% sortIdx returns permutation after}}
-		\STATE {\textcolor{gray}{\hspace{14.9em} \% sorting in descending order}}
-		\STATE {$rankIdx$ = sortIdx($diff$)}
+		\STATE\label{lb_line10} {$var$ = dot\_product($diff,diff$)/len} \textcolor{gray}{\% overall variance}
+		\STATE {$absRankIdx$ = sortIdx(abs($diff$))  \textcolor{gray}{\% ranking according to absolute deviation}}
+		\STATE {\textcolor{gray}{\hspace{5.5em} \% sortIdx returns permutation after, sorting in descending order}}
+		\STATE {$rankIdx$ = sortIdx($diff$)} \textcolor{gray}{\% ranking according to signed deviation, to find}
+		\STATE { \textcolor{gray}{\% the order of \levelGroups from/to which levels have to be acquired/added}}
 		\STATE {$currRank = 0, newVar = var$}
 		\STATE {$old\_T\_ptr$ = $T\_ptr$}
 		\WHILE{$newVar \geq var$}
