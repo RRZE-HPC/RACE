@@ -10,7 +10,7 @@
 
 \def\size{15} %size-1
 \begin{document}
-	\begin{tikzpicture}[redstyle/.style={circle,draw,fill=red!30!white,minimum size=35}, bluestyle/.style={circle,draw,fill=blue!30!white,minimum size=35}]
+	\begin{tikzpicture}[redstyle/.style={circle,draw,fill=red!30!white,minimum size=36, inner sep=0.2pt}, bluestyle/.style={circle,draw,fill=blue!30!white,minimum size=36, inner sep=0.2pt}]
 	\foreach \x in {0,...,\size}
 	\foreach \y in {0,...,\size} 
 	{
@@ -24,7 +24,7 @@
 		\pgfmathparse{\color[\level]}
 		\edef\currCOLOR{\pgfmathresult}
 	%	\edef\currColor{\pgfmathresult}
-		\node[\currCOLOR]  (\label) at (1.5*\x,1.5*\y) { \ifthenelse{\x > \yinv} {\large{\labelu$^{\large{\level}}$}} {\large{\labell$^{\large{\level}}$}}} ;
+		\node[\currCOLOR]  (\label) at (1.5*\x,1.5*\y) { \ifthenelse{\x > \yinv} {\LARGE{\labelu$^{\large{\level}}$}} {\LARGE{\labell$^{\large{\level}}$}}} ;
 		;}
 	
 	\foreach \x in {0,...,\size}
@@ -55,7 +55,7 @@
 		\pgfmathparse{\color[\level]}
 		\edef\currCOLOR{\pgfmathresult}
 		%	\edef\currColor{\pgfmathresult}
-		\node[\currCOLOR]  (\label) at (1.5*\x,1.5*\y) { \ifthenelse{\x > \yinv} {\large{\labelu$^{\large{\level}}$}} {\large{\labell$^{\large{\level}}$}}} ;
+		\node[\currCOLOR]  (\label) at (1.5*\x,1.5*\y) { \ifthenelse{\x > \yinv} {\LARGE{\labelu$^{\large{\level}}$}} {\LARGE{\labell$^{\large{\level}}$}}} ;
 		;}
 	%	\draw [white] (0.1,-0.5) rectangle (0.2,-1.5);
 	\end{tikzpicture}

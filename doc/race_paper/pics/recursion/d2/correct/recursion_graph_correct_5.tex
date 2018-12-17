@@ -19,13 +19,13 @@
 	
 	\fill[color=blue,opacity=0.1,rounded corners=15pt] (8*\scale,-3.5*\scale) rectangle (12*\scale,-1.5*\scale);
 	
-	\node[shape=circle,fill=carmine, text=white] (d) at (8.5*\scale,-2*\scale) {3$_{2,2}$};
-	\node[shape=circle,fill=cyan] (e) at (9.5*\scale,-2*\scale) {4$_{2,3}$};
-	\node[shape=circle,fill=cyan] (f) at (10.5*\scale,-2*\scale) {5$_{2,3}$};
-	\node[shape=circle,fill=cyan] (g) at (11.5*\scale,-2*\scale) {6$_{2,2}$};
-	\node[shape=circle,fill=carmine, text=white] (x) at (9*\scale,-3*\scale) {7$_{3,1}$};
-	\node[shape=circle,fill=cyan] (y) at (10*\scale,-3*\scale) {8$_{3,2}$};
-	\node[shape=circle,fill=carmine, text=white] (z) at (11*\scale,-3*\scale) {9$_{3,4}$};
+	\node[shape=circle,fill=carmine, text=white, minimum size=24, inner sep=0.2pt] (d) at (8.5*\scale,-2*\scale) {\LARGE{3$_{2,2}$}};
+	\node[shape=circle,fill=cyan, minimum size=24, inner sep=0.2pt] (e) at (9.5*\scale,-2*\scale) {\LARGE{4$_{2,3}$}};
+	\node[shape=circle,fill=cyan, minimum size=24, inner sep=0.2pt] (f) at (10.5*\scale,-2*\scale) {\LARGE{5$_{2,3}$}};
+	\node[shape=circle,fill=cyan, minimum size=24, inner sep=0.2pt] (g) at (11.5*\scale,-2*\scale) {\LARGE{6$_{2,2}$}};
+	\node[shape=circle,fill=carmine, text=white, minimum size=24, inner sep=0.2pt] (x) at (9*\scale,-3*\scale) {\LARGE{7$_{3,1}$}};
+	\node[shape=circle,fill=cyan, minimum size=24, inner sep=0.2pt] (y) at (10*\scale,-3*\scale) {\LARGE{8$_{3,2}$}};
+	\node[shape=circle,fill=carmine, text=white, minimum size=24, inner sep=0.2pt] (z) at (11*\scale,-3*\scale) {\LARGE{9$_{3,4}$}};
 	\draw 
     (e) edge[<->] (f) (f) edge[<->] (g)
 	(d) edge[<->] (x) (e) edge[<->] (y) (f) edge[<->] (z) (f) edge[<->] (y)

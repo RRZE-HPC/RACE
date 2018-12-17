@@ -3,7 +3,7 @@
 \usepackage{ifthen}
 
 \begin{document}
-	\begin{tikzpicture}[redstyle/.style={circle,draw,fill=red!30!white,minimum size=30}, bluestyle/.style={circle,draw,fill=blue!30!white,minimum size=30}]
+	\begin{tikzpicture}[redstyle/.style={circle,draw,fill=red!30!white,minimum size=30, inner sep=0.5pt}, bluestyle/.style={circle,draw,fill=blue!30!white,minimum size=30, inner sep=0.5pt}]
 	\foreach \x in {0,...,7}
 	\foreach \y in {0,...,7} 
 	{\pgfmathtruncatemacro{\labell}{(\y + \x)*(\y+\x+1)*0.5+\y  }
@@ -13,9 +13,9 @@
 	
 	\pgfmathparse{Mod(\level,2)==0?1:0}
 	\ifnum\pgfmathresult>0
-		\node [redstyle]  (\x\y) at (1.5*\x,1.5*\y) { \ifthenelse{\x > \yinv} {\labelu$^{\large{\level}}$} {\labell$^{\large{\level}}$}} ;
+		\node [redstyle]  (\x\y) at (1.5*\x,1.5*\y) { \ifthenelse{\x > \yinv} {\LARGE{\labelu$^{\Large{\level}}$}} {\LARGE{\labell$^{\Large{\level}}$}}} ;
 	\else
-		\node [bluestyle]  (\x\y) at (1.5*\x,1.5*\y) { \ifthenelse{\x > \yinv} {\labelu$^{\large{\level}}$} {\labell$^{\large{\level}}$}} ;
+		\node [bluestyle]  (\x\y) at (1.5*\x,1.5*\y) { \ifthenelse{\x > \yinv} {\LARGE{\labelu$^{\Large{\level}}$}} {\LARGE{\labell$^{\Large{\level}}$}}} ;
 	\fi
 	;}
 	
@@ -35,9 +35,9 @@
 	
 	\pgfmathparse{Mod(\level,2)==0?1:0}
 	\ifnum\pgfmathresult>0
-	\node [redstyle]  (\x\y) at (1.5*\x,1.5*\y) { \ifthenelse{\x > \yinv} {\labelu$^{\large{\level}}$} {\labell$^{\large{\level}}$}} ;
+	\node [redstyle]  (\x\y) at (1.5*\x,1.5*\y) { \ifthenelse{\x > \yinv} {\LARGE{\labelu$^{\large{\level}}$}} {\LARGE{\labell$^{\large{\level}}$}}} ;
 	\else
-	\node [bluestyle]  (\x\y) at (1.5*\x,1.5*\y) { \ifthenelse{\x > \yinv} {\labelu$^{\large{\level}}$} {\labell$^{\large{\level}}$}} ;
+	\node [bluestyle]  (\x\y) at (1.5*\x,1.5*\y) { \ifthenelse{\x > \yinv} {\LARGE{\labelu$^{\large{\level}}$}} {\LARGE{\labell$^{\large{\level}}$}}} ;
 	\fi
 	;}
 	

@@ -10,10 +10,10 @@
 	\begin{tikzpicture}
 		\fill[color=red,opacity=0.2,rounded corners=15pt] (13,-3.25) rectangle (14,1.5);
 		
-		\node[shape=circle,fill=yellow] (i) at (13.5,-2.75) {6$^{2,4}$};
-		\node[shape=circle,fill=green] (j) at (13.5,-1.5) {5$^{2,3}$};		
-		\node[shape=circle,fill=cyan] (k) at (13.5, -0.25) {4$^{2,2}$};
-		\node[shape=circle,fill=red] (l) at (13.5, 1) {3$^{2,0}$};
+		\node[shape=circle,fill=yellow, minimum size=18, inner sep=0.2pt] (i) at (13.5,-2.75) {\Large{6$^{2,4}$}};
+		\node[shape=circle,fill=green, minimum size=18, inner sep=0.2pt] (j) at (13.5,-1.5) {\Large{5$^{2,3}$}};		
+		\node[shape=circle,fill=cyan, minimum size=18, inner sep=0.2pt] (k) at (13.5, -0.25) {\Large{4$^{2,2}$}};
+		\node[shape=circle,fill=red, minimum size=18, inner sep=0.2pt] (l) at (13.5, 1) {\Large{3$^{2,0}$}};
 		\draw (i) edge[<->] (j) (j) edge[<->] (k);
 		
 	\end{tikzpicture}
