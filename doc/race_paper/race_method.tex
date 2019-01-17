@@ -170,7 +170,7 @@ As discussed in \cref{subsec:DK} the maximum degree of parallelism is limited by
 %i.e.  \levelGroups which are recursively refined will be computed by multiple threads whereas unmodified \levelGroups will be assigned to a single thread. 
 
 In the following we first demonstrate the basic idea in the context of \DONE dependencies where all dependencies can be resolved within the given \levelGroup by design. 
-However, for $k>1$ vertices in a \levelGroup may have a \DK dependencies through vertices in adjacent \levelGroups. Thus, we generalize our procedure to \DK dependencies. 
+However, for $k>1$ vertices in a \levelGroup may have \DK dependencies through vertices in adjacent \levelGroups {\CA which requires special consideration}. Thus {\CA word 'Thus' is frequently used, may be we could use here 'Hence'}, we generalize our procedure to \DK dependencies. 
 
 In order to visualize the basic concepts easily and discuss important corner cases of the recursive step we choose the simple graph shown in \cref{fig:rec_d1_s1_a}, which is not correlated to our \stex. To distinguish between \levelGroups at different stages $s$ of our recursive procedure we add a subscript to the levels ($L_s(i)$) and \levelGroups ($T_s(i)$) indicating the stage of recursion at which they are generated, with $s=0$ being the original distribution before recursion applied to any \subgraph. Finally, we apply the recursive scheme to our \stex and introduce proper sub-graph selection as well as global load balancing.
 
