@@ -1,19 +1,17 @@
 \subsection{Test bed}
-The tests are conducted on two different multi-core architectures. One being Intel's \IVB and the other \SKX architecture, the choice of these architectures enable study of the method on two extreme generation of Intel's processor currently being used on \HPC systems. All the tests are conducted on a single socket (chip) of these architectures using all its available cores. 
-
+We conducted all benchmarks on a single CPU socket from Intel's \IVB and  \SKX families, respectively, since these  represent probably the oldest and the latest Intel architectures in active use at the time of writing:
 \begin{itemize}
-	\item \Intel \IVB architecture belongs to class of classic Intel's cache-based architecture, which has three inclusive cache  hierarchies. All the caches are scalable and the \LLC (L3) is being shared among all cores on one socket. The processor is capable of 256-bit (four double words) wide \SIMD operations.
-	
-	\item \Intel \SKX architecture belongs to recent generation of Intel family. Contrary to it's predecessors (like \IVB), L3 cache is changed to a non-inclusive victim cache also shared by all the cores on a socket. The private L2 caches is considerably larger than that of its previous generations. The architecture comes with support for 512-bit wide \SIMD operations (eight double words).
-	\begin{comment}
-	\item {\GW \AMD \EPY is based on AMD's Zen microarchitecture. The basic building block of the architecture consists of Core Complex (CCX) consisting of three cores (can extend upto four on high end models) each having it's own private L1 and L2 cache. The L3 cache is shared between a core complex and is non-inclusive victim cache. A single socket of \EPY consists of eight such CCX.}
-	\end{comment}
-	
+\item The \Intel \IVB architecture belongs to the class of ``classic'' designs with three inclusive cache levels. While the L1 and L2 caches are private to each core, the L3 cache is shared but scalabale in terms of bandwidth. The processor supports the AVX instruction set extension, which is capable of 256-bit wide \SIMD execution.
+\item Contrary to its predecessors, the \Intel \SKX architecture has a shared but non-inclusive victim L3 cache and much larger private L2 caches. The model we use in this work supports AVX-512, which features 512-bit wide \SIMD execution.
+%  \begin{comment}
+%  \item {\GW \AMD \EPY is based on AMD's Zen microarchitecture. The basic building block of the architecture consists of Core Complex (CCX) consisting of three cores (can extend upto four on high end models) each having it's own private L1 and L2 cache. The L3 cache is shared between a core complex and is non-inclusive victim cache. A single socket of \EPY consists of eight such CCX.}
+%  \end{comment}
+ 
 \end{itemize}
-The details of architectures along with the measured bandwidths are given in \cref{tab:test_bed}. 
-
+Architectural details along with the measured memory bandwidths are given in \cref{tab:test_bed}. 
+All the measurements were done with \CPU clock speeds fixed at the indicated base frequencies.\GHcomm{What about clock speed reduction with SKX?}
 \begin{comment}
-\begin{table}[tbhp]
+\begin{table}[tbp]
 \footnotesize
 \caption{Compute node configurations. The last two columns present attainable bandwidth numbers ($b_S$) on a single socket, depending on the access pattern (copy vs. load only)}\label{tab:test_bed}
 \begin{center}
@@ -24,7 +22,7 @@ The details of architectures along with the measured bandwidths are given in \cr
 		\midrule
 		{Microarchitecture} & {Ivy Bridge} & {Skylake} & {Zen} \\
 		\midrule
-		{Clock} & {2.2 GHz} & {2.4 GHz} & {2.3 GHz}\\
+		{Base clock frequency} & {2.2 GHz} & {2.4 GHz} & {2.3 GHz}\\
 		{Physical Cores per socket} & {10} & {20} & {24}\\
 		{L1d Cache} & {10 $\times$ 32 \KB} & {20 $\times$ 32 \KB} & {24 $\times$  32 \KB}\\
 		{L2 Cache} & {10 $\times$ 256 \KB} & {20 $\times$ 1 \MB} & {24 $\times$ 512 \MB }\\
@@ -39,51 +37,48 @@ The details of architectures along with the measured bandwidths are given in \cr
 \end{table} 
 \end{comment}
 
-\begin{table}[tbhp]
+\begin{table}[tbp]
 	\footnotesize
-	\caption{Test bed}\label{tab:test_bed}
+	\caption{Technical details (per socket) about the Intel CPUs used for the benchmarks}\label{tab:test_bed}
 	\begin{center}
 		%	\setlength{\tabcolsep}{3em}
-		\begin{tabular}{|l| c  c |}
-			\toprule
-			{Model name} & {Xeon\textsuperscript{\textregistered} E5-2660} & {Xeon\textsuperscript{\textregistered} Gold 6148} \\
-			\midrule
-			{Microarchitecture} & {Ivy Bridge} & {Skylake} \\
-			\midrule
-			{Clock} & {2.2 GHz} & {2.4 GHz}\\
-			{Physical Cores per socket} & {10} & {20} \\
-			{L1d Cache} & {10 $\times$ 32 \KB} & {20 $\times$ 32 \KB}\\
-			{L2 Cache} & {10 $\times$ 256 \KB} & {20 $\times$ 1 \MB} \\
-			{L3 Cache} & {25 \MB} & {27.5 \MB}\\
-			{L3 type} & {inclusive} & {non-inclusive}\\
-			{Main Memory} & {32 GB} & {45 GB}\\
-			{Bandwidth per socket - load only} & {47 GB/s} & {115 GB/s}\\ %TODO
-			{Bandwidth per socket - copy} & {40 GB/s} & {104 GB/s}\\
-			\bottomrule
+		\begin{tabular}{l|cc}
+			{Model name} & {Xeon\textsuperscript{\textregistered} E5-2660} & {Xeon\textsuperscript{\textregistered} Gold 6148} \\\midrule
+			{Microarchitecture} & {\IVB} & {\SKX} \\\midrule
+			{Base clock frequency} & {2.2 GHz} & {2.4 GHz}\\
+			{Physical cores per socket} & {10} & {20} \\
+			{L1D cache} & {10 $\times$ 32 \KiB} & {20 $\times$ 32 \KiB}\\
+			{L2 cache} & {10 $\times$ 256 \KiB} & {20 $\times$ 1 \MiB} \\
+			{L3 cache} & {25 \MiB} & {27.5 \MiB}\\
+			{L3 type} & {inclusive} & {non-inclusive, victim}\\
+			{Main memory} & {32 \GiB} & {45 \GiB}\\
+			{Bandwidth per socket, load only} & {47 \GBS} & {115 \GBS}\\ %TODO
+			{Bandwidth per socket, copy} & {40 \GBS} & {104 \GBS}\\
 		\end{tabular}
 	\end{center}
 \end{table} 
 
-Furthermore all the measurements were done with  \CPU clock speeds fixed at frequencies indicated in \cref{tab:test_bed}.
-
 
 \subsection{External Tools and Software}
-Following external libraries are used in this paper. The application of these libraries will be stated at the point it is needed.
-\begin{itemize}
+The following external libraries are used in this paper:\GHcomm{some versions missing}
+\begin{description}
 	%TODO
-	\item \LIKWID \cite{LIKWID}  \text{\tt{likwid-perfctr}} is used for measuring hardware performance counters. The bandwidths shown in \cref{tab:test_bed} are measured using \likwidBench suite. All measurements are done using \LIKWID version 4.3.2.
-	\item \COLPACK \cite{COLPACK} is used for pre-processing matrix by \MCfull.
-	\item \SPMP \cite{SpMP} is used to perform \RCMfull (\RCM).
-	\item \METIS\cite{METIS} is used for graph partitioning in \ABMC approach.
-	\item All the code used was compiled with Intel compiler version 17.0.3 and the following compiler flags were set {\tt -fno-alias -xHost -O3} for Ivy-Bridge system and {\tt -fno-alias -xCORE-AVX512 -O3} for Skylake system.
-	\item \MKL \cite{MKL} version 17 is used for performing some reference sparse matrix computations.
-\end{itemize}
+	\item[\LIKWID 4.3.2] \cite{LIKWID}  \likwidPerfctr was used for counting hardware events and measuring derived metrics. The bandwidths shown in \cref{tab:test_bed} were taken by the  \likwidBench tool.
+	\item[\COLPACK XXX] \cite{COLPACK} was used for pre-processing matrices via \MCfull.
+	\item[\SPMP XXX] \cite{SpMP} was used to perform \RCMfull (\RCM).
+	\item[\METIS XXX] \cite{METIS} was used for graph partitioning via \ABMC.
+	\item[Intel \MKL 17] \cite{MKL} was used for performing some reference sparse matrix computations.
+\end{description}
+All code was compiled with the Intel compiler in version 17.0.3 and the following compiler flags: {\tt -fno-alias -xHost -O3} for \IVB and {\tt -fno-alias -xCORE-AVX512 -O3} for \SKX. We did not enforce AVX-512 wide SIMD instructions on \SKX because this feature is of minor importance for the algorithms discussed here.
 
 \subsection{Benchmark Matrices}
-All the test matrices are taken from SuiteSparse Matrix Collection (former University of Florida Sparse Matrix Collection) \cite{UOF} and quantum physics field, see \ESSEX project \cite{ESSEX} for more details. The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by combining the test matrices from two papers \cite{RSB,park_ls}. This enables easy comparison of results. Matrices from \ESSEX project are some of the matrices that are of interest in the iterative FEAST eigen value solver that internally uses Kaczmarz solver. Only matrices having undirected graphs are considered due to scope of the paper as mentioned in \cref{Sec:contribution}. Matrices along with some of their parameters are given in \cref{table:bench_matrices}. 
-\begin{table}[ht]
+Most test matrices were taken from the Suite\-Sparse Matrix Collection (former University of Florida Sparse Matrix Collection)~\cite{UOF} combining sets from two papers \cite{RSB,park_ls}, which allows  straightforward comparison of results.\GHcomm{Do we actually compare with them?}  We also added some matrices from quantum physics applications, which originate from the particular project context in which RACE was developed~\cite{ESSEX}.
+%The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by  Matrices from \ESSEX project are some of the matrices that are of interest in the iterative FEAST eigen value solver that internally uses Kaczmarz solver.
+As mentioned before we restrict ourselves to matrices representing undirected graphs.
+\cref{table:bench_matrices} gives an overview of the most important matrix properties.
+\begin{table}[tb]
 	\footnotesize
-	\caption{Details of benchmark matrices. Matrices with an * symbol in the column `C' indicates that they are chosen corner cases and will be discussed in detail. Column `S' shows the source of the matrix, matrix without any label indicates they come from SuiteSparse Matrix Collection and ones marked with * indicate they come from \ESSEX project.} \label{tab:test_mtx}
+	\caption{Details of the benchmark matrices. \nrows is the number of matrix rows and \nnz is the number of nonzeros. $\NNZRmath=\nnzMath/\nrowsMath$ is the average number of nonzeros per row. An asterisk in the `C' column indicates a corner case that will be discussed in detail, while an asterisk in column `S' marks a matrix from quantum physics that is not part of the SuiteSparse Matrix Collection.} \label{tab:test_mtx}
 	\label{table:bench_matrices}
 	\begin{center}
 		\input{pics/matrices/table.tex}
@@ -107,15 +102,15 @@ All the test matrices are taken from SuiteSparse Matrix Collection (former Unive
 %\end{table}
 
 \subsection{Kernels} \label{subsec:test_kernels}
-We evaluate our methods by parallelizing two simple but important kernels showing distance-2 dependencies. In the context of parallelization of symmetric sparse matrix vector (\SymmSpmv) the distance-2 coloring procedure prevents from concurrent update of the same vector entries by different threads resulting in the same result as the serial code (``exact kernel''). As an example of iterative solver we have chosen symmetric Kaczmarz (\SYMMKACZ). Here in addition to writes we also read from the same vector having dependency, which leads to change in convergence depending on the permutation (``inexact kernel'').
+We evaluate our methods by parallelizing two simple but important kernels showing \DTWO dependencies. In parallel symmetric sparse matrix-vector multiplication (\SymmSpmv), \DTWO coloring avoids the concurrent update of the same vector entries by different threads. In this case, the result is identical to the serial code (``exact kernel''). As an example of an iterative solver we have chosen symmetric Kaczmarz (\SYMMKACZ). It reads and writes indirectly from the same vector, which leads to a change in convergence depending on the coloring scheme (``inexact kernel'').
 % {\GW To be done As an example for an iterative solver with distance2 dependency we have chosen the \KACZ ...}
 
-Both algorithms are closely related by structure and computational intensity to the widely used \SpMV kernel applicable to general matrices. Thus, we start with presenting the \SpMV kernel and its known computational intensity. We extend this discussion towards the \SymmSpmv and \SYMMKACZ and show how to derive upper realistic performance bounds. We chose the widely used \CRS matrix storage format for the serial implementation of the kernel and assume square matrices.
+Since both kernels are closely related to the \SpMV kernel by structure and computational intensity, we start with a discussion of \SpMV and extend it towards \SymmSpmv and \SYMMKACZ later. In all cases the aim is to derive realistic upper performance bounds. We choose the \CRS storage format for the serial implementation and assume square matrices.
 
 \subsubsection{\SpMV}
-The \SpMV has no loop carried dependencies and parallelization of outer ($row$) loop using, \eg OpenMP, is straightforward. 
-\begin{algorithm}[H]
-	\caption{SpMV Find $b$ : $b=A x$} 
+\Cref{alg:SpMV} shows the \SpMV kernel for the \CRS storage format. It has no loop-carried dependencies, so parallelization of the outer loop using, \eg OpenMP, is straightforward. 
+\begin{algorithm}[tbp]
+	\caption{Sparse matrix-vector multiplication (\SpMV) using the compressed sparse row (\CRS) format: $b=A x$} 
 	\label{alg:SpMV}
 	\begin{algorithmic}[1]
 	        \STATE{$double:: A[nnz], b[nrows], x[nrows]$}
@@ -127,14 +122,14 @@ The \SpMV has no loop carried dependencies and parallelization of outer ($row$) 
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
-Following the discussion in~\cite{Moritz_sell} the computational intensity of the above kernel $I_\mathrm{\SpMV}$  is as follows:
+Following the discussion in~\cite{Moritz_sell}, its computational intensity is
 \begin{equation}
 \label{eq:SpMV_intensity}
-I_\mathrm{\SpMV} (\alpha)= \frac{2}{8+4+8*\alpha+\frac{20}{\NNZRmath}} \frac{Flop}{Byte} \\
+I_\mathrm{\SpMV} (\alpha)= \frac{2}{8+4+8\alpha+\frac{20}{\NNZRmath}} \frac{\FLOP}{\BYTE}\eos
 \end{equation}
-Here we assume that matrix data  ($A[], col[]$), left hand side vector ($b[]$) and row pointer information ($rowPtr[]$) are loaded once from main memory as these data structures are consecutively accessed. All quantities are calculated for the average costs of computing one non-zero element of the matrix. Thus, contributions which are independent of the inner (short) loop are rescaled by $\NNZRmath$ which is the average number of non-zeros per row (i.e. the average length of the inner loop).
+Here we assume that the matrix data  ($A[], col[]$), the LHS vector ($b[]$) and the row pointer information ($rowPtr[]$) are loaded only once from main memory, since these data structures are consecutively accessed. The intensity is calculated from the average cost of performing all computations required for one nonzero element of the matrix. Thus, contributions which are independent of the inner (short) loop are rescaled by $\NNZRmath$, which is the average number of nonzeros per row (i.e., the average length of the inner loop).
 
-The $8*\alpha$ term represents contribution of accessing the right hand side (RHS) vector ($x[]$) irregularly. The value of $\alpha$ depends on the matrix structure (access pattern) as well as on the RHS vector data set size compared to the largest cache size. The smallest value of $\alpha=\frac{1}{\NNZRmath}$ is attained if the RHS vector is only loaded once from main memory to the cache and all subsequent accesses in the same \SpMV are cache hits. This limit is typically realized for matrices with low bandwidth (high access locality) or if the cache is large enough to hold the full RHS data during one \SpMV. The factor $\alpha$ can be determined by measuring the data traffic when executing the \SpMV; please see~\cite{Moritz_sell} for more details~\footnote{In~\cite{Moritz_sell} the traffic for the row pointer was not accounted, \ie the denominator increases by $\frac{4}{\NNZRmath} Byte$.}.
+The $8\alpha$ term quantifies the data traffic caused by accessing the right hand side (RHS) vector ($x[]$). The value of $\alpha$ depends on the matrix structure as well as on the RHS vector data set size compared to the largest cache size. The smallest value of $\alpha=\NNZRmath^{-1}$ is attained if the RHS vector is only loaded once from main memory to the cache and all subsequent accesses in the same \SpMV are cache hits. This limit is typically attained for matrices with low bandwidth (high access locality) or if the cache is large enough to hold the full RHS data during one \SpMV. The actual value of $\alpha$ can be determined experimentally by measuring the data traffic when executing the \SpMV; see~\cite{Moritz_sell} for more details.\footnote{In~\cite{Moritz_sell} the traffic for the row pointer was not accounted for, \ie the denominator increases by $\frac{4}{\NNZRmath}\,\BYTE$.}
 
 \begin{comment}
 \subsubsection{\SpMTV}
@@ -194,7 +189,7 @@ Comparing~\cref{eq:SymmSpMV_intensity} and~\cref{eq:SpMV_intensity} it is obviou
 
 \begin{comment}
 \subsubsection{\GS and \SYMMGS}
-Gauss-Seidel (\GS) is a solver having distance-1 dependency. Contrary to the above kernels \GS is in-exact meaning it is an iterative method. \Cref{alg:GS} shows the Gauss-Seidel algorithm where its assumed that the diagonal entries of the matrix are stored as first entry in their corresponding rows.
+Gauss-Seidel (\GS) is a solver having \DONE dependency. Contrary to the above kernels \GS is in-exact meaning it is an iterative method. \Cref{alg:GS} shows the Gauss-Seidel algorithm where its assumed that the diagonal entries of the matrix are stored as first entry in their corresponding rows.
 \begin{algorithm}[H]
 	\caption{GS Solve for $x$ : $Ax=b$} 
 	\label{alg:GS}
@@ -228,7 +223,7 @@ The iterative Kaczmarz solver is a row-projection approach which has a data depe
 	x^{k+1} = x^{k} + \frac{b_i - \langle A_i, x_k \rangle}{\|A_i\|^2} \bar{A_i}
 \end{equation}
 
-The basic compute kernel (\KACZ) is  presented in~\cref{alg:KACZ}. For its parallelization one typically uses a distance-2 coloring of the graph representing the matrix. As this does not lead to the exact result as for the serial execution of the kernel, the actual coloring scheme may impact convergence of iterative scheme.
+The basic compute kernel (\KACZ) is  presented in~\cref{alg:KACZ}. For its parallelization one typically uses a \DTWO coloring of the graph representing the matrix. As this does not lead to the exact result as for the serial execution of the kernel, the actual coloring scheme may impact convergence of iterative scheme.
 
 \begin{algorithm}[H]
 	\caption{KACZ kernel used for solving $Ax=b$; outer iteration loop not shown} 
