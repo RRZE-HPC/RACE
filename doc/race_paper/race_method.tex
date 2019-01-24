@@ -293,8 +293,23 @@ Level construction is performed on the \subgraph (\cref{fig:rec_d2_correct_c}) b
 %Here we see recursion is applied to \levelGroups $T_0(4),T_0(5),T_0(6)$ and $T_0(7)$. In this case each of the \levelGroups where recursion is applied spawns parallelism for two threads. The selection of \levelGroups to refine and number of threads needed from each recursion are determined using a global load balancing technique as will be explained in \cref{subsec:subgraph_selection}.
 %\Cref{fig:rec_2d-7pt_graph} (right) shows the execution order of different \levelGroups. Note the usage of nested parallelism, \ie for example thread responsible for $T_0(4)$ spawns two child threads to execute $T_1(0) \subset T_0(4)$ and $T_1(2) \subset T_0(4)$ in one parallel sweep, and $T_1(1) \subset T_0(4)$ and $T_1(3) \subset T_0(4)$ in next parallel sweep. At the end of each sweep there is synchronization between threads assigned to \levelGroup of similar color as represented by a horizontal bar in \cref{fig:rec_2d-7pt_graph} (right). Since each of the leaves needs to synchronize only with it's siblings (leaves of same parent)  we use a simple point to point synchronization scheme. 
           
+\subsubsection{Levelgroup construction and global load balancing} \label{subsec:subgraph_selection}
+
+The recursive refinement of \levelGroups allows us to tackle load imbalance problems and limited degree of parallelism due to low number of levels by assigning more than one thread to each \levelGroup.  Wile we achieved reasonable load balancing for the $16 \times 16$ \stex on five threads in ~\cref{fig:2d_7pt_lb}, requesting parallelization for eight threads will lead to massive load due to the \DTWO coloring constraint: At least on thread operating on two inner successive levels has a load of 31 vertices, e.g. if it operates on levels $15$ and 16. However, the optimal load per thread would be $16$ vertices if the vertices are equally distributed across the two colors, leading to a maximum parallel speed-up of four. 
+
+Thus, we have to modify/replace  {\GW Christie: can you comment on that (???)} our original load balancing scheme which assumed a single thread per \levelGroup. Our scheme assigns weights to all levels in a specific stage of the recursion. Assuming that $L_s(i) \subset T_{s-1}(j)$ its weight is defined by
+
+\begin{align*}
+	w(L_s(i)) &= \frac{n_r(L_s(i))}{\frac{\nrowsMath^{total}}{\nthreadsMath^{}}}=\frac{n_r(L_s(i))}{\nrowsMath^{total}}  {\nthreadsMath^{}}\\
+	\nthreadsMath &: \text{total number of threads to be used for computing $T_{s-1}(j)$}\\
+	\nrowsMath^{total} &= n_r(T_{s-1}(j))\text{, i.e. number of vertices in graph}
+\end{align*}
+In the initial stage ($s=0$) the base \levelGroup ($T_{-1}(0)$) is the full matrix / graph and $\nthreadsMath$ is the total number of threads available. Basically the weight describes which fraction of the optimal load per thread ($\frac{\nrowsMath^{total}}{\nthreadsMath^{}}$)  is available in the specific level. 
+
+{\GW Christie: Please describe your scheme step by step with an itemize list and use examples from ~\cref{fig:rec_2d-7pt_graph}}
+
        
-	\subsubsection{Internal representation of recursively generated \boldmath{\levelGroups}} \label{subsec:level_tree}
+	\subsubsection{TO BE SKIPPED Internal representation of recursively generated \boldmath{\levelGroups}} \label{subsec:level_tree}
 	The recursive nature of our procedure allows to exploit more parallelism. However this introduces more complexity and one has to additionally respect the dependencies between stages and still observe the dependencies within one stage. The best idea is to have a data structure similar to the recursion, therefore we extent the \levelPtr data structure to a hierarchical tree data structure to store these informations. This data structure is called a \levelTree. The root of \levelTree contains information of entire domain, first child leaves of this root \ie leaves with depth 1 stores information about \levelGroups in first stage ($T_0(..)$), leaves with depth 2 stores information about \levelGroups in second stage ($T_1(...)$) and so on. 
 	
 	 \begin{figure}[thbp]
@@ -308,7 +323,7 @@ Level construction is performed on the \subgraph (\cref{fig:rec_d2_correct_c}) b
  
  Note that the \levelTree has a data structure that represents the nested parallelism being used as seen in \cref{fig:rec_2d-7pt_graph} (right). Therefore threads are spawned based on this \levelTree allowing for easy implementation of point to point synchronizations.
 
-\subsubsection{Sub-graph selection and global load balancing} \label{subsec:subgraph_selection}
+\subsubsection{TO BE SKIPPED Sub-graph selection and global load balancing} \label{subsec:subgraph_selection_old}
 Parallelism required for hardware underneath can be obtained either by expanding the \levelTree horizontally \ie increasing \levelGroups within a stage or by expanding \levelTree vertically with the help of recursion. But as we have seen before in \cref{subsec:DK} the horizontal parallelism is limited by total levels (\totalLvl) and after a certain extent this would lead to load balancing problems. Similarly excessive usage of recursion is also not a good idea since data locality worsens due to local permutations within \subgraph. Therefore it is vital to find a proper balance and choose proper configuration. Furthermore just doing load balancing within a single stage is not the best, for example if we had equally balanced within stage 0 in \cref{fig:rec_2d-7pt_tree}, we would receive no benefit from recursion. Therefore a global load balancing becomes inevitable.
 
 \Inorder to select proper \subgraph and do global load balancing we employ a simple algorithm to find proper weights for each \levelGroup ($T_s(i)$) in a particular stage, then depending on this weights, denoted as $w(T_s(i))$, we do load balancing with weights in the particular stage $s$ (algorithm for this is similar to \cref{alg:LB}, except weightage is given to \levelGroups). Finally if $w(T_s(i)) > 1$ we use recursion to achieve $w(T_s(i))$ parallel work in the next stage $T_{s+1}(i)$. The basic structure of the algorithm employed to find weights for the first stage is as follows:
