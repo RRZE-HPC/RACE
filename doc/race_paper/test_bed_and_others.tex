@@ -72,10 +72,13 @@ The following external libraries are used in this paper:\GHcomm{some versions mi
 All code was compiled with the Intel compiler in version 17.0.3 and the following compiler flags: {\tt -fno-alias -xHost -O3} for \IVB and {\tt -fno-alias -xCORE-AVX512 -O3} for \SKX. We did not enforce AVX-512 wide SIMD instructions on \SKX because this feature is of minor importance for the algorithms discussed here.
 
 \subsection{Benchmark Matrices}
-All the test matrices are taken from SuiteSparse Matrix Collection (former University of Florida Sparse Matrix Collection) \cite{UOF} and quantum physics field, see \ESSEX project \cite{ESSEX} for more details. The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by combining the test matrices from two papers \cite{RSB,park_ls}. This enables easy comparison of results. Matrices from \ESSEX project are some of the matrices that are of interest in the iterative FEAST eigen value solver that internally uses Kaczmarz solver. Only matrices having undirected graphs are considered due to scope of the paper as mentioned in \cref{Sec:contribution}. Matrices along with some of their parameters are given in \cref{table:bench_matrices}. 
+Most test matrices were taken from the Suite\-Sparse Matrix Collection (former University of Florida Sparse Matrix Collection)~\cite{UOF} combining sets from two papers \cite{RSB,park_ls}, which allows  straightforward comparison of results.\GHcomm{Do we actually compare with them?}  We also added some matrices from quantum physics applications, which originate from the particular project context in which RACE was developed~\cite{ESSEX}.
+%The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by  Matrices from \ESSEX project are some of the matrices that are of interest in the iterative FEAST eigen value solver that internally uses Kaczmarz solver.
+As mentioned before we restrict ourselves to matrices representing undirected graphs.
+\cref{table:bench_matrices} gives an overview of the most important matrix properties.
 \begin{table}[ht]
 	\footnotesize
-	\caption{Details of benchmark matrices. Matrices with an * symbol in the column `C' indicates that they are chosen corner cases and will be discussed in detail. Column `S' shows the source of the matrix, matrix without any label indicates they come from SuiteSparse Matrix Collection and ones marked with * indicate they come from \ESSEX project.} \label{tab:test_mtx}
+	\caption{Details of the benchmark matrices. $n_r$ is the number of matrix rows and $n_{nz}$ is the number of nonzeros. $N_{nzr}=n_{nz}/n_r$ is the average number of nonzeros per row. An asterisk in the `C' column indicates a corner case that will be discussed in detail, while an asterisk in column `S' marks a matrix from quantum physics that is not part of the SuiteSparse Matrix Collection.} \label{tab:test_mtx}
 	\label{table:bench_matrices}
 	\begin{center}
 		\input{pics/matrices/table.tex}
@@ -99,10 +102,10 @@ All the test matrices are taken from SuiteSparse Matrix Collection (former Unive
 %\end{table}
 
 \subsection{Kernels} \label{subsec:test_kernels}
-We evaluate our methods by parallelizing two simple but important kernels showing distance-2 dependencies. In the context of parallelization of symmetric sparse matrix vector (\SymmSpmv) the distance-2 coloring procedure prevents from concurrent update of the same vector entries by different threads resulting in the same result as the serial code (``exact kernel''). As an example of iterative solver we have chosen symmetric Kaczmarz (\SYMMKACZ). Here in addition to writes we also read from the same vector having dependency, which leads to change in convergence depending on the permutation (``inexact kernel'').
+We evaluate our methods by parallelizing two simple but important kernels showing \DTWO dependencies. In parallel symmetric sparse matrix-vector multiplication (\SymmSpmv), \DTWO coloring avoids the concurrent update of the same vector entries by different threads. In this case, the result is identical to the serial code (``exact kernel''). As an example of an iterative solver we have chosen the symmetric Kaczmarz (\SYMMKACZ). It reads and writes indirectly from the same vector, which leads to a change in convergence depending on the coloring scheme (``inexact kernel'').
 % {\GW To be done As an example for an iterative solver with distance2 dependency we have chosen the \KACZ ...}
 
-Both algorithms are closely related by structure and computational intensity to the widely used \SpMV kernel applicable to general matrices. Thus, we start with presenting the \SpMV kernel and its known computational intensity. We extend this discussion towards the \SymmSpmv and \SYMMKACZ and show how to derive upper realistic performance bounds. We chose the widely used \CRS matrix storage format for the serial implementation of the kernel and assume square matrices.
+Since both kernels are closely related by structure and computational intensity to the \SpMV kernel,  we start with presenting the \SpMV kernel and its known computational intensity. We extend this discussion towards the \SymmSpmv and \SYMMKACZ and show how to derive upper realistic performance bounds. We chose the widely used \CRS matrix storage format for the serial implementation of the kernel and assume square matrices.
 
 \subsubsection{\SpMV}
 The \SpMV has no loop carried dependencies and parallelization of outer ($row$) loop using, \eg OpenMP, is straightforward. 
@@ -186,7 +189,7 @@ Comparing~\cref{eq:SymmSpMV_intensity} and~\cref{eq:SpMV_intensity} it is obviou
 
 \begin{comment}
 \subsubsection{\GS and \SYMMGS}
-Gauss-Seidel (\GS) is a solver having distance-1 dependency. Contrary to the above kernels \GS is in-exact meaning it is an iterative method. \Cref{alg:GS} shows the Gauss-Seidel algorithm where its assumed that the diagonal entries of the matrix are stored as first entry in their corresponding rows.
+Gauss-Seidel (\GS) is a solver having \DONE dependency. Contrary to the above kernels \GS is in-exact meaning it is an iterative method. \Cref{alg:GS} shows the Gauss-Seidel algorithm where its assumed that the diagonal entries of the matrix are stored as first entry in their corresponding rows.
 \begin{algorithm}[H]
 	\caption{GS Solve for $x$ : $Ax=b$} 
 	\label{alg:GS}
@@ -220,7 +223,7 @@ The iterative Kaczmarz solver is a row-projection approach which has a data depe
 	x^{k+1} = x^{k} + \frac{b_i - \langle A_i, x_k \rangle}{\|A_i\|^2} \bar{A_i}
 \end{equation}
 
-The basic compute kernel (\KACZ) is  presented in~\cref{alg:KACZ}. For its parallelization one typically uses a distance-2 coloring of the graph representing the matrix. As this does not lead to the exact result as for the serial execution of the kernel, the actual coloring scheme may impact convergence of iterative scheme.
+The basic compute kernel (\KACZ) is  presented in~\cref{alg:KACZ}. For its parallelization one typically uses a \DTWO coloring of the graph representing the matrix. As this does not lead to the exact result as for the serial execution of the kernel, the actual coloring scheme may impact convergence of iterative scheme.
 
 \begin{algorithm}[H]
 	\caption{KACZ kernel used for solving $Ax=b$; outer iteration loop not shown} 
