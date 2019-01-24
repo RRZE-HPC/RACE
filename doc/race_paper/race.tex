@@ -53,10 +53,12 @@
 %</award-group>
 %</funding-group>
 
-%\def\GW{\color{blue}}
-%\def\CA{\color{red}}
+\def\GW{\color{blue}}
+\def\CA{\color{red}}
 % use \GWcomm{bla} etc. instead
 
+\newcommand{\eos}{~.}
+\newcommand{\cma}{~,}
 \newcommand{\RAC}{RAC\xspace}
 \newcommand{\RACfull}{Recursive Algebraic Coloring\xspace}
 \newcommand{\RACfullNoSpace}{Recursive Algebraic Coloring}
@@ -104,6 +106,8 @@
 \newcommand{\LCC}{LCC\xspace}
 \newcommand{\HCCfull}{High Core Count\xspace}
 \newcommand{\HCC}{HCC\xspace}
+\newcommand{\FLOP}{\mbox{flop}\xspace}
+\newcommand{\BYTE}{\mbox{byte}\xspace}
 \newcommand{\MB}{MB\xspace}
 \newcommand{\KB}{kB\xspace}
 \newcommand{\GB}{GB\xspace}
@@ -145,14 +149,14 @@
 \newcommand{\EffRow}{\emph{Effective row}\xspace}
 \newcommand{\nthreads}{${n_{t}}$\xspace}
 \newcommand{\nthreadsMath}{n_{t}\xspace}
-\newcommand{\nrows}{${n_{r}}$\xspace}
-\newcommand{\nrowsMath}{n_{r}\xspace}
+\newcommand{\nrows}{${N_{r}}$\xspace}
+\newcommand{\nrowsMath}{N_{r}\xspace}
 \newcommand{\nrowsNospace}{${n_{r}}$}
-\newcommand{\nnz}{${n_{nz}}$\xspace}
-\newcommand{\nnzMath}{n_{nz}\xspace}
-\newcommand{\nrowsEff}{${n_{r}^{eff}}$\xspace}
-\newcommand{\nrowsEffMath}{n_{r}^{eff}\xspace}
-\newcommand{\threadEff}{${n_{t}^{eff}}$\xspace}
+\newcommand{\nnz}{${N_{nz}}$\xspace}
+\newcommand{\nnzMath}{N_{nz}\xspace}
+\newcommand{\nrowsEff}{${N_{r}^{eff}}$\xspace}
+\newcommand{\nrowsEffMath}{N_{r}^{eff}\xspace}
+\newcommand{\threadEff}{${N_{t}^{eff}}$\xspace}
 \newcommand{\threadEffMath}{n_{t}^{eff}\xspace}
 \newcommand{\upto}{up to \xspace}
 \newcommand{\fracUnit}[2]{\Big[\frac{\mbox{#1}}{\mbox{#2}}\Big]}

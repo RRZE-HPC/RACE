@@ -76,9 +76,9 @@ Most test matrices were taken from the Suite\-Sparse Matrix Collection (former U
 %The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by  Matrices from \ESSEX project are some of the matrices that are of interest in the iterative FEAST eigen value solver that internally uses Kaczmarz solver.
 As mentioned before we restrict ourselves to matrices representing undirected graphs.
 \cref{table:bench_matrices} gives an overview of the most important matrix properties.
-\begin{table}[ht]
+\begin{table}[tb]
 	\footnotesize
-	\caption{Details of the benchmark matrices. $n_r$ is the number of matrix rows and $n_{nz}$ is the number of nonzeros. $N_{nzr}=n_{nz}/n_r$ is the average number of nonzeros per row. An asterisk in the `C' column indicates a corner case that will be discussed in detail, while an asterisk in column `S' marks a matrix from quantum physics that is not part of the SuiteSparse Matrix Collection.} \label{tab:test_mtx}
+	\caption{Details of the benchmark matrices. \nrows is the number of matrix rows and \nnz is the number of nonzeros. $\NNZRmath=\nnzMath/\nrowsMath$ is the average number of nonzeros per row. An asterisk in the `C' column indicates a corner case that will be discussed in detail, while an asterisk in column `S' marks a matrix from quantum physics that is not part of the SuiteSparse Matrix Collection.} \label{tab:test_mtx}
 	\label{table:bench_matrices}
 	\begin{center}
 		\input{pics/matrices/table.tex}
@@ -102,15 +102,15 @@ As mentioned before we restrict ourselves to matrices representing undirected gr
 %\end{table}
 
 \subsection{Kernels} \label{subsec:test_kernels}
-We evaluate our methods by parallelizing two simple but important kernels showing \DTWO dependencies. In parallel symmetric sparse matrix-vector multiplication (\SymmSpmv), \DTWO coloring avoids the concurrent update of the same vector entries by different threads. In this case, the result is identical to the serial code (``exact kernel''). As an example of an iterative solver we have chosen the symmetric Kaczmarz (\SYMMKACZ). It reads and writes indirectly from the same vector, which leads to a change in convergence depending on the coloring scheme (``inexact kernel'').
+We evaluate our methods by parallelizing two simple but important kernels showing \DTWO dependencies. In parallel symmetric sparse matrix-vector multiplication (\SymmSpmv), \DTWO coloring avoids the concurrent update of the same vector entries by different threads. In this case, the result is identical to the serial code (``exact kernel''). As an example of an iterative solver we have chosen symmetric Kaczmarz (\SYMMKACZ). It reads and writes indirectly from the same vector, which leads to a change in convergence depending on the coloring scheme (``inexact kernel'').
 % {\GW To be done As an example for an iterative solver with distance2 dependency we have chosen the \KACZ ...}
 
-Since both kernels are closely related by structure and computational intensity to the \SpMV kernel,  we start with presenting the \SpMV kernel and its known computational intensity. We extend this discussion towards the \SymmSpmv and \SYMMKACZ and show how to derive upper realistic performance bounds. We chose the widely used \CRS matrix storage format for the serial implementation of the kernel and assume square matrices.
+Since both kernels are closely related to the \SpMV kernel by structure and computational intensity, we start with a discussion of \SpMV and extend it towards \SymmSpmv and \SYMMKACZ later. In all cases the aim is to derive realistic upper performance bounds. We choose the \CRS storage format for the serial implementation and assume square matrices.
 
 \subsubsection{\SpMV}
-The \SpMV has no loop carried dependencies and parallelization of outer ($row$) loop using, \eg OpenMP, is straightforward. 
-\begin{algorithm}[H]
-	\caption{SpMV Find $b$ : $b=A x$} 
+\Cref{alg:SpMV} shows the \SpMV kernel for the \CRS storage format. It has no loop-carried dependencies, so parallelization of the outer loop using, \eg OpenMP, is straightforward. 
+\begin{algorithm}[tbp]
+	\caption{Sparse matrix-vector multiplication (\SpMV) using the compressed sparse row (\CRS) format: $b=A x$} 
 	\label{alg:SpMV}
 	\begin{algorithmic}[1]
 	        \STATE{$double:: A[nnz], b[nrows], x[nrows]$}
@@ -122,14 +122,14 @@ The \SpMV has no loop carried dependencies and parallelization of outer ($row$) 
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
-Following the discussion in~\cite{Moritz_sell} the computational intensity of the above kernel $I_\mathrm{\SpMV}$  is as follows:
+Following the discussion in~\cite{Moritz_sell}, its computational intensity is
 \begin{equation}
 \label{eq:SpMV_intensity}
-I_\mathrm{\SpMV} (\alpha)= \frac{2}{8+4+8*\alpha+\frac{20}{\NNZRmath}} \frac{Flop}{Byte} \\
+I_\mathrm{\SpMV} (\alpha)= \frac{2}{8+4+8\alpha+\frac{20}{\NNZRmath}} \frac{\FLOP}{\BYTE}\eos
 \end{equation}
-Here we assume that matrix data  ($A[], col[]$), left hand side vector ($b[]$) and row pointer information ($rowPtr[]$) are loaded once from main memory as these data structures are consecutively accessed. All quantities are calculated for the average costs of computing one non-zero element of the matrix. Thus, contributions which are independent of the inner (short) loop are rescaled by $\NNZRmath$ which is the average number of non-zeros per row (i.e. the average length of the inner loop).
+Here we assume that the matrix data  ($A[], col[]$), the LHS vector ($b[]$) and the row pointer information ($rowPtr[]$) are loaded only once from main memory, since these data structures are consecutively accessed. The intensity is calculated from the average cost of performing all computations required for one nonzero element of the matrix. Thus, contributions which are independent of the inner (short) loop are rescaled by $\NNZRmath$, which is the average number of nonzeros per row (i.e., the average length of the inner loop).
 
-The $8*\alpha$ term represents contribution of accessing the right hand side (RHS) vector ($x[]$) irregularly. The value of $\alpha$ depends on the matrix structure (access pattern) as well as on the RHS vector data set size compared to the largest cache size. The smallest value of $\alpha=\frac{1}{\NNZRmath}$ is attained if the RHS vector is only loaded once from main memory to the cache and all subsequent accesses in the same \SpMV are cache hits. This limit is typically realized for matrices with low bandwidth (high access locality) or if the cache is large enough to hold the full RHS data during one \SpMV. The factor $\alpha$ can be determined by measuring the data traffic when executing the \SpMV; please see~\cite{Moritz_sell} for more details~\footnote{In~\cite{Moritz_sell} the traffic for the row pointer was not accounted, \ie the denominator increases by $\frac{4}{\NNZRmath} Byte$.}.
+The $8\alpha$ term quantifies the data traffic caused by accessing the right hand side (RHS) vector ($x[]$). The value of $\alpha$ depends on the matrix structure as well as on the RHS vector data set size compared to the largest cache size. The smallest value of $\alpha=\NNZRmath^{-1}$ is attained if the RHS vector is only loaded once from main memory to the cache and all subsequent accesses in the same \SpMV are cache hits. This limit is typically attained for matrices with low bandwidth (high access locality) or if the cache is large enough to hold the full RHS data during one \SpMV. The actual value of $\alpha$ can be determined experimentally by measuring the data traffic when executing the \SpMV; see~\cite{Moritz_sell} for more details.\footnote{In~\cite{Moritz_sell} the traffic for the row pointer was not accounted for, \ie the denominator increases by $\frac{4}{\NNZRmath}\,\BYTE$.}
 
 \begin{comment}
 \subsubsection{\SpMTV}
