@@ -295,16 +295,16 @@ Level construction is performed on the \subgraph (\cref{fig:rec_d2_correct_c}) b
           
 \subsubsection{Levelgroup construction and global load balancing} \label{subsec:subgraph_selection}
 
-The recursive refinement of \levelGroups allows us to tackle load imbalance problems and limited degree of parallelism due to low number of levels by assigning more than one thread to each \levelGroup.  Wile we achieved reasonable load balancing for the $16 \times 16$ \stex on five threads in ~\cref{fig:2d_7pt_lb}, requesting parallelization for eight threads will lead to massive load due to the \DTWO coloring constraint: At least on thread operating on two inner successive levels has a load of 31 vertices, e.g. if it operates on levels $15$ and 16. However, the optimal load per thread would be $16$ vertices if the vertices are equally distributed across the two colors, leading to a maximum parallel speed-up of four. 
+The recursive refinement of \levelGroups allows us to tackle load imbalance problems and limited degree of parallelism by assigning more than one thread to each \levelGroup. While we achieved reasonable load balancing for the $16 \times 16$ \stex on five threads in ~\cref{fig:2d_7pt_lb}, requesting parallelization for eight threads will lead to massive load imbalance due to the \DTWO coloring constraint: At least one thread operating on two inner successive levels has a load of 31 vertices, e.g. if it operates on levels 15 and 16. However, the optimal load per thread is 16 vertices in a single color restricting the parallel speed-up to four, i.e. the parallel efficiency to 50 \%.
 
-Thus, we have to modify/replace  {\GW Christie: can you comment on that (???)} our original load balancing scheme which assumed a single thread per \levelGroup. Our scheme assigns weights to all levels in a specific stage of the recursion. Assuming that $L_s(i) \subset T_{s-1}(j)$ its weight is defined by
+Thus, we have to modify/replace  {\GW Christie: can you comment on that (???)} our original load balancing scheme which assumed a single thread per \levelGroup. In a first step we assign weights to all levels in a specific stage of the recursion. Assuming that $L_s(i) \subset T_{s-1}(j)$ its weight is defined by
 
 \begin{align*}
 	w(L_s(i)) &= \frac{n_r(L_s(i))}{\frac{\nrowsMath^{total}}{\nthreadsMath^{}}}=\frac{n_r(L_s(i))}{\nrowsMath^{total}}  {\nthreadsMath^{}}\\
 	\nthreadsMath &: \text{total number of threads to be used for computing $T_{s-1}(j)$}\\
-	\nrowsMath^{total} &= n_r(T_{s-1}(j))\text{, i.e. number of vertices in graph}
+	\nrowsMath^{total} &= n_r(T_{s-1}(j)) %\text{, i.e. number of vertices in graph}
 \end{align*}
-In the initial stage ($s=0$) the base \levelGroup ($T_{-1}(0)$) is the full matrix / graph and $\nthreadsMath$ is the total number of threads available. Basically the weight describes which fraction of the optimal load per thread ($\frac{\nrowsMath^{total}}{\nthreadsMath^{}}$)  is available in the specific level. 
+In the initial stage ($s=0$) the base \levelGroup ($T_{-1}(0)$) is the full matrix / graph and $\nthreadsMath$ is the total number of threads available. This weight describes which fraction of the optimal load per thread ($\frac{\nrowsMath^{total}}{\nthreadsMath^{}}$)  is available in the specific level. 
 
 {\GW Christie: Please describe your scheme step by step with an itemize list and use examples from ~\cref{fig:rec_2d-7pt_graph}}
 
