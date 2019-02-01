@@ -297,20 +297,38 @@ Level construction is performed on the \subgraph (\cref{fig:rec_d2_correct_c}) b
 
 The recursive refinement of \levelGroups allows us to tackle load imbalance problems and limited degree of parallelism by assigning more than one thread to each \levelGroup.  While we achieved reasonable load balancing for the $16 \times 16$ \stex on five threads in ~\cref{fig:2d_7pt_lb}, requesting parallelization for eight threads will lead to massive load imbalance due to the \DTWO coloring constraint: At least one thread operating on two inner successive levels has a load of 31 vertices, e.g. if it operates on levels 15 and 16. However, the optimal load per thread is 16 vertices in a single color restricting the parallel speed-up to four, i.e. the parallel efficiency to 50 \%. {\CA This example between 5 and 8 threads is for the necessity of recursion and does not clearly stress the importance of global load balancing. One idea to motivate the importance of global load balancing is by telling currently with recursion we have 2 ways of parallelism one within a stage by increasing level groups of a stage (horizontal parallelism) and second by recursion on a single level group to form level groups in next stage (vertical parallelism). Choosing the right combination of both these parallelism levels require a global load balancing scheme. Current load balancing scheme \cref{subsec:LB} considers only the horizontal parallelism, now we have to extend it to incorporate also the vertical element of parallelism introduced by recursion.}
 
-Thus, we have to modify/replace  {\GW Christie: can you comment on that (???)} {\CA (It is modification of the existing load balancing step, by allowing more threads per level group)} our original load balancing scheme {\CA{\sout{which assumed a single thread per \levelGroup}}}. {\CA The modification allows multiple threads to be assigned to a single level group $T_{s}(i)$ at stage $s$, threads that are assigned to specific level groups can then be spawned in the subsequent stages ($s+1, s+2, ...$) of recursion. To determine the number of threads responsible for a \levelGroup $T_{s}(i)$ following steps are followed:} 
+Thus, we have to modify/replace  {\GW Christie: can you comment on that (???)} {\CA (It is modification of the existing load balancing step, by allowing more threads per level group)} our original load balancing scheme {\CA{\sout{which assumed a single thread per \levelGroup}}}. {\CA The modification allows multiple threads to be assigned to a single level group $T_{s}(i)$ at stage $s$, threads that are assigned to specific level groups can then be spawned in the subsequent stages ($s+1, s+2, ...$) of recursion. The basic idea here is to assign multiple threads to \levelGroups containing bigger levels, and for simplicity we enforce equal number of threads to adjacent \levelGroups having different color.   To determine the number of threads responsible for a \levelGroup $T_{s}(i)$ following steps are followed:} 
 
-{\CA TODO: explain steps for determining number of threads in $T_{s}(i)$}
+\begin{enumerate}
+	\item  First we assign weights to all levels in a specific stage ($s$) of the recursion. Assuming that $L_s(i) \subset T_{s-1}(j)$ its weight is defined by
+	
+	\begin{align*}
+		w(L_s(i)) &= \frac{n_r(L_s(i))}{\frac{\nrowsMath^{total}}{\nthreadsMath^{}}}=\frac{n_r(L_s(i))}{\nrowsMath^{total}}  {\nthreadsMath^{}}\\
+		\nthreadsMath &: \text{total number of threads to be used for computing $T_{s-1}(j)$}\\
+		\nrowsMath^{total} &= n_r(T_{s-1}(j)) %\text{, i.e. number of vertices in graph}
+	\end{align*}
+	In the initial stage ($s=0$) the base \levelGroup ($T_{-1}(0)$) is the full matrix/graph and $\nthreadsMath$ is the total number of threads available. This weight describes which fraction of the optimal load per thread ($\frac{\nrowsMath^{total}}{\nthreadsMath^{}}$)  is available in the specific level. For the example shown in \cref{fig:rec_2d-7pt_graph} requiring 8 threads ($T_{-1}(0) = 8$), weights would be 
+	\begin{align*}
+		\{w(L_0(0)), w(L_0(1)), w(L_0(2)), ...\} &= \{0.03125, 0.0625, 0.09375, ...\}
+	\end{align*}
+	
+	\item The above definition of weight implies if the weight is close to a natural number $b$, the load induced by rows included in the calculation of weights is close to optimal for operation with $b$ threads. Thus starting with $L_s(0)$ we sum the weights till it forms a number $a$ close to a natural number $b$. Distance-k coloring is ensured by enforcing \atleast $2 \times k$ \levels in the sum, \ie for \DTWO coloring 4 levels (two for red and two for blue). Closeness of the number is measured by a parameter $\epsilon$ defined as:
+	\begin{align*}
+		\epsilon &=  1 - abs(a-b)\\
+		\text{where } b&= max(1,round(a))
+	\end{align*}
+	Closeness in controlled by the criteria:
+	\begin{align*}
+		\epsilon &> \epsilon_s, \text{where $\epsilon_s$ is a control parameter in the range of (0.5,1)} 	\end{align*}	
+	   
+	 Once we find a sum satisfying the criteria weight $b$ is fixed. Then we assign first \levelGroup of each color ($T_s(0)$ and $T_s(1)$) to be operated by $b$ threads. With fixed $b$ we try increasing levels in the \levelGroup to check if we can find a better natural number $a'$ closer to $b$ which would decrease $\epsilon_s$ value, if found the new set is considered for allocating weights for $T_s(0)$ and $T_s(1)$. Thus in case of our example in \cref{fig:rec_2d-7pt_graph} with $\epsilon_s = 0.6$,  $w(L_0(0)) + w(L_0(1)) + ... + w(L_0(5)) = 0.65625, b=1$ satisfying the criteria $\epsilon = 0.65625 > \epsilon_s$. Therefore one thread ($b=1$) is to be used for $T_0(0)$ and  $T_0(1)$. Now fixing $b=1$ we check increasing levels and finally find $w(L_0(0)) + w(L_0(1)) + ... + w(L_0(6)) = 0.875$ gives the highest $\epsilon$ value. Thus for constructing weights of $T_0(0)$ and $T_0(1)$ first 7 levels are used.
+	
+	\item Weights of subsequent \levelGroups ($T_s(2), T_s(3), ...$) are found by repeating the summing procedure starting with the very next \level. Finally once all the  levels are touched $n_t$ threads would be allocated between pairs (red and blue) of \levelGroups. For example in case of \cref{fig:rec_2d-7pt_graph} in order to find number of threads for $T_0(2)$ and $T_0(3)$ we start summing from $w(L_0(7))$ onwards and find one thread ($b=1$) satisfy the above criteria, and for $T_0(4)$ and $T_0(5)$  two threads satisfy the criteria.
+\end{enumerate}
 
- In a first step we assign weights to all levels in a specific stage of the recursion. Assuming that $L_s(i) \subset T_{s-1}(j)$ its weight is defined by
+Once all the weights are determined using this procedure a weighted load balancing scheme is employed. The scheme remains similar to the one seen in \cref{subsec:LB} except while calculating mean and variance the weights are considered such that after load balancing ideally a \levelGroup with weight $w$ will have $w$ times more load (rows) than a \levelGroup with weight one. Same algorithm \cref{alg:LB} presented in \cref{subsec:LB} can be used except now the weights are the $b$ values instead of ones's. As explained previously in \cref{subsec:LB} this also takes into account load balancing between different colors (red and blue).
 
-\begin{align*}
-	w(L_s(i)) &= \frac{n_r(L_s(i))}{\frac{\nrowsMath^{total}}{\nthreadsMath^{}}}=\frac{n_r(L_s(i))}{\nrowsMath^{total}}  {\nthreadsMath^{}}\\
-	\nthreadsMath &: \text{total number of threads to be used for computing $T_{s-1}(j)$}\\
-	\nrowsMath^{total} &= n_r(T_{s-1}(j)) %\text{, i.e. number of vertices in graph}
-\end{align*}
-In the initial stage ($s=0$) the base \levelGroup ($T_{-1}(0)$) is the full matrix / graph and $\nthreadsMath$ is the total number of threads available. This weight describes which fraction of the optimal load per thread ($\frac{\nrowsMath^{total}}{\nthreadsMath^{}}$)  is available in the specific level. 
-
-{\GW Christie: Please describe your scheme step by step with an itemize list and use examples from ~\cref{fig:rec_2d-7pt_graph}}
+%{\GW Christie: Please describe your scheme step by step with an itemize list and use examples from ~\cref{fig:rec_2d-7pt_graph}}
 
        
 	\subsubsection{TO BE SKIPPED Internal representation of recursively generated \boldmath{\levelGroups}} \label{subsec:level_tree}
