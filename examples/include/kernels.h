@@ -11,11 +11,18 @@ struct kernelArg
     densemat* x;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 void spmv(densemat* b, sparsemat* mat, densemat* x, int iter);
+void spmv_RACE(densemat* b, sparsemat* mat, densemat* x, int iter);
 void spmtv(densemat* b, sparsemat* mat, densemat* x, int iter);
 void gs(densemat* b, sparsemat* mat, densemat* x, int iter);
 void kacz(densemat* b, sparsemat* mat, densemat* x, int iter);
 void symm_spmv(densemat* b, sparsemat* mat, densemat* x, int iter);
+#ifdef __cplusplus
+}
+#endif
 
 //convenience macros
 #define ENCODE_TO_VOID(mat_en, b_en, x_en)\

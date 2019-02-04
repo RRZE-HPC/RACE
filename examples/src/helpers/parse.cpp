@@ -13,7 +13,7 @@ my_option::my_option()
 {
 }
 
-parser::parser():mat_file(NULL), iter(100), cores(1), smt(1), pin(FILL), validate(false), tol(1e-4), prgname("a.out"), numOptions(8)
+parser::parser():mat_file(NULL), iter(100), blockSize(1), cores(1), smt(1), pin(FILL), validate(false), tol(1e-4), prgname("a.out"), numOptions(9)
 {
     long_options = new my_option[numOptions+1];
 
@@ -25,7 +25,8 @@ parser::parser():mat_file(NULL), iter(100), cores(1), smt(1), pin(FILL), validat
     long_options[5] = {"validate",no_argument,       0,  'v', "Validate coloring" };
     long_options[6] = {"tol",     required_argument, 0,  'T', "Tolerance for validation" };
     long_options[7] = {"help",    no_argument,       0,  'h', "Prints this help informations" };
-    long_options[8] = {0,         0,                 0,   0,  0 };
+    long_options[8] = {"blockSize",    required_argument,   0,  'b', "number of colums in dense vector" };
+    long_options[9] = {0,         0,                 0,   0,  0 };
 
     gnuOptions = new option[numOptions+1];
 
@@ -46,7 +47,7 @@ bool parser::parse_arg(int argc, char **argv)
     prgname = argv[0];
     while (1) {
         int option_index = 0, c;
-        c = getopt_long(argc, argv, "0:m:i:c:t:p:T:vh",
+        c = getopt_long(argc, argv, "0:m:i:c:t:p:T:b:vh",
                 gnuOptions, &option_index);
 
         if (c == -1)
@@ -113,6 +114,11 @@ bool parser::parse_arg(int argc, char **argv)
                 {
                     help();
                     return 0;
+                    break;
+                }
+            case 'b':
+                {
+                    blockSize = atoi(optarg);
                     break;
                 }
             default:

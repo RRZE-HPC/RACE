@@ -34,13 +34,18 @@ int mm_read_unsymmetric_sparse(const char *fname, int *M_, int *N_, int *nz_,
     }
 
 
-    if ( !((mm_is_real(matcode)||mm_is_pattern(matcode)) && mm_is_matrix(matcode) &&
-            mm_is_sparse(matcode)))
+    if ( !(((mm_is_real(matcode)||mm_is_complex(matcode))||mm_is_pattern(matcode)) && mm_is_matrix(matcode) &&  mm_is_sparse(matcode)))
     {
         fprintf(stderr, "Sorry, this application does not support ");
         fprintf(stderr, "Market Market type: [%s]\n",
                 mm_typecode_to_str(matcode));
         return -1;
+    }
+
+    bool cmplx = false;
+    if(mm_is_complex(matcode))
+    {
+        cmplx = true;
     }
 
     /* find out size of sparse matrix: M, N, nz .... */
@@ -59,7 +64,15 @@ int mm_read_unsymmetric_sparse(const char *fname, int *M_, int *N_, int *nz_,
 
     II = (int *) malloc(nz * sizeof(int));
     J = (int *) malloc(nz * sizeof(int));
-    val = (double *) malloc(nz * sizeof(double));
+    if(!cmplx)
+    {
+        val = (double *) malloc(nz * sizeof(double));
+    }
+    else
+    {
+        val = (double *) malloc(2 * nz * sizeof(double));
+    }
+
 
     *val_ = val;
     *I_ = II;
@@ -81,12 +94,24 @@ int mm_read_unsymmetric_sparse(const char *fname, int *M_, int *N_, int *nz_,
 
     if(!mm_is_pattern(matcode))
     {
-        for (i=0; i<nz; i++)
+        if(!cmplx)
         {
-            if (fscanf(f, "%d %d %lg\n", &II[i], &J[i], &val[i])
-                    != 3) return MM_PREMATURE_EOF;
-            II[i]--;  /* adjust from 1-based to 0-based */
-            J[i]--;
+            for (i=0; i<nz; i++)
+            {
+                if (fscanf(f, "%d %d %lg\n", &II[i], &J[i], &val[i])
+                        != 3) return MM_PREMATURE_EOF;
+                II[i]--;  /* adjust from 1-based to 0-based */
+                J[i]--;
+            }
+        }
+        else
+        {
+            for (i=0; i<nz; i++)
+            {
+                if (fscanf(f, "%d %d %lg %lg\n", &II[i], &J[i], &val[2*i], &val[2*i+1]) != 4) return MM_PREMATURE_EOF;
+                II[i]--;  /* adjust from 1-based to 0-based */
+                J[i]--;
+            }
         }
     }
     else

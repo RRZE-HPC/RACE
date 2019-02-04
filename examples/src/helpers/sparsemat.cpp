@@ -4,7 +4,7 @@
 #include <omp.h>
 #include <vector>
 
-sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL)
+sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), complex_value(false)
 {
 }
 
@@ -33,6 +33,11 @@ sparsemat::~sparsemat()
 
 }
 
+bool sparsemat::isComplex()
+{
+    return complex_value;
+}
+
 bool sparsemat::readFile(char* filename)
 {
 
@@ -53,9 +58,14 @@ bool sparsemat::readFile(char* filename)
 
     fclose(f);
 
-    bool compatible_flag = (mm_is_sparse(matcode) && (mm_is_real(matcode)||mm_is_pattern(matcode))) && (mm_is_symmetric(matcode) || mm_is_general(matcode));
+    bool compatible_flag = (mm_is_sparse(matcode) && ((mm_is_real(matcode)||mm_is_complex(matcode))||mm_is_pattern(matcode))) && (mm_is_symmetric(matcode) || mm_is_general(matcode));
     bool symm_flag = mm_is_symmetric(matcode);
     bool pattern_flag = mm_is_pattern(matcode);
+
+    if(mm_is_complex(matcode))
+    {
+        complex_value = true;
+    }
 
     if(!compatible_flag)
     {
@@ -65,9 +75,9 @@ bool sparsemat::readFile(char* filename)
             printf(" * matrix has to be sparse\n");
         }
 
-        if(!mm_is_real(matcode) && !(mm_is_pattern(matcode)))
+        if(((!mm_is_real(matcode)) && (!mm_is_complex(matcode))) && !(mm_is_pattern(matcode)))
         {
-            printf(" * matrix has to be real or pattern\n");
+            printf(" * matrix has to be real, complex or pattern\n");
         }
 
         if(!mm_is_symmetric(matcode) && !mm_is_general(matcode))
@@ -115,7 +125,16 @@ bool sparsemat::readFile(char* filename)
 
         int *row_general = new int[new_nnz];
         int *col_general = new int[new_nnz];
-        double *val_general = new double[new_nnz];
+        double *val_general;
+
+        if(!complex_value)
+        {
+            val_general = new double[new_nnz];
+        }
+        else
+        {
+            val_general = new double[2*new_nnz];
+        }
 
         int idx_gen=0;
 
@@ -123,14 +142,30 @@ bool sparsemat::readFile(char* filename)
         {
             row_general[idx_gen] = row[idx];
             col_general[idx_gen] = col_unsorted[idx];
-            val_general[idx_gen] = val_unsorted[idx];
+            if(!complex_value)
+            {
+                val_general[idx_gen] = val_unsorted[idx];
+            }
+            else
+            {
+                val_general[2*idx_gen] = val_unsorted[2*idx];
+                val_general[2*idx_gen+1] = val_unsorted[2*idx+1];
+            }
             ++idx_gen;
 
             if(row[idx] != col_unsorted[idx])
             {
                 row_general[idx_gen] = col_unsorted[idx];
                 col_general[idx_gen] = row[idx];
-                val_general[idx_gen] = val_unsorted[idx];
+                if(!complex_value)
+                {
+                    val_general[idx_gen] = val_unsorted[idx];
+                }
+                else
+                {
+                    val_general[2*idx_gen] = val_unsorted[2*idx];
+                    val_general[2*idx_gen+1] = val_unsorted[2*idx+1];
+                }
                 ++idx_gen;
             }
         }
@@ -157,12 +192,27 @@ bool sparsemat::readFile(char* filename)
     sort_perm(row, perm, nnz);
 
     col = new int[nnz];
-    val = new double[nnz];
+    if(!complex_value)
+    {
+        val = new double[nnz];
+    }
+    else
+    {
+        val = new double[2*nnz];
+    }
 
     for(int idx=0; idx<nnz; ++idx)
     {
         col[idx] = col_unsorted[perm[idx]];
-        val[idx] = val_unsorted[perm[idx]];
+        if(!complex_value)
+        {
+            val[idx] = val_unsorted[perm[idx]];
+        }
+        else
+        {
+            val[2*idx] = val_unsorted[2*perm[idx]];
+            val[2*idx+1] = val_unsorted[2*perm[idx]+1];
+        }
     }
 
     delete[] col_unsorted;
@@ -215,7 +265,15 @@ void sparsemat::makeDiagFirst()
         bool diagHit = false;
         for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
         {
-            val_with_diag->push_back(val[idx]);
+            if(!complex_value)
+            {
+                val_with_diag->push_back(val[idx]);
+            }
+            else
+            {
+                val_with_diag->push_back(val[2*idx]);
+                val_with_diag->push_back(val[2*idx+1]);
+            }
             col_with_diag->push_back(col[idx]);
 
             if(col[idx] == row)
@@ -225,7 +283,15 @@ void sparsemat::makeDiagFirst()
         }
         if(!diagHit)
         {
-            val_with_diag->push_back(0.0);
+            if(!complex_value)
+            {
+                val_with_diag->push_back(0.0);
+            }
+            else
+            {
+                val_with_diag->push_back(0.0);
+                val_with_diag->push_back(0.0);
+            }
             col_with_diag->push_back(row);
             ++extra_nnz;
         }
@@ -240,7 +306,14 @@ void sparsemat::makeDiagFirst()
         delete[] rowPtr;
 
         nnz += extra_nnz;
-        val = new double[nnz];
+        if(!complex_value)
+        {
+            val = new double[nnz];
+        }
+        else
+        {
+            val = new double[2*nnz];
+        }
         col = new int[nnz];
         rowPtr = new int[nrows+1];
 
@@ -251,7 +324,15 @@ void sparsemat::makeDiagFirst()
             rowPtr[row+1] = rowPtr_with_diag->at(row+1);
             for(int idx=rowPtr_with_diag->at(row); idx<rowPtr_with_diag->at(row+1); ++idx)
             {
-                val[idx] = val_with_diag->at(idx);
+                if(!complex_value)
+                {
+                    val[idx] = val_with_diag->at(idx);
+                }
+                else
+                {
+                    val[2*idx] = val_with_diag->at(2*idx);
+                    val[2*idx+1] = val_with_diag->at(2*idx+1);
+                }
                 col[idx] = col_with_diag->at(idx);
             }
         }
@@ -267,32 +348,76 @@ void sparsemat::makeDiagFirst()
     {
         bool diag_hit = false;
 
-        double* newVal = new double[rowPtr[row+1]-rowPtr[row]];
+        double* newVal;
+
+        if(!complex_value)
+        {
+            newVal = new double[rowPtr[row+1]-rowPtr[row]];
+        }
+        else
+        {
+            newVal = new double[2*(rowPtr[row+1]-rowPtr[row])];
+        }
+
         int* newCol = new int[rowPtr[row+1]-rowPtr[row]];
         for(int idx=rowPtr[row], locIdx=0; idx<rowPtr[row+1]; ++idx, ++locIdx)
         {
             //shift all elements+1 until diag entry
             if(col[idx] == row)
             {
-                newVal[0] = val[idx];
+                if(!complex_value)
+                {
+                    newVal[0] = val[idx];
+                }
+                else
+                {
+                    newVal[0] = val[2*idx];
+                    newVal[1] = val[2*idx+1];
+                }
                 newCol[0] = col[idx];
                 diag_hit = true;
             }
             else if(!diag_hit)
             {
-                newVal[locIdx+1] = val[idx];
+                if(!complex_value)
+                {
+                    newVal[locIdx+1] = val[idx];
+                }
+                else
+                {
+                    newVal[2*(locIdx+1)] = val[2*idx];
+                    newVal[2*(locIdx+1)+1] = val[2*idx+1];
+                }
+
                 newCol[locIdx+1] = col[idx];
             }
             else
             {
-                newVal[locIdx] = val[idx];
+                if(!complex_value)
+                {
+                    newVal[locIdx] = val[idx];
+                }
+                else
+                {
+                    newVal[2*locIdx] = val[2*idx];
+                    newVal[2*locIdx+1] = val[2*idx+1];
+                }
                 newCol[locIdx] = col[idx];
             }
         }
         //assign new Val
         for(int idx = rowPtr[row], locIdx=0; idx<rowPtr[row+1]; ++idx, ++locIdx)
         {
-            val[idx] = newVal[locIdx];
+            if(!complex_value)
+            {
+                val[idx] = newVal[locIdx];
+            }
+            else
+            {
+                val[2*idx] = newVal[2*locIdx];
+                val[2*idx+1] = newVal[2*locIdx+1];
+            }
+
             col[idx] = newCol[locIdx];
         }
 
@@ -355,7 +480,14 @@ bool sparsemat::computeSymmData()
         }
 
         col_symm = new int[nnz_symm];
-        val_symm = new double[nnz_symm];
+        if(!complex_value)
+        {
+            val_symm = new double[nnz_symm];
+        }
+        else
+        {
+            val_symm = new double[2*nnz_symm];
+        }
 
         //With NUMA init
 #pragma omp parallel for schedule(static)
@@ -363,7 +495,16 @@ bool sparsemat::computeSymmData()
             int idx_symm = rowPtr_symm[row];
             for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx) {
                 if(col[idx]>=row) {
-                    val_symm[idx_symm] = val[idx];
+                    if(!complex_value)
+                    {
+                        val_symm[idx_symm] = val[idx];
+                    }
+                    else
+                    {
+                        val_symm[2*idx_symm] = val[2*idx];
+                        val_symm[2*idx_symm+1] = val[2*idx+1];
+                    }
+
                     col_symm[idx_symm] = col[idx];
                     ++idx_symm;
                 }
@@ -377,7 +518,6 @@ int sparsemat::colorAndPermute(dist distance, int nthreads, int smt, PinMethod p
 {
     ce = new Interface(nrows, nthreads, distance, rowPtr, col, smt, pinMethod, NULL, NULL);
     RACE_error ret = ce->RACEColor();
-
     if(ret != RACE_SUCCESS)
     {
         printf("Pinning failure\n");
@@ -414,9 +554,12 @@ int sparsemat::maxStageDepth()
 //symmetrically permute
 void sparsemat::permute(int *perm, int*  invPerm)
 {
-    double* newVal = new double[nnz];
+
+    int multiple = isComplex()?2:1;
+
+    double* newVal = new double[multiple*nnz];
+    int* newCol = new int[multiple*nnz];
     int* newRowPtr = new int[nrows+1];
-    int* newCol = new int[nnz];
 
     newRowPtr[0] = 0;
 
@@ -451,7 +594,15 @@ void sparsemat::permute(int *perm, int*  invPerm)
         for(int permIdx=newRowPtr[row],idx=rowPtr[permRow]; permIdx<newRowPtr[row+1]; ++idx,++permIdx)
         {
             //permute column-wise also
-            newVal[permIdx] = val[idx];
+            if(!complex_value)
+            {
+                newVal[permIdx] = val[idx];
+            }
+            else
+            {
+                newVal[2*permIdx] = val[2*idx];
+                newVal[2*permIdx+1] = val[2*idx+1];
+            }
             newCol[permIdx] = invPerm[col[idx]];
         }
     }

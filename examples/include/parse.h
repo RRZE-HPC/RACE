@@ -19,6 +19,7 @@ struct parser
 {
         char *mat_file;
         int iter;
+        int blockSize;
         int cores;
         int smt;
         PinMethod pin;

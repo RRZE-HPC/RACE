@@ -25,6 +25,8 @@ struct sparsemat
     int *rowPtr, *col;
     double *val;
 
+    bool complex_value;
+
     bool readFile(char* filename);
     bool writeFile(char* filename);
     void makeDiagFirst();
@@ -41,6 +43,7 @@ struct sparsemat
     double *val_symm;
     bool computeSymmData();
 
+    bool isComplex();
     sparsemat();
     ~sparsemat();
 

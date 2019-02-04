@@ -6,18 +6,19 @@
 struct densemat
 {
     int nrows;
+    int ncols;
     double *val;
-
-    void setVal(double value);
+    bool complex_value;
+    void setVal(double value, double value_im=0);
     void setRand();
     void setFn(std::function<double(int)> fn);
     void setFn(std::function<double(void)> fn);
 
-    densemat(int nrows);
+    densemat(int nrows, bool complex_value_=false, int ncols=1);
     ~densemat();
 
 };
 
-bool checkEqual(const densemat* lhs, const densemat* rhs, double tol=1e-4);
+bool checkEqual(const densemat* lhs, const densemat* rhs, double tol=1e-4, bool complex_value=false);
 
 #endif

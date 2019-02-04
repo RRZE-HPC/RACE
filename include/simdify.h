@@ -337,7 +337,7 @@ template <typename T> bool simdifyTemplate(int simdWidth, int C, int nrows, int*
  * operations for GS like kernels. This is applicable only for SELL-C-sigma formats.
  * After construction of the matrix call this function in order to make
  * SELL-C-sigma work for distance-1 dependent kernels.
- * i.e., last four entries in each row would be
+ * i.e., for eg 4 wide SIMD, last four entries in each row would be
  *  .    .    .    .
  *  .    .    .   x_0
  *  .    .   x_1  x_0

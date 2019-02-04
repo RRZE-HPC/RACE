@@ -11,7 +11,7 @@
 #include "densemat.h"
 #include "kernels.h"
 #include "timer.h"
-
+#include "generator.h"
 
 void capitalize(char* beg)
 {
@@ -28,6 +28,8 @@ void capitalize(char* beg)
     int iter = param.iter;\
     double time = 0;\
     double nnz_update = ((double)mat->nnz)*iter*1e-9;\
+    /*warm-up*/\
+    kernel(b, mat, x, 10);\
     sleep(1);\
     INIT_TIMER(kernel);\
     START_TIMER(kernel);\
@@ -51,6 +53,18 @@ int main(const int argc, char * argv[])
     {
         printf("Error in reading parameters\n");
     }
+
+    int nBlocks = param.blockSize;
+    int veclen = 8;
+
+    //generate the kernel
+    printf("Generating kernel with vecLen = %d, nBlocks = %d\n", veclen, nBlocks);
+    generator gen(veclen, nBlocks);
+    fn_t spmv = gen.getFn("spmv");
+    fn_t spmtv = gen.getFn("spmtv");
+    fn_t symm_spmv = gen.getFn("symm_spmv");
+    printf("Finished kernel generation \n");
+
     sparsemat* mat = new sparsemat;
 
     printf("Reading matrix file\n");
@@ -67,38 +81,40 @@ int main(const int argc, char * argv[])
     int NROWS = mat->nrows;
 
     densemat *x, *b;
-    x=new densemat(NROWS);
-    b=new densemat(NROWS);
+    x=new densemat(NROWS, mat->isComplex(), nBlocks);
+    b=new densemat(NROWS, mat->isComplex(), nBlocks);
 
     x->setRand();
     b->setRand();
 
+    double complexMultiple = mat->isComplex()?4:1;
     //This macro times and reports performance
-    PERF_RUN(spmv,2);
-    PERF_RUN(spmtv,2);
+    PERF_RUN(spmv,2*complexMultiple*nBlocks);
+    PERF_RUN(spmtv,2*complexMultiple*nBlocks);
     PERF_RUN(kacz,4);
     //diag entry first required for GS
     mat->makeDiagFirst();
     PERF_RUN(gs,2);
 
     mat->computeSymmData();
-    PERF_RUN(symm_spmv,2);
+    PERF_RUN(symm_spmv,2*complexMultiple*nBlocks);
 
 
     if(param.validate)
     {
         printf("\n");
         densemat* bSPMV;
-        bSPMV = new densemat(NROWS);
-        bSPMV->setVal(0);
-        b->setVal(0);
-        x->setRand();
+        bSPMV = new densemat(NROWS, mat->isComplex(), nBlocks);
+        bSPMV->setVal(0,0);
+        b->setVal(0,0);
+  //      x->setRand();
+        x->setVal(1);
         //Assuming symmetric matrix provided.
         //Do one SPMV and SPMTV; compare results
         spmv(bSPMV, mat, x, 1);
         spmtv(b, mat, x, 1);
 
-        bool spmtv_flag = checkEqual(bSPMV,b, param.tol);
+        bool spmtv_flag = checkEqual(bSPMV,b, param.tol, mat->isComplex());
         if(!spmtv_flag)
         {
             printf("SPMTV failed\n");
@@ -109,7 +125,7 @@ int main(const int argc, char * argv[])
         b->setVal(0);
         mat->computeSymmData();
         symm_spmv(b, mat, x, 1);
-        bool symm_spmv_flag = checkEqual(bSPMV,b, param.tol);
+        bool symm_spmv_flag = checkEqual(bSPMV,b, param.tol, mat->isComplex());
         if(!symm_spmv_flag)
         {
             printf("SYMM SPMV failed\n");

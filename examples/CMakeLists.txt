@@ -38,5 +38,7 @@ endif()
 
 file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/helpers/*.cpp)
 add_executable(race ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/main.cpp)
-
 add_executable(param_study ${SOURCES} ${PROJECT_SOURCE_DIR}/src/param_study.cpp)
+add_library(genKernel SHARED ${PROJECT_SOURCE_DIR}/src/gen/kernels.cpp)
+target_link_libraries(race genKernel)
+target_link_libraries(param_study genKernel)
