@@ -549,7 +549,7 @@ void LB::splitZones()
     // (blockedSize*8*2 + blockedSize*nnzr*12) < (LLC cache size)
     //TODO: get LLC cache size automaticallly
     //TODO: Simulate LLC cache here
-    int cacheSize = 100*1024*1024;
+    int cacheSize = std::numeric_limits<int>::max(); //100*1024*1024; //disable it currently
     int nnzr = 27;
     int blockedSize = levelData->nrow*0 + cacheSize/(8*2 + nnzr*12);
 
