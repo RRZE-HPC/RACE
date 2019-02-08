@@ -254,7 +254,7 @@ This ensures that there is no vertex outside the \subgraph which can mediate a \
      	\caption{Correct procedure for \DTWO coloring of \levelGroup $T_0(1)$. The \subgraph as shown in \cref{fig:rec_d2_correct_b} contains \levelGroup $T_0(1)$ and its \DONE neighborhood. Level construction step is applied to this \subgraph in \cref{fig:rec_d2_correct_c}. \DTWO coloring by level aggregation leading to \levelGroups of stage 2 is shown \cref{fig:rec_d2_correct_d} we get three \levelGroups at the end of recursion on $T_0(1)$.}
      	\label{fig:rec_d2_correct}
      \end{figure}
-Level construction is performed on the \subgraph (\cref{fig:rec_d2_correct_c}) but the new levels only contain vertices of  $T_0(1)$, i.e. $L_1(1) = \{7^{3,1}\}$. Finally, \DTWO coloring by aggregation of two adjacent levels is performed, leading to three \levelGroups of stage 2 (\cref{fig:rec_d2_correct_d}), i.e. $T_1(0)=\{L_1(0) \cap L_1(1)\}$ {\CA shouldn't this be $\{L_1(0) \cap L_0(1)\}$}.  Now the vertices $3$ and $6$ are mapped to \levelGroups of different colors. Note, that the permutation step on the newly generated levels is not shown but performed as well to maintain data locality. 
+Level construction is performed on the \subgraph (\cref{fig:rec_d2_correct_c}) but the new levels only contain vertices of  $T_0(1)$, i.e. $L_1(1) = \{7^{3,1}\}$. Finally, \DTWO coloring by aggregation of two adjacent levels is performed, leading to three \levelGroups of stage 2 (\cref{fig:rec_d2_correct_d}), i.e. $T_1(0)=\{L_1(0) \cup L_1(1)\}$.  Now the vertices $3$ and $6$ are mapped to \levelGroups of different colors. Note, that the permutation step on the newly generated levels is not shown but performed as well to maintain data locality. 
     
 %We finally apply the recursive step to the coloring shown in \cref{fig:2d_7pt_lb} where parallelism is restricted to five threads at a time.  To increase parallelism to eight threads we do apply our recursive approach 
 %Requesting parallelism for eight threads for our \stex with \DTWO independency instead of five threads (see result of our procedure applying one recursive step to \levelGroups $T_0(4),T_0(5),T_0(6)$ and $T_0(7)$ is seen in \cref{fig:rec_2d-7pt_graph} (left). 
@@ -321,7 +321,7 @@ Thus, we have to modify/replace  {\GW Christie: can you comment on that (???)} {
 	\end{align*}
 	Closeness is controlled by the criteria:
 	\begin{align*}
-		\epsilon &> \epsilon_s, \text{where $\epsilon_s$ is a control parameter in the range of (0.5,1)} 	\end{align*}	
+		\epsilon &> \epsilon_s, \text{where $\epsilon_s$ is a control parameter in the range of (0,1)} 	\end{align*}	
 	   
 	 Once we find a sum satisfying the criteria weight $b$ is fixed. Then we assign first \levelGroup of each color ($T_s(0)$ and $T_s(1)$) to be operated by $b$ threads. With fixed $b$ we try increasing levels in the \levelGroup to check if we can find a better natural number $a'$ closer to $b$ which would increase $\epsilon$ value, if found the new set is considered for allocating weights for $T_s(0)$ and $T_s(1)$. 
 	 
