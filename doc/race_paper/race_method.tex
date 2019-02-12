@@ -295,7 +295,7 @@ Level construction is performed on the \subgraph (\cref{fig:rec_d2_correct_c}) b
           
 \subsubsection{Levelgroup construction and global load balancing} \label{subsec:subgraph_selection}
 
-The recursive refinement of \levelGroups allows us to tackle load imbalance problems and limited degree of parallelism as we are no longer limited to the one thread per \levelGroup constraint.  Instead we have the opportunity to form \levelGroups and assign appropriate thread counts to them such that the load per thread approaches the optimal value, i.e. total workload divided by the number of threads available. We then apply recursion to the \levelGroups with more than one thread assigned. Starting with the original graph as base \levelGroup ($T_{-1}(0)$) to which all available threads $n_t(T_{-1}(0))=n_t$ are assigned to, we perform the following steps to form \levelGroups $T_s(:)$ at stage $s \ge 0$ to which we assign $n_t(T_{s}(:))$ threads. For simplicity we enforce equal number of threads to adjacent \levelGroups having different color and use the $16 \times 16$ \stex to be assigned to eight threads (see \cref{fig:rec_2d-7pt_graph}).
+The recursive refinement of \levelGroups allows us to tackle load imbalance problems and limited degree of parallelism as we are no longer limited to the one thread per \levelGroup constraint.  Instead we have the opportunity to form \levelGroups and assign appropriate thread counts to them such that the load per thread approaches the optimal value, i.e. total workload divided by the number of threads available. We then apply recursion to the \levelGroups with more than one thread assigned.{\CA to here} Starting with the original graph as base \levelGroup ($T_{-1}(0)$) to which all available threads $n_t(T_{-1}(0))=n_t$ are assigned to, we perform the following steps to form \levelGroups $T_s(:)$ at stage $s \ge 0$ to which we assign $n_t(T_{s}(:))$ threads. {\CA  maybe move following sentence} For simplicity we enforce equal number of threads to adjacent \levelGroups having different color. To show the procedure we use the $16 \times 16$ \stex and assign eight threads (see \cref{fig:rec_2d-7pt_graph}).
 
 \begin{enumerate}
 	\item  Assign weights to all levels at stage ($s$) of the recursion. Assuming that $L_s(i) \subset T_{s-1}(j)$ its weight is defined by
@@ -307,8 +307,12 @@ The recursive refinement of \levelGroups allows us to tackle load imbalance prob
 	\end{align*}
 	%In the initial stage ($s=0$) the base \levelGroup ($T_{-1}(0)$) is the full matrix/graph and $\nthreadsMath$ is the total number of threads available. 
 	This weight describes the fraction of the optimal load per thread ($\frac{n_r(T_{s-1}(j))}{n_t(T_{s-1}(j))}$) in the specific level ($L_s(i)$) for a given \levelGroup ($T_{s-1}(j)$) which has to be split up, i.e.  $n_t(T_{s-1}(j)) > 1$
+	
+	{\CA May be rewrite sentence before as:}
+	
+	 For a given \levelGroup ($T_{s-1}(j)$) that has to be split up ( $n_t(T_{s-1}(j)) > 1$), the weight describes the fraction of the optimal load per thread  ($\frac{n_r(T_{s-1}(j))}{n_t(T_{s-1}(j))}$) in the specific level ($L_s(i)$).
 
-	Requesting $n_t(T_{-1}(0))=8$ threads for the $T_{-1}(0) = 256$ vertices in \cref{fig:rec_2d-7pt_graph} produces these weights for the initial ($s=0$) levels
+	Requesting $n_t(T_{-1}(0))=8$ threads for the $n_r(T_{-1}(0)) = 256$ vertices in \cref{fig:rec_2d-7pt_graph} produces these weights for the initial ($s=0$) levels
 	\begin{align*}
 		\{w(L_0(0)), w(L_0(1)), w(L_0(2)), ...\} &= \{\frac{1}{256} \times 8 , \frac{2}{256} \times 8 , \frac{3}{256} \times 8 , ...\}
 	\end{align*}
