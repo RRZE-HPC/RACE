@@ -295,7 +295,7 @@ Level construction is performed on the \subgraph (\cref{fig:rec_d2_correct_c}) b
           
 \subsubsection{Levelgroup construction and global load balancing} \label{subsec:subgraph_selection}
 
-The recursive refinement of \levelGroups allows us to tackle load imbalance problems and limited degree of parallelism as we are no longer limited to the one thread per \levelGroup constraint.  Instead we have the opportunity to form \levelGroups and assign appropriate thread counts to them such that the load per thread approaches the optimal value, i.e. total workload divided by the number of threads available. We then apply recursion to the \levelGroups with more than one thread assigned.{\CA to here} Starting with the original graph as base \levelGroup ($T_{-1}(0)$) to which all available threads $n_t(T_{-1}(0))=n_t$ are assigned to, we perform the following steps to form \levelGroups $T_s(:)$ at stage $s \ge 0$ to which we assign $n_t(T_{s}(:))$ threads. {\CA  maybe move following sentence} For simplicity we enforce equal number of threads to adjacent \levelGroups having different color. To show the procedure we use the $16 \times 16$ \stex and assign eight threads (see \cref{fig:rec_2d-7pt_graph}).
+The recursive refinement of \levelGroups allows us to tackle load imbalance problems and limited degree of parallelism as we are no longer limited to the one thread per \levelGroup constraint.  Instead we have the opportunity to form \levelGroups and assign appropriate thread counts to them such that the load per thread approaches the optimal value, i.e. total workload divided by the number of threads available. For simplicity we enforce equal number of threads to adjacent \levelGroups having different color, i.e. $T_s(i)$ and $T_s(i+1)$ with $i=0,2,4,...$. We then apply recursion to the \levelGroups with more than one thread assigned. Starting with the original graph as base \levelGroup ($T_{-1}(0)$) to which all available threads $n_t(T_{-1}(0))=n_t$ are assigned to, we perform the following steps to form \levelGroups $T_s(:)$ at stage $s \ge 0$ to which we assign $n_t(T_{s}(:))$ threads. To show the procedure we use the $16 \times 16$ \stex and construct a coloring scheme for eight threads (see \cref{fig:rec_2d-7pt_graph}).
 
 \begin{enumerate}
 	\item  Assign weights to all levels at stage ($s$) of the recursion. Assuming that $L_s(i) \subset T_{s-1}(j)$ its weight is defined by
@@ -306,29 +306,32 @@ The recursive refinement of \levelGroups allows us to tackle load imbalance prob
 %		\nrowsMath^{total} &= n_r(T_{s-1}(j)) %\text{, i.e. number of vertices in graph}
 	\end{align*}
 	%In the initial stage ($s=0$) the base \levelGroup ($T_{-1}(0)$) is the full matrix/graph and $\nthreadsMath$ is the total number of threads available. 
-	This weight describes the fraction of the optimal load per thread ($\frac{n_r(T_{s-1}(j))}{n_t(T_{s-1}(j))}$) in the specific level ($L_s(i)$) for a given \levelGroup ($T_{s-1}(j)$) which has to be split up, i.e.  $n_t(T_{s-1}(j)) > 1$
-	
-	{\CA May be rewrite sentence before as:}
+	%This weight describes the fraction of the optimal load per thread ($\frac{n_r(T_{s-1}(j))}{n_t(T_{s-1}(j))}$) in the specific level ($L_s(i)$) for a given \levelGroup ($T_{s-1}(j)$) which has to be split up, i.e.  $n_t(T_{s-1}(j)) > 1$
+	%{\CA May be rewrite sentence before as:}
 	
 	 For a given \levelGroup ($T_{s-1}(j)$) that has to be split up ( $n_t(T_{s-1}(j)) > 1$), the weight describes the fraction of the optimal load per thread  ($\frac{n_r(T_{s-1}(j))}{n_t(T_{s-1}(j))}$) in the specific level ($L_s(i)$).
 
-	Requesting $n_t(T_{-1}(0))=8$ threads for the $n_r(T_{-1}(0)) = 256$ vertices in \cref{fig:rec_2d-7pt_graph} produces these weights for the initial ($s=0$) levels
+	Requesting $n_t(T_{-1}(0))=8$ threads for the $n_r(T_{-1}(0)) = 256$ vertices of the \stex in \cref{fig:rec_2d-7pt_graph} produces these weights for the initial ($s=0$) levels
 	\begin{align*}
 		\{w(L_0(0)), w(L_0(1)), w(L_0(2)), ...\} &= \{\frac{1}{256} \times 8 , \frac{2}{256} \times 8 , \frac{3}{256} \times 8 , ...\}
 	\end{align*}
 	
-	\item The above definition implies that if the weight is close to a natural number $b$, the corresponding workload is close to optimal for operation with $b$ threads. Thus, starting with $L_s(0)$ we sum the weights till it forms a number $a$ close to a natural number $b$. Distance-k coloring is ensured by enforcing \atleast $2 \times k$ \levels in the sum, \ie for \DTWO coloring at least four levels (two for red and two for blue) are included. Closeness of the number is measured by a parameter $\epsilon$ defined as:
+	\item The above definition implies that if the weight is close to a natural number $b$, the corresponding workload is close to optimal for operation with $b$ threads. Thus, starting with $L_s(0)$ we aggregate successive levels until their combined weight forms a number $a$ close to a natural number $b$. Distance-k coloring is ensured by enforcing to aggregate \atleast $2 \times k$ \levels, \ie for \DTWO coloring at least four levels (two for red and two for blue) are included. Closeness of the number is measured by a parameter $\epsilon$ defined as:
 	\begin{align*}
-		\epsilon &=  1 - abs(a-b)\\
-		\text{where } b&= max(1,round(a))
+		\epsilon &=  1 - abs(a-b), \text{where } b= max(1,nint(a))
 	\end{align*}
-	Closeness is controlled by the criteria:
+	Closeness is controlled by the criterion
 	\begin{align*}
-		\epsilon &> \epsilon_s, \text{where $\epsilon_s$ is a control parameter in the range of (0,1)} 	\end{align*}	
-	   
-	 Once we find a sum satisfying the criteria weight $b$ is fixed. Then we assign first \levelGroup of each color ($T_s(0)$ and $T_s(1)$) to be operated by $b$ threads. With fixed $b$ we try increasing levels in the \levelGroup to check if we can find a better natural number $a'$ closer to $b$ which would increase $\epsilon$ value, if found the new set is considered for allocating weights for $T_s(0)$ and $T_s(1)$. 
-	 
-	 Thus in case of our example in \cref{fig:rec_2d-7pt_graph} with $\epsilon_s = 0.6$,  $w(L_0(0)) + w(L_0(1)) + ... + w(L_0(5)) = 0.65625$ satisfies the criteria $\epsilon = 0.65625 > \epsilon_s$, and $b=1$. Therefore one thread ($b=1$) is to be assigned for $T_0(0)$ and  $T_0(1)$. Now fixing $b=1$ we check increasing levels and finally find $w(L_0(0)) + w(L_0(1)) + ... + w(L_0(6)) = 0.875$ gives the highest $\epsilon$ value. Thus for constructing weights of $T_0(0)$ and $T_0(1)$ first 7 levels are used.
+	\epsilon &> \epsilon_s, \text{with $\epsilon_s \in  (0,1)$ is a user defined parameter.} 	
+	\end{align*}		   
+	 Once we find a collection of successive levels satisfying this criterion, the natural number $b$ is fixed. We try increasing the number of levels further to test if there exists a number $a'>a$ which is closer to $b$ leading to a $\epsilon$ value closer to one. We finally choose the set of levels with best $\epsilon$ value and define them to form $T_s(0)$ and $T_s(1)$ and to be executed by $n_t(T_s(0))=n_t(T_s(1))=b$ threads.	 
+	 In \cref{fig:rec_2d-7pt_graph} we choose $\epsilon_s = 0.6$ which selects the first seven levels to form $T_0(0)$ and $T_0(1)$.  As their combined weight is $\frac{28}{32}=0.875$  one thread will execute the two \levelGroups.
+	  %$w(L_0(0)) + w(L_0(1)) + ... + w(L_0(5)) = 0.65625$ satisfies the criteria $\epsilon = 0.65625 > \epsilon_s$, and $b=1$. Therefore one thread ($b=1$) is to be assigned for $T_0(0)$ and  $T_0(1)$. Now fixing $b=1$ we check increasing levels and finally find $w(L_0(0)) + w(L_0(1)) + ... + w(L_0(6)) = 0.875$ gives the highest $\epsilon$ value. Thus for constructing weights of  first 7 levels are used.
+
+	\item We continue with subsequent pairs of \levelGroups ($T_s(i), T_s(i+1); i=2,4 ...$) by applying this procedure starting with the very next \level. Finally, once all levels have been touched, a total $n_t(T_{s-1}(j))$ threads has been assigned to the levels $L_s(i) \subset T_{s-1}(j)$. For $T_0(4)$ and $T_0(5)$  in \cref{fig:rec_2d-7pt_graph} two threads satisfy the criterion as the total weight of the four levels included is $\frac{53}{32}=1.66$.
+	
+	\item The distribution between adjacent red and blue \levelGroups which are assigned to the same thread(s) as well as the final global load balancing is performed basically using the scheme presented in \cref{subsec:LB}. Here the calculation of mean and variance considers the weights of the levels and \levelGroups {\GW or better: considers the number of threads assigned to each \levelGroup ?}. Finally, a \levelGroup with weight $w$ will ideally have $w$ times more load (vertices) than a \levelGroup with weight one. Same algorithm \cref{alg:LB} presented in \cref{subsec:LB} can be used except now the weights are the $b$ values instead of ones's {\GW Which "1"s? I can not see them in the algorithm.} 
+	%As explained previously in \cref{subsec:LB} this also takes into account load balancing between different colors (red and blue).
 
 \end{enumerate}
 
