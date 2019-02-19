@@ -301,23 +301,29 @@ together this example manuscript and supplement.
 
 %\subsection{Load Balancing}\label{alg:LB}
 \begin{algorithm}[htp]
-	\caption{Load Balancing for two sweep, \DTWO} 
+	\caption{Load Balancing for two sweep, \DTWO, 2 colors} 
 	\label{alg:LB}
 	\begin{algorithmic}[1]
-		\STATE {$num\_sweep$ = 2 \textcolor{gray}{\hspace{6.3em} \% two sweep method}}
-		\STATE {$minGap$ = 2  \textcolor{gray}{\hspace{7.6em} \% \DTWO}}
-		\STATE {$len$ = $num\_sweep*nthread$ \textcolor{gray}{\hspace{1em} \% constructing nthread parallel work}}
+		\IF{\cref{subsec:LB}}
+		\STATE{$nthreads$ = required threads}
+		\STATE {$len$ = $2*nthreads$ \textcolor{gray}{\hspace{1.5em} \% number of \levelGroups}} 
+		\STATE{$worker[0:len-1] = 1$}
+		\ELSE
+		\STATE{$nthreads = n_t(T_{s-1}(i))$ \textcolor{gray}{\% $i$ is the index of \levelGroup in stage $s-1$}}
+		\STATE{\textcolor{gray}{\hspace{10.5em}\% where recursion is applied.}}
+		\STATE {$len$ = $2*nthreads$ \textcolor{gray}{\hspace{1.5em} \% number of \levelGroups}}
+		\STATE{$worker[0:len-1] = [n_t(T_{s}(0)), ... ,n_t(T_{s}(len-1))] = b$}	
+		\ENDIF	
+		\STATE{$exit = false$}
 		\WHILE{$!(exit)$} 
 		\STATE\label{lb_line5} {$T\_size$ = update($T\_ptr$) \textcolor{gray}{\hspace{1em} \% $T\_size$ contains nrows in each \levelGroup}}
-		\STATE {$T\_size\_w$ = $T\_size/w$} 
-		\textcolor{gray}{\hspace{0.1em} \% $T\_size\_w$ is the weighted $T\_size$, $w$ is array of weights}
-		\textcolor{gray}{\hspace{10em} \% and $w[:] = 1$ for \cref{subsec:LB} }
-		\STATE {$mean\_r$ = sum($T\_size\_w[0:num\_sweep:len]$) / $nthreads$}
+		\STATE {$T\_size\_worker$ = $T\_size./worker$} 
+		\STATE {$mean\_r$ = sum($T\_size\_worker[0:2:len-1]$) / $nthreads$}
 		\textcolor{gray}{\%mean of red color}
-		\STATE {$mean\_b$ = sum($T\_size\_w[1:num\_sweep:len]$) / $nthreads$}
+		\STATE {$mean\_b$ = sum($T\_size\_worker[1:2:len-1]$) / $nthreads$}
 		\textcolor{gray}{\%mean of blue color}
-		\STATE {$diff[0:num\_sweep:len]$ = $T\_size\_w[0:num\_sweep:len] .- mean\_r$}
-		\STATE {$diff[1:num\_sweep:len]$ = $T\_size\_w[1:num\_sweep:len] .- mean\_b$}
+		\STATE {$diff[0:2:len-1]$ = $T\_size\_worker[0:2:len-1] .- mean\_r$}
+		\STATE {$diff[1:2:len-1]$ = $T\_size\_worker[1:2:len-1] .- mean\_b$}
 		\STATE\label{lb_line10} {$var$ = dot\_product($diff,diff$)/len} \textcolor{gray}{\% overall variance}
 		\STATE {$absRankIdx$ = sortIdx(abs($diff$))  \textcolor{gray}{\% ranking according to absolute deviation}}
 		\STATE {\textcolor{gray}{\hspace{5.5em} \% sortIdx returns permutation after, sorting in descending order}}
@@ -330,7 +336,7 @@ together this example manuscript and supplement.
 		\STATE {$fail$=true}
 		\IF{ $diff[absRankIdx[currRank]] < 0$ }
 		\FOR{$el$ in $rankIdx[(len-1):-1:0]$}
-		\IF{$(T\_Ptr[el+1] - T\_ptr[el]) > min\_gap$}
+		\IF{$(T\_Ptr[el+1] - T\_ptr[el]) > 2$}
 		\STATE {$acquireIdx$ = el}
 		\STATE {$fail$=false}
 		\STATE {$break$}
@@ -338,13 +344,13 @@ together this example manuscript and supplement.
 		\ENDFOR
 		\STATE {shift($T\_ptr, acquireIdx, currRank$) \textcolor{gray}{\% shifts $T\_ptr$ by 1  from  $acquireIdx$}} 
 		\STATE {\textcolor{gray} {\hspace{6.5em} \% to $currRank$ if $currIdx < acquireIdx$ else shift by -1}}
-		\ELSIF{ $(T\_ptr[currRank+1]-T\_ptr[currRank]) > min\_gap$ }
+		\ELSIF{ $(T\_ptr[currRank+1]-T\_ptr[currRank]) > 2$ }
 		\STATE {$giveIdx = rankIdx[0]$}
 		\STATE {$fail$=false}
 		\STATE {shift($T\_ptr,currRank,giveIdx$)}
 		\ENDIF
 		\IF{!$fail$}
-		\STATE {$newVar$ = calculate\_variance($T\_ptr$) \textcolor{gray}{\% as seen in \textcolor{darkgray}{Line 5} to \textcolor{darkgray}{Line 11}}}
+		\STATE {$newVar$ = calculate\_variance($T\_ptr$) \textcolor{gray}{\% as seen in \textcolor{darkgray}{Line 13} to \textcolor{darkgray}{Line 19}}}
 		\ENDIF
 		\IF{$ (currRank == (len-1)) \text{  } \&\&  \text{  } (newVar \geq var) $}
 		\STATE {$T\_Ptr = old\_T\_ptr$}
