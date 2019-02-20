@@ -325,8 +325,9 @@ The recursive refinement of \levelGroups allows us to tackle load imbalance prob
 	\end{align*}
 	and controlled by the criterion
 	\begin{align*}
-	\epsilon &> \epsilon_s, \text{where $\epsilon_s \in  (0,1)$ is a user defined parameter.} 	
+	\epsilon &> \epsilon_s, \text{where $\epsilon_s \in  (0,1)$ are user defined parameters.} 	
 	\end{align*}		   
+	The choice of this parameter may be different for every stage of recursion. 
 	 Once we find a collection of successive levels satisfying this criterion, the natural number $b$ is fixed. We try increasing the number of levels further to test if there exists a number $a'>a$ which is closer to $b$ leading to a $\epsilon$ value closer to one. We finally choose the set of levels with best $\epsilon$ value and define them to form $T_s(0)$ and $T_s(1)$ and to be executed by $n_t(T_s(0))=n_t(T_s(1))=b$ threads.	 
 	 In \cref{fig:rec_2d-7pt_graph} we choose $\epsilon_s = 0.6$ which selects the first seven levels to form $T_0(0)$ and $T_0(1)$.  As their combined weight is $\frac{28}{32}=0.875$  one thread will execute these two \levelGroups. 
 	  %$w(L_0(0)) + w(L_0(1)) + ... + w(L_0(5)) = 0.65625$ satisfies the criteria $\epsilon = 0.65625 > \epsilon_s$, and $b=1$. Therefore one thread ($b=1$) is to be assigned for $T_0(0)$ and  $T_0(1)$. Now fixing $b=1$ we check increasing levels and finally find $w(L_0(0)) + w(L_0(1)) + ... + w(L_0(6)) = 0.875$ gives the highest $\epsilon$ value. Thus for constructing weights of  first 7 levels are used.
