@@ -33,6 +33,7 @@
 \definecolor{color_19}{RGB}{0, 0, 128}
 \definecolor{color_20}{RGB}{128, 128, 128}
 
+\newcommand{\folder}{data/threads_25}
 \begin{document}
 	\pgfplotsset{compat=1.5}
 	%\begin{figure}
@@ -63,49 +64,49 @@
 	]
 	
 		%BEGIN_CODE%
-		\pgfplotstableread[col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study//misc/matrix_inline_1eff_2_40/data/derived.txt} \dimFile
+		\pgfplotstableread[col sep=space] {\folder/matrix_inline_1eff_2_40/data/derived.txt} \dimFile
 		
 		\pgfplotstablegetelem{0}{THREAD}\of\dimFile
 		\pgfmathsetmacro{\thread}{\pgfplotsretval}
 		
 		%MEASURE_START%
-		\addplot+[color=color_1, line width=2, mark options={scale=1.8, color_1}] table[x =eps_1,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study//misc/matrix_inline_1eff_2_40/data/derived.txt}; \label{plot_one}
+		\addplot+[color=color_1, line width=2, mark options={scale=1.8, color_1}] table[x =eps_1,y =Eff,col sep=space] {\folder/matrix_inline_1eff_2_40/data/derived.txt}; \label{plot_one}
 		\addlegendentry{$\epsilon_1=0.40$}
 		%MEASURE_STOP%
 		
 		%END_CODE%
 		%BEGIN_CODE%
-		\pgfplotstableread[col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study//misc/matrix_inline_1eff_2_70/data/derived.txt} \dimFile
+		\pgfplotstableread[col sep=space] {\folder/matrix_inline_1eff_2_70/data/derived.txt} \dimFile
 		
 		\pgfplotstablegetelem{0}{THREAD}\of\dimFile
 		\pgfmathsetmacro{\thread}{\pgfplotsretval}
 		
 		%MEASURE_START%
-		\addplot+[color=color_2, line width=2, mark options={scale=1.25,color_2}] table[x =eps_1,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study//misc/matrix_inline_1eff_2_70/data/derived.txt}; \label{plot_one}
+		\addplot+[color=color_2, line width=2, mark options={scale=1.25,color_2}] table[x =eps_1,y =Eff,col sep=space] {\folder/matrix_inline_1eff_2_70/data/derived.txt}; \label{plot_one}
 		\addlegendentry{$\epsilon_1=0.70$}
 		%MEASURE_STOP%
 		
 		%END_CODE%
 		%BEGIN_CODE%
-		\pgfplotstableread[col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study//misc/matrix_inline_1eff_2_80/data/derived.txt} \dimFile
+		\pgfplotstableread[col sep=space] {\folder/matrix_inline_1eff_2_80/data/derived.txt} \dimFile
 		
 		\pgfplotstablegetelem{0}{THREAD}\of\dimFile
 		\pgfmathsetmacro{\thread}{\pgfplotsretval}
 		
 		%MEASURE_START%
-		\addplot+[color=color_3, line width=2, mark options={color_3}] table[x =eps_1,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study//misc/matrix_inline_1eff_2_80/data/derived.txt}; \label{plot_one}
+		\addplot+[color=color_3, line width=2, mark options={color_3}] table[x =eps_1,y =Eff,col sep=space] {\folder/matrix_inline_1eff_2_80/data/derived.txt}; \label{plot_one}
 		\addlegendentry{$\epsilon_1=0.80$}
 		%MEASURE_STOP%
 		
 		%END_CODE%
 		%BEGIN_CODE%
-		\pgfplotstableread[col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study//misc/matrix_inline_1eff_2_90/data/derived.txt} \dimFile
+		\pgfplotstableread[col sep=space] {\folder/matrix_inline_1eff_2_90/data/derived.txt} \dimFile
 		
 		\pgfplotstablegetelem{0}{THREAD}\of\dimFile
 		\pgfmathsetmacro{\thread}{\pgfplotsretval}
 		
 		%MEASURE_START%
-		\addplot+[color=color_4, line width=2, mark options={color_4}] table[x =eps_1,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study//misc/matrix_inline_1eff_2_90/data/derived.txt}; \label{plot_one}
+		\addplot+[color=color_4, line width=2, mark options={color_4}] table[x =eps_1,y =Eff,col sep=space] {\folder/matrix_inline_1eff_2_90/data/derived.txt}; \label{plot_one}
 		\addlegendentry{$\epsilon_1=0.90$}
 		%MEASURE_STOP%
 		

@@ -113,12 +113,12 @@ Since both kernels are closely related to the \SpMV kernel by structure and comp
 	\caption{Sparse matrix-vector multiplication (\SpMV) using the compressed sparse row (\CRS) format: $b=A x$} 
 	\label{alg:SpMV}
 	\begin{algorithmic}[1]
-	        \STATE{$double:: A[nnz], b[nrows], x[nrows]$}
-	        \STATE{$integer:: col[nnz], rowPtr[nrows+1]$}
+	    \STATE{$double:: A[nnz], b[nrows], x[nrows]$}
+	    \STATE{$integer:: col[nnz], rowPtr[nrows+1]$}
 		\FOR{$row=1:nrows$}
-		\FOR{$idx=rowPtr[row]:rowPtr[row+1]$}
-		\STATE{$b[row] += A[idx]*x[col[idx]]$} 
-		\ENDFOR
+			\FOR{$idx=rowPtr[row]:rowPtr[row+1]$}
+				\STATE{$b[row] += A[idx]*x[col[idx]]$} 
+			\ENDFOR
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
@@ -178,7 +178,7 @@ I_\mathrm{\SymmSpmv} (\alpha) &= \frac{4}{8+4+24*\alpha+\frac{4}{\NNZRmathSYMM}}
 \text{ where,  } \NNZRmathSYMM &= (\NNZRmath-1)/2 + 1
 \end{align}
 
-For a given non-zero matrix element ($8 Byte + 4 Byte$) of the triangular matrix twice the amount of Flops ($4 Flops$)  are performed. In addition we have indirect access to the LHS vector (read and write) which increases the $\alpha$ contribution by $3\times$. The only term left scaling with \NNZRSYMM (number of non-zeros per row in upper triangular part of the matrix) is the consecutively accessed row pointer. Please note, the $alpha$ value for \SpMV and \SymmSpmv may be different (even for the same matrix and the same compute device) as in the latter case the two vectors are accessed irregularly and compete for the same amount of cache. Thus we can assume that the $\alpha$ value measured for \SpMV ($\alpha_\mathrm{\SpMV}$) can be considered as a lower bound for \SymmSpmv. As performance is the product of computational intensity and the main memory bandwidth ($b_S$; see~\cref{tab:test_bed} for typical values) this approach provides an upper performance bound for \SymmSpmv for a given matrix structure:
+For a given non-zero matrix element ($8 Byte + 4 Byte$) of the triangular matrix twice the amount of Flops ($4 Flops$)  are performed. In addition we have indirect access to the LHS vector (read and write) which increases the $\alpha$ contribution by $3\times$. The only term left scaling with \NNZRSYMM (number of non-zeros per row in upper triangular part of the matrix) is the consecutively accessed row pointer. Please note, the $\alpha$ value for \SpMV and \SymmSpmv may be different (even for the same matrix and the same compute device) as in the latter case the two vectors are accessed irregularly and compete for the same amount of cache. Thus we can assume that the $\alpha$ value measured for \SpMV ($\alpha_\mathrm{\SpMV}$) can be considered as a lower bound for \SymmSpmv. As performance is the product of computational intensity and the main memory bandwidth ($b_S$; see~\cref{tab:test_bed} for typical values) this approach provides an upper performance bound for \SymmSpmv for a given matrix structure:
  \begin{align}
 \label{eq:SymmSpMV_performance}
 P^{max}_\mathrm{\SymmSpmv}  &= I_\mathrm{\SymmSpmv} (\alpha_\mathrm{\SpMV})  \times b_S
@@ -246,7 +246,7 @@ The basic compute kernel (\KACZ) is  presented in~\cref{alg:KACZ}. For its paral
 From a computational perspective the kernel is closely related to \SpMV and \SymmSpmv but performs an in-place indirect vector update ($x[col[]]$). This vector update is the only contribution to the $\alpha$ value (leading to a pre-factor of $16$) and the computational intensity can be calculated as follows:
 \begin{equation}
 \label{eq:KACZ_intensity}
-I_\mathrm{KACZ} (\alpha)=  \frac{4}{8+4+16*\alpha+\frac{12}{nnzr}} \frac{Flop}{Byte}\\
+I_\mathrm{KACZ} (\alpha)=  \frac{6}{8+4+16*\alpha+\frac{12}{nnzr}} \frac{Flop}{Byte}\\
 \end{equation}
 Having two short inner loops does not impact the overall memory traffic (and also the computational intensity) as the data can be held in inner cache levels between the two inner loops. We can also ignore the impact of the divide operation as it is only done once per row and its cost is negligible for main memory bandwidth or latency bound scenarios.  
 
