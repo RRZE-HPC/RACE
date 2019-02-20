@@ -353,6 +353,7 @@ The recursive nature of our scheme can be best  described by a tree data structu
 	 	\label{fig:rec_2d-7pt_tree}
 	 \end{figure}
 
+\begin{comment}
 
 {\GW Needs to be removed finally from here on till chapter 7}
 %
@@ -399,7 +400,7 @@ Once all the weights are determined using this procedure a weighted load balanci
 
 %{\GW Christie: Please describe your scheme step by step with an itemize list and use examples from ~\cref{fig:rec_2d-7pt_graph}}
 
-       
+    
 	\subsubsection{TO BE SKIPPED Internal representation of recursively generated \boldmath{\levelGroups}} \label{subsec:level_tree}
 	The recursive nature of our procedure allows to exploit more parallelism. However this introduces more complexity and one has to additionally respect the dependencies between stages and still observe the dependencies within one stage. The best idea is to have a data structure similar to the recursion, therefore we extent the \levelPtr data structure to a hierarchical tree data structure to store these informations. This data structure is called a \levelTree. The root of \levelTree contains information of entire domain, first child leaves of this root \ie leaves with depth 1 stores information about \levelGroups in first stage ($T_0(..)$), leaves with depth 2 stores information about \levelGroups in second stage ($T_1(...)$) and so on. 
 	
@@ -427,3 +428,5 @@ Parallelism required for hardware underneath can be obtained either by expanding
 	All the \levels that are involved in the sum belongs to \levelGroups  operated by first thread in the current stage. The obtained number $b$ is chosen as weight for these \levelGroups \ie $w(T_0(0))=w(T_0(1))=b$. A local search is then done by increasing \levels in this \levelGroups to see if there is a better choice ($a$ close to $b$) with weight $b$, finally \levelGroups are formed with the best choice.  The weight for next \levelGroups are found by resetting the sum counter to zero and repeating the  procedure with \levels just after the current \levelGroups.
 \end{enumerate}
 For other recursive stage ($s\geq1$) same procedure can be applied to find weights $w(T_s(i))$, except that now $\nthreadsMath$ and $\nrowsMath^{total}$ has to be substituted with the threads required and vertices in the \subgraph considered.
+
+\end{comment}
