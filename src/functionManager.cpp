@@ -3,7 +3,7 @@
 #include <iostream>
 #include <typeinfo>
 
-FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),func(f_),args(args_),zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_)
+FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),power_fn(false),func(f_),args(args_),zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_)
 {
     //    func = std::bind(f_,*this,std::placeholders::_1,std::placeholders::_2,args);
     /*len = 72*72*72;
@@ -16,12 +16,20 @@ FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zone
     recursiveFun = std::bind(recursiveCall, this, std::placeholders::_1);
 }
 
+FuncManager::FuncManager(void (*f_) (int,int,int,void*), void *args_, int power_, mtxPower *matPower_):power_fn(true), powerFunc(f_), args(args_), power(power_), matPower(matPower_)
+{
+
+}
+
 FuncManager::FuncManager(const FuncManager &obj)
 {
     rev = obj.rev;
+    power_fn = obj.power_fn;
     func = obj.func;
-    zoneTree = obj.zoneTree;
+    powerFunc = obj.powerFunc;
     args = obj.args;
+    power = obj.power;
+    zoneTree = obj.zoneTree;
     pool = obj.pool;
     serialPart = obj.serialPart;
 }
@@ -158,45 +166,81 @@ void recursiveCall(FuncManager* funMan, int parentIdx)
 
 #endif
 
+void FuncManager::powerRun()
+{
+    int totalLevel = matPower->getTotalLevel();
+    int* levelPtr = matPower->getLevelPtrRef();
+    for(int level=0; level<(totalLevel+power); ++level)
+    {
+        for(int pow=0; pow<power; ++pow)
+        {
+            int powLevel = (level-pow);
 
+            if( (powLevel >= 0) && (powLevel < totalLevel) )
+            {
+                //can be a function ptr
+                powerFunc(levelPtr[powLevel], levelPtr[powLevel+1], pow+1, args);
+#if 0
+#pragma omp parallel for schedule(static)
+                for(int row=levelPtr[powLevel]; row<levelPtr[powLevel+1]; ++row)
+                {
+                    double tmp = 0;
+                    for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
+                    {
+                        tmp += A[idx]*x[(pow)*graph->NROW+col[idx]];
+                    }
+                    x[(pow+1)*graph->NROW+row] = tmp;
+                }
+#endif
+            }
+        }
+    }
+}
 
 void FuncManager::Run(bool rev_)
 {
-    rev = rev_;
-
-    if(zoneTree == NULL)
+    if(!power_fn)
     {
-        ERROR_PRINT("NO Zone Tree present; Have you registered the function");
-    }
+        rev = rev_;
 
-    if(rev)
-    {
-        func(serialPart[1],serialPart[0],args);
-    }
+        if(zoneTree == NULL)
+        {
+            ERROR_PRINT("NO Zone Tree present; Have you registered the function");
+        }
 
-    int root = 0;
+        if(rev)
+        {
+            func(serialPart[1],serialPart[0],args);
+        }
+
+        int root = 0;
 #ifdef RACE_KERNEL_THREAD_OMP
-    int resetNestedState = omp_get_nested();
-    int resetDynamicState = omp_get_dynamic();
-    //set nested parallelism
-    omp_set_nested(1);
-    omp_set_dynamic(0);
-    recursiveFun(root);
+        int resetNestedState = omp_get_nested();
+        int resetDynamicState = omp_get_dynamic();
+        //set nested parallelism
+        omp_set_nested(1);
+        omp_set_dynamic(0);
+        recursiveFun(root);
 
-    //reset states
-    omp_set_nested(resetNestedState);
-    omp_set_dynamic(resetDynamicState);
+        //reset states
+        omp_set_nested(resetNestedState);
+        omp_set_dynamic(resetDynamicState);
 #else
 
-    // START_TIME(main_fn_call);
-    /*recursiveCall(this, root);*/
-    recursiveFun(root);
-    //STOP_TIME(main_fn_call)
+        // START_TIME(main_fn_call);
+        /*recursiveCall(this, root);*/
+        recursiveFun(root);
+        //STOP_TIME(main_fn_call)
 #endif
 
-    if(!rev)
+        if(!rev)
+        {
+            func(serialPart[0],serialPart[1],args);
+        }
+    }
+    else
     {
-        func(serialPart[0],serialPart[1],args);
+        powerRun();
     }
 }
 

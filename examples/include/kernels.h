@@ -11,11 +11,15 @@ struct kernelArg
     densemat* x;
 };
 
+void spmv(sparsemat* mat, densemat* x);
 void spmv(densemat* b, sparsemat* mat, densemat* x, int iter);
+void plain_spmv(densemat* b, sparsemat* mat, densemat* x, int iter);
 void spmtv(densemat* b, sparsemat* mat, densemat* x, int iter);
 void gs(densemat* b, sparsemat* mat, densemat* x, int iter);
 void kacz(densemat* b, sparsemat* mat, densemat* x, int iter);
 void symm_spmv(densemat* b, sparsemat* mat, densemat* x, int iter);
+void plain_spmv(sparsemat* mat, densemat* x);
+void matPower(sparsemat* A, int power, densemat *x);
 
 //convenience macros
 #define ENCODE_TO_VOID(mat_en, b_en, x_en)\

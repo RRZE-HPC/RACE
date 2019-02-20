@@ -6,14 +6,17 @@
 struct densemat
 {
     int nrows;
+    int ncols;
+    bool viewMat;
     double *val;
 
     void setVal(double value);
     void setRand();
     void setFn(std::function<double(int)> fn);
     void setFn(std::function<double(void)> fn);
-
-    densemat(int nrows);
+    void print();
+    densemat* view(int start_col, int end_col);
+    densemat(int nrows, int ncols=1, bool view=false);
     ~densemat();
 
 };

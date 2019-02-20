@@ -4,7 +4,7 @@
 #include <omp.h>
 
 std::map<int, LevelData> Traverse::cachedData;
-Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_),graphSize(graph_->graphData.size()),distFromRoot(NULL),perm(NULL),invPerm(NULL),levelData(NULL)
+Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_, int numRoots_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_), numRoots(numRoots_), graphSize(graph_->graphData.size()),distFromRoot(NULL),perm(NULL),invPerm(NULL),levelData(NULL)
 {
     if(rangeHi == -1)
     {
@@ -108,8 +108,11 @@ void Traverse::calculateDistance()
         bool marked_all = false;
         int root = rangeLo;
         std::vector<int> currChildren;
-        currChildren.push_back(root); //The root
-
+        //currChildren.push_back(root); //The root
+        for(int i=0; i<numRoots; ++i)
+        {
+            currChildren.push_back(root+i);
+        }
         int currLvl = 0;
         Counter::reset();
 

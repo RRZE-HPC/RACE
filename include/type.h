@@ -7,7 +7,8 @@ namespace RACE {
 
     enum dist{
         ONE=1,
-        TWO=2
+        TWO=2,
+        POWER=3
     };
 
     enum d2Method{

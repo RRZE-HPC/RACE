@@ -17,6 +17,7 @@ class Traverse{
         int rangeLo;
         int rangeHi;
         int parentIdx;
+        int numRoots;
         //Size without pure diagonal elements
         int graphSize;
 
@@ -33,7 +34,7 @@ class Traverse{
         void permuteGraph();
     public:
         //constructor
-        Traverse(Graph *graph_, RACE::dist dist, int rangeLo_=0, int rangeHi_=-1, int parentIdx=0);
+        Traverse(Graph *graph_, RACE::dist dist, int rangeLo_=0, int rangeHi_=-1, int parentIdx=0, int numRoots=1);
         ~Traverse();
         void calculateDistance();
 

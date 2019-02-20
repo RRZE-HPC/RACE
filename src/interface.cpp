@@ -3,9 +3,9 @@
 #include <algorithm>
 #include <iostream>
 
-RACE::Interface::Interface(int nrow_,int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_, RACE::PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, RACE::d2Method d2Type_):graph(NULL),nrow(nrow_),distance(dist_),d2Type(d2Type_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL)
+RACE::Interface::Interface(int nrow_,int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_, RACE::PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, RACE::d2Method d2Type_):graph(NULL),nrow(nrow_),distance(dist_),d2Type(d2Type_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL),powerCalculator(NULL)
 {
-
+    graph = new Graph(nrow, nrow, rowPtr, col, initPerm, initInvPerm);
 }
 
 RACE::Interface::~Interface()
@@ -22,9 +22,33 @@ RACE::Interface::~Interface()
         delete pool;
     }
 
+    if(powerCalculator) {
+        delete powerCalculator;
+    }
+
     for(unsigned i=0; i<funMan.size(); ++i)
     {
         delete funMan[i];
+    }
+}
+
+RACE_error RACE::Interface::RACEColor(int highestPower, double cacheSize, double safetyFactor)
+{
+
+    if(distance != RACE::POWER)
+    {
+        ERROR_PRINT("If you need to calculate power set distance to RACE::POWER");
+        return RACE_ERR_INVALID_ARG;
+    }
+    else
+    {
+        powerCalculator = new mtxPower(graph, highestPower, cacheSize, safetyFactor);
+        powerCalculator->findPartition();
+        int len;
+        powerCalculator->getPerm(&perm, &len);
+        powerCalculator->getInvPerm(&invPerm, &len);
+
+        return RACE_SUCCESS;
     }
 }
 
@@ -32,34 +56,44 @@ RACE::Interface::~Interface()
 RACE_error RACE::Interface::RACEColor()
 {
 
-    //1. Construct Graph
-    graph = new Graph(nrow, nrow, rowPtr, col, initPerm, initInvPerm);
+    if(distance == RACE::POWER)
+    {
+        ERROR_PRINT("If you need to color the matrix specify distance other that RACE::POWER");
+        return RACE_ERR_INVALID_ARG;
+    }
+    else
+    {
+        //1. Construct Graph
+        /*if(graph == NULL)
+          {
+          graph = new Graph(nrow, nrow, rowPtr, col, initPerm, initInvPerm);
+          }*/
+        //2. Call level_recursion
+        LevelRecursion lr(graph, requestedThreads, distance, d2Type);
+        lr.levelBalancing();
+        availableThreads = lr.getAvailableThreads();
+        int len;
+        lr.getPerm(&perm, &len);
+        lr.getInvPerm(&invPerm, &len);
+        zoneTree = lr.getZoneTree();
 
-    //2. Call level_recursion
-    LevelRecursion lr(graph, requestedThreads, distance, d2Type);
-    lr.levelBalancing();
-    availableThreads = lr.getAvailableThreads();
-    int len;
-    lr.getPerm(&perm, &len);
-    lr.getInvPerm(&invPerm, &len);
-    zoneTree = lr.getZoneTree();
+        pool = new LevelPool(zoneTree, SMT, pinMethod);
 
-    pool = new LevelPool(zoneTree, SMT, pinMethod);
-
-    printZoneTree();
+        printZoneTree();
 
 #ifdef RACE_KERNEL_THREAD_OMP
-    return pool->pin.pinApplication();
+        return pool->pin.pinApplication();
 #else
-    return pool->createPool();//creates pinned thread pools
+        return pool->createPool();//creates pinned thread pools
 #endif
-    /*    printf("Checking Coloring\n");
-          if(D2Checker())
-          {
-          ERROR_PRINT("Conflict in coloring\n");
-          }
-          printf("Checking Finished\n");
-          */    
+        /*    printf("Checking Coloring\n");
+              if(D2Checker())
+              {
+              ERROR_PRINT("Conflict in coloring\n");
+              }
+              printf("Checking Finished\n");
+              */
+    }
 }
 
 
@@ -131,26 +165,50 @@ int RACE::Interface::getNumThreads()
 
 int RACE::Interface::registerFunction(void (*f) (int,int,void *), void *args)
 {
-    //    pool->pin.pinApplication();
+    if(distance != RACE::POWER)
+    {
+        //    pool->pin.pinApplication();
 
-    FuncManager* currFun = new FuncManager(f, args, zoneTree, pool, graph->serialPart);
-    funMan.push_back(currFun);
+        FuncManager* currFun = new FuncManager(f, args, zoneTree, pool, graph->serialPart);
+        funMan.push_back(currFun);
 
-    //     funMan = new FuncManager(f, args, zoneTree, pool);
+        //     funMan = new FuncManager(f, args, zoneTree, pool);
 
-    /* for(int i=0; i<10; ++i) {
-       START_TIME(omp_fn);
-       funMan->RunOMP();
-       STOP_TIME(omp_fn);
-       }*/
-    //TODO just pin for the first time; but now OpenMP does not work with this
-    //model
-    //Pin threads
-    //Pin pin(zoneTree, true);
-    //pin.pinApplication();
+        /* for(int i=0; i<10; ++i) {
+           START_TIME(omp_fn);
+           funMan->RunOMP();
+           STOP_TIME(omp_fn);
+           }*/
+        //TODO just pin for the first time; but now OpenMP does not work with this
+        //model
+        //Pin threads
+        //Pin pin(zoneTree, true);
+        //pin.pinApplication();
 
-    return (funMan.size()-1);
+        return (funMan.size()-1);
+    }
+    else
+    {
+        ERROR_PRINT("To calcaulte power call back function prototype is void (*f) (int,int,int,void *)\n");
+        return RACE_ERR_INVALID_ARG;
+    }
 }
+
+int RACE::Interface::registerFunction(void (*f) (int,int,int,void *), void *args, int power)
+{
+    if(distance != RACE::POWER)
+    {
+        ERROR_PRINT("To parallel execution of dependent kernels callback  function prototype is void (*f) (int,int,void *)\n");
+        return RACE_ERR_INVALID_ARG;
+    }
+    else
+    {
+        FuncManager* currFun = new FuncManager(f, args, power, powerCalculator);
+        funMan.push_back(currFun);
+        return (funMan.size()-1);
+    }
+}
+
 
 void RACE::Interface::executeFunction(int funcId, bool rev)
 {
@@ -289,3 +347,66 @@ void RACE::Interface::pinThread(int threadId)
 {
     pool->pin.pinThread(threadId);
 }
+
+void powerInitRowPtrFunc(int start, int end, int pow, void* arg)
+{
+     DECODE_ARG(arg);
+     if((col != NULL && val != NULL) && x != NULL)
+     {
+         printf("Something went wrong, I shouldnn' t be here\n");
+     }
+#pragma omp parallel for schedule(static)
+    for(int row=start; row<end; ++row)
+    {
+        rowPtr[row] = 0*pow*nrow;
+        rowPtr[row+1] = 0*pow*nrow;
+    }
+}
+
+void RACE::Interface::numaInitRowPtr(int *rowPtr_)
+{
+    if(distance == RACE::POWER)
+    {
+        ENCODE_ARG(nrow, rowPtr_, NULL, NULL, NULL);
+        int fn_id = registerFunction(powerInitRowPtrFunc, voidArg, 1);
+        executeFunction(fn_id);
+    }
+    else
+    {
+        ERROR_PRINT("NUMA not implemented for coloring")
+    }
+}
+
+void powerInitMtxVecFunc(int start, int end, int pow, void* arg)
+{
+    DECODE_ARG(arg);
+#pragma omp parallel for schedule(static)
+    for(int row=start; row<end; ++row)
+    {
+        for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
+        {
+            val[idx] = 0;
+            col[idx] = 0;
+        }
+        if(x!=NULL)
+        {
+            x[(pow)*nrow+row] = 0;
+            x[(pow+1)*nrow+row] = 0;
+        }
+    }
+}
+
+void RACE::Interface::numaInitMtxVec(int *rowPtr_, int *col_, double *val_, double *x_, int power_)
+{
+    if(distance == RACE::POWER)
+    {
+        ENCODE_ARG(nrow, rowPtr_, col_, val_, x_);
+        int fn_id = registerFunction(powerInitMtxVecFunc, voidArg, power_);
+        executeFunction(fn_id);
+    }
+    else
+    {
+        ERROR_PRINT("NUMA not implemented for coloring")
+    }
+}
+

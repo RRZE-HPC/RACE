@@ -373,6 +373,19 @@ bool sparsemat::computeSymmData()
     return true;
 }
 
+int sparsemat::prepareForPower(int highestPower, double cacheSize)
+{
+    ce = new Interface(nrows, 10, RACE::POWER, rowPtr, col);
+    ce->RACEColor(highestPower, cacheSize);
+
+    int *perm, *invPerm, permLen;
+    ce->getPerm(&perm, &permLen);
+    ce->getInvPerm(&invPerm, &permLen);
+    permute(perm, invPerm, true);
+
+    return 1;
+}
+
 int sparsemat::colorAndPermute(dist distance, int nthreads, int smt, PinMethod pinMethod)
 {
     ce = new Interface(nrows, nthreads, distance, rowPtr, col, smt, pinMethod, NULL, NULL);
@@ -412,7 +425,7 @@ int sparsemat::maxStageDepth()
 
 
 //symmetrically permute
-void sparsemat::permute(int *perm, int*  invPerm)
+void sparsemat::permute(int *perm, int*  invPerm, bool RACEalloc)
 {
     double* newVal = new double[nnz];
     int* newRowPtr = new int[nrows+1];
@@ -420,14 +433,21 @@ void sparsemat::permute(int *perm, int*  invPerm)
 
     newRowPtr[0] = 0;
 
-    //NUMA init
-#pragma omp parallel for schedule(static)
-    for(int row=0; row<nrows; ++row)
+    if(!RACEalloc)
     {
-        newRowPtr[row+1] = 0;
+        //NUMA init
+#pragma omp parallel for schedule(static)
+        for(int row=0; row<nrows; ++row)
+        {
+            newRowPtr[row+1] = 0;
+        }
+    }
+    else
+    {
+        ce->numaInitRowPtr(newRowPtr);
     }
 
-    //first find newRowPtr; therefore wwe can do proper NUMA init
+    //first find newRowPtr; therefore we can do proper NUMA init
     int permIdx=0;
     printf("nrows = %d\n", nrows);
     for(int row=0; row<nrows; ++row)
@@ -442,6 +462,11 @@ void sparsemat::permute(int *perm, int*  invPerm)
     }
 
 
+    if(RACEalloc)
+    {
+        printf("NUMA allocing\n");
+        ce->numaInitMtxVec(newRowPtr, newCol, newVal, NULL);
+    }
     //with NUMA init
 #pragma omp parallel for schedule(static)
     for(int row=0; row<nrows; ++row)
@@ -455,6 +480,7 @@ void sparsemat::permute(int *perm, int*  invPerm)
             newCol[permIdx] = invPerm[col[idx]];
         }
     }
+
 
     //free old permutations
     delete[] val;

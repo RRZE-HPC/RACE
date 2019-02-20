@@ -36,6 +36,7 @@ set (SOURCES
     src/signal.cpp
     #src/simdify.cpp
     src/sell_c_sigmize.cpp
+    src/matrixPower.cpp
     )
 
 set (HEADERS
@@ -66,6 +67,7 @@ set (HEADERS
     include/macros.h
     include/simdify.h
     include/sell_c_sigmize.h
+    include/matrixPower.h
     )
 
 

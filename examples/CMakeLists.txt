@@ -17,12 +17,22 @@ Set(CXX_STANDARD_REQUIRED On)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${RACE_INCLUDE_DIRS})
 
+#likwid library
+link_directories($ENV{LIKWID_LIBDIR})
+link_libraries(liblikwid.so)
+include_directories($ENV{LIKWID_INCDIR})
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DLIKWID_PERFMON -DLIKWID_MEASURE")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLIKWID_PERFMON -DLIKWID_MEASURE")
+
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${RACE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} ${RACE_CXX_FLAGS}")
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -xHOST -save-temps -fsource-asm")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -xHOST -save-temps -fsource-asm")
+    #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -xCORE-AVX2  -save-temps -fsource-asm")
+    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -xCORE-AVX2  -save-temps -fsource-asm")
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wno-write-strings")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wno-write-strings")
@@ -38,5 +48,5 @@ endif()
 
 file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/helpers/*.cpp)
 add_executable(race ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/main.cpp)
-
+add_executable(mtxPower ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/matrixPower.cpp)
 add_executable(param_study ${SOURCES} ${PROJECT_SOURCE_DIR}/src/param_study.cpp)

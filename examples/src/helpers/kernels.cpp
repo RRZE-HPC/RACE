@@ -1,5 +1,6 @@
 #include "kernels.h"
 
+
 inline void SPMV_KERNEL(int start, int end, void* args)
 {
     DECODE_FROM_VOID(args);
@@ -152,7 +153,6 @@ inline void SYMM_SPMV_KERNEL(int start, int end, void* args)
         double x_row = x->val[row];
         b->val[row] += mat->val_symm[mat->rowPtr_symm[row]]*x_row;
         double temp = 0;
-
 #pragma simd reduction(+:temp)
         for(int idx=mat->rowPtr_symm[row]+1; idx<mat->rowPtr_symm[row+1]; ++idx)
         {
@@ -179,5 +179,46 @@ void symm_spmv(densemat* b, sparsemat* mat, densemat* x, int iterations)
         ce->executeFunction(symm_spmv_Id);
     }
 
+    DELETE_ARG();
+}
+
+inline void PLAIN_SPMV_KERNEL(int start, int end, int pow, void* args)
+{
+    DECODE_FROM_VOID(args);
+
+#pragma omp for schedule(static)
+    for(int row=start; row<end; ++row)
+    {
+        double tmp = 0;
+        const int offset = (pow-1)*mat->nrows;
+#pragma simd vectorlength(8) reduction(+:tmp)
+        for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
+        {
+            tmp += mat->val[idx]*x->val[offset+mat->col[idx]];
+        }
+        x->val[(pow)*mat->nrows+row] = tmp;
+    }
+}
+
+//plain spmv
+void plain_spmv(sparsemat* mat, densemat* x)
+{
+    ENCODE_TO_VOID(mat, NULL, x);
+#pragma omp parallel
+    {
+        PLAIN_SPMV_KERNEL(0, mat->nrows, 1, voidArg);
+    }
+    DELETE_ARG();
+}
+
+void matPower(sparsemat *A, int power, densemat *x)
+{
+    RACE::Interface *ce = A->ce;
+    ENCODE_TO_VOID(A, NULL, x);
+    int race_power_id = ce->registerFunction(&PLAIN_SPMV_KERNEL, voidArg, power);
+#pragma omp parallel
+    {
+        ce->executeFunction(race_power_id);
+    }
     DELETE_ARG();
 }
