@@ -3,8 +3,9 @@
 % supplement. If no supplement is required, then this information can
 % be included directly in the main document.
 
-In this section we study the impact of parameter $\epsilon_s$ and hardware parallelism on the quality of  RACE method. \Inorder to do this we first quantify the quality of the method and finally we  use this quantity to do a parameter study. The study gives insights into tuning of parameter $\epsilon_s$ based on the given matrix and required parallelism.
+%In this section we study the impact of parameter $\epsilon_s$ and hardware parallelism on the quality of  RACE method. \Inorder to do this we first quantify the quality of the method and finally we  use this quantity to do a parameter study. The study gives insights into tuning of parameter $\epsilon_s$ based on the given matrix and required parallelism.
 
+The RACE method introduced above has a set of input parameters $\epsilon_s$ which controls the assignment of number of threads to adjacent level groups. Setting these parameter close to $1$ requests high quality load balance but may lead to deep recursion levels which results in frequent synchronisation and loss of data locality. 
 
 \subsection{Quantifying quality of RACE}
 Quantifying quality of the method in a well-defined way is a primary and most vital step for parameter study. We do this using the concept of \effPar. From \cref{Sec:race} we saw that even though one tries to achieve parallelism exactly as that required by the hardware, in practice one might not be able to utilize this parallelism to 100 \% due to load imbalances. Therefore we use a simple calculation based on the \levelTree to determine efficiency. This takes into account load imbalances incurred from different stages of recursion. We first calculate \effRow for each of the worker leaves (leaves in finest level) in \levelTree.
