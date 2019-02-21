@@ -18,6 +18,7 @@ filename=race
 
 pdf:
 	pdflatex ${filename}
+	makeglossaries ${filename}
 	bibtex ${filename}||true
 	pdflatex ${filename}
 	pdflatex ${filename}
