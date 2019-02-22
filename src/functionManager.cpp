@@ -16,7 +16,7 @@ FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zone
     recursiveFun = std::bind(recursiveCall, this, std::placeholders::_1);
 }
 
-FuncManager::FuncManager(void (*f_) (int,int,int,void*), void *args_, int power_, mtxPower *matPower_):power_fn(true), powerFunc(f_), args(args_), power(power_), matPower(matPower_)
+FuncManager::FuncManager(void (*f_) (int,int,int,void*,int,int,int), void *args_, int power_, mtxPower *matPower_):power_fn(true), powerFunc(f_), args(args_), power(power_), matPower(matPower_)
 {
 
 }
@@ -170,16 +170,41 @@ void FuncManager::powerRun()
 {
     int totalLevel = matPower->getTotalLevel();
     int* levelPtr = matPower->getLevelPtrRef();
+    LevelData* levelData = matPower->getLevelDataRef();
     for(int level=0; level<(totalLevel+power); ++level)
     {
+        int preLevel = (level+1);
+        //find size of prefetch Level
+        int preLevelSize = (preLevel<totalLevel)?levelData->levelRow[preLevel]:0;
+        std::vector<int> prePtr(power+2,0);
+        std::vector<int> preModulo(power+1,1);
+        if(preLevelSize != 0)
+        {
+            //check number of powers participating in prefetch
+            int prePow = std::min(power+1, level+1);
+            int currTotalRow = 0;
+            for(int pow=0; pow<prePow; ++pow)
+            {
+                currTotalRow += levelData->levelRow[level-pow];
+            }
+            double preFactor = preLevelSize/(double)currTotalRow; // this has to be less than 1 else there is problem with cache spill
+            prePtr[0] = levelPtr[preLevel];
+            for(int pow=0; pow<prePow; ++pow)
+            {
+                int powLevel = (level-pow);
+                int preRow = (int)(preFactor*levelData->levelRow[powLevel]); //row to be prefetched by this power
+                preModulo[pow] = std::max(1, (int)(levelData->levelRow[powLevel]/(double)preRow)); //tells me how often to prefetch
+                prePtr[pow+1] = prePtr[pow] + preRow;
+            }
+        }
         for(int pow=0; pow<power; ++pow)
         {
             int powLevel = (level-pow);
-
             if( (powLevel >= 0) && (powLevel < totalLevel) )
             {
+//                printf("%d, %d, %d \n", prePtr[pow], prePtr[pow+1], preModulo[pow]);
                 //can be a function ptr
-                powerFunc(levelPtr[powLevel], levelPtr[powLevel+1], pow+1, args);
+                powerFunc(levelPtr[powLevel], levelPtr[powLevel+1], pow+1, args, prePtr[pow], prePtr[pow+1], preModulo[pow]);
 #if 0
 #pragma omp parallel for schedule(static)
                 for(int row=levelPtr[powLevel]; row<levelPtr[powLevel+1]; ++row)

@@ -1,5 +1,6 @@
 #include "kernels.h"
-
+#include <xmmintrin.h>
+#include "omp.h"
 
 inline void SPMV_KERNEL(int start, int end, void* args)
 {
@@ -182,19 +183,33 @@ void symm_spmv(densemat* b, sparsemat* mat, densemat* x, int iterations)
     DELETE_ARG();
 }
 
-inline void PLAIN_SPMV_KERNEL(int start, int end, int pow, void* args)
+
+inline void PLAIN_SPMV_KERNEL(int start, int end, int pow, void* args, int pre_start, int pre_end, int pre_modulo)
 {
     DECODE_FROM_VOID(args);
 
+    int pre_start_nnz = mat->rowPtr[pre_start];
+    int pre_end_nnz = mat->rowPtr[pre_end];
+
+    int nthreads = omp_get_num_threads();
+    int tid = omp_get_thread_num();
+    int pre_idx = pre_start_nnz + (int)((pre_end_nnz - pre_start_nnz)*tid/(double)nthreads);
+    int pre_ctr = 0;
+    int ctr = 0;
+    double pre_modulo_inv = 1/((double)pre_modulo);
 #pragma omp for schedule(static)
     for(int row=start; row<end; ++row)
     {
         double tmp = 0;
         const int offset = (pow-1)*mat->nrows;
-#pragma simd vectorlength(8) reduction(+:tmp)
+#pragma simd reduction(+:tmp)
         for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
         {
-            tmp += mat->val[idx]*x->val[offset+mat->col[idx]];
+          //  _mm_prefetch((char*) &(mat->val[pre_idx+pre_ctr]), 3);
+          //  _mm_prefetch((char*) &(mat->col[pre_idx+pre_ctr]), 3);
+            tmp += mat->val[idx]*x->val[offset+mat->col[idx]];//+mat->val[pre_idx+pre_ctr]*1e-9+mat->col[pre_idx+pre_ctr]*1e-8;
+          //  ++ctr;
+          //  pre_ctr = (int)(ctr*pre_modulo_inv);
         }
         x->val[(pow)*mat->nrows+row] = tmp;
     }
@@ -206,7 +221,7 @@ void plain_spmv(sparsemat* mat, densemat* x)
     ENCODE_TO_VOID(mat, NULL, x);
 #pragma omp parallel
     {
-        PLAIN_SPMV_KERNEL(0, mat->nrows, 1, voidArg);
+        PLAIN_SPMV_KERNEL(0, mat->nrows, 1, voidArg, 0, 0, mat->nnz);
     }
     DELETE_ARG();
 }

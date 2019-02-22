@@ -63,7 +63,7 @@ class RACE::Interface{
 
         //Execution
         int registerFunction(void (*f) (int,int,void *), void* args);
-        int registerFunction(void (*f) (int,int,int,void *), void* args, int power=1);
+        int registerFunction(void (*f) (int,int,int,void *,int,int,int), void* args, int power=1);
         void executeFunction(int funcId, bool rev=false);
         //RACE_error powerRun(int power, int *rowPtr, int *col, double *A, double *x);
 

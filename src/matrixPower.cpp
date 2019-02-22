@@ -27,7 +27,7 @@ mtxPower::~mtxPower()
 
 double mtxPower::getElemUpperLimit(int level)
 {
-    return (safetyFactor*(2*highestPower-1)*levelData->levelNnz[level]);
+    return (safetyFactor*(2*highestPower+1)*levelData->levelNnz[level]);
 }
 
 void mtxPower::createLevelPtr()
@@ -69,7 +69,7 @@ void mtxPower::findPartition()
     //so the one where it violates first is detected first
     for(int level=0; level<totalLevel; ++level)
     {
-        printf("NNZ[%d] = %d\n", level, levelData->levelNnz[level]);
+        //printf("NNZ[%d] = %d\n", level, levelData->levelNnz[level]);
         double currElem = levelData->levelNnz[level];
         //depending on power we have to adapt cache condition
         /*for(int idx=0; idx<highestPower; ++idx)
@@ -115,19 +115,31 @@ void mtxPower::consolidatePartition()
     std::vector<int> newLevelPtr;
     newLevelPtr.push_back(0);
     double sumElem = 0;
+    int sumNnz = 0;
+    int ctr = 0;
     for(int level=0; level<totalLevel; ++level)
     {
         double currElem = getElemUpperLimit(level);
         double bytePerNNZ = getBytePerNNZ();
         double cacheElem = cacheSize/bytePerNNZ;
         sumElem += currElem;
+        sumNnz += levelData->levelNnz[level];
         if(sumElem >= cacheElem)
         {
-            sumElem = 0;
+            sumElem = currElem;
             newLevelPtr.push_back(levelPtr[level]);
+            //rewrite levelRow and levelNnz
+            int curr_idx = (int)newLevelPtr.size();
+            levelData->levelRow[ctr] = newLevelPtr[curr_idx-1] - newLevelPtr[curr_idx-2];
+            levelData->levelNnz[ctr] = (sumNnz-levelData->levelNnz[level]);
+            sumNnz = levelData->levelNnz[level];
+            ++ctr;
         }
     }
     newLevelPtr.push_back(levelPtr[totalLevel]);
+    int curr_idx = (int)newLevelPtr.size();
+    levelData->levelRow[ctr] = newLevelPtr[curr_idx-1] - newLevelPtr[curr_idx-2];
+    levelData->levelNnz[ctr] = sumNnz;
 
     //rewrite levelPtr with newLevelPtr
     totalLevel = (int)(newLevelPtr.size()-1);
@@ -136,6 +148,26 @@ void mtxPower::consolidatePartition()
     {
         levelPtr[i] = newLevelPtr[i];
     }
+
+    for(int level=0; level<totalLevel; ++level)
+    {
+        printf("ROW[%d] = %d, NNZ[%d] = %d\n", level, levelData->levelRow[level], level, levelData->levelNnz[level]);
+    }
+
+#if 0 //for debugging
+    printf("Validation of levelNnz and levelRow\n");
+    printf("totalLevel = %d, ctr = %d\n", totalLevel, ctr);
+
+    int sumRow = 0;
+    sumNnz = 0;
+    for(int i=0; i<totalLevel; ++i)
+    {
+        sumRow += levelData->levelRow[i];
+        sumNnz += levelData->levelNnz[i];
+    }
+    printf("Total rows = %d, total nnz = %d\n", sumRow, sumNnz);
+#endif
+
 }
 
 void mtxPower::getPerm(int **perm_, int *len)

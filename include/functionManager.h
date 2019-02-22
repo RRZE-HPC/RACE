@@ -18,7 +18,7 @@ class FuncManager
     private:
         bool rev;
         typedef std::function< void(int,int,void *) > funcType;
-        typedef std::function< void(int,int,int,void *) > powerFuncType;
+        typedef std::function< void(int,int,int,void *,int,int,int) > powerFuncType;
         bool power_fn;
         funcType func;
         powerFuncType powerFunc;
@@ -34,7 +34,7 @@ class FuncManager
         //int len;
     public:
         FuncManager(void (*f_) (int,int,void *), void* args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart);
-        FuncManager(void (*f_) (int,int,int,void *), void* args_, int power, mtxPower *matPower);
+        FuncManager(void (*f_) (int,int,int,void *,int,int,int), void* args_, int power, mtxPower *matPower);
         FuncManager(const FuncManager &obj);
         ~FuncManager();
         void SerialPartRun();

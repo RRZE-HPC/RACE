@@ -381,7 +381,7 @@ int sparsemat::prepareForPower(int highestPower, double cacheSize)
     int *perm, *invPerm, permLen;
     ce->getPerm(&perm, &permLen);
     ce->getInvPerm(&invPerm, &permLen);
-    permute(perm, invPerm, true);
+    permute(perm, invPerm);//, true);
 
     return 1;
 }
@@ -444,7 +444,7 @@ void sparsemat::permute(int *perm, int*  invPerm, bool RACEalloc)
     }
     else
     {
-        ce->numaInitRowPtr(newRowPtr);
+ //       ce->numaInitRowPtr(newRowPtr);
     }
 
     //first find newRowPtr; therefore we can do proper NUMA init
@@ -465,7 +465,7 @@ void sparsemat::permute(int *perm, int*  invPerm, bool RACEalloc)
     if(RACEalloc)
     {
         printf("NUMA allocing\n");
-        ce->numaInitMtxVec(newRowPtr, newCol, newVal, NULL);
+      //  ce->numaInitMtxVec(newRowPtr, newCol, newVal, NULL);
     }
     //with NUMA init
 #pragma omp parallel for schedule(static)

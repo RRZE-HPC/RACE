@@ -194,7 +194,7 @@ int RACE::Interface::registerFunction(void (*f) (int,int,void *), void *args)
     }
 }
 
-int RACE::Interface::registerFunction(void (*f) (int,int,int,void *), void *args, int power)
+int RACE::Interface::registerFunction(void (*f) (int,int,int,void *,int,int,int), void *args, int power)
 {
     if(distance != RACE::POWER)
     {
@@ -347,7 +347,7 @@ void RACE::Interface::pinThread(int threadId)
 {
     pool->pin.pinThread(threadId);
 }
-
+#if 0
 void powerInitRowPtrFunc(int start, int end, int pow, void* arg)
 {
      DECODE_ARG(arg);
@@ -409,4 +409,4 @@ void RACE::Interface::numaInitMtxVec(int *rowPtr_, int *col_, double *val_, doub
         ERROR_PRINT("NUMA not implemented for coloring")
     }
 }
-
+#endif
