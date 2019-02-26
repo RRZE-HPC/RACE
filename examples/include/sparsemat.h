@@ -28,12 +28,12 @@ struct sparsemat
     bool readFile(char* filename);
     bool writeFile(char* filename);
     void makeDiagFirst();
-    int prepareForPower(int highestPower, double cacheSize);
+    int prepareForPower(int highestPower, int numSharedCache, double cacheSize);
     int colorAndPermute(dist d, int nthreads, int smt=1, PinMethod pinMethod=FILL);
     double colorEff();
     int maxStageDepth();
     void permute(int* perm, int* invPerm, bool RACEalloc=false);
-    void NUMA_init(bool symmPart);
+    void numaInit(bool RACEalloc=false);
     void pinOMP(int nthreads);
 
     /* For symmetric computations */

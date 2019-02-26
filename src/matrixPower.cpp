@@ -2,8 +2,9 @@
 #include "utility.h"
 #include <cmath>
 #include "macros.h"
+#include "lb.h"
 
-mtxPower::mtxPower(Graph* graph_, int highestPower_, double cacheSize_, double safetyFactor_):graph(graph_),levelPtr(NULL),macroLevelPtr(NULL),levelData(NULL), highestPower(highestPower_), cacheSize(cacheSize_), safetyFactor(safetyFactor_)
+mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_):graph(graph_),levelPtr(NULL),levelGroupPtr(NULL),cacheLevelGroup(NULL),levelData(NULL), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_)
 {
     traverser = new Traverse(graph, RACE::ONE);
 }
@@ -14,9 +15,13 @@ mtxPower::~mtxPower()
     {
         delete[] levelPtr;
     }
-    if(macroLevelPtr)
+    if(levelGroupPtr)
     {
-        delete[] macroLevelPtr;
+        delete[] levelGroupPtr;
+    }
+    if(cacheLevelGroup)
+    {
+        delete[] cacheLevelGroup;
     }
     delete traverser;
     if(levelData)
@@ -107,27 +112,81 @@ void mtxPower::findPartition()
         printf("NNZ[%d] = %d\n", level, subLevelData->levelNnz[level]);
     }
 #endif
+    splitSharedCacheDomain();
     consolidatePartition();
+}
+
+//split into 'n' equal parts, where 'n' is number of shared caches available
+void mtxPower::splitSharedCacheDomain()
+{
+    std::vector<double> eff_vec;
+    getEnv("RACE_EFFICIENCY", eff_vec);
+
+    if(eff_vec.empty())
+    {
+        eff_vec.push_back(50);
+    }
+    //use lb for load balancing for nSharedCache
+    LB lb(numSharedCache, eff_vec[0], levelData, RACE::POWER);
+    lb.balance();
+    int len;
+    lb.getZonePtr(&cacheLevelGroup, &len);
+
+    if(numSharedCache != (len-1))
+    {
+        WARNING_PRINT("All cache groups cannot be active, active  = %d, requested = %d, check reducing efficiency", len-1, numSharedCache);
+        numSharedCache = (len-1);
+    }
+    /*printf("caches = %d, len = %d\n", numSharedCache, len);
+    for(int i=0; i<(len-1); ++i)
+    {
+        printf("lg[%d] = %d, lg[%d] = %d, row = %d\n", i, cacheLevelGroup[i], i+1, cacheLevelGroup[i+1], cacheLevelGroup[i+1]-cacheLevelGroup[i]);
+    }*/
+
+    levelGroupPtr = new int[len];
+    findMacroLevelPtr(cacheLevelGroup, levelGroupPtr);
+
+    for(int i=0; i<len; ++i)
+    {
+        printf("lg = %d\n", levelGroupPtr[i]);
+    }
+}
+
+void mtxPower::findMacroLevelPtr(int* zones, int* macroLevelPtr)
+{
+    int ctr=0;
+    for(int i=0; i<(totalLevel+1); ++i)
+    {
+        if(levelPtr[i] == zones[ctr])
+        {
+            macroLevelPtr[ctr] = i;
+            ++ctr;
+        }
+    }
 }
 
 void mtxPower::consolidatePartition()
 {
     std::vector<int> newLevelPtr;
     newLevelPtr.push_back(0);
-    double sumElem = 0;
-    for(int level=0; level<totalLevel; ++level)
+    for(int levelGroup=0; levelGroup<numSharedCache; ++levelGroup)
     {
-        double currElem = getElemUpperLimit(level);
-        double bytePerNNZ = getBytePerNNZ();
-        double cacheElem = cacheSize/bytePerNNZ;
-        sumElem += currElem;
-        if(sumElem >= cacheElem)
+        double sumElem = 0;
+        for(int level=levelGroupPtr[levelGroup]; level<levelGroupPtr[levelGroup+1]; ++level)
         {
-            sumElem = 0;
-            newLevelPtr.push_back(levelPtr[level]);
+            double currElem = getElemUpperLimit(level);
+            double bytePerNNZ = getBytePerNNZ();
+            double cacheElem = cacheSize/bytePerNNZ;
+            sumElem += currElem;
+            if(sumElem >= cacheElem)
+            {
+                sumElem = currElem;
+                newLevelPtr.push_back(levelPtr[level]);
+            }
         }
+        int lastLevel = levelGroupPtr[levelGroup+1];
+        newLevelPtr.push_back(levelPtr[lastLevel]);
     }
-    newLevelPtr.push_back(levelPtr[totalLevel]);
 
     //rewrite levelPtr with newLevelPtr
     totalLevel = (int)(newLevelPtr.size()-1);
@@ -136,6 +195,17 @@ void mtxPower::consolidatePartition()
     {
         levelPtr[i] = newLevelPtr[i];
     }
+
+    int* newLevelGroupPtr = new int[numSharedCache+1];
+    findMacroLevelPtr(cacheLevelGroup, newLevelGroupPtr);
+
+    for(int i=0; i<(numSharedCache+1); ++i)
+    {
+        levelGroupPtr[i] = newLevelGroupPtr[i];
+        printf("lg_consolidated[%d] = %d, row = %d\n", i, levelGroupPtr[i], levelPtr[levelGroupPtr[i]]);
+    }
+
+    delete[] newLevelGroupPtr;
 }
 
 void mtxPower::getPerm(int **perm_, int *len)
@@ -161,4 +231,14 @@ LevelData* mtxPower::getLevelDataRef()
 int* mtxPower::getLevelPtrRef()
 {
     return levelPtr;
+}
+
+int mtxPower::getTotalLevelGroup()
+{
+    return numSharedCache;
+}
+
+int* mtxPower::getLevelGroupPtrRef()
+{
+    return levelGroupPtr;
 }

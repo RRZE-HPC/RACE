@@ -13,7 +13,7 @@ my_option::my_option()
 {
 }
 
-parser::parser():mat_file(NULL), iter(100), cores(1), smt(1), pin(FILL), validate(false), tol(1e-4), prgname("a.out"), numOptions(8)
+parser::parser():mat_file(NULL), iter(100), cores(1), smt(1), nodes(1), pin(FILL), validate(false), tol(1e-4), prgname("a.out"), numOptions(9)
 {
     long_options = new my_option[numOptions+1];
 
@@ -21,11 +21,12 @@ parser::parser():mat_file(NULL), iter(100), cores(1), smt(1), pin(FILL), validat
     long_options[1] = {"iter",    required_argument, 0,  'i', "Iterations to be carried out" };
     long_options[2] = {"cores",   required_argument, 0,  'c', "Number of cores to be used" };
     long_options[3] = {"smt",     required_argument, 0,  't', "Number of threads per core to be used (recommended 1)" };
-    long_options[4] = {"pin",     required_argument, 0,  'p', "Pinning strategy to be used; availablle options FILL or SCATTER" };
-    long_options[5] = {"validate",no_argument,       0,  'v', "Validate coloring" };
-    long_options[6] = {"tol",     required_argument, 0,  'T', "Tolerance for validation" };
-    long_options[7] = {"help",    no_argument,       0,  'h', "Prints this help informations" };
-    long_options[8] = {0,         0,                 0,   0,  0 };
+    long_options[4] = {"nodes",   required_argument, 0,  'n', "Number of nodes" };
+    long_options[5] = {"pin",     required_argument, 0,  'p', "Pinning strategy to be used; availablle options FILL or SCATTER" };
+    long_options[6] = {"validate",no_argument,       0,  'v', "Validate coloring" };
+    long_options[7] = {"tol",     required_argument, 0,  'T', "Tolerance for validation" };
+    long_options[8] = {"help",    no_argument,       0,  'h', "Prints this help informations" };
+    long_options[9] = {0,         0,                 0,   0,  0 };
 
     gnuOptions = new option[numOptions+1];
 
@@ -46,7 +47,7 @@ bool parser::parse_arg(int argc, char **argv)
     prgname = argv[0];
     while (1) {
         int option_index = 0, c;
-        c = getopt_long(argc, argv, "0:m:i:c:t:p:T:vh",
+        c = getopt_long(argc, argv, "0:m:i:c:t:n:p:T:vh",
                 gnuOptions, &option_index);
 
         if (c == -1)
@@ -78,6 +79,11 @@ bool parser::parse_arg(int argc, char **argv)
             case 't':
                 {
                     smt = atoi(optarg);
+                    break;
+                }
+            case 'n':
+                {
+                    nodes = atoi(optarg);
                     break;
                 }
             case 'p':

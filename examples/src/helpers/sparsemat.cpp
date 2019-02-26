@@ -373,10 +373,10 @@ bool sparsemat::computeSymmData()
     return true;
 }
 
-int sparsemat::prepareForPower(int highestPower, double cacheSize)
+int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cacheSize)
 {
     ce = new Interface(nrows, 10, RACE::POWER, rowPtr, col);
-    ce->RACEColor(highestPower, cacheSize);
+    ce->RACEColor(highestPower, numSharedCache, cacheSize);
 
     int *perm, *invPerm, permLen;
     ce->getPerm(&perm, &permLen);
@@ -423,10 +423,15 @@ int sparsemat::maxStageDepth()
     return ce->getMaxStageDepth();
 }
 
+void sparsemat::numaInit(bool RACEalloc)
+{
+    permute(NULL, NULL, RACEalloc);
+}
 
 //symmetrically permute
 void sparsemat::permute(int *perm, int*  invPerm, bool RACEalloc)
 {
+    printf("NUMA allocing\n");
     double* newVal = new double[nnz];
     int* newRowPtr = new int[nrows+1];
     int* newCol = new int[nnz];
@@ -447,37 +452,62 @@ void sparsemat::permute(int *perm, int*  invPerm, bool RACEalloc)
         ce->numaInitRowPtr(newRowPtr);
     }
 
-    //first find newRowPtr; therefore we can do proper NUMA init
-    int permIdx=0;
-    printf("nrows = %d\n", nrows);
-    for(int row=0; row<nrows; ++row)
+    if(perm != NULL)
     {
-        //row permutation
-        int permRow = perm[row];
-        for(int idx=rowPtr[permRow]; idx<rowPtr[permRow+1]; ++idx)
+        //first find newRowPtr; therefore we can do proper NUMA init
+        int permIdx=0;
+        printf("nrows = %d\n", nrows);
+        for(int row=0; row<nrows; ++row)
         {
-             ++permIdx;
+            //row permutation
+            int permRow = perm[row];
+            for(int idx=rowPtr[permRow]; idx<rowPtr[permRow+1]; ++idx)
+            {
+                ++permIdx;
+            }
+            newRowPtr[row+1] = permIdx;
         }
-        newRowPtr[row+1] = permIdx;
+    }
+    else
+    {
+        for(int row=0; row<nrows+1; ++row)
+        {
+            newRowPtr[row] = rowPtr[row];
+        }
     }
 
 
     if(RACEalloc)
     {
-        printf("NUMA allocing\n");
         ce->numaInitMtxVec(newRowPtr, newCol, newVal, NULL);
     }
-    //with NUMA init
-#pragma omp parallel for schedule(static)
-    for(int row=0; row<nrows; ++row)
+
+    if(perm != NULL)
     {
-        //row permutation
-        int permRow = perm[row];
-        for(int permIdx=newRowPtr[row],idx=rowPtr[permRow]; permIdx<newRowPtr[row+1]; ++idx,++permIdx)
+        //with NUMA init
+#pragma omp parallel for schedule(static)
+        for(int row=0; row<nrows; ++row)
         {
-            //permute column-wise also
-            newVal[permIdx] = val[idx];
-            newCol[permIdx] = invPerm[col[idx]];
+            //row permutation
+            int permRow = perm[row];
+            for(int permIdx=newRowPtr[row],idx=rowPtr[permRow]; permIdx<newRowPtr[row+1]; ++idx,++permIdx)
+            {
+                //permute column-wise also
+                newVal[permIdx] = val[idx];
+                newCol[permIdx] = invPerm[col[idx]];
+            }
+        }
+    }
+    else
+    {
+#pragma omp parallel for schedule(static)
+        for(int row=0; row<nrows; ++row)
+        {
+            for(int idx=newRowPtr[row]; idx<newRowPtr[row+1]; ++idx)
+            {
+                newVal[idx] = val[idx];
+                newCol[idx] = col[idx];
+            }
         }
     }
 

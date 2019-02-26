@@ -2,6 +2,7 @@
 #include "test.h"
 #include <iostream>
 #include <typeinfo>
+#include "machine.h"
 
 FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),power_fn(false),func(f_),args(args_),zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_)
 {
@@ -168,31 +169,71 @@ void recursiveCall(FuncManager* funMan, int parentIdx)
 
 void FuncManager::powerRun()
 {
-    int totalLevel = matPower->getTotalLevel();
+    //int totalLevel = matPower->getTotalLevel();
+    int totalLevelGroup = matPower->getTotalLevelGroup();
     int* levelPtr = matPower->getLevelPtrRef();
-    for(int level=0; level<(totalLevel+power); ++level)
-    {
-        for(int pow=0; pow<power; ++pow)
-        {
-            int powLevel = (level-pow);
+    int* levelGroupPtr = matPower->getLevelGroupPtrRef();
 
-            if( (powLevel >= 0) && (powLevel < totalLevel) )
+#pragma omp parallel num_threads(totalLevelGroup)
+    {
+        int levelGroup = omp_get_thread_num();
+        //body
+        {
+            //printf("here is %d\n", sched_getcpu());
+            int startLevel = levelGroupPtr[levelGroup];
+            int endLevel = levelGroupPtr[levelGroup+1];
+            for(int level=startLevel; level<(endLevel); ++level)
             {
-                //can be a function ptr
-                powerFunc(levelPtr[powLevel], levelPtr[powLevel+1], pow+1, args);
+                for(int pow=0; pow<power; ++pow)
+                {
+                    int powLevel = (level-pow);
+
+                    if( (powLevel >= (startLevel+pow)) && (powLevel < (endLevel-pow)) )
+                    {
+                        //can be a function ptr
+                        powerFunc(levelPtr[powLevel], levelPtr[powLevel+1], pow+1, args);
 #if 0
 #pragma omp parallel for schedule(static)
-                for(int row=levelPtr[powLevel]; row<levelPtr[powLevel+1]; ++row)
-                {
-                    double tmp = 0;
-                    for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
-                    {
-                        tmp += A[idx]*x[(pow)*graph->NROW+col[idx]];
-                    }
-                    x[(pow+1)*graph->NROW+row] = tmp;
-                }
+                        for(int row=levelPtr[powLevel]; row<levelPtr[powLevel+1]; ++row)
+                        {
+                            double tmp = 0;
+                            for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
+                            {
+                                tmp += A[idx]*x[(pow)*graph->NROW+col[idx]];
+                            }
+                            x[(pow+1)*graph->NROW+row] = tmp;
+                        }
 #endif
+                    }
+                }
             }
+        }
+#pragma omp barrier
+        //reminder
+        for(int pow=1; pow<power; ++pow)
+        {
+            //reminder-head
+            {
+                int startLevel = levelGroupPtr[levelGroup];
+                int endLevel = std::min(startLevel+pow, levelGroupPtr[levelGroup+1]);
+                for(int level=startLevel; level<endLevel; ++level)
+                {
+                    //can be a function ptr
+                    powerFunc(levelPtr[level], levelPtr[level+1], pow+1, args);
+                }
+            }
+            //reminder-tail
+            {
+                int endLevel = levelGroupPtr[levelGroup+1];
+                int startLevel = std::max(levelGroupPtr[levelGroup], endLevel-pow);
+                for(int level=startLevel; level<endLevel; ++level)
+                {
+                    //can be a function ptr
+                    powerFunc(levelPtr[level], levelPtr[level+1], pow+1, args);
+                }
+
+            }
+#pragma omp barrier
         }
     }
 }
@@ -240,7 +281,20 @@ void FuncManager::Run(bool rev_)
     }
     else
     {
+#ifdef RACE_KERNEL_THREAD_OMP
+        int resetNestedState = omp_get_nested();
+        int resetDynamicState = omp_get_dynamic();
+        //set nested parallelism
+        //printf("setting nested\n");
+        omp_set_nested(1);
+        omp_set_dynamic(0);
         powerRun();
+
+        //reset states
+        omp_set_nested(resetNestedState);
+        omp_set_dynamic(resetDynamicState);
+#endif
+
     }
 }
 

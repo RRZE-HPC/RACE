@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include <iterator>
-
+#include <vector>
 
 template <typename T> inline void sort(T *arr, int range_lo, int range_hi, bool rev=false)
 {
@@ -48,6 +48,20 @@ template <typename T> inline T maxArr(T *arr, int len)
     return maxVal;
 }
 
+template <typename T> inline void getEnv(std::string envName, std::vector<T>& val_vec)
+{
+    char *envVal = getenv(envName.c_str());
+
+    if(envVal != NULL)
+    {
+        char* token = strtok(envVal, ",");
+        while(token != NULL)
+        {
+            val_vec.push_back(atoi(token));
+            token = strtok(NULL, ",");
+        }
+    }
+}
 
 //updates first prmutation array based on the current permutation
 inline void updatePerm(int **mainPerm, int *currPerm, int len, int fullLen)

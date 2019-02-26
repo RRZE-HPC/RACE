@@ -14,7 +14,7 @@ LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist d
     }
 
     double default_eff = 40;
-    char *lvlEff = getenv("RACE_EFFICIENCY");
+/*    char *lvlEff = getenv("RACE_EFFICIENCY");
     char *lvlThreads = getenv("RACE_THREADS");
 
     if(lvlThreads != NULL)
@@ -26,14 +26,18 @@ LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist d
             token = strtok(NULL, ",");
         }
     }
-
-    //printf("RACE_THREADS = \n");
+*/
+    getEnv("RACE_THREADS", lvl_threads);
+    printf("RACE_THREADS = \n");
     for(unsigned i=0; i<lvl_threads.size(); ++i)
     {
         printf("%d\n",lvl_threads[i]);
     }
 
+    eff_vec.push_back(default_eff);
+    getEnv("RACE_EFFICIENCY", eff_vec);
 
+    /*
     if(lvlEff == NULL)
     {
         eff_vec.push_back(default_eff);
@@ -45,7 +49,7 @@ LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist d
             eff_vec.push_back(atof(token));
             token = strtok(NULL, ",");
         }
-    }
+    }*/
 
     printf("Efficiency Vector = \n");
     for(unsigned i=0; i<eff_vec.size(); ++i)

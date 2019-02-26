@@ -27,6 +27,7 @@ class Pin{
         RACE_error pinInit();
         RACE_error pinThread(int pinOrder);
         RACE_error pinApplication();
+        void pinPowerThread(int nodes);
         void resetMaster();
 };
 

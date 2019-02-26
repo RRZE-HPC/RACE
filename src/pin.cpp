@@ -231,3 +231,29 @@ RACE_error Pin::pinApplication()
 
     return ret;
 }
+
+void Pin::pinPowerThread(int nodes)
+{
+    int resetNestedState = omp_get_nested();
+    int resetDynamicState = omp_get_dynamic();
+    //set nested parallelism
+    //printf("setting nested\n");
+    omp_set_nested(1);
+    omp_set_dynamic(0);
+    Machine* mc = (Machine*) machine;
+    //body
+#pragma omp parallel num_threads(nodes)
+    {
+        int parentId = omp_get_thread_num();
+        mc->pinThread(0, parentId);
+#pragma omp parallel
+        {
+            mc->pinThread(omp_get_thread_num(), parentId);
+        }
+    }
+
+    //reset states
+    omp_set_nested(resetNestedState);
+    omp_set_dynamic(resetDynamicState);
+}
+

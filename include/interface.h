@@ -47,7 +47,7 @@ class RACE::Interface{
     public:
         Interface(int nrow_, int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_=1, RACE::PinMethod method_=RACE::SCATTER, int *initPerm_=NULL, int *initInvPerm_=NULL, RACE::d2Method d2Type_=RACE::TWO_BLOCK);
         ~Interface();
-        RACE_error RACEColor(int highestPower, double cacheSize, double safetyFactor=2);
+        RACE_error RACEColor(int highestPower, int numSharedCache, double cacheSize, double safetyFactor=2);
         //Pre-processing
         RACE_error RACEColor();
         double getEfficiency();

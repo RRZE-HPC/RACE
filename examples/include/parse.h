@@ -21,6 +21,7 @@ struct parser
         int iter;
         int cores;
         int smt;
+        int nodes;
         PinMethod pin;
         bool validate;
         double tol;

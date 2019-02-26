@@ -80,7 +80,7 @@ class LB{
         void splitZones();
 
     public:
-        LB(int nThreads_, double efficiency_, LevelData* levelData_, RACE::dist dist_, RACE::d2Method d2Type, RACE::LBTarget lbTarget = RACE::NNZ); //constructor
+        LB(int nThreads_, double efficiency_, LevelData* levelData_, RACE::dist dist_, RACE::d2Method d2Type = RACE::TWO_BLOCK, RACE::LBTarget lbTarget = RACE::NNZ); //constructor
         ~LB(); //destructor
 
         int getMaxThreads();

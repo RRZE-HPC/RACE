@@ -32,7 +32,7 @@ RACE::Interface::~Interface()
     }
 }
 
-RACE_error RACE::Interface::RACEColor(int highestPower, double cacheSize, double safetyFactor)
+RACE_error RACE::Interface::RACEColor(int highestPower, int numSharedCache, double cacheSize, double safetyFactor)
 {
 
     if(distance != RACE::POWER)
@@ -42,12 +42,13 @@ RACE_error RACE::Interface::RACEColor(int highestPower, double cacheSize, double
     }
     else
     {
-        powerCalculator = new mtxPower(graph, highestPower, cacheSize, safetyFactor);
+        powerCalculator = new mtxPower(graph, highestPower, numSharedCache, cacheSize, safetyFactor);
         powerCalculator->findPartition();
         int len;
         powerCalculator->getPerm(&perm, &len);
         powerCalculator->getInvPerm(&invPerm, &len);
-
+        Pin pin(NULL, 1, RACE::FILL);
+        pin.pinPowerThread(numSharedCache);
         return RACE_SUCCESS;
     }
 }
