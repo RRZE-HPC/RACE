@@ -324,7 +324,7 @@ The recursive refinement of \levelGroups allows us to tackle load imbalance prob
 	\end{align*}
 	and controlled by the criterion
 	\begin{align*}
-	\epsilon &> \epsilon_s, \text{where $\epsilon_s \in  (0,1)$ are user defined parameters.} 	
+	\epsilon &> \epsilon_s, \text{where $\epsilon_s \in  [0.5,1)$ are user defined parameters.} 	
 	\end{align*}		   
 	The choice of this parameter may be different for every stage of recursion. 
 	 Once we find a collection of successive levels satisfying this criterion, the natural number $b$ is fixed. We try increasing the number of levels further to test if there exists a number $a'>a$ which is closer to $b$ leading to a $\epsilon$ value closer to one. We finally choose the set of levels with best $\epsilon$ value and define them to form $T_s(0)$ and $T_s(1)$ and to be executed by $\acrshort{nthreads}(T_s(0))=\acrshort{nthreads}(T_s(1))=b$ threads.	 

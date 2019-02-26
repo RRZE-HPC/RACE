@@ -64,12 +64,12 @@ The following external libraries are used in this paper:\GHcomm{some versions mi
 \begin{description}
 	%TODO
 	\item[\LIKWID 4.3.2] \cite{LIKWID}  \likwidPerfctr was used for counting hardware events and measuring derived metrics. The bandwidths shown in \cref{tab:test_bed} were taken by the  \likwidBench tool.
-	\item[\COLPACK XXX] \cite{COLPACK} was used for pre-processing matrices via \acrshort{MC}.
-	\item[\SPMP XXX] \cite{SpMP} was used to perform \acrshort{RCM}.
-	\item[\METIS XXX] \cite{METIS} was used for graph partitioning in \acrshort{ABMC}.
-	\item[Intel \MKL 17] \cite{MKL} was used for performing some reference sparse matrix computations.
+	\item[\COLPACK xxx] \cite{COLPACK} was used for pre-processing matrices via \acrshort{MC}.
+	\item[\SPMP xxx] \cite{SpMP} was used to perform \acrshort{RCM}.
+	\item[\METIS 5.1.0] \cite{METIS} was used for graph partitioning in \acrshort{ABMC}.
+	\item[Intel \MKL 19.0.2] \cite{MKL} was used for performing some reference sparse matrix computations.
 \end{description}
-All code was compiled with the Intel compiler in version 17.0.3 and the following compiler flags: {\tt -fno-alias -xHost -O3} for \IVB and {\tt -fno-alias -xCORE-AVX512 -O3} for \SKX. We did not enforce AVX-512 wide SIMD instructions on \SKX because this feature is of minor importance for the algorithms discussed here.
+All code was compiled with the Intel compiler in version 19.0.2 and the following compiler flags: {\tt -fno-alias -xHost -O3} for \IVB and {\tt -fno-alias -xCORE-AVX512 -O3} for \SKX. We did not enforce AVX-512 wide SIMD instructions on \SKX because this feature is of minor importance for the algorithms discussed here.
 
 \subsection{Benchmark Matrices}
 Most test matrices were taken from the Suite\-Sparse Matrix Collection (former University of Florida Sparse Matrix Collection)~\cite{UOF} combining sets from two papers \cite{RSB,park_ls}, which allows  straightforward comparison of results.\GHcomm{Do we actually compare with them?}  We also added some matrices from quantum physics applications, which originate from the particular project context in which RACE was developed~\cite{ESSEX}.
@@ -105,7 +105,14 @@ As mentioned before we restrict ourselves to matrices representing undirected gr
 We evaluate our methods by parallelizing two simple but important kernels showing \DTWO dependencies. In parallel \acrfull{SymmSpMV}, \DTWO coloring avoids the concurrent update of the same vector entries by different threads. In this case, the result is identical to the serial code (``exact kernel''). As an example of an iterative solver we have chosen \acrfull{SymmKACZ}. It reads and writes indirectly from the same vector, which leads to a change in convergence depending on the coloring scheme (``inexact kernel'').
 % {\GW To be done As an example for an iterative solver with distance2 dependency we have chosen the \acrshort{KACZ} ...}
 
-Since both kernels are closely related to the \acrshort{SpMV} kernel by structure and computational intensity, we start with a discussion of \acrshort{SpMV} and extend it towards \acrshort{SymmSpMV} and \acrshort{SymmKACZ} later. In all cases the aim is to derive realistic upper performance bounds. We choose the \acrshort{CRS} storage format for the serial implementation and assume square matrices.
+Since both kernels are closely related to the \acrshort{SpMV} kernel by structure and computational intensity, we start with a discussion of \acrshort{SpMV} and extend it towards \acrshort{SymmSpMV} and \acrshort{SymmKACZ} later. In all cases the aim is to derive realistic upper performance bounds, which can be estimated once the computational intensity and main memory bandwidth (\acrshort{b_s}, see \cref{tab:test_bed}) is known \cite{Williams_roofline} \ie
+  \begin{align}
+   	\label{eq:upper_performance}
+   	P^{max}_\mathrm{kernel}  &= I_\mathrm{kernel}  \times b_S
+  \end{align}
+  Due to the nature of our kernels and matrices having considerable amount of non-zeros our algorithms have considerably more loads compared to stores, therefore we choose $b_s$ to be the most optimistic (load-only) value from \cref{tab:test_bed}.
+  
+   In the following discussions we choose the \acrshort{CRS} storage format for the serial \CAcomm{why only serial impl.} implementation and assume square matrices.
 
 \subsubsection{\acrshort{SpMV}}
 \Cref{alg:SpMV} shows the \acrshort{SpMV} kernel for the \acrshort{CRS} storage format. It has no loop-carried dependencies, so parallelization of the outer loop using, \eg OpenMP, is straightforward. 
@@ -178,12 +185,15 @@ I_\mathrm{\acrshort{SymmSpMV}} (\alpha) &= \frac{4}{8+4+24*\alpha+\frac{4}{\acrs
 \text{ where,  } \acrshort{SymmNNZR} &= (\acrshort{NNZR}-1)/2 + 1
 \end{align}
 
-For a given non-zero matrix element ($8~\BYTE + 4~\BYTE$) of the triangular matrix twice the amount of Flops ($4~\FLOP$)  are performed. In addition we have indirect access to the LHS vector (read and write) which increases the $\alpha$ contribution by $3\times$. The only term left scaling with \acrshort{SymmNNZR} (number of non-zeros per row in upper triangular part of the matrix) is the consecutively accessed row pointer. Please note, the $\alpha$ value for \acrshort{SpMV} and \acrshort{SymmSpMV} may be different (even for the same matrix and the same compute device) as in the latter case the two vectors are accessed irregularly and compete for the same amount of cache. Thus we can assume that the $\alpha$ value measured for \acrshort{SpMV} ($\alpha_\mathrm{\acrshort{SpMV}}$) can be considered as a lower bound for \acrshort{SymmSpMV}. As performance is the product of computational intensity and the main memory bandwidth ($b_S$; see~\cref{tab:test_bed} for typical values) this approach provides an upper performance bound for \acrshort{SymmSpMV} for a given matrix structure:
+For a given non-zero matrix element ($8~\BYTE + 4~\BYTE$) of the triangular matrix twice the amount of Flops ($4~\FLOP$)  are performed. In addition we have indirect access to the LHS vector (read and write) which increases the $\alpha$ contribution by $3\times$. \sout{The only term left scaling  with \acrshort{SymmNNZR}} \CAcomm{The remaining term scaled with \acrshort{SymmNNZR}} (number of non-zeros per row in upper triangular part of the matrix) is the consecutively accessed row pointer. Please note, the $\alpha$ value for \acrshort{SpMV} and \acrshort{SymmSpMV} may be different (even for the same matrix and the same compute device) as in the latter case the two vectors are accessed irregularly and compete for the same amount of cache. Thus we can assume that the $\alpha$ value measured for \acrshort{SpMV} ($\alpha_\mathrm{\acrshort{SpMV}}$) can be considered as a lower bound for \acrshort{SymmSpMV}. As performance is the product of computational intensity and the main memory bandwidth (see \cref{eq:upper_performance}) this approach provides an upper performance bound for \acrshort{SymmSpMV}.
+\begin{comment}
+ for a given matrix structure:
  \begin{align}
 \label{eq:SymmSpMV_performance}
 P^{max}_\mathrm{\acrshort{SymmSpMV}}  &= I_\mathrm{\acrshort{SymmSpMV}} (\alpha_\mathrm{\acrshort{SpMV}})  \times b_S
 \end{align}
 As most matrices have a considerable number of non-zeros per row, we chose $b_S$ to be the optimistic (load-only) value  from~\cref{tab:test_bed}.
+\end{comment}
 
 Comparing~\cref{eq:SymmSpMV_intensity} and~\cref{eq:SpMV_intensity} it is obvious that the perfect speed-up of 2$\times$ when using \acrshort{SymmSpMV} instead of \acrshort{SpMV} is only attainable in the limit of small $\alpha$, \ie for regularly structured matrices or low bandwidth matrices. Considering the large pre-factor of the $\alpha$ contribution, any implementation of \acrshort{SymmSpMV} must aim at ensuring high data locality. The indirect update of the LHS has also large impact on parallelization strategy as two rows which have a non-zero in the same column can not be computed in parallel. If using a graph based approach to this problem this is equivalent to the constraint that only vertices can be computed in parallel which have at least distance 2.
 
