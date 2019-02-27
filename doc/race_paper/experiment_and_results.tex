@@ -12,29 +12,6 @@ The test setup is so constructed that it replicates the behavior of these kernel
 For \acrshort{SymmKACZ} there are two use cases. In one it is used as a plain iterative solver where the kernel is called successively. The other use case of this iterative solver is in algorithms like CGMN~\cite{CGMN, CGMN_gordon} or CARP-CG~\cite{CARP-CG} where \acrshort{SymmKACZ} is used like a preconditioner, where an approach similar to \acrshort{SymmSpMV} have to be used for benchmarking. In this paper the benchmark is constructed to replicate the behavior of the former case, \ie we call the \acrshort{SymmKACZ} kernel 500 times in succession and report the mean performance. It has to be noted that the difference in performance measurements between these two benchmarks is very small and only affects small matrices.
 
 
-\subsection{Corner Cases}
-
-
-
-\Cref{fig:corner_cases_scaling} shows the scaling performance of \acrshort{SymmSpMV} and \acrshort{SpMV} (baseline) kernel for corner case matrices on one socket of \SKX architecture. Chosen corner case matrices represent different aspects and bottlenecks that appear either due to \acrshort{RACE} method or because of hardware capabilities.
-
- The \emph{crankseg\_1} matrix is the worst in terms of performance. It does not scale well due to it's limited parallelism obtained using the \acrshort{RACE} method. This property of \emph{crankseg\_1} is well evident directly after doing the theoretical estimate based on $\eta$ as  seen in \cref{fig:crankseg_param}. One could further see that the actual scaling run of the kernel seen in \cref{fig:crankseg_scaling} is exactly in tune with that of the theoretical result. Note that due to this bottleneck of parallelism we didn't achieve much benefit from using \acrshort{SymmSpMV} compared to \acrshort{SpMV}.
-
-The \emph{inline\_1} matrix although being third lowest in terms of parallelism in the entire set of test matrices, but it still achieves a high efficiency ($\eta$ = 0.85) for 20 threads (see \cref{fig:inline_param}), leading to good scaling as seen in \cref{fig:inline_scaling}. The saturation in performance after 15 threads is due to the fact that we hit the memory bottleneck, similar saturation behavior can also be observed for \acrshort{SpMV} which is embarrassingly parallel. The saturation occurs at the maximum achievable performance on the given architecture which could easily be verified using the \roofline model \cite{Williams_roofline} and intensity equations (see \cref{subsec:test_kernels}) as shown below:
-\begin{align*}
-	% P_{max} =&  2 \fracUnit{FMA AVX-512 instruction}{cy*cores}  * 8 \fracUnit{FMA}{FMA AVX-512 instruction} \\
-	% & * 2 \fracUnit{Flop}{FMA} * 2.4 \fracUnit{Gcy}{s} * 20 \unit{cores} = 1536  \fracUnit{GFlop}{s} \\	 
-	 I_\mathrm{\acrshort{SpMV}} &= \frac{2}{8+4+\frac{8+16}{73}} = 0.162 \fracUnit{Flop}{byte} \text{, assuming best case : $\alpha = \frac{1}{\acrshort{NNZR}}$}\\
-	 P_\mathrm{\acrshort{SpMV}} &= b_s*I_\mathrm{\acrshort{SpMV}}; \text{  for memory-bound case}\\
-	 P_\mathrm{\acrshort{SpMV}} &= 0.162\fracUnit{Flop}{Bytes}*115\fracUnit{GByte}{s} = 18.6 \fracUnit{GFlop}{s}\\
-\end{align*}
-
-As seen we achieve 17.8 GFlop/s which is close to the theoretical maximum of 18.6 GFlop/s for \acrshort{SpMV}. Similar derivation can be done for \acrshort{SymmSpMV} and one could see $P_\mathrm{\acrshort{SymmSpMV}}$= 34.5 GFlop/s, which is approximately twice that of \acrshort{SpMV} since $I_\mathrm{\acrshort{SymmSpMV}}$ is almost a factor two higher than $I_\mathrm{\acrshort{SpMV}}$ for matrix with moderate \acrshort{NNZR} (see \cref{eq:SpMV_intensity,eq:SymmSpMV_intensity}). From \cref{fig:inline_scaling} one can observe that at saturation we reach close to theoretical values. A cushioning effect due to memory bandwidth bottleneck is also evident from \cref{fig:inline_scaling}, where we see that due to this saturation decrease in $\eta$ to a certain extent would not effect the socket level performance, it would just shift the knee of saturation towards right.
-
-In the case of \emph{parabolic\_fem} matrix we theoretically have a good efficiency as seen from \cref{fig:parabolic_fem_param}, but here we do not see any saturation in performance (see \cref{fig:parabolic_fem_scaling}), even \acrshort{SpMV} does not have this saturation behavior. If one calculates the maximum  theoretical performance by \roofline model and assuming memory-boundedness as shown in previous example one would see that $P_\mathrm{\acrshort{SpMV}}$=15 GFlop/s and $P_\mathrm{\acrshort{SymmSpMV}}$=19 GFlop/s, but we achieve more than these values in actual runs 26.5 and 31.5 GFlop/s respectively. This is because the matrix is small enough ($\approx$ 46 MB for full matrix and $\approx$ 23 MB for symmetric storage) to just fit in caches (combined L2 and L3) of the \SKX architecture. Since the caches scales well on this architecture we don't observe the saturation behavior. It should be noted that in this case comparison between \acrshort{SpMV} and \acrshort{SymmSpMV} cannot be done directly since for \acrshort{SpMV} the total data is almost close to cache limits, while for \acrshort{SymmSpMV} it would easily fit in cache.
-
-\emph{Graphene-4096} matrix on the other hand is a matrix with efficiency similar to \emph{parabolic\_fem} but with much larger size ($\approx 2 GB$) resulting in matrix data always coming from main memory. This therefore shows dominant saturation behavior and since we achieve good efficiency ($\eta$) the knee of saturation begins at a well early stage for \acrshort{SymmSpMV} compared to  the case of \emph{inline\_1} where the efficiency was lower in comparison resulting in smaller \acrshort{threadEff}.
-
 \subsection{Performance and comparisons}
 
 \begin{figure}[thbp]
