@@ -2,7 +2,29 @@
 % This is information that is shared between the main document and any
 % supplement. If no supplement is required, then this information can
 % be included directly in the main document.
-The method stated above was implemented and consolidated into \acrshort{RACE} library. The library provides easy interface for parallelizing kernels, user typically just needs to supply the serial code (with dependency) and hardware settings. Library will then parallelize, pin and run the code in parallel. The library is publicly available in the git repository. %TODO
+
+
+Our method has been implemented and consolidated into a library named \acrshort{RACE}. The library provides easy interface for parallelizing kernels having dependencies, user typically just needs to supply a callback function with the serial code (potentially with dependency) and specify the required hardware settings. Library will then parallelize and run the code in parallel. The library is made publicly available through the git repository.  %TODO
+ 
+ In the following we present the results of two important benchmarks which makes use of the \acrshort{SymmSpMV} and \acrshort{SymmKACZ} kernels. The benchmarks are carefully constructed to mimic the actual settings in real application runs. These benchmarks results are further compared with current state of art alternative methods.
+ 
+ Both the benchmarks are run on the full set of test matrices (see \cref{table:bench_matrices}) and the matrices are preprocessed with \acrshort{RCM} bandwidth reduction using the \SPMP library \cite{SpMP}.
+
+\subsection{Benchmark - \acrshort{SymmSpMV}}
+Sparse matrix vector multiplication is a frequently used operator in plenty of sparse numerical algorithms and is commonly the most time consuming one. This simple benchmark performs multiplication of a symmetric matrix with a vector, and involves a direct use of the \acrshort{SymmSpMV} kernel.  In this benchmark we store only the upper triangular part of the symmetric matrix and perform the full matrix vector multiplication as shown in \cref{sect:SymmSpmv}. 
+
+The main purpose of the benchmark is to study the performance quality of the \acrshort{RACE} library and make a solid performance-only comparison between different methods due to the exact nature of the \acrshort{SymmSpMV} kernel.
+
+\subsubsection{Test setup}
+\Inorder to have well reproducible result and accurate timing measurements it is necessary to have multiple runs of the kernel. But running the same matrix vector multiplication over the same vectors could lead to caching of the vectors if the sizes are small enough. However this effect does not appear in actual practice since normally a matrix vector multiplication is followed by different calls to other kernels (commonly Level 1 BLAS) that in addition use other helper data leading to eviction of the cached vectors. To replicate this behavior we use two ring buffers holding vectors of size \acrshort{nrows}. Number of vectors in the buffer is chosen such that the combined size of both the ring buffer is \atleast 100 \MB, which is \atleast two times bigger than 
+the combined cache sizes of both the architectures. The \acrshort{SymmSpMV} kernel is then run over these two buffers taking one vector each as input ($x$) and output vector ($b$) for the matrix vector operation ($b=Ax$). The kernel is run two times through all of the elements in this ring buffer and the mean performance of the runs is taken into account.
+
+\begin{figure}[tbhp]
+	\centering
+	\includegraphics[scale=0.5]{pics/results/symm_spmv_setup/test_setup}
+	\caption{Benchmark \acrshort{SymmSpMV} test setup}
+\end{figure}
+{\GW Will continue here...}
 
 \subsection{Test setup}
 In the following we present the performance and convergence results obtained using the library, and compare it against state of art methods. \acrshort{SymmSpMV} and \acrshort{SymmKACZ} are chosen as representative benchmark kernels. Hardware and matrices as described in \cref{Sec:test_bed} is used for the following benchmarks. As mentioned in \cref{Sec:param_study} parameter $\epsilon_s$ is set to 0.8 and \acrshort{RCM} is used in level construction stage. The matrix is pre-processed with \acrshort{RCM} for all the cases (even for \acrshort{SpMV}). \SPMP \cite{SpMP} library was used to do this \acrshort{RCM} pre-processing.
