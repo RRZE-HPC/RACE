@@ -3,6 +3,7 @@
 #include "stdlib.h"
 #include <omp.h>
 #include <vector>
+#include <sys/mman.h>
 
 sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL)
 {
@@ -381,7 +382,7 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
     int *perm, *invPerm, permLen;
     ce->getPerm(&perm, &permLen);
     ce->getInvPerm(&invPerm, &permLen);
-    permute(perm, invPerm, true);
+    permute(perm, invPerm , true);
 
     return 1;
 }
@@ -432,9 +433,16 @@ void sparsemat::numaInit(bool RACEalloc)
 void sparsemat::permute(int *perm, int*  invPerm, bool RACEalloc)
 {
     printf("NUMA allocing\n");
+
     double* newVal = new double[nnz];
-    int* newRowPtr = new int[nrows+1];
     int* newCol = new int[nnz];
+    int* newRowPtr = new int[nrows+1];
+
+/*
+    double *newVal = (double*) malloc(sizeof(double)*nnz);
+    int *newCol = (int*) malloc(sizeof(int)*nnz);
+    int *newRowPtr = (int*) malloc(sizeof(int)*(nrows+1));
+*/
 
     newRowPtr[0] = 0;
 

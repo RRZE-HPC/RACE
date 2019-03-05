@@ -131,7 +131,7 @@ int main(const int argc, char * argv[])
         LIKWID_MARKER_START("pre_process");
     }
 #endif
-    mat->prepareForPower(power, param.nodes, 25*1024*1024);
+    mat->prepareForPower(power, param.nodes, 16*1024*1024);
 #ifdef LIKWID_PERFMON
 #pragma omp parallel
     {
@@ -156,7 +156,7 @@ int main(const int argc, char * argv[])
 
     printf("calculation started\n");
 
-    int iterations = 200;
+    int iterations = 2000;
 
     INIT_TIMER(matPower);
 #ifdef LIKWID_PERFMON

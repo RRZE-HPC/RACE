@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
+#include <unistd.h>
+#include <sys/mman.h>
 
 template <typename T> inline void sort(T *arr, int range_lo, int range_hi, bool rev=false)
 {
@@ -111,5 +113,34 @@ inline int roundDouble(double val)
     return ( (((val - val_i))<0.5)?val_i:(val_i+1) );
 }
 
+//Taken from :
+//https://www3.physnet.uni-hamburg.de/physnet/Tru64-Unix/HTML/APS33DTE/DOCU_005.HTM
+inline int lock_memory(char   *addr,
+        size_t  size)
+{
+    unsigned long    page_offset, page_size;
+
+    page_size = sysconf(_SC_PAGE_SIZE);
+    page_offset = (unsigned long) addr % page_size;
+
+    addr -= page_offset;  /* Adjust addr to page boundary */
+    size += page_offset;  /* Adjust size with page_offset */
+
+    return ( mlock(addr, size) );  /* Lock the memory */
+}
+
+inline int unlock_memory(char   *addr,
+        size_t  size)
+{
+    unsigned long    page_offset, page_size;
+
+    page_size = sysconf(_SC_PAGE_SIZE);
+    page_offset = (unsigned long) addr % page_size;
+
+    addr -= page_offset;  /* Adjust addr to page boundary */
+    size += page_offset;  /* Adjust size with page_offset */
+
+    return ( munlock(addr, size) );  /* Unlock the memory */
+}
 
 #endif

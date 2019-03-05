@@ -1,6 +1,5 @@
 #include "kernels.h"
 
-
 inline void SPMV_KERNEL(int start, int end, void* args)
 {
     DECODE_FROM_VOID(args);
@@ -182,25 +181,27 @@ void symm_spmv(densemat* b, sparsemat* mat, densemat* x, int iterations)
     DELETE_ARG();
 }
 
-
 inline void PLAIN_SPMV_KERNEL(int start, int end, int pow, void* args)
 {
     DECODE_FROM_VOID(args);
 
     int parentId = omp_get_thread_num();
-#pragma omp parallel
-    {
+//#pragma omp parallel
+//    {
         //int ctr = 0;
-#pragma omp for schedule(static)
+#pragma omp parallel for schedule(static)
         for(int row=start; row<end; ++row)
         {
-            /*if(ctr==0)
+            /*
+            if(((sched_getcpu())/10) != parentId)
+            //if(ctr<100)
             {
                 printf("here inside is cpu: %d thread: %d parent: %d\n", sched_getcpu(), omp_get_thread_num(), parentId);
-                ctr = 1;
+                //++ctr;
             }*/
             double tmp = 0;
             const int offset = (pow-1)*mat->nrows;
+#pragma nounroll
 #pragma simd vectorlength(8) reduction(+:tmp)
             for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
             {
@@ -208,7 +209,7 @@ inline void PLAIN_SPMV_KERNEL(int start, int end, int pow, void* args)
             }
             x->val[(pow)*mat->nrows+row] = tmp;
         }
-    }
+  //  }
 }
 
 //plain spmv

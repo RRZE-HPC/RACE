@@ -167,6 +167,9 @@ void recursiveCall(FuncManager* funMan, int parentIdx)
 
 #endif
 
+#if 0
+//OMP nested parallelism is not a good idea for some reason when NUMA comes to play
+
 void FuncManager::powerRun()
 {
     //int totalLevel = matPower->getTotalLevel();
@@ -179,6 +182,8 @@ void FuncManager::powerRun()
         int levelGroup = omp_get_thread_num();
         //body
         {
+            //if(levelGroup == 3)
+            {
             //printf("here is %d\n", sched_getcpu());
             int startLevel = levelGroupPtr[levelGroup];
             int endLevel = levelGroupPtr[levelGroup+1];
@@ -206,6 +211,7 @@ void FuncManager::powerRun()
 #endif
                     }
                 }
+            }
             }
         }
 #pragma omp barrier
@@ -237,6 +243,108 @@ void FuncManager::powerRun()
         }
     }
 }
+
+#endif
+
+#if 1
+#define SPLIT_LEVEL_PER_THREAD(_level_)\
+    int _startRow_ = levelPtr[_level_];\
+    int _endRow_ = levelPtr[_level_+1];\
+    int _RowPerThread_ = (_endRow_ - _startRow_)/threadPerLevelGroup;\
+    int startRow_tid = _startRow_ + localTid*_RowPerThread_;\
+    int endRow_tid = (localTid == (threadPerLevelGroup-1)) ? _endRow_ : _startRow_ + (localTid+1)*_RowPerThread_;\
+
+
+void FuncManager::powerRun()
+{
+    //int totalLevel = matPower->getTotalLevel();
+    int totalLevelGroup = matPower->getTotalLevelGroup();
+    int* levelPtr = matPower->getLevelPtrRef();
+    int* levelGroupPtr = matPower->getLevelGroupPtrRef();
+
+#pragma omp parallel
+    {
+        int threadPerLevelGroup = omp_get_num_threads()/totalLevelGroup;
+        int tid = omp_get_thread_num();
+        int levelGroup = tid / threadPerLevelGroup;
+        int localTid = tid % threadPerLevelGroup;
+        //body
+        {
+            //printf("here is %d\n", sched_getcpu());
+            int startLevel = levelGroupPtr[levelGroup];
+            int endLevel = levelGroupPtr[levelGroup+1];
+            int maxLevelCount = 0;
+            for(int i=0; i<totalLevelGroup; ++i)
+            {
+                maxLevelCount = std::max(maxLevelCount, (levelGroupPtr[i+1]-levelGroupPtr[i]));
+            }
+            int maxEndLevel = startLevel + maxLevelCount; //needed so that everyone calls barrier
+            for(int level=startLevel; level<(maxEndLevel); ++level)
+            {
+                if(level < endLevel)
+                {
+                    for(int pow=0; pow<power; ++pow)
+                    {
+                        int powLevel = (level-pow);
+
+                        if( (powLevel >= (startLevel+pow)) && (powLevel < (endLevel-pow)) )
+                        {
+                            SPLIT_LEVEL_PER_THREAD(powLevel);
+                            //can be a function ptr
+                            powerFunc(startRow_tid, endRow_tid, pow+1, args);
+#if 0
+#pragma omp parallel for schedule(static)
+                            for(int row=levelPtr[powLevel]; row<levelPtr[powLevel+1]; ++row)
+                            {
+                                double tmp = 0;
+                                for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
+                                {
+                                    tmp += A[idx]*x[(pow)*graph->NROW+col[idx]];
+                                }
+                                x[(pow+1)*graph->NROW+row] = tmp;
+                            }
+#endif
+                        }
+                    }
+                }
+#pragma omp barrier
+//I think we need this actually, but this actually
+//separates into inCache and burst phase
+            }
+        }
+//#pragma omp barrier
+        //reminder
+        for(int pow=1; pow<power; ++pow)
+        {
+            //reminder-head
+            {
+                int startLevel = levelGroupPtr[levelGroup];
+                int endLevel = std::min(startLevel+pow, levelGroupPtr[levelGroup+1]);
+                for(int level=startLevel; level<endLevel; ++level)
+                {
+                    SPLIT_LEVEL_PER_THREAD(level);
+                    //can be a function ptr
+                    powerFunc(startRow_tid, endRow_tid, pow+1, args);
+                }
+            }
+            //reminder-tail
+            {
+                int endLevel = levelGroupPtr[levelGroup+1];
+                int startLevel = std::max(levelGroupPtr[levelGroup], endLevel-pow);
+                for(int level=startLevel; level<endLevel; ++level)
+                {
+                    SPLIT_LEVEL_PER_THREAD(level);
+                    //can be a function ptr
+                    powerFunc(startRow_tid, endRow_tid, pow+1, args);
+                }
+
+            }
+#pragma omp barrier
+        }
+    }
+}
+
+#endif
 
 void FuncManager::Run(bool rev_)
 {
@@ -283,16 +391,13 @@ void FuncManager::Run(bool rev_)
     {
 #ifdef RACE_KERNEL_THREAD_OMP
         int resetNestedState = omp_get_nested();
-        int resetDynamicState = omp_get_dynamic();
         //set nested parallelism
         //printf("setting nested\n");
-        omp_set_nested(1);
-        omp_set_dynamic(0);
+        omp_set_nested(0);
         powerRun();
 
         //reset states
         omp_set_nested(resetNestedState);
-        omp_set_dynamic(resetDynamicState);
 #endif
 
     }

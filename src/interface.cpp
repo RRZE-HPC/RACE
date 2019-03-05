@@ -2,6 +2,7 @@
 #include "simdify.h"
 #include <algorithm>
 #include <iostream>
+#include "utility.h"
 
 RACE::Interface::Interface(int nrow_,int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_, RACE::PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, RACE::d2Method d2Type_):graph(NULL),nrow(nrow_),distance(dist_),d2Type(d2Type_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL),powerCalculator(NULL)
 {
@@ -356,12 +357,20 @@ void powerInitRowPtrFunc(int start, int end, int pow, void* arg)
      {
          printf("Something went wrong, I shouldnn' t be here\n");
      }
-#pragma omp parallel for schedule(static)
+
+     if( lock_memory( (char*)&(rowPtr[start]), (end-start)*sizeof(int) ) == -1 )
+     {
+         rowPtr[0] = 0*pow*nrow;
+         ERROR_PRINT("Memory locking didn't work");
+     }
+/*
+//#pragma omp parallel for schedule(static)
     for(int row=start; row<end; ++row)
     {
         rowPtr[row] = 0*pow*nrow;
         rowPtr[row+1] = 0*pow*nrow;
     }
+    */
 }
 
 void RACE::Interface::numaInitRowPtr(int *rowPtr_)
@@ -381,13 +390,37 @@ void RACE::Interface::numaInitRowPtr(int *rowPtr_)
 void powerInitMtxVecFunc(int start, int end, int pow, void* arg)
 {
     DECODE_ARG(arg);
-#pragma omp parallel for schedule(static)
-    for(int row=start; row<end; ++row)
+
+
+    if(pow == 0)
     {
-        for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
+        if( lock_memory( (char*)&(val[rowPtr[start]]), (rowPtr[end]-rowPtr[start])*sizeof(double) ) == -1)
         {
-            val[idx] = 0;
-            col[idx] = 0;
+            ERROR_PRINT("Memory locking didn't work");
+        }
+
+        if( lock_memory( (char*)&(col[rowPtr[start]]), (rowPtr[end]-rowPtr[start])*sizeof(int) ) == -1)
+        {
+            ERROR_PRINT("Memory locking didn't work");
+        }
+    }
+    if(x != NULL)
+    {
+        if( lock_memory( (char*)&(x[pow*nrow+start]), (end-start)*sizeof(double) ) == -1)
+        {
+            ERROR_PRINT("Memory locking didn't work");
+        }
+    }
+//#pragma omp parallel for schedule(static)
+/*    for(int row=start; row<end; ++row)
+    {
+        if(pow==0)
+        {
+            for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
+            {
+                val[idx] = 0;
+                col[idx] = 0;
+            }
         }
         if(x!=NULL)
         {
@@ -395,6 +428,7 @@ void powerInitMtxVecFunc(int start, int end, int pow, void* arg)
             x[(pow+1)*nrow+row] = 0;
         }
     }
+    */
 }
 
 void RACE::Interface::numaInitMtxVec(int *rowPtr_, int *col_, double *val_, double *x_, int power_)

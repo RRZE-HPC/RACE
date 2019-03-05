@@ -234,7 +234,7 @@ RACE_error Pin::pinApplication()
 
 void Pin::pinPowerThread(int nodes)
 {
-    int resetNestedState = omp_get_nested();
+/*    int resetNestedState = omp_get_nested();
     int resetDynamicState = omp_get_dynamic();
     //set nested parallelism
     //printf("setting nested\n");
@@ -255,5 +255,6 @@ void Pin::pinPowerThread(int nodes)
     //reset states
     omp_set_nested(resetNestedState);
     omp_set_dynamic(resetDynamicState);
+    */
 }
 

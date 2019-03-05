@@ -8,10 +8,13 @@ densemat::densemat(int nrows_, int ncols_, bool view_):nrows(nrows_), ncols(ncol
     {
         val = new double[nrows*ncols];
 
-#pragma omp parallel for
-        for(int i=0; i<nrows*ncols; ++i)
+        for(int j=0; j<ncols; ++j)
         {
-            val[i] = 0.0;
+#pragma omp parallel for schedule(static)
+            for(int i=0; i<nrows; ++i)
+            {
+                val[j*nrows+i] = 0.0;
+            }
         }
     }
 }
