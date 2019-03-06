@@ -67,7 +67,7 @@ The following external libraries are used in this paper:\GHcomm{some versions mi
 	\item[\COLPACK xxx] \cite{COLPACK} was used for pre-processing matrices via \acrshort{MC}.
 	\item[\SPMP xxx] \cite{SpMP} was used to perform \acrshort{RCM}.
 	\item[\METIS 5.1.0] \cite{METIS} was used for graph partitioning in \acrshort{ABMC}.
-	\item[Intel \MKL 19.0.2] \cite{MKL} was used for performing some reference sparse matrix computations.
+	\item[\acrshort{MKL} 19.0.2] \cite{MKL} was used for performing some reference sparse matrix computations.
 \end{description}
 All code was compiled with the Intel compiler in version 19.0.2 and the following compiler flags: {\tt -fno-alias -xHost -O3} for \IVB and {\tt -fno-alias -xCORE-AVX512 -O3} for \SKX. We did not enforce AVX-512 wide SIMD instructions on \SKX because this feature is of minor importance for the algorithms discussed here.
 
@@ -110,7 +110,9 @@ Since both kernels are closely related to the \acrshort{SpMV} kernel by structur
    	\label{eq:upper_performance}
    	P^{max}_\mathrm{kernel}  &= I_\mathrm{kernel}  \times b_S
   \end{align}
-  Due to the nature of our kernels and matrices having considerable amount of non-zeros our algorithms have considerably more loads compared to stores, therefore we choose $b_s$ to be the most optimistic (load-only) value from \cref{tab:test_bed}.
+  
+  Since bandwidth ($b_s$) depends on the ratio of load to store streams we present the model for both upper (load only) and lower bound (copy) bandwidth case.  
+ % Due to the nature of our kernels and matrices having considerable amount of non-zeros our algorithms have considerably more loads compared to stores, therefore we choose $b_s$ to be the most optimistic (load-only) value from \cref{tab:test_bed} if not mentioned otherwise.
   
    In the following discussions we choose the \acrshort{CRS} storage format for the serial \CAcomm{why only serial impl.} implementation and assume square matrices.
 

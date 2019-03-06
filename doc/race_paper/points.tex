@@ -5,11 +5,11 @@
 	
 	\item In this paper we test our method for both \DONE (\acrshort{GS}) and \DTWO (\acrshort{SymmSpMV} and \acrshort{KACZ}) dependencies, and analyze both exact (\acrshort{SymmSpMV}) and iterative kernels (\acrshort{GS}, \acrshort{KACZ}).
 	
-	\item For \DONE kernels we compare against the existing approaches of \acrshort{MC} \cite{MC}, \acrshort{ABMC} \cite{ABMC} and \MKL \cite{MKL} implementations.
+	\item For \DONE kernels we compare against the existing approaches of \acrshort{MC} \cite{MC}, \acrshort{ABMC} \cite{ABMC} and \acrshort{MKL} \cite{MKL} implementations.
 	
-	\item For \DTWO kernels along with comparing against existing approaches of \acrshort{MC} \cite{feast_mc} and implementations in \MKL \cite{MKL}, we also extend the \acrshort{ABMC} method for \DTWO coloring. To our knowledge this is the first paper which uses \acrshort{ABMC} method for \DTWO coloring.
+	\item For \DTWO kernels along with comparing against existing approaches of \acrshort{MC} \cite{feast_mc} and implementations in \acrshort{MKL} \cite{MKL}, we also extend the \acrshort{ABMC} method for \DTWO coloring. To our knowledge this is the first paper which uses \acrshort{ABMC} method for \DTWO coloring.
 	
-	\item Comparisons with \acrshort{SymmSpMV} (an exact kernel) enables us to solely study the performance behavior of \acrshort{RACE} compared with others, since here effects like convergence does not play a role. Overall we achieve a speed-up of $2-2.5 \times$ compared to \acrshort{MC} and \MKL implementations, while we are on par with \acrshort{ABMC} for small matrices and for large matrices we gain almost a factor of $1.5-2 \times$ benefit. 
+	\item Comparisons with \acrshort{SymmSpMV} (an exact kernel) enables us to solely study the performance behavior of \acrshort{RACE} compared with others, since here effects like convergence does not play a role. Overall we achieve a speed-up of $2-2.5 \times$ compared to \acrshort{MC} and \acrshort{MKL} implementations, while we are on par with \acrshort{ABMC} for small matrices and for large matrices we gain almost a factor of $1.5-2 \times$ benefit. 
 	
 	\item Comparisons with iterative kernels also puts into light the convergence behavior of the method. Results show that the convergence of \acrshort{RACE} is better than \acrshort{MC} and is competitive with \acrshort{ABMC} method.
 	
