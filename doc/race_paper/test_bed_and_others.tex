@@ -105,12 +105,12 @@ As mentioned before we restrict ourselves to matrices representing undirected gr
 We evaluate our methods by parallelizing two simple but important kernels showing \DTWO dependencies. In parallel \acrfull{SymmSpMV}, \DTWO coloring avoids the concurrent update of the same vector entries by different threads. In this case, the result is identical to the serial code (``exact kernel''). As an example of an iterative solver we have chosen \acrfull{SymmKACZ}. It reads and writes indirectly from the same vector, which leads to a change in convergence depending on the coloring scheme (``inexact kernel'').
 % {\GW To be done As an example for an iterative solver with distance2 dependency we have chosen the \acrshort{KACZ} ...}
 
-Since both kernels are closely related to the \acrshort{SpMV} kernel by structure and computational intensity, we start with a discussion of \acrshort{SpMV} and extend it towards \acrshort{SymmSpMV} and \acrshort{SymmKACZ} later. In all cases the aim is to derive realistic upper performance bounds, which can be estimated once the computational intensity and main memory bandwidth (\acrshort{b_s}, see \cref{tab:test_bed}) is known \cite{Williams_roofline} \ie
+Since both kernels are closely related to the \acrshort{SpMV} kernel by structure and computational intensity, we start with a discussion of \acrshort{SpMV} and extend it towards \acrshort{SymmSpMV} and \acrshort{SymmKACZ} later. In all cases the aim is to derive realistic upper performance bounds, which can be estimated once the computational intensity and main memory bandwidth (\acrshort{b_s}, see \cref{tab:test_bed}) is known \cite{Williams_roofline}, \ie
   \begin{align}
    	\label{eq:upper_performance}
    	P^{max}_\mathrm{kernel}  &= I_\mathrm{kernel}  \times b_S
   \end{align}
-  Due to the nature of our kernels and matrices having considerable amount of non-zeros our algorithms have considerably more loads compared to stores, therefore we choose $b_s$ to be the most optimistic (load-only) value from \cref{tab:test_bed}.
+Our kernels have considerably more loads compared to stores, therefore we choose $b_s$ to be the most optimistic (load-only) value from \cref{tab:test_bed}.
   
    In the following discussions we choose the \acrshort{CRS} storage format for the serial \CAcomm{why only serial impl.} implementation and assume square matrices.
 
@@ -136,11 +136,11 @@ I_\mathrm{\acrshort{SpMV}} (\alpha)= \frac{2}{8+4+8\alpha+\frac{20}{\acrshort{NN
 \end{equation}
 Here we assume that the matrix data  ($A[], col[]$), the LHS vector ($b[]$) and the row pointer information ($rowPtr[]$) are loaded only once from main memory, since these data structures are consecutively accessed. The intensity is calculated from the average cost of performing all computations required for one nonzero element of the matrix. Thus, contributions which are independent of the inner (short) loop are rescaled by $\acrshort{NNZR}$, which is the average number of nonzeros per row (i.e., the average length of the inner loop).
 
-The $8\alpha$ term quantifies the data traffic caused by accessing the right hand side (RHS) vector ($x[]$). The value of $\alpha$ depends on the matrix structure as well as on the RHS vector data set size compared to the largest cache size. The smallest value of $\alpha=\acrshort{NNZR}^{-1}$ is attained if the RHS vector is only loaded once from main memory to the cache and all subsequent accesses in the same \acrshort{SpMV} are cache hits. This limit is typically attained for matrices with low bandwidth (high access locality) or if the cache is large enough to hold the full RHS data during one \acrshort{SpMV}. The actual value of $\alpha$ can be determined experimentally by measuring the data traffic when executing the \acrshort{SpMV}; see~\cite{Moritz_sell} for more details.\footnote{In~\cite{Moritz_sell} the traffic for the row pointer was not accounted for, \ie the denominator increases by $\frac{4}{\acrshort{NNZR}}\,\BYTE$.}
+The $8\alpha$ term quantifies the data traffic caused by accessing the right hand side (RHS) vector ($x[]$). The value of $\alpha$ depends on the matrix structure as well as on the RHS vector data set size compared to the largest cache size. The smallest value of $\alpha=\acrshort{NNZR}^{-1}$ is attained if the RHS vector is only loaded once from main memory to the cache and all subsequent accesses in the same \acrshort{SpMV} are cache hits. This limit is typically observed for matrices with low bandwidth (high access locality) or if the cache is large enough to hold the full RHS data during one \acrshort{SpMV}. The actual value of $\alpha$ can be determined experimentally by measuring the data traffic when executing the \acrshort{SpMV}; see~\cite{Moritz_sell} for more details.\footnote{In~\cite{Moritz_sell} the traffic for the row pointer was not accounted for, \ie the denominator in (\ref{eq:SpMV_intensity}) is larger $\frac{4}{\acrshort{NNZR}}\,\BYTE$. This error is only significant when $\acrshort{NNZR}$ is small.}
 
 \begin{comment}
 \subsubsection{\SpMTV}
-Sparse Matrix Transpose Vector (\SpMTV) is a kernel having \DTWO dependency.
+Sparse Matrix Transpose Vector multiplication (\SpMTV) is a kernel with a \DTWO dependency.
 \begin{algorithm}[H]
 	\caption{SpMTV Find $b$ : $b=A'x$} 
 	\label{alg:SpMTV}
@@ -152,7 +152,7 @@ Sparse Matrix Transpose Vector (\SpMTV) is a kernel having \DTWO dependency.
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
-In comparison to SpMV operation, the kernel requires an extra scatter operation, which causes dependency. The arithmetic intensity of the kernel $I_\mathrm{\SpMTV}$ is given as:
+In comparison to \acrshort{SpMV} it requires scattered writes, which require attention in order to avoid race conditions when executing in parallel. The arithmetic intensity of the kernel $I_\mathrm{\SpMTV}$ is
 \begin{equation}
 \label{eq:SpMTV_intensity}
 I_\mathrm{\SpMTV} (\alpha)= \frac{2}{8+4+16*\alpha+\frac{8}{\acrshort{NNZR}}} \\
@@ -162,7 +162,7 @@ In ideal case data traffic for this kernel should remain close to that of SpMV, 
 
 \subsubsection{\acrshort{SymmSpMV}}
 \label{sect:SymmSpmv}
-\acrfull{SymmSpMV} exploits the symmetry in the underlying matrix to reduce storage size for matrix data and reduce overall memory traffic by  operating on the upper (or lower) half of the matrix. Thus for every non-zero matrix entry we need to update two entries in the LHS vector ($b[]$) as shown in~\cref{alg:SymmSpMV}.
+\acrfull{SymmSpMV} exploits the symmetry of the matrix ($A_{ij}=A_{ji}$) to reduce storage size for matrix data and reduce the overall memory traffic by operating on the upper (or lower) half of the matrix only. Thus for every non-zero matrix entry we need to update two entries in the LHS vector ($b[]$) as shown in~\cref{alg:SymmSpMV}.
 \begin{algorithm}[H]
 	\caption{SymmSpMV Find $b$ : $b=Ax$, where $A$ is an upper triangular matrix} 
 	\label{alg:SymmSpMV}
@@ -177,15 +177,15 @@ In ideal case data traffic for this kernel should remain close to that of SpMV, 
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
-In line with the discussion above the computational intensity of \acrshort{SymmSpMV} can be calculated as:
+In line with the discussion above, the computational intensity of \acrshort{SymmSpMV} is
 \begin{align}
 \label{eq:SymmSpMV_intensity}
-I_\mathrm{\acrshort{SymmSpMV}} (\alpha) &= \frac{4}{8+4+24*\alpha+\frac{4}{\acrshort{SymmNNZR}}} \frac{Flop}{Byte}\\
+I_\mathrm{\acrshort{SymmSpMV}} (\alpha) &= \frac{4}{8+4+24*\alpha+\frac{4}{\acrshort{SymmNNZR}}} \frac{\FLOP}{\BYTE}\cma\\
 \label{eq:NNZR_symm}
-\text{ where,  } \acrshort{SymmNNZR} &= (\acrshort{NNZR}-1)/2 + 1
+\text{ where  } \acrshort{SymmNNZR} &= (\acrshort{NNZR}-1)/2 + 1\eos
 \end{align}
 
-For a given non-zero matrix element ($8~\BYTE + 4~\BYTE$) of the triangular matrix twice the amount of Flops ($4~\FLOP$)  are performed. In addition we have indirect access to the LHS vector (read and write) which increases the $\alpha$ contribution by $3\times$. \sout{The only term left scaling  with \acrshort{SymmNNZR}} \CAcomm{The remaining term scaled with \acrshort{SymmNNZR}} (number of non-zeros per row in upper triangular part of the matrix) is the consecutively accessed row pointer. Please note, the $\alpha$ value for \acrshort{SpMV} and \acrshort{SymmSpMV} may be different (even for the same matrix and the same compute device) as in the latter case the two vectors are accessed irregularly and compete for the same amount of cache. Thus we can assume that the $\alpha$ value measured for \acrshort{SpMV} ($\alpha_\mathrm{\acrshort{SpMV}}$) can be considered as a lower bound for \acrshort{SymmSpMV}. As performance is the product of computational intensity and the main memory bandwidth (see \cref{eq:upper_performance}) this approach provides an upper performance bound for \acrshort{SymmSpMV}.
+For a given non-zero matrix element, $4~\FLOP$, i.e., twice the amount of work than in \acrshort{SpMV} is performed. In addition we have indirect access to the LHS vector (read and write) which triples the traffic contribution quantified by $\alpha$\@. The only term scaled with \acrshort{SymmNNZR} (number of non-zeros per row in the upper triangular part of the matrix) is the row pointer. Note that the $\alpha$ for \acrshort{SpMV} and \acrshort{SymmSpMV} may be different even for the same matrix and the same compute device, as in the latter case the two vectors are accessed irregularly and compete for the same amount of cache. Thus we can assume that the $\alpha$ value measured for \acrshort{SpMV} ($\alpha_\mathrm{\acrshort{SpMV}}$) is a lower bound for \acrshort{SymmSpMV}. Since an upper bound for performance is the product of computational intensity and the main memory bandwidth (see \cref{eq:upper_performance}), this approach provides an upper performance bound for \acrshort{SymmSpMV}.
 \begin{comment}
  for a given matrix structure:
  \begin{align}
@@ -195,7 +195,9 @@ P^{max}_\mathrm{\acrshort{SymmSpMV}}  &= I_\mathrm{\acrshort{SymmSpMV}} (\alpha_
 As most matrices have a considerable number of non-zeros per row, we chose $b_S$ to be the optimistic (load-only) value  from~\cref{tab:test_bed}.
 \end{comment}
 
-Comparing~\cref{eq:SymmSpMV_intensity} and~\cref{eq:SpMV_intensity} it is obvious that the perfect speed-up of 2$\times$ when using \acrshort{SymmSpMV} instead of \acrshort{SpMV} is only attainable in the limit of small $\alpha$, \ie for regularly structured matrices or low bandwidth matrices. Considering the large pre-factor of the $\alpha$ contribution, any implementation of \acrshort{SymmSpMV} must aim at ensuring high data locality. The indirect update of the LHS has also large impact on parallelization strategy as two rows which have a non-zero in the same column can not be computed in parallel. If using a graph based approach to this problem this is equivalent to the constraint that only vertices can be computed in parallel which have at least distance 2.
+Comparing~\cref{eq:SymmSpMV_intensity} and~\cref{eq:SpMV_intensity} it is obvious that the perfect speed-up of 2$\times$ when using \acrshort{SymmSpMV} instead of \acrshort{SpMV} is only attainable in the limit of small $\alpha$\@. \GHcomm{deleted the following half-sentence; neither low bandwidth nor regular structure guarantee low alpha}
+%, \ie for regularly structured matrices or low-bandwidth matrices.
+Considering the large prefactor of the $\alpha$ contribution, any implementation of \acrshort{SymmSpMV} must aim at ensuring high data locality. The indirect update of the LHS has also large impact on parallelization strategy as two rows which have a non-zero in the same column can not be computed in parallel. In a graph-based approach to this problem this is equivalent to the constraint that only vertices can be computed in parallel which have at least distance two.
 
 \begin{comment}
 \subsubsection{\GS and \SYMMGS}
@@ -227,13 +229,14 @@ In general for most of the algorithms one is interested in symmetric operator th
 
 
 \subsubsection{\acrshort{KACZ} and \acrshort{SymmKACZ}}
-The iterative Kaczmarz solver is a row-projection approach which has a data dependency. The basic equation of this iterative solver for solving $x$ in $Ax = b$, is shown in \cref{eq:KACZ}. The method computes a new approximation $x^{k+1}$ to the unknown $x$ in each iteration $k$ by projecting  the current iterate $x^{k}$ to the $i$-th linear equation. 
+The iterative Kaczmarz solver is a row-projection algorithm with a data dependency.
+%The update step for solving $x$ in $Ax = b$ is shown in \cref{eq:KACZ}.
+A new approximation $x^{k+1}$ for solving $x$ in $Ax = b$ is obtained by projecting  the current iterate $x^{k}$ to the $i$-th linear equation $A_i$: 
 \begin{equation}
 	\label{eq:KACZ}
-	x^{k+1} = x^{k} + \frac{b_i - \langle A_i, x_k \rangle}{\|A_i\|^2} \bar{A_i}
+	x^{k+1} = x^{k} + \frac{b_i - \langle A_i, x_k \rangle}{\|A_i\|^2} \bar{A_i}\eos
 \end{equation}
-
-The basic compute kernel (\acrshort{KACZ}) is  presented in~\cref{alg:KACZ}. For its parallelization one typically uses a \DTWO coloring of the graph representing the matrix. As this does not lead to the exact result as for the serial execution of the kernel, the actual coloring scheme may impact convergence of iterative scheme.
+The basic compute kernel (\acrshort{KACZ}) is  presented in~\cref{alg:KACZ}. For its parallelization one typically uses a \DTWO coloring of the graph representing the matrix. As this does not lead to the same result as for the serial execution of the kernel, the actual coloring scheme may impact the convergence of the iterative scheme.
 
 \begin{algorithm}[H]
 	\caption{KACZ kernel used for solving $Ax=b$; outer iteration loop not shown} 
@@ -253,13 +256,15 @@ The basic compute kernel (\acrshort{KACZ}) is  presented in~\cref{alg:KACZ}. For
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
-From a computational perspective the kernel is closely related to \acrshort{SpMV} and \acrshort{SymmSpMV} but performs an in-place indirect vector update ($x[col[]]$). This vector update is the only contribution to the $\alpha$ value (leading to a pre-factor of $16$) and the computational intensity can be calculated as follows:
+From a computational perspective the kernel is closely related to \acrshort{SpMV} and \acrshort{SymmSpMV} but performs an in-place indirect vector update ($x[col[]]$). This vector update is the only contribution to $\alpha$, so the computational intensity is\footnote{The computation of $rownorm$ in each row can be avoided if the system  (matrix $A[]$ and vector $b[]$) is pre-scaled, which reduces the numerator from 6 to 4 \FLOP. Note, however, that the time to solution will remain the same, since this kernel is usually memory bound.}
 \begin{equation}
 \label{eq:KACZ_intensity}
-I_\mathrm{KACZ} (\alpha)\footnote{The computation of $rownorm$ of each row of the matrix can be avoided if the system  (matrix $A[]$ and vector $b[]$) is pre-scaled, this reduces the numerator from 6 to 4 \FLOP. But note that the time to solution will remain same, since this kernel is predominantly memory bound.} =  \frac{6}{8+4+16*\alpha+\frac{12}{\acrshort{NNZR}}} \frac{Flop}{Byte} \\
+I_\mathrm{KACZ} (\alpha) =  \frac{6}{8+4+16*\alpha+\frac{12}{\acrshort{NNZR}}} \frac{\FLOP}{\BYTE} \eos
 \end{equation}
-Having two short inner loops does not impact the overall memory traffic (and also the computational intensity) as the data can be held in inner cache levels between the two inner loops. We can also ignore the impact of the divide operation as it is only done once per row and its cost is negligible for main memory bandwidth or latency bound scenarios.  
+Having two short inner loops does not impact the overall memory traffic (and also the computational intensity) as the data can be kept in some inner cache  between the two inner loops. We can also ignore the impact of the divide operation as it is only done once per row and its cost is negligible for main memory bandwidth- or latency-bound scenarios.  
 
-Most iterative algorithms use a symmetric operator, so called symmetric Kaczmarz (\acrshort{SymmKACZ}), where the forward sweep shown in \cref{alg:KACZ} is followed by a backward sweep, where the outermost loop is traversed in reverse order  \ie { \tt row=nrows:-1:1} in~\cref{alg:KACZ}. The intensity of \acrshort{SymmKACZ} remains same as of \acrshort{KACZ}. 
+A variant of the algorithm called symmetric Kaczmarz (\acrshort{SymmKACZ}) uses a symmetric operator: The  forward sweep shown in \cref{alg:KACZ} is followed by a backward sweep, in which the outermost loop is traversed in reverse order.
+%\ie { \tt row=nrows:-1:1} in~\cref{alg:KACZ}.
+This does not change the computational intensity.
 
 %Symmetric variant of \acrshort{KACZ} is denoted by \acrshort{SymmKACZ}, and similar to \SYMMGS this requires forward sweep followed by a backward sweep. 
