@@ -60,15 +60,6 @@ The performance model is constructed using \cref{eq:upper_performance} and the i
 From the model and measurements it is well clear that even though \acrshort{SymmSpMV} requires theoretically only half the memory data volume it is not always the case we achieve two times the performance even for well memory-bound cases. This is due to the bigger pre-factor of the $\alpha$ term for \acrshort{SymmSpMV} compared to \acrshort{SpMV} ($24$ vs $8$ respectively).
 
 
-\begin{table}[ht]
-	\footnotesize
-	\caption{$\alpha$ values of SpMV measured using \LIKWID,  $\alpha_{SKX}$ and $\alpha_{IVB}$ correspond to $\alpha$ values on \SKX and \IVB respectively.}
-	\label{table:alpha_values}
-	\begin{center}
-		\input{pics/results/alpha_table_generator/table.tex}
-	\end{center}
-\end{table}
-
 Having well understood the performance of \acrshort{RACE} we now compare \acrshort{SymmSpMV} benchmark with the other methods. Here we will compare the performance with coloring methods \acrshort{MC} and \acrshort{ABMC} that were previously discussed and also with the widely used math numerical library \acrshort{MKL}.  We use the same libraries and setup as mentioned in  \cref{Sec:motivation} for pre-processing the matrix with \acrshort{MC} and \acrshort{ABMC} methods. The methods are then executed with the same inner kernel \acrshort{SymmSpMV} as used for \acrshort{RACE}.  
 
 \begin{figure}[thbp]
