@@ -174,7 +174,7 @@ In ideal case data traffic for this kernel should remain close to that of SpMV, 
 \subsubsection{\acrshort{SymmSpMV}}
 \label{sect:SymmSpmv}
 
-\acrfull{SymmSpMV} exploits the symmetry of the matrix ($A_{ij}=A_{ji}$) to reduce storage size for matrix data and reduce the overall memory traffic by operating on the upper (or lower) half of the matrix only. Thus for every non-zero matrix entry we need to update two entries in the LHS vector ($b[]$) as shown in~\cref{alg:SymmSpMV}.
+\Acrfull{SymmSpMV} exploits the symmetry of the matrix ($A_{ij}=A_{ji}$) to reduce storage size for matrix data and reduce the overall memory traffic by operating on the upper (or lower) half of the matrix only. Thus for every non-zero matrix entry we need to update two entries in the LHS vector ($b[]$) as shown in~\cref{alg:SymmSpMV}.
 \begin{algorithm}[H]
 	\caption{SymmSpMV Find $b$ : $b=Ax$, where $A$ is an upper triangular matrix} 
 	\label{alg:SymmSpMV}

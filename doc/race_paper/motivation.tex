@@ -90,16 +90,16 @@ red dotted line in \cref{fig:motivation_data}). Of course this
 effect strongly depends on the matrix structure, the matrix size and
 the cache size.
         
-\acrfull{ABMC} tries to preserve data locality by first partitioning
+\Acrfull{ABMC} tries to preserve data locality by first partitioning
 the entire matrix into blocks of specified size and then
 applying \acrlong{MC} to these blocks. Threads then work in parallel
-between blocks of the same color. The blocksize for \acrshort{ABMC} is
+between blocks of the same color. Along the lines of \cite{Park_HPCG} 
+we use \METIS \cite{METIS} to partition the matrix into blocks, and COLPACK 
+for \acrlong{MC}. The size of blocks for \acrshort{ABMC} is
 determined by a parameter scan (range 4 \ldots 128,
-see~\cite{ABMC})\@. \GHcomm{Is performance data for this case actually shown?} As stated above, the timing for the performance measurements
-excludes pre-processing and the parameter search. Along the lines
-of \cite{Park_HPCG} we use \METIS \cite{METIS} to partition the matrix
-into blocks, and COLPACK for \acrlong{MC}.  This method reduces the data
-traffic (see \cref{fig:motivation_data}) as there is better data
+see~\cite{ABMC})\@. As stated above, the timing for the performance measurements
+excludes pre-processing and the parameter search. This method reduces the 
+data traffic (see \cref{fig:motivation_data}) as there is better data
 locality within a block. Consequently, the performance improves
 over plain \acrshort{MC} (see \cref{fig:motivation_symm_spmv}). However,
 we are far off the performance model prediction of 8.95~\GF. In
