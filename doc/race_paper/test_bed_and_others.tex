@@ -138,11 +138,11 @@ I_\mathrm{\acrshort{SpMV}} (\alpha)= \frac{2}{8+4+8\alpha+\frac{20}{\acrshort{NN
 \end{equation}
 Here we assume that the matrix data  ($A[], col[]$), the LHS vector ($b[]$) and the row pointer information ($rowPtr[]$) are loaded only once from main memory, since these data structures are consecutively accessed. The intensity is calculated from the average cost of performing all computations required for one nonzero element of the matrix. Thus, contributions which are independent of the inner (short) loop are rescaled by $\acrshort{NNZR}$, which is the average number of nonzeros per row (i.e., the average length of the inner loop).
 
-The $8\alpha$ term quantifies the data traffic caused by accessing the right hand side (RHS) vector ($x[]$). The value of $\alpha$ depends on the matrix structure as well as on the RHS vector data set size compared to the largest cache size. The minimum value of $\alpha=\acrshort{NNZR}^{-1}$ is attained if the RHS vector is only loaded once from main memory to the cache and all subsequent accesses in the same \acrshort{SpMV} are cache hits. This limit is typically attained for matrices with low bandwidth (high access locality) or if the cache is large enough to hold the full RHS data during one \acrshort{SpMV}. The actual value of $\alpha$ can be determined experimentally by measuring the data traffic when executing the \acrshort{SpMV}; see~\cite{Moritz_sell} for more details.\footnote{In~\cite{Moritz_sell} the traffic for the row pointer was not accounted for, \ie the denominator increases by $\frac{4}{\acrshort{NNZR}}\,\BYTE$.} The minimum value of $\alpha$ ($\acrshort{NNZR}^{-1}$) together with the corresponding intensity value as well as the measured values (denoted by $\alpha_\mathrm{\acrshort{SpMV}}$) for all matrices on the two processor chips are given in \cref{table:alpha_values}.
+The $8\alpha$ term quantifies the data traffic caused by accessing the right hand side (RHS) vector ($x[]$). The value of $\alpha$ depends on the matrix structure as well as on the RHS vector data set size compared to the largest cache size. The minimum value of $\alpha=\acrshort{NNZR}^{-1}$ is attained if the RHS vector is only loaded once from main memory to the cache and all subsequent accesses in the same \acrshort{SpMV} are cache hits. This limit is typically attained for matrices with low bandwidth (high access locality) or if the cache is large enough to hold the full RHS data during one \acrshort{SpMV}. The actual value of $\alpha$ can be determined experimentally by measuring the data traffic when executing the \acrshort{SpMV}; see~\cite{Moritz_sell} for more details.\footnote{In~\cite{Moritz_sell} the traffic for the row pointer was not accounted for, \ie the denominator increases by $\frac{4}{\acrshort{NNZR}}\,\BYTE$.} The optimal (minimum) value of $\alpha$ ($\alpha_{opt} = \acrshort{NNZR}^{-1}$) together with the corresponding intensity value as well as the measured values (denoted by $\alpha_\mathrm{\acrshort{SpMV}}$) for all matrices on the two processor chips are given in \cref{table:alpha_values}.
 
-\begin{table}[ht]
+\begin{table}[thbp]
 	\footnotesize
-	\caption{$\alpha$ values of SpMV measured using \LIKWID,  $\alpha_{SKX}$ and $\alpha_{IVB}$ correspond to $\alpha$ values on \SKX and \IVB respectively.}
+	\caption{Optimal $\alpha$ value ($\alpha_{opt}$) and corresponding intensity of \acrshort{SpMV} ($I_{\acrshort{SpMV}}(\alpha_{opt})$)  along with $\alpha$ values of SpMV measured using \LIKWID.  $\alpha_{SKX}$ and $\alpha_{IVB}$ correspond to measured $\alpha$ values on \SKX and \IVB respectively.}
 	\label{table:alpha_values}
 	\begin{center}
 		\input{pics/results/alpha_table_generator/table.tex}
@@ -174,7 +174,7 @@ In ideal case data traffic for this kernel should remain close to that of SpMV, 
 \subsubsection{\acrshort{SymmSpMV}}
 \label{sect:SymmSpmv}
 \acrfull{SymmSpMV} exploits the symmetry in the underlying matrix to reduce storage size for matrix data and reduce overall memory traffic by  operating on the upper (or lower) half of the matrix. Thus for every non-zero matrix entry we need to update two entries in the LHS vector ($b[]$) as shown in~\cref{alg:SymmSpMV}.
-\begin{algorithm}[H]
+\begin{algorithm}[tbp]
 	\caption{SymmSpMV Find $b$ : $b=Ax$, where $A$ is an upper triangular matrix} 
 	\label{alg:SymmSpMV}
 	\begin{algorithmic}[1]
@@ -246,7 +246,7 @@ The iterative Kaczmarz solver is a row-projection approach which has a data depe
 
 The basic compute kernel (\acrshort{KACZ}) is  presented in~\cref{alg:KACZ}. For its parallelization one typically uses a \DTWO coloring of the graph representing the matrix. As this does not lead to the exact result as for the serial execution of the kernel, the actual coloring scheme may impact convergence of iterative scheme.
 
-\begin{algorithm}[H]
+\begin{algorithm}[tbp]
 	\caption{KACZ kernel used for solving $Ax=b$; outer iteration loop not shown} 
 	\label{alg:KACZ}
 	\begin{algorithmic}[1]
