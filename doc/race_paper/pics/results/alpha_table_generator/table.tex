@@ -1,6 +1,9 @@
 \begin{tabular}{|l|l|S[round-mode=places,round-precision=4]|S[round-mode=places,round-precision=4]|S[round-mode=places,round-precision=4]|S[round-mode=places,round-precision=4]|}
 \toprule
-{Index} & {Matrix name} &  {$\alpha_{opt}$} & {$I_{\acrshort{SpMV}}(\alpha_{opt})$} & {$\alpha_{SKX}$} & {$\alpha_{IVB}$}  \\
+\multirow{2}{*}{Index} & \multirow{2}{*}{Matrix name} & \multicolumn{3}{c|}{$\alpha_{SpMV}$} & {$I_{\acrshort{SpMV}}(\alpha_{SpMV})$} \\
+%\midrule
+ \cline{3-6}
+ & &  {optimal} & {SKX} & {IVB} & {optimal}  \\
 \midrule
 {1}& {	crankseg\_1                }	& 0.004974840341951422	& 0.16475420629866486	& 0.0099	& 0.017876	\\
 {2}& {	ship\_003                  }	& 0.015054104375856307	& 0.16101095659221026	& 0.029662	& 0.039038	\\
