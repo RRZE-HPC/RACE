@@ -13,18 +13,90 @@ Our method has been implemented and consolidated into a library named \acrshort{
 \subsection{Benchmark - \acrshort{SymmSpMV}}
 Sparse matrix vector multiplication is a frequently used operator in plenty of sparse numerical algorithms and is commonly the most time consuming one. This simple benchmark performs multiplication of a symmetric matrix with a vector, and involves a direct use of the \acrshort{SymmSpMV} kernel.  In this benchmark we store only the upper triangular part of the symmetric matrix and perform the full matrix vector multiplication as shown in \cref{sect:SymmSpmv}. 
 
-The main purpose of the benchmark is to study the performance quality of the \acrshort{RACE} library and make a solid performance-only comparison between different methods due to the exact nature of the \acrshort{SymmSpMV} kernel.
+The main purpose of this benchmark is to study the performance quality of the \acrshort{RACE} library and make a solid performance-only comparison between different methods, which is made possible due to the exact nature of the \acrshort{SymmSpMV} kernel.
 
 \subsubsection{Test setup}
-\Inorder to have well reproducible result and accurate timing measurements it is necessary to have multiple runs of the kernel. But running the same matrix vector multiplication over the same vectors could lead to caching of the vectors if the sizes are small enough. However this effect does not appear in actual practice since normally a matrix vector multiplication is followed by different calls to other kernels (commonly Level 1 BLAS) that in addition use other helper data leading to eviction of the cached vectors. To replicate this behavior we use two ring buffers holding vectors of size \acrshort{nrows}. Number of vectors in the buffer is chosen such that the combined size of both the ring buffer is \atleast 100 \MB, which is \atleast two times bigger than 
-the combined cache sizes of both the architectures. The \acrshort{SymmSpMV} kernel is then run over these two buffers taking one vector each as input ($x$) and output vector ($b$) for the matrix vector operation ($b=Ax$). The kernel is run two times through all of the elements in this ring buffer and the mean performance of the runs is taken into account.
+\Inorder to have well reproducible result and accurate timing measurements it is necessary to have multiple runs of the kernel. But running the matrix vector multiplication over the same vectors could lead to caching of the vectors if the sizes are small enough. However this effect does not appear in actual practice since normally a matrix vector multiplication is followed by different calls to other kernels (commonly Level 1 BLAS) that in addition use other helper data leading to eviction of the cached vectors. To replicate this behavior we use two ring buffers holding vectors of size \acrshort{nrows}. Number of vectors in the buffer is chosen such that the combined size of both the ring buffer is \atleast 100 \MB, which is \atleast two times bigger than 
+the combined cache size for both the architectures. The \acrshort{SymmSpMV} kernel is then run over these two buffers taking one vector each as input ($x$) and output vector ($b$) for the matrix vector operation ($b=Ax$) as shown in \cref{fig:test_setup_symm_spmv}. The kernel is run two times through all of the elements in this ring buffer and the mean performance of the runs is taken into account.
 
 \begin{figure}[tbhp]
+	\label{fig:test_setup_symm_spmv}
 	\centering
 	\includegraphics[scale=0.5]{pics/results/symm_spmv_setup/test_setup}
-	\caption{Benchmark \acrshort{SymmSpMV} test setup}
+	\caption{Benchmark \acrshort{SymmSpMV} test setup. \CAcomm{Maybe can ommit this fig.}}
 \end{figure}
+
+
+\subsubsection{Results}
+The problems with existing approaches were briefly discussed in \cref{Sec:motivation} and we observed that the performance achieved with other methods were far from our predictions using performance model. 
+
+ \begin{figure}[thbp]
+ 	\centering
+ 	% 	\subfloat[\acrshort{SpMV}]{\label{fig:motivation_spmv}\includegraphics[width=0.26\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_spmv}}
+ 	%	\hspace{1em}
+ 	\subfloat[SymmSpMV]{\label{fig:motivation_symm_spmv_w_RACE}\includegraphics[width=0.38\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_symm_spmv_w_RACE}}
+ 	\hspace{1em}
+ 	\subfloat[Data Traffic]{\label{fig:motivation_data_w_RACE}\includegraphics[width=0.4\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_data_w_RACE}}
+ 	\caption{\Cref{fig:motivation_symm_spmv_w_RACE} performance of \acrshort{SymmSpMV} with \acrshort{MC} and \acrshort{ABMC} compared to \acrshort{RACE} performance on a socket of \IVB. The roofline performance model and performance of normal \acrshort{SpMV} kernel is plotted for reference. \Cref{fig:motivation_data_w_RACE} average data traffic per non-zero entry ($\acrshort{NNZR}$) of the full matrix as measured with \LIKWID for all cache levels and main memory.}
+ 	\label{fig:motivation_w_RACE}
+ \end{figure}
+
+\begin{figure}[thbp]
+	\centering
+	\subfloat[\IVB]{\label{fig:spmv_vs_symm_spmv_ivy}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV/perf}}
+	\hspace{1em}
+	\subfloat[\SKX]{\label{fig:spmv_vs_symm_spmv_skx}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV/perf}}
+	\caption{Performance of \acrshort{SymmSpMV} executed with \acrshort{RACE} compared to performance model. \acrshort{SpMV} performance obtained using \acrshort{MKL} library is also shown for reference.}
+	\label{fig:SpMV_vs_SymmSpMV}
+\end{figure}
+
+We repeat the same scaling experiment on \emph{Spin-26} matrix with the \acrshort{RACE} method for comparison. \Cref{fig:motivation_w_RACE} shows the results and the significant speedup  of \acrshort{RACE} (more than a factor of 3$\times$) compared to other methods can be easily observed. It is even more important to note that with the \acrshort{RACE} method the attained performance is close to the predictions indicating the optimality of the method. 
+
+\Inorder to further verify the quality of our method we compare the results of this benchmark against the performance predictions for all the test matrices (see \cref{table:bench_matrices}). \Cref{fig:spmv_vs_symm_spmv_ivy,fig:spmv_vs_symm_spmv_skx} show this results for \IVB and \SKX architecture respectively. 
+
+The performance model is constructed using \cref{eq:upper_performance} and the intensity equation seen in \cref{eq:SymmSpMV_intensity}, the $\alpha$ value of the reference \acrshort{SpMV} kernel is taken into account. The measured $\alpha$ values for the matrices and the two architectures are shown in \cref{table:alpha_values}. The plots show close agreement of the \acrshort{RACE} performance and the predictions. Even though the performance model should give upper limit for performance there are two outliers on \SKX architectures namely \emph{pwtk} and \emph{parabolic\_fem}, which as discussed previously in \cref{subsec:param_analysis} is due to the fact that these matrices are small enough to fit in the cache of this architecture. The performance of \emph{offshore} matrix reflects same behavior as \emph{crankseg-1} due to the load imbalance problem as discussed earlier.
+
+
+From the model and measurements it is well clear that even though \acrshort{SymmSpMV} requires theoretically only half the memory data volume it is not always the case we achieve two times the performance even for well memory-bound cases. This is due to the bigger pre-factor of the $\alpha$ term for \acrshort{SymmSpMV} compared to \acrshort{SpMV} ($24$ vs $8$ respectively).
+
+
+Having well understood the performance of \acrshort{RACE} we now compare \acrshort{SymmSpMV} benchmark with the other methods. Here we will compare the performance with coloring methods \acrshort{MC} and \acrshort{ABMC} that were previously discussed and also with the widely used math numerical library \acrshort{MKL}.  We use the same libraries and setup as mentioned in  \cref{Sec:motivation} for pre-processing the matrix with \acrshort{MC} and \acrshort{ABMC} methods. The methods are then executed with the same inner kernel \acrshort{SymmSpMV} as used for \acrshort{RACE}.  
+
+\begin{figure}[thbp]
+	\centering
+	\subfloat[\IVB]{\label{fig:symm_spmv_ivy}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx/perf}}
+	\hspace{1em}
+	\subfloat[\SKX]{\label{fig:symm_spmv_skx}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx/perf}}
+	\caption{Comparison of \acrshort{SymmSpMV} performance obtained using various implementations. Matrices arranged in increasing number of rows (\acrshort{nrows}).}
+	\label{fig:symm_spmv}
+\end{figure}
+
+For \acrshort{MKL} we use two available implementations that does \acrshort{SymmSpMV} operation. The first one is the \texttt{mkl\_cspblas\_dcsrsymv} kernel where it directly computes the product of the given sparse triangular matrix and a vector. However this kernel has been deprecated from \acrshort{MKL}.v.18 and a newer routine under Inspector-executor Sparse BLAS is to be used. In the newer method user initially provide the matrix along with hints (symmetry) and operations to be carried out. Then the optimize routine is called where the matrix could be pre-processed based on the hint and the required operation. Finally the kernel \texttt{mkl\_sparse\_d\_mv} is executed on this optimized matrix to perform the matrix vector multiplication. By this method one has no guarantee what kernel the library uses under the hood, for example the library can even change the data storage format internally and use respective kernel.
+
+Results of these comparisons are shown in \cref{fig:symm_spmv}. The matrices are arranged according to ascending number of rows (\acrshort{nrows}). Clearly in all the cases \acrshort{RACE} has an upper hand compared to other methods. \acrshort{ABMC} method comes next followed by \acrshort{MKL} and \acrshort{MC} methods. Speedup gained by the \acrshort{RACE} method is higher for matrices towards right since the dimension \acrshort{nrows} is large such that the whole right hand side vector $x$ do not fit into cache anymore, as a result of this the data locality of the method plays a more important role for these matrices towards right as it directly impacts memory traffic. Even though both \acrshort{MKL} versions do not have an on par performance compared to \acrshort{RACE} it is interesting to note that the Inspector-Executor version of \acrshort{MKL} (MKL-IE) has exactly the same performance of a general MKL-\acrshort{SpMV} as seen previously in \cref{fig:SpMV_vs_SymmSpMV}. This we believe is due to the fact that internally the library decides the implementation of \acrshort{SymmSpMV}  is not beneficial and switches to \acrshort{SpMV} kernel. We further validated this by measuring the memory data volume using \LIKWID, which shows almost twice the data volume compared to \acrshort{SymmSpMV}.
+
+The overall speedup of \acrshort{RACE} over the next best performing variant \acrshort{ABMC} is $1.5\times$ and $1.65 \times$ for \IVB and \SKX respectively, whereas for some matrices the speed-up is higher than $3 \times$. Compared to other methods we constantly have a speedup of more than $2.5 - 3 \times$ in most of the cases. 
+
+\subsection{Benchmark - \acrshort{SymmKACZ}}
+Kaczmarz solver is a stable and very robust iterative solver, but the convergence of the solver for many cases are very slow. Therefore in most of the scientific simulations a conjugate gradient (CG) accelerated variant of the Kaczmarz solver known as CGMN \cite{CGMN} is used. The CGMN solver has been found to be very efficient and robust solver for a wide range of linear systems \cite{CGMN_gordon}. In this benchmark we test the CGMN solver with different parallel implementations of \acrshort{SymmKACZ} kernel. 
+
+The main purpose of this benchmark is to study an inexact iterative kernel where the convergence depends on the parallelization scheme used. The benchmark compares performance, convergence and time to solution of different coloring methods.
+
+\subsubsection{Test setup}
+The CGMN algorithm is implemented as shown in \cite{CGMN_gordon}. The algorithm involves couple of BLAS-1 calls that constitute less than 10\% of total runtime and the time intensive \acrshort{SymmKACZ} kernel. The linear system of equation to be solved is setup such that the exact solution ($x$) is a pure diagonal vector with all elements set to 10 (\ie [10,10,10,...]).
+
+With the change in order of rows to be calculated (for \eg by permutation) the convergence rate of \acrshort{SymmKACZ} is changed, thereby that of CGMN. \Inorder to fix the baseline convergence we first run a serial version of CGMN algorithm for 100 iterations without using any coloring schemes. The $\ell_2$ norm of the error vector is then computed and fixed as the target error  norm. The parallel versions of the algorithm are then run on the same linear system until it reaches the target error norm. The runtime, mean performance and number of iterations to achieve the target are noted for comparisons.
+
+
+\subsubsection{Results}
+
 {\GW Will continue here...}
+
+
+\begin{comment}
+\subsection{\acrshort{RACE} performance in comparison to SpMV}
+
+
 
 \subsection{Test setup}
 In the following we present the performance and convergence results obtained using the library, and compare it against state of art methods. \acrshort{SymmSpMV} and \acrshort{SymmKACZ} are chosen as representative benchmark kernels. Hardware and matrices as described in \cref{Sec:test_bed} is used for the following benchmarks. As mentioned in \cref{Sec:param_study} parameter $\epsilon_s$ is set to 0.8 and \acrshort{RCM} is used in level construction stage. The matrix is pre-processed with \acrshort{RCM} for all the cases (even for \acrshort{SpMV}). \SPMP \cite{SpMP} library was used to do this \acrshort{RCM} pre-processing.
@@ -36,23 +108,7 @@ For \acrshort{SymmKACZ} there are two use cases. In one it is used as a plain it
 
 \subsection{Performance and comparisons}
 
-\begin{figure}[thbp]
-	\centering
-	\subfloat[Comparison of \acrshort{SpMV} and \acrshort{RACE} \acrshort{SymmSpMV} on 1 socket of \IVB]{\label{fig:spmv_vs_symm_spmv_ivy}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV/perf}}
-	\hspace{1em}
-	\subfloat[\acrshort{SymmSpMV} on 1 socket of \SKX]{\label{fig:spmv_vs_symm_spmv_skx}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV/perf}}
-	\caption{\acrshort{SpMV} vs RACE \acrshort{SymmSpMV} performance}
-	\label{fig:SpMV_vs_SymmSpMV}
-\end{figure}
-\subsection{\acrshort{RACE} performance in comparison to SpMV}
-\begin{table}[ht]
-	\footnotesize
-	\caption{$\alpha$ values of SpMV measured using \LIKWID for both architectures }
-	\label{table:alpha_values}
-	\begin{center}
-		\input{pics/results/alpha_table_generator/table.tex}
-	\end{center}
-\end{table}
+
 
 \Cref{fig:SpMV_vs_SymmSpMV} provides performance of SymmSpMV compared to SpMV. Roofline \cite{Williams_roofline} model for each of the matrices is also shown in the figure. The model takes into account the alpha factor, which is derived based on SpMV performance.
 
@@ -64,16 +120,9 @@ For \acrshort{SymmKACZ} there are two use cases. In one it is used as a plain it
  	\item $\alpha$ factor: The effect of $\alpha$ on \acrshort{SymmSpMV} kernel is more than that of \acrshort{SpMV}. One can observe this by comparing \cref{eq:SpMV_intensity,eq:SymmSpMV_intensity}, where the  pre-factor of $\alpha$ is three times bigger for \acrshort{SymmSpMV}.
  \end{enumerate}
 
-\begin{figure}[thbp]
-	\centering
-	\subfloat[\acrshort{SymmSpMV} on 1 socket of \IVB]{\label{fig:symm_spmv_ivy}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx/perf}}
-	\hspace{1em}
-	\subfloat[\acrshort{SymmSpMV} on 1 socket of \SKX]{\label{fig:symm_spmv_skx}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx/perf}}
-	\caption{\acrshort{SymmSpMV} performance}
-	\label{fig:symm_spmv}
-\end{figure}
 
-\begin{comment}
+
+%\begin{comment}
 
 \begin{figure}[thbp]
 	\centering
@@ -93,7 +142,7 @@ For \acrshort{SymmKACZ} there are two use cases. In one it is used as a plain it
 	\label{fig:symm_spmv_scamac}
 \end{figure}
 
-\end{comment}
+%\end{comment}
 
 %\begin{figure}[thbp]
 %	\centering
@@ -112,9 +161,13 @@ For \acrshort{SymmKACZ} there are two use cases. In one it is used as a plain it
 %Here we plot the performance of \acrshort{SymmSpMV}, \GS and \KACZ with \acrshort{RACE} compared to \acrshort{SpMV}. \Cref{fig:race_ivy,fig:race_skx} will be used here. This is done for entire test matrices and all the hardwares. 
 
 \subsubsection{Exact kernel}
-Here we compare  \acrshort{RACE} with \acrshort{ABMC}, \acrshort{MC} and \MKL for \acrshort{SymmSpMV}. \Cref{fig:symm_spmv_ivy,fig:symm_spmv_skx} will be used. \COLPACK \cite{COLPACK} %TOD cite
+Here we compare  \acrshort{RACE} with \acrshort{ABMC}, \acrshort{MC} and \acrshort{MKL} for \acrshort{SymmSpMV}. \Cref{fig:symm_spmv_ivy,fig:symm_spmv_skx} will be used. \COLPACK \cite{COLPACK} %TOD cite
 was used for multicoloring (\acrshort{MC}). \METIS \cite{METIS}  was used for graph partitioning for \acrshort{ABMC}, and \COLPACK was used for coloring the hyper graph. The blocksize for \acrshort{ABMC} is chosen by doing parameter scan over 4 to 128 as shown by Iwashita \etal in \cite{ABMC}, and choosing the optimal one. Note that the time for this parameter search is not included in the performance results shown. 
 
+\end{comment}
+
+
+\subsubsection{Iterative kernel}
 
 \begin{figure}[thbp]
 	\centering
@@ -133,14 +186,13 @@ was used for multicoloring (\acrshort{MC}). \METIS \cite{METIS}  was used for gr
 	\caption{\acrshort{SymmKACZ} convergence study on \SKX}
 	\label{fig:symmkacz_convergence}
 \end{figure}
-\subsubsection{Iterative kernel}
 Here we compare  \acrshort{RACE} with \acrshort{ABMC} and \acrshort{MC} for \acrshort{SymmKACZ} kernel. Inverse runtime of \acrshort{SymmKACZ} kernel is shown in \cref{fig:symmkacz_dp}.
 
  Since each of the matrix reordering changes convergence of the kernel, it is necessary here to also study the convergence behavior. \Cref{fig:symmkacz_convergence} shows the plain performance and iterations required on \SKX (20 threads) architecture.
 
 Note that matrices only compatible with the \acrshort{KACZ} solvers are shown in performance results.
 
-% The exact implementation of \MKL for \SYMMGS is not explicitly stated and is not published. But due to the property of the solver having same convergence as serial case we believe level-scheduling is used. The usage of same kernels in Intel's implementation of HPCG benchmark where the usage of level-scheduling has been stated \cite{Park_HPCG} leads to more confidence in our assumption.
+% The exact implementation of \acrshort{MKL} for \SYMMGS is not explicitly stated and is not published. But due to the property of the solver having same convergence as serial case we believe level-scheduling is used. The usage of same kernels in Intel's implementation of HPCG benchmark where the usage of level-scheduling has been stated \cite{Park_HPCG} leads to more confidence in our assumption.
 
 
 

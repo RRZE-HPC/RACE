@@ -18,7 +18,7 @@ for i in 1:length(skx_name)
 		row = Any[]
 		push!(row, string("{",i,"}") )
 		push!(row, string("& {", curr_mtx_name, "}") )
-		push!(row, string("& ", skx_nnz[i]) )
+		push!(row, string("& ", 1/skx_nnz[i]) )
 		push!(row, string("& ", skx_alphas[i]) )
 		push!(row, string("& ", ivy_alphas[i]) )
 		push!(row,string("\\\\"))
