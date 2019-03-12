@@ -110,7 +110,7 @@ increase with chromatic number. In case of the Spin-26 matrix the overhead of
 synchronization is roughly 10\% for the \acrshort{MC} method.  For most of
 the matrices considered in this work one can also observe a strong
 positive correlation between false sharing and the number of threads
-for \acrshort{SymmSpMV} kernels, due to the indirect writes
+for \acrshort{SymmSpMV} kernels due to the indirect writes
 in \acrshort{SymmSpMV}.
  
  %As seen in \cref{fig:motivation_data} the data traffic further increases for \acrshort{SymmSpMV}, although ideally one would expect only half the data traffic as \\acrshort{SpMV} since we operate only with upper triangle part of the matrix. The reason for this extra traffic is due to additional indirect writes (scatter) and this scales up $\alpha$ factor as seen in the denominator of $I_{\acrshort{SymmSpMV}}$ (see \cref{eq:Symm\acrshort{SpMV}_intensity}),  which further decreases performance of \acrshort{SymmSpMV} compared to \\acrshort{SpMV} on \acrshort{MC} matrix. Note that ideal performance of \acrshort{SymmSpMV} is almost twice as that of \\acrshort{SpMV} if the code could saturate the memory bandwidth.

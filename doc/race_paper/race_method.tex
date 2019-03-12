@@ -2,26 +2,39 @@
 % This is information that is shared between the main document and any
 % supplement. If no supplement is required, then this information can
 % be included directly in the main document.
-%Keeping in mind the observations from previous \cref{Sec:motivation}, one can observe that it would be best to maintain the non-zeros of matrix close to the diagonal. 
-Improving data locality for sparse matrix computations like \acrshort{SpMV}  is closely related to bandwidth reduction of the matrix. This was recognized previously and has led to the pre-processing of matrix by applying bandwidth reduction algorithms like \acrfull{RCM} \cite{RCM,RCM_Sparse_computation}. Thus we start  with a bandwidth reduction approach and then apply a coloring scheme which conserves data locality. If necessary this scheme is applied recursively to obtain sufficient level of parallelism. Within this recursive step we further avoid the problem of global synchronization between threads.
+%Keeping in mind the observations from previous \cref{Sec:motivation}, one can observe that it would be best to maintain the non-zeros of matrix close to the diagonal.
 
+%%Improving data locality for sparse matrix computations
+%%like \acrshort{SpMV} often requires bandwidth reduction via
+%%pre-processing algorithms such
+%%as \acrfull{RCM} \cite{RCM,RCM_Sparse_computation}. In RACE, we thus
+%%start with a bandwidth reduction approach and then apply a
+%%locality-conserving coloring scheme, recursively if necessary to
+%%obtain a sufficient level of parallelism. The recursion is designed
+%%to avoid global synchronization between threads.
 %Here, we aim to develop a method that does not distort this ideal permutations to a large extent and at the same time resolves \DK dependencies. 
- 
-Our method can be divided into three steps:
+Our advanced coloring algorithm is based on three steps:
 \begin{enumerate}
-	\item Level construction
-	\item Distance-k coloring
-	\item Load balancing
+	\item level construction,
+	\item \DK coloring,
+	\item load balancing.
 \end{enumerate}
-
-In the first step we basically apply bandwidth reduction algorithm including level construction and matrix reordering. We then use the information from the level construction step to form subsets of levels which allow for hardware efficient \DK coloring of the graph. Finally we present a concept to ensure load balancing between threads. As we apply these three steps recursively and work on the graph of the matrix we call this method \acrfull{RACE}.
+In the first step we basically apply a bandwidth reduction algorithm
+including level construction and matrix reordering. We then use the
+information from the level construction step to form subsets of levels
+which allow for hardware efficient \DK coloring of the graph. Finally
+we present a concept to ensure load balancing between threads. These steps
+are applied recursively if required.
 
 
 %The method is strongly coupled to the hardware underneath and exploits only the parallelism as required by the hardware. If at the end of all these four steps one does not achieve sufficient parallelism, all the steps are recursively applied to selected sub-graphs of the matrix until sufficient parallelism is attained. Due to this recursive nature of our coloring method we cal it as ``\RACfullNoSpace" (\RAC).
 
-To explain the method in an easier and illustrative way we choose a simple matrix which is associated with an artificially constructed two--dimensional stencil as shown in \cref{fig:2d-7pt-a}. The corresponding sparsity pattern and the graph of the matrix are shown in \cref{fig:2d-7pt-b} and \cref{fig:2d-7pt-c}, respectively.
-
-\begin{figure}[tbhp]
+To illustrate the method we choose a
+simple matrix which is associated with an artificially constructed
+two-dimensional stencil as shown in \cref{fig:2d-7pt-a}. The
+corresponding sparsity pattern and the graph of the matrix are shown
+in \cref{fig:2d-7pt-b} and \cref{fig:2d-7pt-c}, respectively.
+\begin{figure}[tbp]
 	\centering
 	\subfloat[\Stex]{\label{fig:2d-7pt-a}\includegraphics[width=0.17\textwidth , height=0.14\textheight]{pics/2d-7pt/stencil.pdf}}
 	\hspace{0.8em}
