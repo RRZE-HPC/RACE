@@ -6,6 +6,9 @@ template_file=table_template.tex
 #remove " signs
 sed -i 's@"@@g' table.txt
 
+#remove .mtx
+sed -i 's@.mtx@@g' table.txt
+
 #now permute table
 ./permute_w_rows.sh
 

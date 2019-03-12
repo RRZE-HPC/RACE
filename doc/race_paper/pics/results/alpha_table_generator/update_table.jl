@@ -18,8 +18,12 @@ for i in 1:length(skx_name)
 		row = Any[]
 		push!(row, string("{",i,"}") )
 		push!(row, string("& {", curr_mtx_name, "}") )
-		push!(row, string("& ", 1/skx_nnz[i]) )
-		push!(row, string("& ", skx_alphas[i]) )
+		alpha_opt=1/skx_nnz[i]
+		push!(row, string("& ", alpha_opt) )
+		p=2.0/(8.0+4.0+8.0*alpha_opt+20.0/skx_nnz[i])
+		#println("check ", p)
+		push!(row, string("& ", p) )
+		push!(row, string("& ", skx_alphas[i]) ) #intensity
 		push!(row, string("& ", ivy_alphas[i]) )
 		push!(row,string("\\\\"))
 		push!(table, row)
