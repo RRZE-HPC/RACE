@@ -22,15 +22,16 @@ saturation pattern as we fill the chip (\cref{fig:motivation}
 we find $16.26$ \BYTE per non-zero matrix entry (\cref{fig:motivation}
 (b)). This corresponds to the denominator of
 $I_\mathrm{\acrshort{SpMV}}$ in~\cref{eq:SpMV_intensity}, so we can
-determine $\alpha_\mathrm{\acrshort{SpMV}}=0.353$. Using the load-only
-bandwidth of \IVB (see~\cref{tab:test_bed}) we find a maximum
-attainable {\acrshort{SymmSpMV}} performance for this matrix of
-$P^{max}_\mathrm{\acrshort{SymmSpMV}}=8.95\,\GF$;\GHcomm{I recommend
+determine $\alpha_\mathrm{\acrshort{SpMV}}=0.353$ and calculate an 
+optimistic bound for the intensity of \acrshort{SymmSpMV} according to ~\cref{eq:SymmSpMV_intensity}.
+Using the copy and the load-only
+bandwidth of \IVB (see~\cref{tab:test_bed}) in \cref{eq:upper_performance} we find a maximum
+attainable {\acrshort{SymmSpMV}} performance range for this matrix of
+$P^{max}_\mathrm{\acrshort{SymmSpMV}}=7.62,\ldots,8.95\,\GF$. \GHcomm{I recommend
 not using $P_{max}$ but find some other symbol because we use
 $P_{max}$ differently in all our other publications; what about
-$P_{BW}$?} see~\cref{eq:SymmSpMV_intensity}
-and \cref{eq:upper_performance}. While this indicates a possible
-speed-up of approximately 1.6$\times$ compared to the \acrshort{SpMV}
+$P_{BW}$?}. While this indicates a possible
+speed-up of approximately 1.4$\times$ - 1.6$\times$ compared to the \acrshort{SpMV}
 baseline of $\approx 5.5\,\GF$, the \acrshort{SymmSpMV} implementation
 using \acrfull{MC} falls short of this expectation and is more than
 three times slower than \acrshort{SpMV}.
