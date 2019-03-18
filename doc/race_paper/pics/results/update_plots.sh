@@ -17,7 +17,6 @@ for arch in ivy skx; do
 			folder_names=$folder_names" "$i
 		done < <(find * -type d)
 
-
 		for folder in $folder_names; do
 			#find script and config file
 			cd $folder
