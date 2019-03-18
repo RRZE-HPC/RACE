@@ -1,0 +1,38 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,height=12cm,compat=1.3}
+\usetikzlibrary{patterns}
+\usepackage{pgfplotstable}
+
+%%%%%%%%%%%%%%%%%%%%%change matrix here%%%%%%%%%%%%%%%%%%%
+\newcommand{\MATRIX}{offshore} %folder name
+%\newcommand{\MNAME}{Anderson-16.5}  %name in title
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\definecolor{color_1}{RGB}{230, 25, 75}
+\definecolor{color_2}{RGB}{145, 30, 180}
+\definecolor{color_3}{RGB}{0, 180, 255}
+\definecolor{color_4}{RGB}{245, 130, 48}
+
+	
+\begin{document}	
+	\pgfplotstableread[col sep=comma] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/skx/scaling_skx_15_march_2019/scaling_db/MKL_RCM/\MATRIX_derived.txt} \PERFSpMV
+	\pgfplotstableread[col sep=comma] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/skx/scaling_skx_15_march_2019/scaling_db/RACE_RCM_eff_80/\MATRIX_derived.txt} \PERFSymmSpMV
+	
+	\begin{tikzpicture}
+	  \begin{axis}[ xlabel={\LARGE{$n_t$}}, ylabel={\LARGE{GFlop/s}}, ymode=linear, ylabel shift =-0.25cm, xlabel shift=0.1cm, ylabel shift =0.1cm, tick label style={font=\Large},
+	  scaled ticks=false,
+	  xmin=1,xmax = 20,
+	%  title={Scaling test on 1 Socket of Sky-Lake @2.4GHz, matrix-\MNAME},
+	  legend style={legend pos=south east, font=\LARGE}]
+
+	   \addplot+[color=gray,line width=2, mark=square, mark options=gray] table[x=Threads,y=Perf,col sep=comma] {\PERFSpMV}; \label{plot_one}
+	   \addlegendentry{SpMV}
+	   
+	   \addplot+[color=orange,line width=2, mark=*, mark options=orange] table[x=Threads,y=Perf,col sep=comma] {\PERFSymmSpMV}; \label{plot_two}
+	   \addlegendentry{SymmSpMV}
+
+	 \end{axis}
+	\end{tikzpicture}
+\end{document}

@@ -76,8 +76,8 @@ We further find performance drops both for measurements and model prediction whi
  
   \begin{figure}[thbp]
   	\centering
-  	\subfloat[\SKX]{\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_spmv_single_core/plot_generator/perf_vs_mtx_RACE_vs_MKL/perf}}
-  	\caption{Scaling run of \texttt{delaunay\_n24}}
+  	\subfloat[\SKX]{\includegraphics[width=0.48\textwidth, height=0.3\textheight]{pics/results/scaling_skx/plots/delaunay_n24}}
+  	\caption{Scaling run of \texttt{delaunay\_n24} on one socket of \SKX}
   	\label{fig:scaling_delaunay}
   \end{figure}
 The corner case matrix \texttt{crankseg\_1} has a strikingly different behavior for \acrshort{RACE} on both architectures, which is caused by the limited amount parallelism in its structures. Here we refer to the discussion of \cref{fig:crankseg_param} where best performance and highest parallelism (\acrshort{threadEff}) was achieved at approximately 10 cores. Using only 9 cores on \SKX lifts the \acrshort{SymmSpMV} performance slightly above the \acrshort{SpMV} level of the MKL. 
