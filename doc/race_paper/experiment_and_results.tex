@@ -67,9 +67,22 @@ A characteristic drop in performance levels is encountered around the \texttt{Fl
 
 We further find performance drops both for measurements and model prediction which have a strong correlation with lower \acrshort{SpMV} performance, e.g. \texttt{Hubbard-12}, \texttt{thermal2} or \texttt{delauny\_n24}. These matrices are characterized by a rather low $\acrshort{NNZR}$ and a larger $\alpha_{\acrshort{SpMV}}$ value. Note, that  $\alpha_{\acrshort{SpMV}}$ is measured for \acrshort{SpMV}  kernel mainly accounts for the RHS vector traffic. Thus it is an optimistic upper bound for the actual data traffic in the \acrshort{SymmSpMV} kernel, which requires two vectors to stay in cache concurrently. Moreover, for these matrices the inner loop length (which is approx. $\acrshort{NNZR}/2$) may become very short and the SIMD vectorization performed by the compiler may become inefficient. This leads to lower single core performance and imbalanced matrices may not be able to saturate the full chip memory bandwidth. {\GW Can we give a good example for that?}  \CAcomm{What about delaunay\_n24.}
 
+ \begin{figure}[thbp]
+ 	\centering
+ 	\subfloat[\SKX]{\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_spmv_single_core/plot_generator/perf_vs_mtx_RACE_vs_MKL/perf}}
+ 	\caption{Performance of \acrshort{SymmSpMV} executed with \acrshort{RACE} compared with \acrshort{SpMV} performance on single core of \SKX}
+ 	\label{fig:SpMV_vs_SymmSpMV_single_core}
+ \end{figure}
+ 
+  \begin{figure}[thbp]
+  	\centering
+  	\subfloat[\SKX]{\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_spmv_single_core/plot_generator/perf_vs_mtx_RACE_vs_MKL/perf}}
+  	\caption{Scaling run of \texttt{delaunay\_n24}}
+  	\label{fig:scaling_delaunay}
+  \end{figure}
 The corner case matrix \texttt{crankseg\_1} has a strikingly different behavior for \acrshort{RACE} on both architectures, which is caused by the limited amount parallelism in its structures. Here we refer to the discussion of \cref{fig:crankseg_param} where best performance and highest parallelism (\acrshort{threadEff}) was achieved at approximately 10 cores. Using only 9 cores on \SKX lifts the \acrshort{SymmSpMV} performance slightly above the \acrshort{SpMV} level of the MKL. 
 %
-{\GW Should we close with some averages for both architectures, e.g. On SKX raCE has an average speed-up of .... vs SpMV and achieves xxx percentage of rlm-copy limit ????} 
+{\GW Should we close with some averages for both architectures, e.g. On SKX RACE has an average speed-up of .... vs SpMV and achieves xxx percentage of rlm-copy limit ????} 
 %
 %\Inorder to further verify the quality of our method we compare the results of this benchmark against the performance predictions for all the test matrices (see \cref{table:bench_matrices}). \Cref{fig:spmv_vs_symm_spmv_ivy,fig:spmv_vs_symm_spmv_skx} show this results for \IVB and \SKX architecture respectively. 
 %The performance model is constructed using \cref{eq:upper_performance} and the intensity equation seen in \cref{eq:SymmSpMV_intensity}, the $\alpha$ value of the reference \acrshort{SpMV} kernel is taken into account. The measured $\alpha$ values for the matrices and the two architectures are shown in \cref{table:alpha_values}. The plots show close agreement of the \acrshort{RACE} performance and the predictions. Even though the performance model should give upper limit for performance there are two outliers on \SKX architectures namely \emph{pwtk} and \emph{parabolic\_fem}, which as discussed previously in \cref{subsec:param_analysis} is due to the fact that these matrices are small enough to fit in the cache of this architecture. The performance of \emph{offshore} matrix reflects same behavior as \emph{crankseg-1} due to the load imbalance problem as discussed earlier.

@@ -6,7 +6,7 @@ sort_col=3
 mtxDetailFile=matrix_details.txt
 
 for arch in ivy skx; do
-	for kernel in symm_kacz symm_spmv; do 
+	for kernel in symm_kacz symm_spmv symm_spmv_single_core; do 
 	#for kernel in symm_spmv_combined; do 
 		for method in ABMC MC MKL RACE RSB RLM; do
 			echo "ARCH = $arch"

@@ -6,7 +6,7 @@
 curr_folder=$PWD
 
 for arch in ivy skx; do
-	for kernel in symm_kacz symm_spmv; do 
+	for kernel in symm_kacz symm_spmv symm_spmv_single_core; do 
 	#for kernel in symm_spmv_combined; do 
 		echo "ARCH = $arch"
 		cd $arch/data_"$kernel"/plot_generator/
@@ -18,6 +18,8 @@ for arch in ivy skx; do
 		done < <(find * -type d)
 
 		for folder in $folder_names; do
+			#echo "curr pwd = $PWD, kernel = $kernel"
+			#echo "folder=$folder"
 			#find script and config file
 			cd $folder
 			#script_file=$(find * -name "*.sh")
