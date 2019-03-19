@@ -57,7 +57,13 @@ All the measurements were done with \CPU clock speeds fixed at the indicated bas
 		\end{tabular}
 	\end{center}
 \end{table} 
-
+\begin{figure}[tbp]
+	\centering
+	\subfloat[\emph{\IVB}]{\label{fig:ivy_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/ivy}}
+	\subfloat[\emph{\SKX}]{\label{fig:skx_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/skx}}
+	\caption{Attained bandwidth vs total data size for range from 20 \MB to 2 \GB. The dotted lines show the asymptotic bandwidth shown in \cref{tab:test_bed} for the load and copy benchmark.}
+	\label{fig:size_vs_bw}
+\end{figure}
 
 \subsection{External Tools and Software}
 The following external libraries are used in this paper:\GHcomm{some versions missing}

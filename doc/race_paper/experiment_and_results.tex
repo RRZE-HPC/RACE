@@ -126,7 +126,7 @@ In a final step we compare  in \cref{fig:symm_spmv_mkl} our approach with the tw
 \end{figure}
 On the \IVB architecture \acrshort{RACE} always provides superior performance levels and the best performing Intel variant depends on the underlying matrix. On the \SKX, however, MKL-IE always outperforms the deprecated MKL routine and is superior to \acrshort{RACE} for two matrices. Comparing \cref{fig:symm_spmv_skx_mkl} with \cref{fig:spmv_vs_symm_spmv_skx} we find that these are the same matrices where \acrshort{RACE} is slower than the MKL \acrshort{SpMV} kernel. A simple analysis of all MKL-IE data for \acrshort{SymmSpMV} 
  revealed that they are identical with the MKL \acrshort{SpMV} numbers presented in \cref{fig:symm_spmv_mkl}, i.e. the inspector calls the baseline \acrshort{SpMV} kernel and uses the full matrix, though it knows about the symmetry of the matrix. One reason for that strategy might be that the parallelization approach used in the deprecated MKL implementation for \acrshort{SymmSpMV} is not scaleable which would explain the fact that MKL is worse than MKL-IE for all cases on \SKX.  As neither the algorithmn used to parallelize the \acrshort{SymmSpMV} nor its low level code implementation is known, we refrain from a deep analysis of the Intel performance behavior. 
- In summary we find that \acrshort{RACE} is in average {\GW Christie please insert the numbers here X times} faster than the best Intel variant on \IVB and  {\GW Christie please insert the numbers here Y times} faster than MKL-IE on \SKX.
+ In summary we find that \acrshort{RACE} is in average 1.4$\times$ faster than the best Intel variant on \IVB and  1.4$\times$ faster than MKL-IE on \SKX.
 
 
 
