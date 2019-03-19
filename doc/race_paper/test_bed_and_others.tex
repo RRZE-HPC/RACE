@@ -123,11 +123,13 @@ A baseline \acrshort{SpMV} kernel is presented in \Cref{alg:SpMV}. It has no loo
 	\label{alg:SpMV}
 	\begin{algorithmic}[1]
 	    \STATE{$double:: A[nnz], b[nrows], x[nrows]$}
-	    \STATE{$integer:: col[nnz], rowPtr[nrows+1]$}
+	    \STATE{$integer:: col[nnz], rowPtr[nrows+1], tmp$}
 		\FOR{$row=1:nrows$}
+			\STATE{$tmp=0$}
 			\FOR{$idx=rowPtr[row]:rowPtr[row+1]$}
-				\STATE{$b[row] += A[idx]*x[col[idx]]$} 
+				\STATE{$tmp += A[idx]*x[col[idx]]$} 
 			\ENDFOR
+			\STATE{$b[row] = tmp$}
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
@@ -182,10 +184,12 @@ In ideal case data traffic for this kernel should remain close to that of SpMV, 
 		\FOR{$row=1:nrows$}
 		\STATE{$diag\_idx=rowPtr[row]$}
 		\STATE{$b[row] += A[diag\_idx]*x[row]$}
-		\FOR{$idx=rowPtr[row]+1:rowPtr[row+1]$}
-		\STATE{$b[row] += A[idx]*x[col[idx]]$}
-		\STATE{$b[col[idx]] += A[idx]*x[row]$} 
-		\ENDFOR
+			\STATE{$tmp = 0$}
+			\FOR{$idx=rowPtr[row]+1:rowPtr[row+1]$}
+				\STATE{$tmp += A[idx]*x[col[idx]]$}
+				\STATE{$b[col[idx]] += A[idx]*x[row]$} 
+			\ENDFOR
+			\STATE{$b[row] += tmp$}
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
