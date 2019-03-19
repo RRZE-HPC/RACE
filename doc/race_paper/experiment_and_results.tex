@@ -8,7 +8,7 @@ As a yardstick for baseline performance we choose the general \acrshort{SpMV} ke
 
 \subsection{Experimental Setup}
 
-All matrix data is encoded in the CRS format. For the \acrshort{SymmSpMV}  only the nonzeros of upper triangular matrix are stored. In case of RACE and the coloring approaches every thread executes the \acrshort{SymmSpMV} kernel \cref{alg:SymmSpMV} with appropriate outer loop boundary settings depending on the color (MC, ABMC) or \levelGroups (\acrshort{RACE}) to be computed. \CAcomm{\Inorder to ensure vectorization along the inner loop (non-zeros in a row, see  \cref{alg:SymmSpMV}) we use the simd pragma as \texttt{\#pragma simd reduction(+:tmp) vectorlength(VECWIDTH)}, where \texttt{VECWIDTH} is the maximum vector width supported by the architecture.}
+All matrix data is encoded in the CRS format. For the \acrshort{SymmSpMV}  only the nonzeros of upper triangular matrix are stored. In case of RACE and the coloring approaches every thread executes the \acrshort{SymmSpMV} kernel \cref{alg:SymmSpMV} with appropriate outer loop boundary settings depending on the color (MC, ABMC) or \levelGroups (\acrshort{RACE}) to be computed. \Inorder to ensure vectorization of the inner loop in \cref{alg:SymmSpMV} we use the SIMD pragma \texttt{\#pragma simd reduction(+:tmp) vectorlength(VECWIDTH)}. Here \texttt{VECWIDTH} is the maximum vector width supported by the architecture, i.e. \texttt{VECWIDTH = 4 (8)} for \IVB (\SKX).
 
 The  \acrshort{MKL} offers two choices for the two sparse matrix kernels under consideration: First, CRS based data structures are provided and are used in the subroutines (\texttt{mkl\_cspblas\_dcsrgemv} for \acrshort{SpMV}  and  \texttt{mkl\_cspblas\_dcsrsymv} for \acrshort{SymmSpMV}) without any modification (MKL). This mode of operation is deprecated from \acrshort{MKL}.v.18. Instead the Inspector-Executor mode (MKL-IE) is recommended to be used. Here, the user initially provides the matrix along with hints (e.g. symmetry) and operations to be carried out to the inspector routine (\texttt{mkl\_sparse\_set\_mv\_hint}). Then an optimization routine (\texttt{mkl\_sparse\_optimize}) is called where the matrix is  pre-processed based on the inspector information to achieve best performance and highest parallelism for the problem at hand. The subroutine \texttt{mkl\_sparse\_d\_mv} is then used to do the \acrshort{SpMV} or \acrshort{SymmSpMV} operations on this optimized matrix structure. This approach does not provide any insight which kernel or data structure is actually \CAcomm{used} under the hood.
 
@@ -83,7 +83,7 @@ We further find performance drops both for measurements and model prediction whi
   \begin{figure}[thbp]
   	\centering
   	\subfloat[\SKX]{\includegraphics[width=0.48\textwidth, height=0.3\textheight]{pics/results/scaling_skx/plots/delaunay_n24}}
-  	\caption{Parallel performance  of \acrshort{SymmSpMV} (with \acrshort{RACE})  and \acrshort{SpMV} (with \acrshort{MKL}) for the \texttt{delaunay\_n24} matrix on one socket of \SKX}
+  	\caption{Parallel performance  of \acrshort{SymmSpMV} (with \acrshort{RACE})  and \acrshort{SpMV} (with \acrshort{MKL}) for the \texttt{delaunay\_n24} matrix on one socket of \SKX. To disable vectorization (SymmSpMV-Scalar) we set \texttt{VECWIDTH = 1} when compiling the \acrshort{SymmSpMV} kernel.}
   	\label{fig:scaling_delaunay}
   \end{figure}
 %
