@@ -57,13 +57,15 @@ All the measurements were done with \CPU clock speeds fixed at the indicated bas
 		\end{tabular}
 	\end{center}
 \end{table} 
+As the attainable main memory bandwidth is the input parameter to the \roofline model used later, we have carefully measured this value depending on the data set size for two access patterns (copy and read-only). The data presented in \cref{fig:size_vs_bw} basically show the characteristic performance drop if data set size is too large to fit into the \acrshort{LLC}, which is L3 cache on both architectures (cf. \cref{tab:test_bed} for the actual sizes). 
 \begin{figure}[tbp]
 	\centering
 	\subfloat[\emph{\IVB}]{\label{fig:ivy_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/ivy}}
 	\subfloat[\emph{\SKX}]{\label{fig:skx_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/skx}}
-	\caption{Attained bandwidth vs total data size for range from 20 \MB to 2 \GB. The dotted lines show the asymptotic bandwidth shown in \cref{tab:test_bed} for the load and copy benchmark.}
+	\caption{Attained bandwidth vs. total data size for range from 20 \MB to 2 \GB. The dotted lines show the asymptotic bandwidth given in \cref{tab:test_bed} for the load-only and copy benchmark. The benchmarks were performed on the full socket using the \likwidBench tool. Note, the logarithmic scales.}
 	\label{fig:size_vs_bw}
 \end{figure}
+Interestingly there is no sharp drop at the exact size of the \acrshort{LLC} but a rather steady performance decrease with enhanced data access rates also for data set sizes up to twice the L3 size on \IVB. For \SKX this effect is even more pronounced as the non-inclusive victim L3 architecture only stores data which are not in L2 cache, thus the available cache size for an application may be the aggregate sizes of L2 and L3 caches on this architecture. The final bandwidth for the  \roofline model is chosen as the asymptotic value depicted in \cref{fig:size_vs_bw}. Of course caching effects are extremely sensitive to the data access pattern and thus the value presented here only provide simple upper bound for the \acrshort{SymmSpMV} kernel with its potentially strongly irregular data access. 
 
 \subsection{External Tools and Software}
 The following external libraries are used in this paper:\GHcomm{some versions missing}
