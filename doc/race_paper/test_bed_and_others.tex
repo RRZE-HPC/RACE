@@ -39,7 +39,7 @@ All the measurements were done with \CPU clock speeds fixed at the indicated bas
 
 \begin{table}[tbp]
 	\footnotesize
-	\caption{Technical details (per socket) about the Intel CPUs used for the benchmarks}\label{tab:test_bed}
+	\caption{Technical details (per socket) about the Intel CPUs used for the benchmarks. \CAcomm{Need to run on SKX @ 2.2GHz}}\label{tab:test_bed}
 	\begin{center}
 		%	\setlength{\tabcolsep}{3em}
 		\begin{tabular}{l|cc}
@@ -57,7 +57,7 @@ All the measurements were done with \CPU clock speeds fixed at the indicated bas
 		\end{tabular}
 	\end{center}
 \end{table} 
-As the attainable main memory bandwidth is the input parameter to the \roofline model used later, we have carefully measured this value depending on the data set size for two access patterns (copy and read-only). The data presented in \cref{fig:size_vs_bw} basically show the characteristic performance drop if data set size is too large to fit into the \acrshort{LLC}, which is L3 cache on both architectures (cf. \cref{tab:test_bed} for the actual sizes). 
+As the attainable main memory bandwidth is the input parameter to the \roofline model used later, we have carefully measured this value depending on the data set size for two access patterns (copy and load-only). The data presented in \cref{fig:size_vs_bw} basically show the characteristic performance drop if data set size is too large to fit into the \acrshort{LLC}, which is L3 cache on both architectures (cf. \cref{tab:test_bed} for the actual sizes). 
 \begin{figure}[tbp]
 	\centering
 	\subfloat[\emph{\IVB}]{\label{fig:ivy_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/ivy}}
@@ -65,7 +65,7 @@ As the attainable main memory bandwidth is the input parameter to the \roofline 
 	\caption{Attained bandwidth vs. total data size for range from 20 \MB to 2 \GB. The dotted lines show the asymptotic bandwidth given in \cref{tab:test_bed} for the load-only and copy benchmark. The benchmarks were performed on the full socket using the \likwidBench tool. Note, the logarithmic scales.}
 	\label{fig:size_vs_bw}
 \end{figure}
-Interestingly there is no sharp drop at the exact size of the \acrshort{LLC} but a rather steady performance decrease with enhanced data access rates also for data set sizes up to twice the L3 size on \IVB. For \SKX this effect is even more pronounced as the non-inclusive victim L3 architecture only stores data which are not in L2 cache, thus the available cache size for an application may be the aggregate sizes of L2 and L3 caches on this architecture. The final bandwidth for the  \roofline model is chosen as the asymptotic value depicted in \cref{fig:size_vs_bw}. Of course caching effects are extremely sensitive to the data access pattern and thus the value presented here only provide simple upper bound for the \acrshort{SymmSpMV} kernel with its potentially strongly irregular data access. 
+Interestingly there is no sharp drop at the exact size of the \acrshort{LLC} but a rather steady performance decrease with enhanced data access rates also for data set sizes up to twice the L3 size on \IVB. For \SKX this effect is even more pronounced as the non-inclusive victim L3 architecture only stores data which are not in L2 cache, thus the available cache size for an application may be the aggregate sizes of L2 and L3 caches on this architecture. The final bandwidth for the  \roofline model is chosen as the asymptotic value depicted in \cref{fig:size_vs_bw}. Of course caching effects are extremely sensitive to the data access pattern and thus the value presented here only provide simple upper bound for the \acrshort{SymmSpMV} kernel with its potentially strongly irregular data access. \CAcomm{need to rewrite: with its potentially ...}
 
 \subsection{External Tools and Software}
 The following external libraries are used in this paper:\GHcomm{some versions missing}
@@ -77,7 +77,7 @@ The following external libraries are used in this paper:\GHcomm{some versions mi
 	\item[\METIS 5.1.0] \cite{METIS} was used for graph partitioning in \acrshort{ABMC}.
 	\item[\acrshort{MKL} 19.0.2] \cite{MKL} was used for performing some reference sparse matrix computations.
 \end{description}
-All code was compiled with the Intel compiler in version 19.0.2 and the following compiler flags: {\tt -fno-alias -xHost -O3} for \IVB and {\tt -fno-alias -xCORE-AVX512 -O3} for \SKX. We did not enforce AVX-512 wide SIMD instructions on \SKX because this feature is of minor importance for the algorithms discussed here.
+All code was compiled with the Intel compiler in version 19.0.2 and the following compiler flags: {\tt -fno-alias -xHost -O3} for \IVB and {\tt -fno-alias -xCORE-AVX512 -O3} for \SKX. \sout{We did not enforce AVX-512 wide SIMD instructions on \SKX because this feature is of minor importance for the algorithms discussed here.} \CAcomm{We did}
 
 \subsection{Benchmark Matrices}
 Most test matrices were taken from the Suite\-Sparse Matrix Collection (former University of Florida Sparse Matrix Collection)~\cite{UOF} combining sets from two papers \cite{RSB,park_ls}, which allows  straightforward comparison of results.\GHcomm{Do we actually compare with them?}  We also added some matrices from quantum physics applications, which originate from the particular project context in which RACE was developed~\cite{ESSEX}.
@@ -110,10 +110,12 @@ As mentioned before we restrict ourselves to matrices representing undirected gr
 %\end{table}
 
 \subsection{Kernels} \label{subsec:test_kernels}
-We evaluate our methods by parallelizing two simple but important kernels showing \DTWO dependencies. In parallel \acrfull{SymmSpMV}, \DTWO coloring avoids the concurrent update of the same vector entries by different threads. In this case, the result is identical to the serial code (``exact kernel''). As an example of an iterative solver we have chosen \acrfull{SymmKACZ}. It reads and writes indirectly from the same vector, which leads to a change in convergence depending on the coloring scheme (``inexact kernel'').
+We evaluate our methods by parallelizing a simple but important sparse kernel \acrfull{SymmSpMV} showing \DTWO dependency. In parallel execution of \acrshort{SymmSpMV}, \DTWO coloring avoids the concurrent update of the same vector entries by different threads. 
+
+%In this case, the result is identical to the serial code (``exact kernel''). As an example of an iterative solver we have chosen \acrfull{SymmKACZ}. It reads and writes indirectly from the same vector, which leads to a change in convergence depending on the coloring scheme (``inexact kernel'').
 % {\GW To be done As an example for an iterative solver with distance2 dependency we have chosen the \acrshort{KACZ} ...}
 
-Since both kernels are closely related to the \acrshort{SpMV} kernel by structure and computational intensity, we start with a discussion of \acrshort{SpMV} and extend it towards \acrshort{SymmSpMV} and \acrshort{SymmKACZ} later. In all cases the aim is to derive realistic upper performance bounds, which can be estimated once the computational intensity and main memory bandwidth (\acrshort{b_s}, see \cref{tab:test_bed}) is known \cite{Williams_roofline}, \ie
+Since the kernel is closely related to the \acrshort{SpMV} kernel by structure and computational intensity, we start with a discussion of \acrshort{SpMV} and extend it towards \acrshort{SymmSpMV} later. In all cases the aim is to derive realistic upper performance bounds, which can be estimated once the computational intensity and main memory bandwidth (\acrshort{b_s}, see \cref{tab:test_bed}) is known \cite{Williams_roofline}, \ie
   \begin{align}
    	\label{eq:upper_performance}
    	P^{max}_\mathrm{kernel}  &= I_\mathrm{kernel}  \times b_S
@@ -148,7 +150,7 @@ I_\mathrm{\acrshort{SpMV}} (\alpha)= \frac{2}{8+4+8\alpha+\frac{20}{\acrshort{NN
 \end{equation}
 Here we assume that the matrix data  ($A[], col[]$), the LHS vector ($b[]$) and the row pointer information ($rowPtr[]$) are loaded only once from main memory, since these data structures are consecutively accessed. The intensity is calculated from the average cost of performing all computations required for one nonzero element of the matrix. Thus, contributions which are independent of the inner (short) loop are rescaled by $\acrshort{NNZR}$, which is the average number of nonzeros per row (i.e., the average length of the inner loop). 
 
-The $8\alpha$ term quantifies the data traffic caused by accessing the right hand side (RHS) vector ($x[]$). The value of $\alpha$ depends on the matrix structure as well as on the RHS vector data set size and the available cache size. The minimum value of $\alpha=\acrshort{NNZR}^{-1}$ is attained if the RHS vector is only loaded once from main memory to the cache and all subsequent accesses in the same \acrshort{SpMV} are cache hits. This limit is typically observed for matrices with low bandwidth (high access locality) or if the cache is large enough to hold the full RHS data during one \acrshort{SpMV}. The actual value of $\alpha$ can be determined experimentally by measuring the data traffic when executing the \acrshort{SpMV}; see~\cite{Moritz_sell} for more details.\footnote{In~\cite{Moritz_sell} the traffic for the row pointer was not accounted for, \ie the denominator in (\ref{eq:SpMV_intensity}) is larger by $\frac{4}{\acrshort{NNZR}}\,\BYTE$. This error is only significant when $\acrshort{NNZR}$ is small.}  The optimal value of $\alpha$ ($\acrshort{NNZR}^{-1}$) together with the corresponding intensity value as well as the measured $\alpha$ values (denoted by $\alpha_\mathrm{\acrshort{SpMV}}$) for all matrices on the two processor chips are given in \cref{table:alpha_values}. 
+The $8\alpha$ term quantifies the data traffic caused by accessing the right hand side (RHS) vector ($x[]$). The value of $\alpha$ depends on the matrix structure as well as on the RHS vector data set size and the available cache size. The minimum value of $\alpha=\acrshort{NNZR}^{-1}$ is attained if the RHS vector is only loaded once from main memory to the cache and all subsequent accesses in the same \acrshort{SpMV} are cache hits. \CAcomm{(Should we tell about $\alpha = 0$, see the comment on \cref{table:alpha_values})} This limit is typically observed for matrices with low bandwidth (high access locality) or if the cache is large enough to hold the full RHS data during one \acrshort{SpMV}. The actual value of $\alpha$ can be determined experimentally by measuring the data traffic when executing the \acrshort{SpMV}; see~\cite{Moritz_sell} for more details.\footnote{In~\cite{Moritz_sell} the traffic for the row pointer was not accounted for, \ie the denominator in (\ref{eq:SpMV_intensity}) is larger by $\frac{4}{\acrshort{NNZR}}\,\BYTE$. This error is only significant when $\acrshort{NNZR}$ is small.}  The optimal value of $\alpha$ ($\acrshort{NNZR}^{-1}$) together with the corresponding intensity value as well as the measured $\alpha$ values (denoted by $\alpha_\mathrm{\acrshort{SpMV}}$) for all matrices on the two processor chips are given in \cref{table:alpha_values}. 
 \begin{table}[htbp]
 	\footnotesize
 	\caption{The optimal value and the measured values of $\alpha_{\acrshort{SpMV}}$ on \SKX (SKX) as well as \IVB (IVB) for the \acrshort{SpMV} kernel (using the \LIKWID tool) are presented in columns three to five. Following \cref{eq:upper_performance} the maximum \acrshort{SpMV} performance can be calculated for each architecture using the best intensity values ($I_{\acrshort{SpMV}}(\alpha_{SpMV})$) as shown in the last column. \CAcomm{Discuss over the case when matrix fit in cache, and -ve alpha values we take optimal alpha}}
@@ -185,7 +187,7 @@ In ideal case data traffic for this kernel should remain close to that of SpMV, 
 \label{sect:SymmSpmv}
 
 \Acrfull{SymmSpMV} exploits the symmetry of the matrix ($A_{ij}=A_{ji}$) to reduce storage size for matrix data and reduce the overall memory traffic by operating on the upper (or lower) half of the matrix only. Thus for every non-zero matrix entry we need to update two entries in the LHS vector ($b[]$) as shown in~\cref{alg:SymmSpMV}.
-\begin{algorithm}[H]
+\begin{algorithm}[tbp]
 	\caption{SymmSpMV Find $b$ : $b=Ax$, where $A$ is an upper triangular matrix} 
 	\label{alg:SymmSpMV}
 	\begin{algorithmic}[1]
@@ -219,8 +221,7 @@ P^{max}_\mathrm{\acrshort{SymmSpMV}}  &= I_\mathrm{\acrshort{SymmSpMV}} (\alpha_
 As most matrices have a considerable number of non-zeros per row, we chose $b_S$ to be the optimistic (load-only) value  from~\cref{tab:test_bed}.
 \end{comment}
 
-Comparing~\cref{eq:SymmSpMV_intensity} and~\cref{eq:SpMV_intensity} it is obvious that the perfect speed-up of 2$\times$ when using \acrshort{SymmSpMV} instead of \acrshort{SpMV} is only attainable in the limit of small $\alpha$\@. \GHcomm{deleted the following half-sentence; neither low bandwidth nor regular structure guarantee low alpha}
-%, \ie for regularly structured matrices or low-bandwidth matrices.
+Comparing~\cref{eq:SymmSpMV_intensity} and~\cref{eq:SpMV_intensity} it is obvious that the perfect speed-up of 2$\times$ when using \acrshort{SymmSpMV} instead of \acrshort{SpMV} is only attainable in the limit of small $\alpha$\@. %, \ie for regularly structured matrices or low-bandwidth matrices.
 Considering the large prefactor of the $\alpha$ contribution, any implementation of \acrshort{SymmSpMV} must aim at ensuring high data locality. The indirect update of the LHS has also large impact on parallelization strategy as two rows which have a non-zero in the same column can not be computed in parallel. In a graph-based approach to this problem this is equivalent to the constraint that only vertices can be computed in parallel which have at least distance two.
 
 \begin{comment}
@@ -251,7 +252,7 @@ I_\mathrm{GS} = I_\mathrm{SPMV}
 In general for most of the algorithms one is interested in symmetric operator therefore commonly one would encounter symmetric variant of Gauss-Seidel, so called symmetric Gauss-Seidel (\SYMMGS). The algorithm remains same except that instead of just doing forward sweep shown in \cref{alg:GS} one would follow it with a backward sweep \ie {\tt row=nrows:-1:1}. The intensity of \SYMMGS remains same as of \GS, as we do two times more flops and bring in proportional data.
 \end{comment}
 
-
+\begin{comment}
 \subsubsection{\acrshort{KACZ} and \acrshort{SymmKACZ}}
 The iterative Kaczmarz solver is a row-projection algorithm with a data dependency.
 %The update step for solving $x$ in $Ax = b$ is shown in \cref{eq:KACZ}.
@@ -292,3 +293,4 @@ A variant of the algorithm called symmetric Kaczmarz (\acrshort{SymmKACZ}) uses 
 This does not change the computational intensity.
 
 %Symmetric variant of \acrshort{KACZ} is denoted by \acrshort{SymmKACZ}, and similar to \SYMMGS this requires forward sweep followed by a backward sweep. 
+\end{comment}
