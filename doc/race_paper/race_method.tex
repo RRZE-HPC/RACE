@@ -42,28 +42,49 @@ in \cref{fig:2d-7pt-b} and \cref{fig:2d-7pt-c}, respectively.
 	 pattern]{\label{fig:2d-7pt-b}\includegraphics[width=0.38\textwidth , height=0.19\textheight]{pics/2d-7pt/2d_7pt_bw.eps}}
 	\hspace{1em}
 	\subfloat[Graph]{\label{fig:2d-7pt-c}\includegraphics[width=0.3\textwidth , height=0.18\textheight]{pics/2d-7pt/stencil_2d_7pt.pdf}}
-	\caption{Basic structure of an artificially designed stencil (a) as well as corresponding sparsity pattern of its matrix discretization (b) and graph representation (c). A $8 \times 8$ lattice in two dimensions with Dirichlet boundary conditions are chosen. The stencil structure is designed for illustration purpose and does not represent any specific application scenario.}
+	\caption{(a) Structure of an artificially designed stencil,
+	(b) corresponding sparsity pattern of its matrix
+	representation on an $8\times 8$ lattice with Dirichlet
+	boundary conditions, and (c) the graph representation of the
+	matrix. The stencil
+	structure was chosen for illustration purposes and does not
+	represent any specific application scenario.}
 	\label{fig:2d-7pt}
 \end{figure}
 
 \subsection*{Definitions}
-The following basic definitions from graph theory are used in the following sections:
+We need the following definitions from graph theory:
 \begin{itemize}
-	\item \textbf{Graph : } $G = (V,E)$ represents a graph where $V(G)$ belongs to set of vertices and $E(G)$ represents the edges in the graph. Note that we use $G$ for irreducible undirected graphs.
-	\item \textbf{Neighborhood :} Neighborhood of vertex $u$ represented as $N(u)$ is defined as:
+	\item \textbf{Graph: } $G = (V,E)$ represents a graph, with $V(G)$
+              denoting its set of vertices and $E(G)$ denoting its edges. Note that
+              we restrict ourselves to irreducible undirected graphs.
+	\item \textbf{Neighborhood:} $N(u)$ is the neighborhood of a vertex $u$ and is defined as
 	\begin{equation*}
-	  N(u) = \set{ v : uv \in E}.
+	  N(u) = \set{ v : uv \in E}\eos
 	\end{equation*}
-	\item \textbf{Subgraph :} In this paper a subgraph $H$ of graph $G$ specifically refers to the subgraph induced by vertices $V' \subseteq V(G)$ and is defined as
+	\item \textbf{Subgraph:} In this paper a subgraph $H$ of $G$ specifically
+              refers to the subgraph induced by vertices $V' \subseteq V(G)$ and is defined as
 	\begin{equation*}
-		H = (V', \set{ uv : uv \in E(G) \text{ and } u,v \in V'}).
+		H = (V', \set{ uv : uv \in E(G) \text{ and } u,v \in V'})\eos
 	\end{equation*}
 \end{itemize}
 
 \subsection{Level Construction}\label{subsec:LEVEL_CONST}
-The first step of \acrshort{RACE} is to determine different \textit{\levels} in the graph followed by a related permutation of the graph data structure. This is equivalent to well-known bandwidth reduction algorithms such as \acrfull{RCM} or \acrfull{BFS} \cite{BFS} based approaches. Though the RCM method is also implemented in \acrshort{RACE}, we use the  \acrshort{BFS} reordering in the following for better illustration purpose.
+
+The first step of \acrshort{RACE} is to determine
+different \textit{\levels} in the graph and permute the
+graph data structure. This is equivalent to
+well-known bandwidth reduction algorithms such as \acrfull{RCM}
+or \acrfull{BFS} \cite{BFS}\@. Although the RCM method is
+also implemented in \acrshort{RACE}, we use the \acrshort{BFS}
+reordering in the following for simpler illustration.
 %\acrshort{BFS} can also be replaced with better bandwidth reduction algorithms like ``(Reverse) \CMfull".  
-As a first step we choose a root vertex which is assigned to the first \level ($L(0)$). All other \levels (\acrshort{L_i} for $i > 0$) are defined to  contain vertices that are in neighborhood of vertices in previous \level $L(i-1)$ but not in \level $L(i-2)$ \cite{BFS_level_def} \ie
+
+First we choose a root vertex and assign it to the
+first \level, $L(0)$\@. All other \levels (\acrshort{L_i} for $i > 0$)
+are defined to contain vertices that are in neighborhood of vertices
+in previous \level $L(i-1)$ but not in \level
+$L(i-2)$ \cite{BFS_level_def} \ie
 \begin{equation}\label{eq:level}
 L(i) = 
 \begin{cases}
