@@ -17,8 +17,9 @@
 
 	
 \begin{document}	
-	\pgfplotstableread[col sep=comma] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/skx/scaling_skx_15_march_2019/scaling_db/MKL_RCM/\MATRIX_derived.txt} \PERFSpMV
-	\pgfplotstableread[col sep=comma] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/skx/scaling_skx_15_march_2019/scaling_db/RACE_RCM_eff_80/\MATRIX_derived.txt} \PERFSymmSpMV
+	\pgfplotstableread[col sep=comma] {../scaling_db/MKL_RCM/\MATRIX_derived.txt} \PERFSpMV
+	\pgfplotstableread[col sep=comma] {../scaling_db/RACE_RCM_eff_80/\MATRIX_derived.txt} \PERFSymmSpMV
+	\pgfplotstableread[col sep=comma] {../scaling_db_scalar_code/RACE_RCM_eff_80/\MATRIX_derived.txt} \PERFSymmSpMVScalar
 	
 	\begin{tikzpicture}
 	  \begin{axis}[ xlabel={\LARGE{$n_t$}}, ylabel={\LARGE{GFlop/s}}, ymode=linear, ylabel shift =-0.25cm, xlabel shift=0.1cm, ylabel shift =0.1cm, tick label style={font=\Large},
@@ -32,6 +33,9 @@
 	   
 	   \addplot+[color=orange,line width=2, mark=*, mark options=orange] table[x=Threads,y=Perf,col sep=comma] {\PERFSymmSpMV}; \label{plot_two}
 	   \addlegendentry{SymmSpMV}
+
+	   \addplot+[color=blue,line width=2, mark=*, mark options=blue] table[x=Threads,y=Perf,col sep=comma] {\PERFSymmSpMVScalar}; \label{plot_three}
+	   \addlegendentry{SymmSpMV-Scalar}
 
 	 \end{axis}
 	\end{tikzpicture}

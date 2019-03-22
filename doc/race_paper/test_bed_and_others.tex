@@ -57,7 +57,15 @@ All the measurements were done with \CPU clock speeds fixed at the indicated bas
 		\end{tabular}
 	\end{center}
 \end{table} 
-
+As the attainable main memory bandwidth is the input parameter to the \roofline model used later, we have carefully measured this value depending on the data set size for two access patterns (copy and read-only). The data presented in \cref{fig:size_vs_bw} basically show the characteristic performance drop if data set size is too large to fit into the \acrshort{LLC}, which is L3 cache on both architectures (cf. \cref{tab:test_bed} for the actual sizes). 
+\begin{figure}[tbp]
+	\centering
+	\subfloat[\emph{\IVB}]{\label{fig:ivy_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/ivy}}
+	\subfloat[\emph{\SKX}]{\label{fig:skx_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/skx}}
+	\caption{Attained bandwidth vs. total data size for range from 20 \MB to 2 \GB. The dotted lines show the asymptotic bandwidth given in \cref{tab:test_bed} for the load-only and copy benchmark. The benchmarks were performed on the full socket using the \likwidBench tool. Note, the logarithmic scales.}
+	\label{fig:size_vs_bw}
+\end{figure}
+Interestingly there is no sharp drop at the exact size of the \acrshort{LLC} but a rather steady performance decrease with enhanced data access rates also for data set sizes up to twice the L3 size on \IVB. For \SKX this effect is even more pronounced as the non-inclusive victim L3 architecture only stores data which are not in L2 cache, thus the available cache size for an application may be the aggregate sizes of L2 and L3 caches on this architecture. The final bandwidth for the  \roofline model is chosen as the asymptotic value depicted in \cref{fig:size_vs_bw}. Of course caching effects are extremely sensitive to the data access pattern and thus the value presented here only provide simple upper bound for the \acrshort{SymmSpMV} kernel with its potentially strongly irregular data access. 
 
 \subsection{External Tools and Software}
 The following external libraries are used in this paper:\GHcomm{some versions missing}
@@ -123,11 +131,13 @@ A baseline \acrshort{SpMV} kernel is presented in \Cref{alg:SpMV}. It has no loo
 	\label{alg:SpMV}
 	\begin{algorithmic}[1]
 	    \STATE{$double:: A[nnz], b[nrows], x[nrows]$}
-	    \STATE{$integer:: col[nnz], rowPtr[nrows+1]$}
+	    \STATE{$integer:: col[nnz], rowPtr[nrows+1], tmp$}
 		\FOR{$row=1:nrows$}
+			\STATE{$tmp=0$}
 			\FOR{$idx=rowPtr[row]:rowPtr[row+1]$}
-				\STATE{$b[row] += A[idx]*x[col[idx]]$} 
+				\STATE{$tmp += A[idx]*x[col[idx]]$} 
 			\ENDFOR
+			\STATE{$b[row] = tmp$}
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
@@ -141,7 +151,7 @@ Here we assume that the matrix data  ($A[], col[]$), the LHS vector ($b[]$) and 
 The $8\alpha$ term quantifies the data traffic caused by accessing the right hand side (RHS) vector ($x[]$). The value of $\alpha$ depends on the matrix structure as well as on the RHS vector data set size and the available cache size. The minimum value of $\alpha=\acrshort{NNZR}^{-1}$ is attained if the RHS vector is only loaded once from main memory to the cache and all subsequent accesses in the same \acrshort{SpMV} are cache hits. This limit is typically observed for matrices with low bandwidth (high access locality) or if the cache is large enough to hold the full RHS data during one \acrshort{SpMV}. The actual value of $\alpha$ can be determined experimentally by measuring the data traffic when executing the \acrshort{SpMV}; see~\cite{Moritz_sell} for more details.\footnote{In~\cite{Moritz_sell} the traffic for the row pointer was not accounted for, \ie the denominator in (\ref{eq:SpMV_intensity}) is larger by $\frac{4}{\acrshort{NNZR}}\,\BYTE$. This error is only significant when $\acrshort{NNZR}$ is small.}  The optimal value of $\alpha$ ($\acrshort{NNZR}^{-1}$) together with the corresponding intensity value as well as the measured $\alpha$ values (denoted by $\alpha_\mathrm{\acrshort{SpMV}}$) for all matrices on the two processor chips are given in \cref{table:alpha_values}. 
 \begin{table}[htbp]
 	\footnotesize
-	\caption{The optimal value and the measured values of $\alpha_{\acrshort{SpMV}}$ on \SKX (SKX) as well as \IVB (IVB) for the \acrshort{SpMV} kernel (using the \LIKWID tool) are presented in columns three to five. Following \cref{eq:upper_performance} the maximum \acrshort{SpMV} performance can be calculated for each architecture using the best intensity values ($I_{\acrshort{SpMV}}(\alpha_{SpMV})$) as shown in the last column.}
+	\caption{The optimal value and the measured values of $\alpha_{\acrshort{SpMV}}$ on \SKX (SKX) as well as \IVB (IVB) for the \acrshort{SpMV} kernel (using the \LIKWID tool) are presented in columns three to five. Following \cref{eq:upper_performance} the maximum \acrshort{SpMV} performance can be calculated for each architecture using the best intensity values ($I_{\acrshort{SpMV}}(\alpha_{SpMV})$) as shown in the last column. \CAcomm{Discuss over the case when matrix fit in cache, and -ve alpha values we take optimal alpha}}
 	\label{table:alpha_values}
 	\begin{center}
 		\input{pics/results/alpha_table_generator/table.tex}
@@ -182,10 +192,12 @@ In ideal case data traffic for this kernel should remain close to that of SpMV, 
 		\FOR{$row=1:nrows$}
 		\STATE{$diag\_idx=rowPtr[row]$}
 		\STATE{$b[row] += A[diag\_idx]*x[row]$}
-		\FOR{$idx=rowPtr[row]+1:rowPtr[row+1]$}
-		\STATE{$b[row] += A[idx]*x[col[idx]]$}
-		\STATE{$b[col[idx]] += A[idx]*x[row]$} 
-		\ENDFOR
+			\STATE{$tmp = 0$}
+			\FOR{$idx=rowPtr[row]+1:rowPtr[row+1]$}
+				\STATE{$tmp += A[idx]*x[col[idx]]$}
+				\STATE{$b[col[idx]] += A[idx]*x[row]$} 
+			\ENDFOR
+			\STATE{$b[row] += tmp$}
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}

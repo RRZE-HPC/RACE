@@ -1,0 +1,52 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{width=14cm,height=8cm,compat=1.3}
+\usetikzlibrary{patterns}
+\usepackage{pgfplotstable}
+
+%%%%%%%%%%%%%%%%%%%%%change matrix here%%%%%%%%%%%%%%%%%%%
+\newcommand{\MATRIX}{delaunay_n24} %folder name
+%\newcommand{\MNAME}{Anderson-16.5}  %name in title
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\definecolor{color_1}{RGB}{230, 25, 75}
+\definecolor{color_2}{RGB}{145, 30, 180}
+\definecolor{color_3}{RGB}{0, 180, 255}
+\definecolor{color_4}{RGB}{245, 130, 48}
+
+	
+\begin{document}	
+%	\pgfplotstableread[col sep=comma] {ivy/load_avx/derived.txt} \LoadIvy
+	\pgfplotstableread[col sep=comma] {skx/load_avx512/derived.txt} \LoadSkx
+	\pgfplotstableread[col sep=comma] {skx/copy_avx512/derived.txt} \CopySkx
+		
+	\begin{tikzpicture}
+	  \begin{axis}[ xlabel={\LARGE{Size (MB)}}, ylabel={\LARGE{Bandwidth (GB/s)}}, ymode=linear, ylabel shift =-0.25cm, xlabel shift=0.1cm, ylabel shift =0.1cm, tick label style={font=\Large},
+	  scaled ticks=false,
+	  xtick={20,32,64,128,256,512,1024,2048},
+	  xticklabels={20,32,64,128,256,512,1024,2048},
+	  ytick={20,100,200,400,800},
+	  yticklabels={20,100,200,400,800},
+	  xmode=log,
+	  ymode=log,
+	  log basis x={2},
+	  xmin=20,
+	  xmax=2048,
+	  ymin=0,
+	 % xmin=1,xmax = 20,
+	%  title={Scaling test on 1 Socket of Sky-Lake @2.4GHz, matrix-\MNAME},
+	  legend style={legend pos=north east, font=\LARGE}]
+
+	   \addplot+[color=red,line width=2, mark=square, mark options=red, mark size=0.5pt] table[x expr=\thisrow{SIZE(KB)}*0.001, y expr=\thisrow{Bandwidth(MB/s)}*0.001 ,col sep=comma, ] {\LoadSkx}; \label{plot_one}
+	   \addlegendentry{Load}
+	   \addplot+[color=blue,line width=2, mark=square, mark options=blue, mark size=0.5pt] table[x expr=\thisrow{SIZE(KB)}*0.001, y expr=\thisrow{Bandwidth(MB/s)}*0.001*1.5 ,col sep=comma, ] {\CopySkx}; \label{plot_two}
+	   \addlegendentry{Copy}
+	   
+	   \addplot[red, line width=2, dashed] coordinates {(20,115) (2048,115)};
+	   \addplot[blue, line width=2, dashed] coordinates {(20,104) (2048,104)};
+
+
+	 \end{axis}
+	\end{tikzpicture}
+\end{document}
