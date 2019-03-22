@@ -4,7 +4,7 @@
 % be included directly in the main document.
 
 As pointed out previously, the parallelization of
-the \acrshort{SymmSpMV} and \acrshort{SymmKACZ} kernels can be done
+the \acrshort{SymmSpMV} kernel can be done
 via \DTWO coloring of the corresponding graph. The computational
 intensity, and hence the performance, depends on the data access
 patterns to the LHS and RHS vectors. As coloring schemes change those
@@ -19,10 +19,10 @@ the \emph{Spin-26} matrix on a single socket of the \IVB
 system. For \acrshort{SpMV} we recover the well-known memory bandwidth
 saturation pattern as we fill the chip (\cref{fig:motivation}
 (a)). Measuring the actual data volume from main memory using \LIKWID
-we find $16.26$ \BYTE per non-zero matrix entry (\cref{fig:motivation}
+we find $16.26$ \BYTE \CAcomm{shouldn't it be bytes} per non-zero matrix entry (\cref{fig:motivation}
 (b)). This corresponds to the denominator of
 $I_\mathrm{\acrshort{SpMV}}$ in~\cref{eq:SpMV_intensity}, so we can
-determine $\alpha_\mathrm{\acrshort{SpMV}}=0.353$ and calculate an 
+determine $\alpha_\mathrm{\acrshort{SpMV}}=0.354$ and calculate an 
 optimistic bound for the intensity of \acrshort{SymmSpMV} according to ~\cref{eq:SymmSpMV_intensity}.
 Using the copy and the load-only
 bandwidth of \IVB (see~\cref{tab:test_bed}) in \cref{eq:upper_performance} we find a maximum
@@ -74,7 +74,7 @@ The reason for this is the nature of the \acrlong{MC}
 permutation. For \DTWO coloring, sets of structurally orthogonal
 rows have to be determined \cite{dist_k_def}, \ie rows that do not
 overlap in any column entry. Then, different colors are assigned to
-each set. \Cref{fig:mc_alpha} shows the corresponding permutation
+each set. \CAcomm{Isn't it less confusing to say : These sets are referred to as colors.} \Cref{fig:mc_alpha} shows the corresponding permutation
 and the obtained sets of colors applied to a toy problem with high
 data locality. Different rows of the same color can be executed in
 parallel, but colors are operated one after the
@@ -84,7 +84,7 @@ that the \acrfull{LLC} can hold a maximum of six elements, we find
 that the right hand side vector must be loaded every time for each
 new color. This is the reason why we observe 3$\times$ more bytes
 per non-zero for \acrshort{SymmSpMV} with \acrshort{MC} compared
-to \acrshort{SpMV}, as seen in~\cref{fig:motivation_data}.  However,
+to \acrshort{SpMV}, as seen in~\cref{fig:motivation_data} \CAcomm{This might confuse the reader as toy problem has 3 colors and reader might relate it to this 3$\times$}.  However,
 our performance model indicates that \acrshort{SymmSpMV} should
 exhibit only 0.7$\times$ the data traffic of \acrshort{SpMV} (see
 red dotted line in \cref{fig:motivation_data}). Of course this
