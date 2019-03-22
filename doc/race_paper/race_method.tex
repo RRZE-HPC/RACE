@@ -36,7 +36,7 @@ corresponding sparsity pattern and the graph of the matrix are shown
 in \cref{fig:2d-7pt-b} and \cref{fig:2d-7pt-c}, respectively.
 \begin{figure}[tbp]
 	\centering
-	\subfloat[\Stex]{\label{fig:2d-7pt-a}\includegraphics[width=0.17\textwidth , height=0.14\textheight]{pics/2d-7pt/stencil.pdf}}
+	\subfloat[\Stex]{\label{fig:2d-7pt-a}\includegraphics[width=0.17\textwidth , height=0.13\textheight]{pics/2d-7pt/stencil.pdf}}
 	\hspace{0.8em}
 	\subfloat[Sparsity
 	 pattern]{\label{fig:2d-7pt-b}\includegraphics[width=0.38\textwidth , height=0.19\textheight]{pics/2d-7pt/2d_7pt_bw.eps}}
@@ -80,16 +80,16 @@ also implemented in \acrshort{RACE}, we use the \acrshort{BFS}
 reordering in the following for simpler illustration.
 %\acrshort{BFS} can also be replaced with better bandwidth reduction algorithms like ``(Reverse) \CMfull".  
 
-First we choose a root vertex and assign it to the
-first \level, $L(0)$\@. All other \levels (\acrshort{L_i} for $i > 0$)
-are defined to contain vertices that are in neighborhood of vertices
-in previous \level $L(i-1)$ but not in \level
-$L(i-2)$ \cite{BFS_level_def} \ie
+First we choose a \emph{root} vertex and assign it to the
+first \level, $L(0)$\@. For $i>0$, \level \acrshort{L_i}
+is defined to contain vertices that are in the neighborhood of vertices
+in $L(i-1)$ but not in the neighborhood of vertices
+in $L(i-2)$ \cite{BFS_level_def} \ie
 \begin{equation}\label{eq:level}
 L(i) = 
 \begin{cases}
 	  u : u \in N(L(i-1)) \cap \overline{N(L(i-2))}  & \text{ if } i \neq 0, \\
-	 root & otherwise.
+	 root & \text{ otherwise.}
 \end{cases}   
 \end{equation}
 
