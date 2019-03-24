@@ -241,15 +241,16 @@ together this example manuscript and supplement.
 	\caption{Construction of levels}
 	\label{alg:BFS}
 	\begin{algorithmic}[1]
-		\STATE Choose starting node(s) = \{$n$\}
-		\STATE $marked\_all$ = false 
-		\STATE $N = nrows(graph)$
-		\STATE $distFromRoot[1..N] = -1$
-		\STATE $curr\_children.push\_back(n)$;
-		\STATE $currLvl = 0$
+		\STATE $integer::root = n$ {\textcolor{gray}{\hspace{1em} \% Choose starting node}}
+		\STATE $bool::marked\_all = false$ {\textcolor{gray}{\hspace{1em} \% Stopping criteria}}
+		\STATE $integer::N = nrows(graph)$
+		\STATE $integer::distFromRoot[N] = \{-1\}$
+		\STATE $integer::curr\_children[] = \{\}$
+		\STATE $curr\_children.push\_back(root)$;
+		\STATE $integer::currLvl = 0$
 		\WHILE{$!marked\_all$}
 		\STATE $marked\_all$ = true
-		\STATE $nxt\_children = \{\}$ 
+		\STATE $integer::nxt\_children[] = \{\}$ 
 		\FOR{$i=1:size(curr\_children)$}
 		\IF{$distFromRoot[curr\_children[i]]==-1$}
 		\STATE $distFromRoot[curr\_children[i]]=currLvl$
@@ -267,24 +268,28 @@ together this example manuscript and supplement.
 \end{algorithm}
 
 %\subsection{Load Balancing}\label{alg:LB}
-\begin{algorithm}[htp]
-	\caption{Load Balancing for two sweep, \DTWO, 2 colors} 
+\begin{algorithm}[htbp]
+	\caption{Load Balancing for two sweep, \DTWO, two colors} 
 	\label{alg:LB}
 	\begin{algorithmic}[1]
 		\IF{\cref{subsec:LB}}
-		\STATE{$nthreads$ = required threads}
-		\STATE {$len$ = $2*nthreads$ \textcolor{gray}{\hspace{1.5em} \% number of \levelGroups}} 
-		\STATE{$worker[0:len-1] = 1$}
+		\STATE{$integer::nthreads$ = \acrshort{nthreads}}
+		\STATE {$integer::len$ = $2*nthreads$ \textcolor{gray}{\hspace{1em} \% number of \levelGroups}}
+		\STATE{$integer::worker[len] = {1}$}
+		\STATE{$integer::T\_ptr[len+1] = linspace(0, \acrshort{totalLvl}, len) $ \textcolor{gray}{\hspace{0em} \% \levelGroup pointer}}
 		\ELSE
-		\STATE{$nthreads = n_t(T_{s-1}(i))$ \textcolor{gray}{\% $i$ is the index of \levelGroup in stage $s-1$}}
-		\STATE{\textcolor{gray}{\hspace{10.5em}\% where recursion is applied.}}
-		\STATE {$len$ = $2*nthreads$ \textcolor{gray}{\hspace{1.5em} \% number of \levelGroups}}
-		\STATE{$worker[0:len-1] = [n_t(T_{s}(0)), ... ,n_t(T_{s}(len-1))] = b$}	
+		\STATE{$integer::nthreads = n_t(T_{s-1}(i))$ \textcolor{gray}{\% $i$ is the index of \levelGroup in stage $s-1$}}
+		\STATE{\textcolor{gray}{\hspace{15em}\% where recursion is applied.}}
+		\STATE {$integer::len$ = $2*nthreads$ \textcolor{gray}{\hspace{1.5em} \% number of \levelGroups}}
+		\STATE{$integer::worker[len] = [n_t(T_{s}(0)), ... ,n_t(T_{s}(len-1))] = b$}
+		\STATE{$integer::T\_ptr[len+1] = linspace(0, \acrshort{totalLvl}, len) $}
 		\ENDIF	
-		\STATE{$exit = false$}
+		\STATE{$bool::exit = false$}
+		\STATE{$integer::T\_size[len], absRankIdx[len], rankIdx[len], currRank$}
+		\STATE{$double::mean\_r, mean\_b, diff[len], var, newVar$}
 		\WHILE{$!(exit)$} 
-		\STATE\label{lb_line5} {$T\_size$ = update($T\_ptr$) \textcolor{gray}{\hspace{1em} \% $T\_size$ contains nrows in each \levelGroup}}
-		\STATE {$T\_size\_worker$ = $T\_size./worker$} 
+		\STATE\label{lb_line5} {$T\_size[:]$ = update($T\_ptr[:]$) \textcolor{gray}{\hspace{0em} \% $T\_size$ contains nrows in each \levelGroup}}
+		\STATE {$integer::T\_size\_worker[:]$ = $T\_size[:]/worker[:]$} 
 		\STATE {$mean\_r$ = sum($T\_size\_worker[0:2:len-1]$) / $nthreads$}
 		\textcolor{gray}{\%mean of red color}
 		\STATE {$mean\_b$ = sum($T\_size\_worker[1:2:len-1]$) / $nthreads$}
@@ -292,15 +297,14 @@ together this example manuscript and supplement.
 		\STATE {$diff[0:2:len-1]$ = $T\_size\_worker[0:2:len-1] .- mean\_r$}
 		\STATE {$diff[1:2:len-1]$ = $T\_size\_worker[1:2:len-1] .- mean\_b$}
 		\STATE\label{lb_line10} {$var$ = dot\_product($diff,diff$)/len} \textcolor{gray}{\% overall variance}
-		\STATE {$absRankIdx$ = sortIdx(abs($diff$))  \textcolor{gray}{\% ranking according to absolute deviation}}
-		\STATE {\textcolor{gray}{\hspace{5.5em} \% sortIdx returns permutation after, sorting in descending order}}
-		\STATE {$rankIdx$ = sortIdx($diff$)} \textcolor{gray}{\% ranking according to signed deviation, to find}
-		\STATE { \textcolor{gray}{\% the order of \levelGroups from/to which levels have to be acquired/added}}
+		\STATE {$absRankIdx$ = argsort(-abs($diff$))  \textcolor{gray}{\% ranking according to absolute deviation}}
+		\STATE {$rankIdx$ = argsort($diff$)} \textcolor{gray}{\% ranking according to signed deviation}
+	%	\STATE { \textcolor{gray}{\% ,to find the order of \levelGroups from/to which levels have to be acquired/added}}
 		\STATE {$currRank = 0, newVar = var$}
-		\STATE {$old\_T\_ptr$ = $T\_ptr$}
+		\STATE {$integer::old\_T\_ptr[len+1]$ = $T\_ptr[:], acquireIdx, giveIdx$}
 		\WHILE{$newVar \geq var$}
 		\STATE {$T\_ptr$ = $old\_T\_ptr$}
-		\STATE {$fail$=true}
+		\STATE {$bool::fail$=true}
 		\IF{ $diff[absRankIdx[currRank]] < 0$ }
 		\FOR{$el$ in $rankIdx[(len-1):-1:0]$}
 		\IF{$(T\_Ptr[el+1] - T\_ptr[el]) > 2$}
@@ -317,7 +321,7 @@ together this example manuscript and supplement.
 		\STATE {shift($T\_ptr,currRank,giveIdx$)}
 		\ENDIF
 		\IF{!$fail$}
-		\STATE {$newVar$ = calculate\_variance($T\_ptr$) \textcolor{gray}{\% as seen in \textcolor{darkgray}{Line 13} to \textcolor{darkgray}{Line 19}}}
+		\STATE {$newVar$ = calculate\_variance($T\_ptr$) \textcolor{gray}{\% as seen in \textcolor{darkgray}{Line 17} to \textcolor{darkgray}{Line 23}}}
 		\ENDIF
 		\IF{$ (currRank == (len-1)) \text{  } \&\&  \text{  } (newVar \geq var) $}
 		\STATE {$T\_Ptr = old\_T\_ptr$}
