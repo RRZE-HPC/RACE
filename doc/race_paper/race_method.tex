@@ -36,48 +36,78 @@ corresponding sparsity pattern and the graph of the matrix are shown
 in \cref{fig:2d-7pt-b} and \cref{fig:2d-7pt-c}, respectively.
 \begin{figure}[tbp]
 	\centering
-	\subfloat[\Stex]{\label{fig:2d-7pt-a}\includegraphics[width=0.17\textwidth , height=0.14\textheight]{pics/2d-7pt/stencil.pdf}}
+	\subfloat[\Stex]{\label{fig:2d-7pt-a}\includegraphics[width=0.17\textwidth , height=0.13\textheight]{pics/2d-7pt/stencil.pdf}}
 	\hspace{0.8em}
 	\subfloat[Sparsity
 	 pattern]{\label{fig:2d-7pt-b}\includegraphics[width=0.38\textwidth , height=0.19\textheight]{pics/2d-7pt/2d_7pt_bw.eps}}
 	\hspace{1em}
 	\subfloat[Graph]{\label{fig:2d-7pt-c}\includegraphics[width=0.3\textwidth , height=0.18\textheight]{pics/2d-7pt/stencil_2d_7pt.pdf}}
-	\caption{Basic structure of an artificially designed stencil (a) as well as corresponding sparsity pattern of its matrix discretization (b) and graph representation (c). A $8 \times 8$ lattice in two dimensions with Dirichlet boundary conditions are chosen. The stencil structure is designed for illustration purpose and does not represent any specific application scenario.}
+	\caption{(a) Structure of an artificially designed stencil,
+	(b) corresponding sparsity pattern of its matrix
+	representation on an $8\times 8$ lattice with Dirichlet
+	boundary conditions, and (c) the graph representation of the
+	matrix. The stencil
+	structure was chosen for illustration purposes and does not
+	represent any specific application scenario.}
 	\label{fig:2d-7pt}
 \end{figure}
 
 \subsection*{Definitions}
-The following basic definitions from graph theory are used in the following sections:
+We need the following definitions from graph theory:
 \begin{itemize}
-	\item \textbf{Graph : } $G = (V,E)$ represents a graph where $V(G)$ belongs to set of vertices and $E(G)$ represents the edges in the graph. Note that we use $G$ for irreducible undirected graphs.
-	\item \textbf{Neighborhood :} Neighborhood of vertex $u$ represented as $N(u)$ is defined as:
+	\item \textbf{Graph: } $G = (V,E)$ represents a graph, with $V(G)$
+              denoting its set of vertices and $E(G)$ denoting its edges. Note that
+              we restrict ourselves to irreducible undirected graphs.
+	\item \textbf{Neighborhood:} $N(u)$ is the neighborhood of a vertex $u$ and is defined as
 	\begin{equation*}
-	  N(u) = \set{ v : uv \in E}.
+	  N(u) = \set{ v : uv \in E}\eos
 	\end{equation*}
-	\item \textbf{Subgraph :} In this paper a subgraph $H$ of graph $G$ specifically refers to the subgraph induced by vertices $V' \subseteq V(G)$ and is defined as
+	\item \textbf{Subgraph:} In this paper a subgraph $H$ of $G$ specifically
+              refers to the subgraph induced by vertices $V' \subseteq V(G)$ and is defined as
 	\begin{equation*}
-		H = (V', \set{ uv : uv \in E(G) \text{ and } u,v \in V'}).
+		H = (V', \set{ uv : uv \in E(G) \text{ and } u,v \in V'})\eos
 	\end{equation*}
 \end{itemize}
 
 \subsection{Level Construction}\label{subsec:LEVEL_CONST}
-The first step of \acrshort{RACE} is to determine different \textit{\levels} in the graph followed by a related permutation of the graph data structure. \sout{This is equivalent to} \CAcomm{This we achieve} using well-known bandwidth reduction algorithms such as \acrfull{RCM} or \acrfull{BFS} \cite{BFS} based approaches. Though the RCM method is also implemented in \acrshort{RACE}, we use the  \acrshort{BFS} reordering in the following for better illustration purpose.
+
+The first step of \acrshort{RACE} is to determine
+different \textit{\levels} in the graph and permute the
+graph data structure. \sout{This is equivalent to} \CAcomm{This we achieve using}
+well-known bandwidth reduction algorithms such as \acrfull{RCM}
+or \acrfull{BFS} \cite{BFS}\@. Although the RCM method is
+also implemented in \acrshort{RACE}, we use the \acrshort{BFS}
+reordering in the following for simpler illustration.
+
 %\acrshort{BFS} can also be replaced with better bandwidth reduction algorithms like ``(Reverse) \CMfull".  
-As a first step we choose a root vertex which is assigned to the first \level ($L(0)$). All other \levels (\acrshort{L_i} for $i > 0$) are defined to  contain vertices that are in neighborhood of vertices in previous \level $L(i-1)$ but not in \level $L(i-2)$ \cite{BFS_level_def} \ie
+
+First we choose a \emph{root} vertex and assign it to the
+first \level, $L(0)$\@. For $i>0$, \level \acrshort{L_i}
+is defined to contain vertices that are in the neighborhood of vertices
+in $L(i-1)$ but not in the neighborhood of vertices
+in $L(i-2)$ \cite{BFS_level_def} \ie
 \begin{equation}\label{eq:level}
 L(i) = 
 \begin{cases}
 	 root & \text{ if } i = 0, \\
 	 u : u \in N(L(i-1))  & \text{ if } i = 1, \\
-	 u : u \in N(L(i-1)) \cap \overline{N(L(i-2))}  & otherwise.
+	 u : u \in N(L(i-1)) \cap \overline{N(L(i-2))}  & \text{otherwise}.
 \end{cases}   
 \end{equation}
-
-From \cref{eq:level} one finds that the $i$-th \level consist of all vertices that have a minimum distance of $i$ from the root node. See \Cref{alg:BFS} on how to determine minimum distance of each node from the root. The total number of \levels obtained with this graph traversal is denoted as \acrshort{totalLvl}. \Cref{fig:2d_7pt_level_construction} shows the \acrshort{totalLvl}=14 \levels of our artificial stencil discretization, where the index of each vertex ($v$) refers to the vertex number and the superscript represents the \level number, \ie
+From \cref{eq:level} one finds that the $i$-th \level consists of all
+vertices that have a minimum distance of $i$ from the root node.
+\Cref{alg:BFS} shows how to determine this distance and thus set up the
+\levels $L(i)$\@. We refer to the total number of \levels obtained with this graph
+as \acrshort{totalLvl}. \Cref{fig:2d_7pt_level_construction} shows the
+\acrshort{totalLvl}=14 \levels of our artificial stencil
+discretization, where the index of each vertex ($v$) is the
+vertex number and the superscript represents the \level number, \ie
 \begin{equation}\label{eq:node_notation}
-	v^i \implies v \in L(i).
+	v^i \implies v \in L(i)\eos
 \end{equation}
-Note that this is substantially different to the \levels used in ``level-scheduling" \cite{saad} approach which applies a ``Depth First Search".
+Note that the $L(i)$ are  substantially different from the \levels used in
+the ``level-scheduling" \cite{saad} approach, which applies ``Depth First
+Search".
 
 \setlength{\fboxsep}{0pt}%
 
@@ -96,41 +126,72 @@ Note that this is substantially different to the \levels used in ``level-schedul
 		}
 	\hspace{1em}
 	\subfloat[]{\label{fig:2d_7pt_levelPtr}\includegraphics[height=0.18\textheight,width=0.07\textwidth]{pics/permutation/levelPtr}}
-	\caption{Levels of the original graph (a) and the permuted graph (b) for the \stex. Insets show associated sparsity pattern of the stencils. The entries of  the \levelPtr associated with $G'$ are presented in (c).}
+	\caption{(a) Levels of the original graph and (b) the permuted
+          graph for the \stex. Insets show the corresponding sparsity patterns.
+          (c) Shows the entries of the \levelPtr array associated
+          with $G'$.}
 	\label{fig:2d-7pt_step_1_2}
 \end{figure}
 
 
 %\subsection{Permutation}\label{subsec:PERM}
-After the \levels have been determined, the matrix is permuted in the order of its \levels, such that the vertices in $L(i)$ are stored consecutively and appear before that of $L(i+1)$. \Cref{fig:2d-7pt_step_1_2} displays the graph ($G' = P(G)$) of the \stex after applying this permutation ($P$) and demonstrates the enhanced spatial locality of the vertices within and between \levels (see \cref{fig:2d_7pt_perm}) as compared to the original (lexicographic) numbering (see \cref{fig:2d_7pt_level_construction}).  Until now the procedure is the same as \acrshort{BFS} (or \acrshort{RCM}). 
 
-As \acrshort{RACE} uses information about the \levels for resolving dependencies in the coloring step, we store the entry point to each \level of the permuted graph ($G'$) in an array $\levelPtr[0:$ \acrshort{totalLvl}$]$, \ie \levels on $G'$ can be identified as:
+After the \levels have been determined, the matrix is permuted in the
+order of its \levels, such that the vertices in $L(i)$ are stored
+consecutively and appear before those of
+$L(i+1)$. \Cref{fig:2d-7pt_step_1_2} shows the graph ($G' = P(G)$)
+of the \stex after applying this permutation ($P$) and demonstrates
+the enhanced spatial locality of the vertices within and between
+\levels (see \cref{fig:2d_7pt_perm}) as compared to the original
+(lexicographic) numbering (see \cref{fig:2d_7pt_level_construction}).
+Until now the procedure is the same as \acrshort{BFS} (or
+\acrshort{RCM}).
+
+As \acrshort{RACE} uses information about the \levels for resolving
+dependencies in the coloring step, we store the index of the entry point to each
+\level in the permuted data structure (of $G'$) in an array
+$\levelPtr[0:$ \acrshort{totalLvl}$]$, so that \levels on $G'$ can be
+identified as:
 \begin{equation*}
-	L(i) = \set{ u : u \in [\levelPtr[i]:(\levelPtr[i+1]-1)] \text{ and } u \in V(G')} .
+  L(i) = \set{ u : u \in [\levelPtr[i]:(\levelPtr[i+1]-1)]
+    \text{ and } u \in V(G')}\eos
 \end{equation*}
-
-The entries of \levelPtr for \stex are shown in \cref{fig:2d_7pt_levelPtr}. 
+The entries of \levelPtr for the \stex are shown in \cref{fig:2d_7pt_levelPtr}. 
 %, and one could easily read from \levelPtr that vertices from $\levelPtr(4)=7$ to $\levelPtr(5)-1=10$ belongs to $L(4)$.
  
- \subsection{Distance-k coloring} \label{subsec:DK}
- The \levels generated above serve as the base for our \DK coloring procedure as they contain information about the neighborhood relation between the vertices of any two \levels. Following the definition in~\cite{dist_k_def}, two vertices are called \DK neighbors if the shortest path connecting them consists of at most $k$ edges.
-%In this section we introduce the idea of \DK neighbor and show how this idea can be used to color the matrix with the help of the level information that we already have in hand.
-This implies $u$ is a \DK neighbor of $v$ (denoted as $u\xrightarrow{k}v$)  if
- \begin{equation}\label{eq:dk}
-	  u\xrightarrow{k}v  \iff  v \in \set{ u \cup N(u) \cup N^2(u) \cup ... N^k(u) }.	 
- \end{equation}
- For undirected graphs as considered in this work  $u\xrightarrow{k}v$ also implies $v\xrightarrow{k}u$. Based on this definition we consider two vertices to be \DK independent if they are not \DK neighbors. Thus,  \levels $L(i)$ and $L(i\pm(k+j))$  of the permuted graph $G'$ are \DK independent for all $j\geq1$ as shown in the following:
-  \begin{corollary}\label{corollary_dk}
-   $L(i)$ and $L(i\pm(k+j))$ are \DK independent $\forall j\geq1$. 
-  \end{corollary}
-  \begin{proof}
-  	We prove by contradiction. Let there exist $u,v \in V(G')$ such that  $u \in L(i)$ and $v \in  L(i \pm (k+j)) \forall j\geq1$. Assume $u,v$ are \DK neighbors ($u\xrightarrow{k}v$). From \cref{eq:level}, \cref{eq:dk} and the fact $G'$ is undirected we get 
-  	\begin{align*}
-	  	u\xrightarrow{k}v \iff & v \in \set{L(i) \cup L(i \pm 1) \cup ... \cup L(i \pm k)} \\
-	  	\implies & v \notin L(i \pm (k+j)) \text{  } \forall j \geq 1
-  	\end{align*}
-  	which contradicts to $v \in L(i \pm (k+j) ) \forall j \geq 1$. This implies $u$ and $v$ are \DK independent.
-  \end{proof}
+\subsection{Distance-k coloring} \label{subsec:DK}
+
+The data structure generated above serves as the basis for our \DK coloring
+procedure as it contains information about the neighborhood relation
+between the vertices of any two \levels. Following the definition
+in~\cite{dist_k_def}, two vertices are called \DK neighbors if the
+shortest path connecting them consists of at most $k$ edges.
+%In this section we introduce the idea of \DK neighbor and show how
+%this idea can be used to color the matrix with the help of the level
+%information that we already have in hand.
+This implies that $u$ is a \DK neighbor of $v$ (referred to as
+$u\xrightarrow{k}v$) if
+\begin{equation}\label{eq:dk}
+  u\xrightarrow{k}v  \iff  v \in \set{ u \cup N(u) \cup N^2(u) \cup ... N^k(u) }\eos
+\end{equation}
+For undirected graphs as considered in this work $u\xrightarrow{k}v$
+also implies $v\xrightarrow{k}u$. Based on this definition we consider
+two vertices to be \DK independent if they are not \DK
+neighbors. Thus, \levels $L(i)$ and $L(i\pm(k+j))$ of the permuted
+graph $G'$ are \DK independent for all $j\geq1$ as shown in the
+following:
+\begin{corollary}\label{corollary_dk}
+$L(i)$ and $L(i\pm(k+j))$ are \DK independent $\forall j\geq1$. 
+\end{corollary}
+\begin{proof}
+We prove by contradiction. Let there exist $u,v \in V(G')$ such that  $u \in L(i)$ and $v \in  L(i \pm (k+j)) \forall j\geq1$. Assume $u,v$ are \DK neighbors ($u\xrightarrow{k}v$). From \cref{eq:level}, \cref{eq:dk} and the fact $G'$ is undirected we get 
+\begin{align*}
+  u\xrightarrow{k}v \iff & v \in \set{L(i) \cup L(i \pm 1) \cup ... \cup L(i \pm k)} \\
+  \implies & v \notin L(i \pm (k+j)) \text{  } \forall j \geq 1
+\end{align*}
+which contradicts to $v \in L(i \pm (k+j) ) \forall j \geq 1$. This
+implies $u$ and $v$ are \DK independent.
+\end{proof}
 
 \Cref{corollary_dk} implies that if there is a gap of \emph{\atleast} one \level between any two \levels ($L(i), L(i+2)$ for example) all the vertices between these two levels are \DONE independent. Similarly if the gap consists of \emph{\atleast} two \levels between any two \levels ($L(i), L(i+3)$ for example) we have \DTWO independent \levels.
   
