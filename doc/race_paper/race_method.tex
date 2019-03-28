@@ -111,7 +111,7 @@ Search".
 
 \setlength{\fboxsep}{0pt}%
 
-\begin{figure}[tbhp]
+\begin{figure}[tbp]
 	\centering
 	\subfloat[Level construction]{\label{fig:2d_7pt_level_construction}\includegraphics[height=0.18\textheight,width=0.32\textwidth]{pics/level_construction/stencil_2d_7pt}
 			\begin{picture}(0,0)
@@ -174,7 +174,7 @@ $u\xrightarrow{k}v$) if
 \begin{equation}\label{eq:dk}
   u\xrightarrow{k}v  \iff  v \in \set{ u \cup N(u) \cup N^2(u) \cup ... N^k(u) }\eos
 \end{equation}
-For undirected graphs as considered in this work $u\xrightarrow{k}v$
+For the undirected graphs as used here, $u\xrightarrow{k}v$
 also implies $v\xrightarrow{k}u$. Based on this definition we consider
 two vertices to be \DK independent if they are not \DK
 neighbors. Thus, \levels $L(i)$ and $L(i\pm(k+j))$ of the permuted
@@ -184,18 +184,25 @@ following:
 $L(i)$ and $L(i\pm(k+j))$ are \DK independent $\forall j\geq1$. 
 \end{corollary}
 \begin{proof}
-We prove by contradiction. Let there exist $u,v \in V(G')$ such that  $u \in L(i)$ and $v \in  L(i \pm (k+j)) \forall j\geq1$. Assume $u,v$ are \DK neighbors ($u\xrightarrow{k}v$). From \cref{eq:level}, \cref{eq:dk} and the fact $G'$ is undirected we get 
+  We prove by contradiction. Let there exist $u,v \in V(G')$ such that
+  $u \in L(i)$ and $v \in \bigcup\limits_{j\geq 1}L(i \pm (k+j))$. Assume $u,v$
+  are \DK neighbors ($u\xrightarrow{k}v$). From \cref{eq:level},
+  \cref{eq:dk} and the fact $G'$ is undirected we get
 \begin{align*}
   u\xrightarrow{k}v \iff & v \in \set{L(i) \cup L(i \pm 1) \cup ... \cup L(i \pm k)} \\
-  \implies & v \notin L(i \pm (k+j)) \text{  } \forall j \geq 1
+  \implies & v \notin L(i \pm (k+j)) \text{  } \forall j \geq 1\cma
 \end{align*}
-which contradicts to $v \in L(i \pm (k+j) ) \forall j \geq 1$. This
-implies $u$ and $v$ are \DK independent.
+which contradicts our assumption about $v$\@.
+Thus it follows that $u$ and $v$ are \DK independent.
 \end{proof}
 
-\Cref{corollary_dk} implies that if there is a gap of \emph{\atleast} one \level between any two \levels ($L(i), L(i+2)$ for example) all the vertices between these two levels are \DONE independent. Similarly if the gap consists of \emph{\atleast} two \levels between any two \levels ($L(i), L(i+3)$ for example) we have \DTWO independent \levels.
-  
- \begin{figure}[tbhp]
+\Cref{corollary_dk} implies that if there is a gap of at least
+one \level between any two \levels (e.g., $L(i) and L(i+2)$) all
+pairs of vertices between these two levels are \DONE independent. Similarly
+if the gap consists of at least two \levels between any two
+\levels (e.g., $L(i) and L(i+3)$) we have \DTWO independent
+\levels, and so on.
+ \begin{figure}[tbp]
  	\centering
  	\subfloat[\DONE independent \levelGroups]{\label{fig:2d_7pt_d1}\includegraphics[height=0.2\textheight,width=0.4\textwidth]{pics/dk_coloring/stencil_2d_7pt_d1}}
  	\hspace{2.5em}
@@ -204,11 +211,43 @@ implies $u$ and $v$ are \DK independent.
  	\label{fig:2d-7pt_d1_d2}
  \end{figure}
  
- % {\CA Maybe more explanation is required.} 
- The weak definition used in \cref{corollary_dk} offers many choices for forming \DK independent sets of vertices, which can then be executed in parallel. 
- In  \cref{fig:2d-7pt_d1_d2} we present one example each for \DONE (\cref{fig:2d_7pt_d1}) and \DTWO (\cref{fig:2d_7pt_d2}) coloring of our \stex. The \DONE coloring uses a straight forward approach by assigning two colors to alternating \levels, i.e. \levels of a color can be calculated concurrently. In case of \DTWO independency we refrain from using three colors but instead aggregate two adjacent \levels to form a \textit{\levelGroup} (denoted by \acrshort{T_i}) and perform a \DONE coloring on top of those groups. This guarantees that vertices of two \levelGroups of the same color are \DTWO independent and can be executed in parallel. Here, the vertices in $T(0)$, $T(2)$, $T(4)$, $T(6)$ can be operated by four different threads in parallel, i.e. one thread per \levelGroup.  After synchronisation the remaining four blue \levelGroups can also be executed in parallel. Note, that within a single \levelGroup all verticies are computed in their original order enabling high spatial locality for accessing them. This idea can be generalized such that for \DK coloring, each \levelGroup contains \atleast $k$ adjacent \levels but the number of \sout{\levels} \CAcomm{Was `rows' meant here?} per \levelGroup may be different. Thus formed \levelGroups are then \DONE colored. Then, all \levelGroups within a color can be executed in parallel. This simple approach allows to generate workload for $\frac{\acrshort{totalLvl}}{2 k}$ threads if \DK coloring is requested.
  
-However, choosing the same number of \levels for each \levelGroup may lead to severe load imbalances depending on the matrix structure. In particular the use of bandwidth reduction schemes such as BFS or RCM  will further worsen that problem due to the lens like shape of the reordered matrix (see \cref{fig:2d_7pt_perm} inset) leading to low workload for \sout{matrix rows at the top and bottom of the matrix} \CAcomm{\levelGroups containing the top and bottom rows of the matrix}. Compare \eg $T(0)$ and $T(7)$ with  $T(3)$ and $T(4)$ in \cref{fig:2d_7pt_d2}.
+The weak\GHcomm{definition of ``weak'' comes later on, so I'd drop it
+  here} definition used in \cref{corollary_dk} offers many choices for
+forming \DK independent sets of vertices, which can then be executed
+in parallel.  In \cref{fig:2d-7pt_d1_d2} we present one example each
+for \DONE (\cref{fig:2d_7pt_d1}) and \DTWO (\cref{fig:2d_7pt_d2})
+coloring of our \stex. The \DONE coloring uses a straightforward
+approach by assigning two colors to alternating \levels, i.e., \levels
+of a color can be calculated concurrently. In case of \DTWO
+independence we do not use three colors but rather aggregate two
+adjacent \levels to form a \textit{\levelGroup} (denoted by
+\acrshort{T_i}) and perform a \DONE coloring on top of those
+groups. This guarantees that vertices of two \levelGroups of the same
+color are \DTWO independent and can be executed in parallel. Here, the
+vertices in $T(0)$, $T(2)$, $T(4)$ and $T(6)$ can be operated on by
+four threads in parallel, i.e., one thread per \levelGroup.  After
+synchronization the remaining four blue \levelGroups can also be
+executed in parallel. Note that all vertices are computed in their
+original order within a single \levelGroup, which allows for good
+spatial access locality. This idea can be generalized: For \DK
+coloring, each \levelGroup contains \atleast $k$ adjacent \levels but
+the number of \levels \CAcomm{Was `rows' meant here?}\GHcomm{levels is correct IMO} per
+\levelGroup may be different. Thus formed \levelGroups are then \DONE
+colored. Then, all \levelGroups within a color can be executed in
+parallel. This simple approach allows to generate workload for
+${\acrshort{totalLvl}}/{2 k}$ threads if \DK coloring is
+requested.
+ 
+However, choosing the same number of \levels for each \levelGroup may
+cause severe load imbalance depending on the matrix structure. In
+particular the use of bandwidth reduction schemes such as BFS or RCM
+will further worsen that problem due to the lens-like shape of the
+reordered matrix (see inset of \cref{fig:2d_7pt_perm}), leading to low
+workload for \sout{matrix rows at the top and bottom of the matrix}
+\CAcomm{\levelGroups containing the top and bottom rows of the
+  matrix}. Compare, \eg $T(0)$ and $T(7)$ with $T(3)$ and $T(4)$ in
+\cref{fig:2d_7pt_d2}.
  %coloring by aggregating consecutive levels into \levelGroups (denoted by $T(i)$). In  \Cref{fig:2d_7pt_d1}  and \Cref{fig:2d_7pt_d2} we present one example for \DONE and \DTWO coloring of our \stex, respectively. The \DONE coloring uses straight forward approach by assigning two colors to alternating levels, i.e. \levelGroup and \level is equivalent here. For and applying a \DONE coloring on top of those groups as shown for \DTWO coloring in \cref{fig:2d_7pt_d2}.  In this context \Cref{fig:2d-7pt_d1_d2} contains two potential colorings for \DONE independent \levels as \DTWO coloring also solves \DONE dependencies.  One could also group some more of nearby \levels together to form a \levelGroup, and make this \DONE or \DTWO independent of other \levelGroups. The $i$-th \levelGroup would be denoted by $T(i)$. Difference between \level and  \levelGroup can be seen in \cref{fig:2d_7pt_d2}, for \cref{fig:2d_7pt_d1} \levelGroup and \level coincides. In principle one could compute on all independent \levelGroups in parallel, but sequentially within a \levelGroup, \ie for example in \cref{fig:2d_7pt_d2} $T(0)$, $T(2)$, $T(4)$, $T(6)$ can be operated by four different threads in parallel and in the next sweep rest \levelGroups. For the configurations seen in \cref{fig:2d-7pt_d1_d2} then we have $\frac{\acrshort{totalLvl}}{2}$ and $\frac{\acrshort{totalLvl}}{4}$ parallelism for \DONE and \DTWO kernels respectively.
  %However the problem with the configurations like the one seen in \cref{fig:2d-7pt_d1_d2} {\CA is that there, check Holger's comment} is load imbalances between threads because the number of rows (\nrows) per \levelGroup is not distributed evenly. As seen here in the case of \stex the threads working on extreme ends of graph (\eg $T(1), T(7)$) have a small amount of work compared to the threads working on middle (\eg $T(3), T(4)$). 
   
