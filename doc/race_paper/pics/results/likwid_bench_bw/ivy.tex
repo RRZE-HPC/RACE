@@ -40,10 +40,10 @@
 
 	  
 	   \addplot+[color=red,line width=2, mark=square, mark options=red, mark size=0.5pt] table[x expr=\thisrow{SIZE(KB)}*0.001, y expr=\thisrow{Bandwidth(MB/s)}*0.001 ,col sep=comma, ] {\LoadIvy}; \label{plot_one}
-	   \addlegendentry{Load}
+	   \addlegendentry{load-only}
 
 	   \addplot+[color=blue,line width=2, mark=square, mark options=blue, mark size=0.5pt] table[x expr=\thisrow{SIZE(KB)}*0.001, y expr=\thisrow{Bandwidth(MB/s)}*0.001*1.5 ,col sep=comma, ] {\CopyIvy}; \label{plot_two}
-	   \addlegendentry{Copy}
+	   \addlegendentry{copy}
 
 	   \addplot[red, line width=2, dashed] coordinates {(20,47) (2048,47)};
 	   \addplot[blue, line width=2, dashed] coordinates {(20,40) (2048,40)};

@@ -28,7 +28,7 @@ for i in 1:length(mtx_name)
 				k=reqd_field[l]
 				push!(row, string("& ",verbose[j,k],""))
 			end
-			push!(row, string("& {} &"))
+			#push!(row, string("& {} &"))
 			push!(row,string("\\\\"))
 			push!(table, row)
 			break

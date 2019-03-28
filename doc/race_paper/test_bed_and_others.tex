@@ -1,5 +1,5 @@
-\subsection{Test bed}
-We conducted all benchmarks on a single CPU socket from Intel's \IVB and  \SKX families, respectively, since these  represent probably the oldest and the latest Intel architectures in active use at the time of writing:
+\subsection{Hardware test bed}
+We conducted all benchmarks on a single CPU socket from Intel's \IVB and  \SKX families, respectively, since these  represent the oldest and the latest Intel architectures in active use within the scientific community at the time of writing:
 \begin{itemize}
 \item The \Intel \IVB architecture belongs to the class of ``classic'' designs with three inclusive cache levels. While the L1 and L2 caches are private to each core, the L3 cache is shared but scalabale in terms of bandwidth. The processor supports the AVX instruction set extension, which is capable of 256-bit wide \SIMD execution.
 \item Contrary to its predecessors, the \Intel \SKX architecture has a shared but non-inclusive victim L3 cache and much larger private L2 caches. The model we use in this work supports AVX-512, which features 512-bit wide \SIMD execution.
@@ -8,8 +8,8 @@ We conducted all benchmarks on a single CPU socket from Intel's \IVB and  \SKX f
 %  \end{comment}
  
 \end{itemize}
-Architectural details along with the measured memory bandwidths are given in \cref{tab:test_bed}. 
-All the measurements were done with \CPU clock speeds fixed at the indicated base frequencies.\GHcomm{What about clock speed reduction with SKX?}
+Architectural details along with the attainable memory bandwidths are given in \cref{tab:test_bed}. 
+All the measurements were done with \CPU clock speeds fixed at the indicated base frequencies. Note that for the \SKX architecture the clock frequency is scaled down internally to 2.2 \GHZ when using multi-core support and AVX-512 instruction set, however this is of minor importance for the algorithms discussed here.
 \begin{comment}
 \begin{table}[tbp]
 \footnotesize
@@ -39,25 +39,26 @@ All the measurements were done with \CPU clock speeds fixed at the indicated bas
 
 \begin{table}[tbp]
 	\footnotesize
-	\caption{Technical details (per socket) about the Intel CPUs used for the benchmarks. \CAcomm{Need to run on SKX @ 2.2GHz}}\label{tab:test_bed}
+	\caption{Technical details (per socket) about the Intel CPUs used for the benchmarks.}\label{tab:test_bed}
 	\begin{center}
 		%	\setlength{\tabcolsep}{3em}
 		\begin{tabular}{l|cc}
 			{Model name} & {Xeon\textsuperscript{\textregistered} E5-2660} & {Xeon\textsuperscript{\textregistered} Gold 6148} \\\midrule
 			{Microarchitecture} & {\IVB} & {\SKX} \\\midrule
 			{Base clock frequency} & {2.2 GHz} & {2.4 GHz}\\
+			{Uncore clock frequency} & {2.2 GHz} & {2.4 GHz}\\
 			{Physical cores per socket} & {10} & {20} \\
 			{L1D cache} & {10 $\times$ 32 \KiB} & {20 $\times$ 32 \KiB}\\
 			{L2 cache} & {10 $\times$ 256 \KiB} & {20 $\times$ 1 \MiB} \\
 			{L3 cache} & {25 \MiB} & {27.5 \MiB}\\
 			{L3 type} & {inclusive} & {non-inclusive, victim}\\
 			{Main memory} & {32 \GiB} & {45 \GiB}\\
-			{Bandwidth per socket, load only} & {47 \GBS} & {115 \GBS}\\ %TODO
+			{Bandwidth per socket, load-only} & {47 \GBS} & {115 \GBS}\\ %TODO
 			{Bandwidth per socket, copy} & {40 \GBS} & {104 \GBS}\\
 		\end{tabular}
 	\end{center}
 \end{table} 
-As the attainable main memory bandwidth is the input parameter to the \roofline model used later, we have carefully measured this value depending on the data set size for two access patterns (copy and load-only). The data presented in \cref{fig:size_vs_bw} basically show the characteristic performance drop if data set size is too large to fit into the \acrshort{LLC}, which is L3 cache on both architectures (cf. \cref{tab:test_bed} for the actual sizes). 
+As the attainable main memory bandwidth is the input parameter to the \roofline model used later, we have carefully measured this value depending on the data set size for two access patterns (copy and load-only). The data presented in \cref{fig:size_vs_bw} basically show the characteristic performance drop if data set size is too large to fit into the \acrfull{LLC}, which is L3 cache on both architectures (cf. \cref{tab:test_bed} for the actual sizes). 
 \begin{figure}[tbp]
 	\centering
 	\subfloat[\emph{\IVB}]{\label{fig:ivy_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/ivy}}
@@ -65,28 +66,28 @@ As the attainable main memory bandwidth is the input parameter to the \roofline 
 	\caption{Attained bandwidth vs. total data size for range from 20 \MB to 2 \GB. The dotted lines show the asymptotic bandwidth given in \cref{tab:test_bed} for the load-only and copy benchmark. The benchmarks were performed on the full socket using the \likwidBench tool. Note, the logarithmic scales.}
 	\label{fig:size_vs_bw}
 \end{figure}
-Interestingly there is no sharp drop at the exact size of the \acrshort{LLC} but a rather steady performance decrease with enhanced data access rates also for data set sizes up to twice the L3 size on \IVB. For \SKX this effect is even more pronounced as the non-inclusive victim L3 architecture only stores data which are not in L2 cache, thus the available cache size for an application may be the aggregate sizes of L2 and L3 caches on this architecture. The final bandwidth for the  \roofline model is chosen as the asymptotic value depicted in \cref{fig:size_vs_bw}. Of course caching effects are extremely sensitive to the data access pattern and thus the value presented here only provide simple upper bound for the \acrshort{SymmSpMV} kernel with its potentially strongly irregular data access. \CAcomm{need to rewrite: with its potentially ...}
+Interestingly there is no sharp drop at the exact size of the \acrshort{LLC} but a rather steady performance decrease with enhanced data access rates also for data set sizes up to twice the \acrshort{LLC} size on \IVB. For \SKX this effect is even more pronounced as the non-inclusive victim L3 cache architecture only stores data which are not in L2 cache, thus the available cache size for an application may be the aggregate sizes of the L2 and L3 caches on this architecture. The final bandwidth for the  \roofline model is chosen as the asymptotic value depicted in \cref{fig:size_vs_bw}. Of course caching effects are extremely sensitive to the data access pattern and thus the values presented here only provide simple upper bounds for the \acrshort{SymmSpMV} kernel with its potentially strong irregular data access. 
 
 \subsection{External Tools and Software}
-The following external libraries are used in this paper:\GHcomm{some versions missing}
+The following external libraries are used in this paper:
 \begin{description}
 	%TODO
 	\item[\LIKWID 4.3.2] \cite{LIKWID}  \likwidPerfctr was used for counting hardware events and measuring derived metrics. The bandwidths shown in \cref{tab:test_bed} were taken by the  \likwidBench tool.
-	\item[\COLPACK xxx] \cite{COLPACK} was used for pre-processing matrices via \acrshort{MC}.
-	\item[\SPMP xxx] \cite{SpMP} was used to perform \acrshort{RCM}.
+	\item[\COLPACK] \cite{COLPACK} was used for pre-processing matrices via \acrshort{MC}.
+	\item[\SPMP] \cite{SpMP} was used to perform \acrshort{RCM}.
 	\item[\METIS 5.1.0] \cite{METIS} was used for graph partitioning in \acrshort{ABMC}.
 	\item[\acrshort{MKL} 19.0.2] \cite{MKL} was used for performing some reference sparse matrix computations.
 \end{description}
-All code was compiled with the Intel compiler in version 19.0.2 and the following compiler flags: {\tt -fno-alias -xHost -O3} for \IVB and {\tt -fno-alias -xCORE-AVX512 -O3} for \SKX. \sout{We did not enforce AVX-512 wide SIMD instructions on \SKX because this feature is of minor importance for the algorithms discussed here.} \CAcomm{We did}
+All code was compiled with the Intel compiler in version 19.0.2 and the following compiler flags: {\tt -fno-alias -xHost -O3} for \IVB and {\tt -fno-alias -xCORE-AVX512 -O3} for \SKX.
 
 \subsection{Benchmark Matrices}
-Most test matrices were taken from the Suite\-Sparse Matrix Collection (former University of Florida Sparse Matrix Collection)~\cite{UOF} combining sets from two papers \cite{RSB,park_ls}, which allows  straightforward comparison of results.\GHcomm{Do we actually compare with them?}  We also added some matrices from quantum physics applications, which originate from the particular project context in which RACE was developed~\cite{ESSEX}.
+Most test matrices were taken from the Suite\-Sparse Matrix Collection (former University of Florida Sparse Matrix Collection)~\cite{UOF} combining sets from two related papers \cite{RSB,park_ls}, which allows the reader to make straightforward comparison of results.  We also added some matrices from quantum physics applications, which originate from the particular project context in which RACE was developed~\cite{ESSEX}.
 %The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by  Matrices from \ESSEX project are some of the matrices that are of interest in the iterative FEAST eigen value solver that internally uses Kaczmarz solver.
 As mentioned before we restrict ourselves to matrices representing undirected graphs.
-\cref{table:bench_matrices} gives an overview of the most important matrix properties.
+\cref{table:bench_matrices} gives an overview of the most important matrix properties like \acrfull{nrows}, \acrfull{nnz}, \acrfull{NNZR} along with the bandwidth of the matrix without ($bw$) and with ($bw_{RCM}$) \acrshort{RCM} pre-processing.
 \begin{table}[tb]
 	\footnotesize
-	\caption{Details of the benchmark matrices. \acrshort{nrows} is the number of matrix rows and \acrshort{nnz} is the number of nonzeros. $\acrshort{NNZR}=\acrshort{nnz}/\acrshort{nrows}$ is the average number of nonzeros per row. An asterisk in the `C' column indicates a corner case that will be discussed in detail, while an asterisk in column `S' marks a matrix from quantum physics that is not part of the SuiteSparse Matrix Collection. \CAcomm{TODO: fix table width}} \label{tab:test_mtx}
+	\caption{Details of the benchmark matrices. \acrshort{nrows} is the number of matrix rows and \acrshort{nnz} is the number of nonzeros. $\acrshort{NNZR}=\acrshort{nnz}/\acrshort{nrows}$ is the average number of nonzeros per row. $bw$ and $bw_{RCM}$ refers to the matrix bandwidth without and with \acrshort{RCM} pre-processing. Letter `C' in the parentheses of matrix name indicates a corner case matrix that will be discussed in detail, while letter `Q' marks a matrix from quantum physics that is not part of the SuiteSparse Matrix Collection.} \label{tab:test_mtx}
 	\label{table:bench_matrices}
 	\begin{center}
 		\input{pics/matrices/table.tex}
@@ -118,10 +119,10 @@ We evaluate our methods by parallelizing a simple but important sparse kernel \a
 Since the kernel is closely related to the \acrshort{SpMV} kernel by structure and computational intensity, we start with a discussion of \acrshort{SpMV} and extend it towards \acrshort{SymmSpMV} later. In all cases the aim is to derive realistic upper performance bounds, which can be estimated once the computational intensity and main memory bandwidth (\acrshort{b_s}, see \cref{tab:test_bed}) is known \cite{Williams_roofline}, \ie
   \begin{align}
    	\label{eq:upper_performance}
-   	P^{max}_\mathrm{kernel}  &= I_\mathrm{kernel}  \times b_S
+   	P_\mathrm{kernel}  &= I_\mathrm{kernel}  \times b_S
   \end{align}
 %Our kernels have considerably more loads compared to stores, therefore we choose $b_s$ to be the most optimistic (load-only) value from \cref{tab:test_bed}.
-Since bandwidth ($b_s$) depends on the ratio of load to store streams we present the model for both upper (load only) and lower bound (copy) bandwidth case.  
+Since bandwidth ($b_s$) depends on the ratio of load to store streams we present the model for both upper (load-only) and lower bound (copy) bandwidth case.  
  % Due to the nature of our kernels and matrices having considerable amount of non-zeros our algorithms have considerably more loads compared to stores, therefore we choose $b_s$ to be the most optimistic (load-only) value from \cref{tab:test_bed} if not mentioned otherwise.
   
   In the following we choose the \acrshort{CRS} storage format for the  implementation of \acrshort{SpMV} as well as  \acrshort{SymmSpMV} and assume symmetric matrices.
