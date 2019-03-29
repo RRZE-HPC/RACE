@@ -85,8 +85,9 @@
 \newcommand{\ie}{i.e.,\xspace}
 \newcommand{\cf}{cf. \xspace}
 \newcommand{\ESSEX}{ESSEX\xspace}
-\newcommand{\FLOP}{\mbox{Flops}\xspace}
-\newcommand{\BYTE}{\mbox{Byte}\xspace}
+\newcommand{\FLOP}{\mbox{flops}\xspace}
+\newcommand{\BYTE}{\mbox{bytes}\xspace}
+
 \newcommand{\MB}{MB\xspace}
 \newcommand{\KB}{kB\xspace}
 \newcommand{\GB}{GB\xspace}
@@ -204,7 +205,7 @@ results are in \cref{sec:experiments}, and the conclusions follow in
 \label{Sec:param_study}
 \input{parameter_study.tex}
 
-\section{Performance Evaluation of \acrshort{SymmSpMV} using \acrfull{RACE}}
+\section{Performance Evaluation of \acrshort{SymmSpMV} using \acrshort{RACE}}
 \label{Sec:expt}
 \input{experiment_and_results.tex}
 
@@ -234,6 +235,10 @@ together this example manuscript and supplement.
 
 
 \appendix
+\section{RACE Library}
+Our method has been implemented and consolidated into a library named \acrshort{RACE}. The library provides easy interface for parallelizing kernels having dependencies, user typically just needs to supply a callback function with the serial code (potentially with dependency) and specify the required hardware settings. Library will then parallelize and run the code in parallel. The library is made publicly available through the git repository.
+
+\CAcomm{If necessary description of \acrshort{RACE} library.}
 
 \section{Algorithms}
 %\subsection{Level Construction}
@@ -335,4 +340,5 @@ together this example manuscript and supplement.
 \end{algorithm} 
 %\lipsum[71]
 
+ 
 \end{document}
