@@ -10,7 +10,7 @@ SPMV_COL="2 3"
 SPMV_DELIM="|"
 
 ALPHA_TABLE=SpMV_RCM/result.txt
-ALPHA_COL="2 4"
+ALPHA_COL="2 5"
 ALPHA_DELIM="|"
 
 OUT_FILE=../RLM/result.txt

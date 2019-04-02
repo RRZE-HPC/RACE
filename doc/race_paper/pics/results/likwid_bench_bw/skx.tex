@@ -15,7 +15,7 @@
 \definecolor{color_3}{RGB}{0, 180, 255}
 \definecolor{color_4}{RGB}{245, 130, 48}
 
-	
+
 \begin{document}	
 %	\pgfplotstableread[col sep=comma] {ivy/load_avx/derived.txt} \LoadIvy
 	\pgfplotstableread[col sep=comma] {skx/load_avx512/derived.txt} \LoadSkx
@@ -46,7 +46,31 @@
 	   \addplot[red, line width=2, dashed] coordinates {(20,115) (2048,115)};
 	   \addplot[blue, line width=2, dashed] coordinates {(20,104) (2048,104)};
 
+		\foreach \mat in {61, 47, 68, 26, 24, 127, 68, 56, 52, 96}
+		{
+		  \addplot[gray, line width=1, dashed] coordinates {(\mat,100) (\mat,1200)};
+		}
+		
+	%	\def\matId{1, 2, 3, 7, 8, 10, 21}
+	%	\foreach \mat [count=\c,evaluate=\c as \id using {{\matId}[\c-1]}] in {61, 47, 68, 24, 127, 68, 96}
+	%	{
+	%		\edef\temp{\noexpand\node[black,rotate=90] at (axis cs: \mat-0.5,1250) {\id};}
+	%		\temp
+	%	}
 
+	%	\def\matId{4, 20}
+	%	\foreach \mat [count=\c,evaluate=\c as \id using {{\matId}[\c-1]}] in {26, 52}
+	%	{
+	%		\edef\temp{\noexpand\node[black,rotate=90] at (axis cs: \mat,1300) {\id};}
+	%		\temp
+	%	}
+		
+	%	\def\matId{15,20}
+	%	\foreach \mat [count=\c,evaluate=\c as \id using {{\matId}[\c-1]}] in {56}
+	%	{
+	%		\edef\temp{\noexpand\node[black,rotate=90] at (axis cs: \mat,1400) {\id};}
+	%		\temp
+	%	}
 	 \end{axis}
 	\end{tikzpicture}
 \end{document}

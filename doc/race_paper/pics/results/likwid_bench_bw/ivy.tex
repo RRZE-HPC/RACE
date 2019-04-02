@@ -48,6 +48,10 @@
 	   \addplot[red, line width=2, dashed] coordinates {(20,47) (2048,47)};
 	   \addplot[blue, line width=2, dashed] coordinates {(20,40) (2048,40)};
 	   
+	  	\foreach \mat in {26, 24}
+	 	{
+	 		\addplot[gray, line width=1, dashed] coordinates {(\mat,38) (\mat,280)};
+	    }
 	 \end{axis}
 	\end{tikzpicture}
 \end{document}

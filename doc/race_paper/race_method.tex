@@ -177,7 +177,7 @@ $u\xrightarrow{k}v$) if
 For the undirected graphs as used here, $u\xrightarrow{k}v$
 also implies $v\xrightarrow{k}u$. Based on this definition we consider
 two vertices to be \DK independent if they are not \DK
-neighbors, \CAcomm{and two \levels are said to be \DK independent if the vertices between them are \DK independent} Thus, \levels $L(i)$ and $L(i\pm(k+j))$ of the permuted
+neighbors, and two \levels are said to be \DK independent if the vertices between them are \DK independent. Thus, \levels $L(i)$ and $L(i\pm(k+j))$ of the permuted
 graph $G'$ are \DK independent for all $j\geq1$ as shown in the
 following:
 \begin{corollary}\label{corollary_dk}
@@ -246,11 +246,11 @@ will further worsen that problem due to the lens-like shape of the
 reordered matrix (see inset of \cref{fig:2d_7pt_perm}), leading to low
 workload for \levelGroups containing the top and bottom rows of the
   matrix. Compare, \eg $T(0)$ and $T(7)$ with $T(3)$ and $T(4)$ in
-\cref{fig:2d_7pt_d2}. \CAcomm{However, \cref{corollary_dk} does not require
-exact $k$ levels to be in a \levelGroup but is a ``weaker'' statement 
-requiring only ``\atleast'' k \levels in a \levelGroup. In
+\cref{fig:2d_7pt_d2}. However, \cref{corollary_dk} does not require
+exact $k$ levels to be in a \levelGroup but  
+requires only ``\atleast'' k \levels in a \levelGroup. In
 the following we exploit this concept to alleviate the imbalance
-problem.}
+problem.
  %coloring by aggregating consecutive levels into \levelGroups (denoted by $T(i)$). In  \Cref{fig:2d_7pt_d1}  and \Cref{fig:2d_7pt_d2} we present one example for \DONE and \DTWO coloring of our \stex, respectively. The \DONE coloring uses straight forward approach by assigning two colors to alternating levels, i.e. \levelGroup and \level is equivalent here. For and applying a \DONE coloring on top of those groups as shown for \DTWO coloring in \cref{fig:2d_7pt_d2}.  In this context \Cref{fig:2d-7pt_d1_d2} contains two potential colorings for \DONE independent \levels as \DTWO coloring also solves \DONE dependencies.  One could also group some more of nearby \levels together to form a \levelGroup, and make this \DONE or \DTWO independent of other \levelGroups. The $i$-th \levelGroup would be denoted by $T(i)$. Difference between \level and  \levelGroup can be seen in \cref{fig:2d_7pt_d2}, for \cref{fig:2d_7pt_d1} \levelGroup and \level coincides. In principle one could compute on all independent \levelGroups in parallel, but sequentially within a \levelGroup, \ie for example in \cref{fig:2d_7pt_d2} $T(0)$, $T(2)$, $T(4)$, $T(6)$ can be operated by four different threads in parallel and in the next sweep rest \levelGroups. For the configurations seen in \cref{fig:2d-7pt_d1_d2} then we have $\frac{\acrshort{totalLvl}}{2}$ and $\frac{\acrshort{totalLvl}}{4}$ parallelism for \DONE and \DTWO kernels respectively.
  %However the problem with the configurations like the one seen in \cref{fig:2d-7pt_d1_d2} {\CA is that there, check Holger's comment} is load imbalances between threads because the number of rows (\nrows) per \levelGroup is not distributed evenly. As seen here in the case of \stex the threads working on extreme ends of graph (\eg $T(1), T(7)$) have a small amount of work compared to the threads working on middle (\eg $T(3), T(4)$). 
   
@@ -283,7 +283,7 @@ The overall variance, which is target of our minimization procedure, is then fou
      
 
 	\subsection{Recursion}\label{subsec:REC}
-As discussed in \cref{subsec:DK} the maximum degree of parallelism is limited by the total number of levels (\acrshort{totalLvl}) and may be further reduced by level aggregation in the load balancing step.  To match the high levels of parallelism in modern compute devices we search for further parallelism within the \levelGroups.  Contrary to methods like \acrfull{MC} we didn't require all vertices in a \levelGroup to be \DONE (or \DK in general) independent of each other, rather we had a weak constraint as prescribed by \cref{corollary_dk}. There can exist more parallelism within the \levelGroups which we can interpret as \subgraphs.  Thus, we apply the three steps of our method recursively on selected \subgraphs to exploit the parallelism within them.  
+As discussed in \cref{subsec:DK} the maximum degree of parallelism is limited by the total number of levels (\acrshort{totalLvl}) and may be further reduced by level aggregation in the load balancing step.  To match the high levels of parallelism in modern compute devices we search for further parallelism within the \levelGroups.  Compared to methods like \acrfull{MC} we didn't require all vertices in a \levelGroup to be \DONE (or \DK in general) independent of each other, which is a consequence of our \level based approach where we required \DK independency between vertices of different levels but not within a level (see \cref{corollary_dk}). There can exist more parallelism within the \levelGroups which we can interpret as \subgraphs.  Thus, we apply the three steps of our method recursively on selected \subgraphs to exploit the parallelism within them.  
 %i.e.  \levelGroups which are recursively refined will be computed by multiple threads whereas unmodified \levelGroups will be assigned to a single thread. 
 
 In the following we first demonstrate in \cref{subsec:D1_dependency} the basic idea in the context of \DONE dependencies where all dependencies can be resolved within the given \levelGroup by design. However, for $k>1$ vertices in a \levelGroup may have a \DK dependencies through vertices in adjacent \levelGroups. We generalize our procedure to \DK dependencies as a second step in \cref{subsec:Dk_dependency}. Finally, in \cref{subsec:subgraph_selection} we apply the recursive scheme to our \stex and introduce proper sub-graph selection as well as global load balancing strategies. 

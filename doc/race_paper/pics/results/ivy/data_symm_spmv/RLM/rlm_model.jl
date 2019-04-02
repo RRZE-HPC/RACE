@@ -30,6 +30,13 @@ measured_alpha=readdlm(table_measured_alpha)
 measured_alpha_names=measured_alpha[1:end,1]
 measured_alpha_val=measured_alpha[1:end,2]
 
+for i in 1:length(measured_alpha_val)
+	if(measured_alpha_val[i] < 1/nnzr[i])
+		println(" resetting alpha for ", spmv_names[i]) 
+		measured_alpha_val[i] = 1/nnzr[i]
+	end
+end
+
 max_width=0
 for i in 1:length(names)
 	max_width=max(max_width, strwidth(names[i]))
