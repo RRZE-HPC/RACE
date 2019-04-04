@@ -6,6 +6,7 @@
 #include "error.h"
 #include "graph.h"
 #include "levelData.h"
+#include "macros.h"
 
 class Graph;
 

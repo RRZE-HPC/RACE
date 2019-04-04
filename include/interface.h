@@ -30,12 +30,12 @@ class RACE::Interface{
         int *initInvPerm;
         int *rowPtr;
         int *col;
-        int *zonePtr;
-        int zonePtrLen;
+/*        int *zonePtr;
+        int zonePtrLen;*/
         int *perm;
-        int permLen;
+//        int permLen;
         int *invPerm;
-        int invPermLen;
+//        int invPermLen;
         ZoneTree* zoneTree;
         std::vector<FuncManager*> funMan;
         //	FuncManager *funMan;

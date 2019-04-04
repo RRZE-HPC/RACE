@@ -25,6 +25,8 @@ Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, 
 
 
     levelData = new LevelData;
+    UNUSED(parentIdx);
+
 }
 
 Traverse::~Traverse()
