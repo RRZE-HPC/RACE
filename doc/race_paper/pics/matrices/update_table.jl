@@ -12,7 +12,7 @@ for i in 1:size(verbose)[1]
 end
 
 
-reqd_field=[3,5,7,9,11]
+reqd_field=[3,5,7,9,11,13]
 table=Any[]
 
 for i in 1:length(mtx_name)
@@ -28,7 +28,7 @@ for i in 1:length(mtx_name)
 				k=reqd_field[l]
 				push!(row, string("& ",verbose[j,k],""))
 			end
-			push!(row, string("& {} &"))
+			#push!(row, string("& {} &"))
 			push!(row,string("\\\\"))
 			push!(table, row)
 			break

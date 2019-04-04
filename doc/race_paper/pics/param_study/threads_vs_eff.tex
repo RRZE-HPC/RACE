@@ -33,6 +33,7 @@
 \definecolor{color_19}{RGB}{0, 0, 128}
 \definecolor{color_20}{RGB}{128, 128, 128}
 
+\newcommand{\folder}{data}
 \begin{document}
 	\pgfplotsset{compat=1.5}
 	%\begin{figure}
@@ -53,7 +54,7 @@
 	%  , $18^3$, $22^3$, $26^3$, $30^3$, $34^3$, $38^3$, $42^3$},
 	%scaled ticks=false,
 	%xmode=log,
-	xmin=1,xmax = 200,
+	xmin=1,xmax = 100,
 	ymin=0, ymax=1,
 %	title = {\LARGE{$n\_threads$ vs $\eta$ , matrix - \emph{inline\_1}, $\epsilon_2 = 40$} },
 	legend style={legend pos=south west, font=\LARGE},
@@ -63,8 +64,8 @@
 	%BEGIN_CODE%
 	
 	%MEASURE_START%
-	\addplot+[color=color_1, line width=2, mark options={color_1}] table[x =THREAD,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study/db/matrix_inline_1/eff_1_40/eff_2_40//derived.txt}; \label{plot_one}
-	\addlegendentry{$\epsilon_0 = 0.40$}
+	\addplot+[color=color_1, line width=2, mark options={color_1}] table[x =THREAD,y =Eff,col sep=space] {\folder/eff_50_50/derived.txt}; \label{plot_one}
+	\addlegendentry{$\epsilon_0 = 0.50$}
 	%MEASURE_STOP%
 
 
@@ -72,7 +73,7 @@
 	%BEGIN_CODE%
 	
 	%MEASURE_START%
-	\addplot+[color=color_2, line width=2, mark options={color_2}] table[x =THREAD,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study/db/matrix_inline_1/eff_1_70/eff_2_40//derived.txt}; \label{plot_two}
+	\addplot+[color=color_2, line width=2, mark options={color_2}] table[x =THREAD,y =Eff,col sep=space] {\folder/eff_70_50/derived.txt}; \label{plot_two}
 	\addlegendentry{$\epsilon_0 = 0.70$}
 	%MEASURE_STOP%
 
@@ -81,7 +82,7 @@
 	%BEGIN_CODE%
 	
 	%MEASURE_START%
-	\addplot+[color=color_3, line width=2, mark options={color_3}] table[x =THREAD,y =Eff,col sep=space] {/home/christiealappatt/Thesis/race_performance/RACE_paper_results/param_study/db/matrix_inline_1/eff_1_80/eff_2_40//derived.txt}; \label{plot_three}
+	\addplot+[color=color_3, line width=2, mark options={color_3}] table[x =THREAD,y =Eff,col sep=space] {\folder/eff_80_50/derived.txt}; \label{plot_three}
 	\addlegendentry{$\epsilon_0 = 0.80$}
 	%MEASURE_STOP%
 

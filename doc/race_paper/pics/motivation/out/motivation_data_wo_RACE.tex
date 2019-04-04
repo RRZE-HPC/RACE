@@ -35,7 +35,7 @@
 		bar width=16pt,
 		ymajorgrids = true,
 		grid style={dashed, gray!40},
-		ylabel = {\Large{Bytes/NNZ}},
+		ylabel = {\Large{B/$N_{NZ}$}},
 		symbolic x coords={SpMV, SymmSpMV-MC, SymmSpMV-ABMC},
 		x tick label style={rotate=25,font={\large}},
 		y tick label style={font={\Large}},
@@ -109,6 +109,8 @@
 		\addplot[draw=red,smooth,dashed, line width=3pt] coordinates { (SymmSpMV-MC,\ideal) (SymmSpMV-ABMC,\ideal)};
 				
 		\legend{MEM, L3, L2, Ideal SymmSpMV}
+		
+		\addplot[draw=red,smooth,dashed, line width=3pt, shorten >=-2.5em, shorten <=-2.5em] coordinates { (SymmSpMV-MC,\ideal) (SymmSpMV-ABMC,\ideal)};
 		\end{axis}
 	%	\node at (6.5,10) {Data traffic Comparison using LIKWID};
 		\end{tikzpicture}

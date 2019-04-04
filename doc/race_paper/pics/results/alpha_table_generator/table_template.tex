@@ -1,6 +1,9 @@
-\begin{tabular}{|l|l|S[round-mode=places,round-precision=2]|S[round-mode=places,round-precision=4]|S[round-mode=places,round-precision=4]|}
+\begin{tabular}{|l|l|S[round-mode=places,round-precision=4]|S[round-mode=places,round-precision=4]|S[round-mode=places,round-precision=4]|S[round-mode=places,round-precision=4]|}
 \toprule
-{Index} & {Matrix name} &  {nnz} & {$\alpha_{SKX}$} & {$\alpha_{IVB}$}  \\
+\multirow{2}{*}{Index} & \multirow{2}{*}{Matrix name} & \multicolumn{3}{c|}{$\alpha_{SpMV}$} & {$I_{\acrshort{SpMV}}(\alpha_{SpMV})$} \\
+%\midrule
+\cline{3-6}
+& &  {optimal} & {SKX} & {IVB} & {optimal}  \\
 \midrule
 %#TABLE_DATA#
 \bottomrule

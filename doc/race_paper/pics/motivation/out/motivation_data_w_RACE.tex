@@ -35,8 +35,8 @@
 		bar width=12pt,
 		ymajorgrids = true,
 		grid style={dashed, gray!40},
-		ylabel = {\Large{Bytes/NNZ}},
-		symbolic x coords={SpMV, SymmSpMV-MC, SymmSpMV-ABMC, SymmSpMV-RAC},
+		ylabel = {\Large{B/$N_{NZ}$}},
+		symbolic x coords={SpMV, SymmSpMV-MC, SymmSpMV-ABMC, SymmSpMV-RACE},
 		x tick label style={rotate=25,font={\large}},
 		y tick label style={font={\Large}},
 		xtick = data,
@@ -69,7 +69,7 @@
 		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 		
 		\addplot[pattern=horizontal lines]%style={ppurple,fill=ppurple}]
-		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC) (SymmSpMV-RAC,\memSYMMSPMVRACE)};
+		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC) (SymmSpMV-RACE,\memSYMMSPMVRACE)};
 
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMV
 		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)} %change to SpMV
@@ -85,7 +85,7 @@
 		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 
 		\addplot[fill=gray!180]%style={ppurple,fill=ppurple}]
-		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC) (SymmSpMV-RAC,\memSYMMSPMVRACE)};
+		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC) (SymmSpMV-RACE,\memSYMMSPMVRACE)};
 
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMV
 		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)} %change to SpMV
@@ -101,14 +101,15 @@
 		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 				
 		\addplot[pattern=vertical lines]%style={ppurple,fill=ppurple}]
-		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC) (SymmSpMV-RAC,\memSYMMSPMVRACE)};
+		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC) (SymmSpMV-RACE,\memSYMMSPMVRACE)};
 	
 		
 		\pgfkeys{/pgf/fpu=false}
 
-		\addplot[draw=red,smooth,dashed, line width=3pt] coordinates { (SymmSpMV-MC,\ideal) (SymmSpMV-ABMC,\ideal) (SymmSpMV-RAC,\ideal)};
+		\addplot[draw=red,smooth,dashed, line width=3pt] coordinates { (SymmSpMV-MC,\ideal) (SymmSpMV-ABMC,\ideal) (SymmSpMV-RACE,\ideal)};
 				
 		\legend{MEM, L3, L2, Ideal SymmSpMV}
+		\addplot[draw=red,smooth,dashed, line width=3pt, shorten >=-2em, shorten <=-2em] coordinates { (SymmSpMV-MC,\ideal) (SymmSpMV-RACE,\ideal)};
 		\end{axis}
 	%	\node at (6.5,10) {Data traffic Comparison using LIKWID};
 		\end{tikzpicture}

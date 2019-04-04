@@ -32,7 +32,7 @@
   \def\ymin{0}
   \def\ymax{30}
  
-  \begin{axis}[ xlabel={\Large{Threads}}, ylabel={\Large{Performance (GFlop/s)}}, ymode=linear,
+  \begin{axis}[ xlabel={\Large{Threads}}, ylabel={\Large{Performance (GF/s)}}, ymode=linear,
   x tick label style={font={\Large}},
   y tick label style={font={\Large}},
   %xtick={1000, 2744, 5832, 10648, 17576, 27000, 39304, 54872, 74088},
@@ -40,7 +40,8 @@
   %  , $18^3$, $22^3$, $26^3$, $30^3$, $34^3$, $38^3$, $42^3$},
   scaled ticks=false,
   %xmode=log,
-  xmin=1,xmax = 10,
+  xmin=0,xmax = 10,
+  ymin=0,
   %ymin=0, ymax=14,
   legend style={legend pos=north west}]
 
