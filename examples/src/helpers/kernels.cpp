@@ -33,6 +33,25 @@ void spmv(densemat* b, sparsemat* mat, densemat* x, int iterations)
     DELETE_ARG();
 }
 
+void plain_spmv(densemat* b, sparsemat* mat, densemat* x, int iterations)
+{
+
+    for(int i=0; i<iterations; ++i)
+    {
+#pragma omp parallel for schedule(static)
+        for(int row=0; row<mat->nrows; ++row)
+        {
+            double tmp = 0;
+            for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
+            {
+                tmp += mat->val[idx]*x->val[mat->col[idx]];
+            }
+            b->val[row] = tmp;
+        }
+    }
+}
+
+
 inline void SPMTV_KERNEL(int start, int end, void* args)
 {
     DECODE_FROM_VOID(args);
