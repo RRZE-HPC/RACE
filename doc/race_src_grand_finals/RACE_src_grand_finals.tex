@@ -1,0 +1,214 @@
+\documentclass[sigplan]{acmart}
+
+\usepackage{booktabs} % For formal tables
+\usepackage{xspace} 
+\usepackage{cleveref}
+\usepackage[acronym, nonumberlist]{glossaries} %texlive-generic-extra package
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{tikz}
+\usetikzlibrary{backgrounds}
+\usepackage{pgfplots}
+\usetikzlibrary{patterns}
+\usepackage{pgfplotstable}
+\usepackage{graphicx,epstopdf} 
+\usepackage[caption=false]{subfig} 
+%required
+%\glsdisablehyper
+
+\include{race_glossary}
+
+% Copyright
+\setcopyright{none}
+%\setcopyright{acmcopyright}
+%\setcopyright{acmlicensed}
+%\setcopyright{rightsretained}
+%\setcopyright{usgov}
+%\setcopyright{usgovmixed}
+%\setcopyright{cagov}
+%\setcopyright{cagovmixed}
+
+\settopmatter{printacmref=false}
+
+% DOI
+\acmDOI{}
+
+% ISBN
+\acmISBN{}
+
+%Conference
+\acmConference[ACM-SRC Grand Finals]{ACM Student Research Competition Grand
+	Finals}{2019}{USA}
+\acmYear{}
+\copyrightyear{2019}
+
+%\acmPrice{15.00}
+
+%\acmBadgeL[http://ctuning.org/ae/ppopp2016.html]{ae-logo}
+%\acmBadgeR[http://ctuning.org/ae/ppopp2016.html]{ae-logo}
+
+% Submission ID
+%\acmSubmissionID{123-A56-BU3}
+\def\GW{\color{blue}}
+\def\CA{\color{red}}
+
+\newcommand{\eos}{~.}
+\newcommand{\cma}{~,}
+\newcommand{\DONE}{distance-$1$\xspace}
+\newcommand{\DTWO}{distance-$2$\xspace}
+\newcommand{\DK}{distance-$k$\xspace}
+\newcommand{\DKM}{distance-($k-1$)\xspace}
+\newcommand{\etal}{et al.\xspace}
+\newcommand{\Intel}{Intel\xspace}
+\newcommand{\AMD}{AMD\xspace} 
+\newcommand{\IVB}{Ivy Bridge EP\xspace}
+\newcommand{\BDW}{Broadwell\xspace}
+\newcommand{\SKX}{Skylake SP\xspace}
+\newcommand{\NAP}{Naples\xspace}
+\newcommand{\EPY}{Epyc\xspace}
+\newcommand{\LIKWID}{LIKWID\xspace}
+\newcommand{\likwidBench}{\texttt{likwid-bench}\xspace}
+\newcommand{\likwidPerfctr}{\texttt{likwid-perfctr}\xspace}
+\newcommand{\ie}{i.e.,\xspace}
+\newcommand{\cf}{cf. \xspace}
+\newcommand{\ESSEX}{ESSEX\xspace}
+\newcommand{\FLOP}{\mbox{Flops}\xspace}
+\newcommand{\BYTE}{\mbox{Byte}\xspace}
+\newcommand{\MB}{MB\xspace}
+\newcommand{\KB}{kB\xspace}
+\newcommand{\GB}{GB\xspace}
+\newcommand{\TB}{TB\xspace}
+\newcommand{\GBS}{\GB/s}
+\newcommand{\MiB}{MiB\xspace}
+\newcommand{\KiB}{KiB\xspace}
+\newcommand{\GiB}{GiB\xspace}
+\newcommand{\TiB}{TiB\xspace}
+\newcommand{\GHZ}{\mbox{GHz}\xspace}
+\newcommand{\SIMD}{SIMD\xspace}
+\newcommand{\CPU}{CPU\xspace}
+\newcommand{\pt}{pt.\xspace}
+\newcommand{\Stex}{Stencil example\xspace}
+\newcommand{\stex}{stencil example\xspace}
+\newcommand{\Inorder}{In order\xspace}
+\newcommand{\inorder}{in order\xspace}
+\newcommand{\levelPtr}{{\tt level\_ptr}\xspace}
+\newcommand{\atleast}{at least\xspace}
+\newcommand{\level}{level\xspace}
+\newcommand{\levels}{levels\xspace}
+\newcommand{\levelGroup}{level group\xspace}
+\newcommand{\levelGroups}{level groups\xspace}
+\newcommand{\LevelGroups}{Level groups\xspace}
+\newcommand{\eg}{e.g.,\xspace}
+\newcommand{\aka}{a.k.a.\xspace}
+\newcommand{\subgraph}{sub-graph\xspace}
+\newcommand{\subgraphs}{sub-graphs\xspace}
+\newcommand{\levelTree}{{\tt level\_tree}\xspace}
+\newcommand{\HPC}{HPC\xspace}
+\newcommand{\effPar}{\emph{effective parallelism}\xspace}
+\newcommand{\effRow}{\emph{effective row}\xspace}
+\newcommand{\EffRow}{\emph{Effective row}\xspace}
+\newcommand{\upto}{up to \xspace}
+\newcommand{\fracUnit}[2]{\Big[\frac{\mbox{#1}}{\mbox{#2}}\Big]}
+\newcommand{\unit}[1]{\Big[\mbox{#1}\Big]}
+\newcommand{\roofline}{roof\/line\xspace}
+\newcommand{\METIS}{METIS\xspace}
+\newcommand{\COLPACK}{COLPACK\xspace}
+\newcommand{\SPMP}{Intel SpMP\xspace}
+%\newcommand{\MKL}{Intel MKL\xspace}
+\newcommand{\GF}{\mbox{GF/s}\xspace}
+\newcommand{\SCAMACTfull}{Scalable Matrix Collection\xspace}
+\newcommand{\SCAMACT}{ScaMac\xspace}
+\newcommand{\GHcomm}[1]{{\color{red}{#1}\color{black}}}
+\newcommand{\GWcomm}[1]{{\color{blue}{#1}\color{black}}}
+\newcommand{\OScomm}[1]{{\color{green}{#1}\color{black}}}
+\newcommand{\CAcomm}[1]{{\color{orange}{#1}\color{black}}}
+
+
+\begin{document}
+	
+	\title[RACE]{SC18:G: RACE - Recursive Algebraic Coloring Engine}
+	%\titlenote{Produces the permission block, and
+	%  copyright information}
+	%\subtitle{Poster Summary}
+	%\subtitlenote{The full version of the author's guide is available as
+	%  \texttt{acmart.pdf} document}
+	
+	\author{Christie Louis Alappat} \authornote{Friedrich-Alexander-Universit{\"a}t
+		Erlangen-N{\"u}rnberg, Germany}
+	%\affiliation{%
+	%\institution{Friedrich-Alexander-Universit{\"a}t (FAU) Erlangen-N{\"u}rnberg,
+	%Germany}
+	%\city{Erlangen}
+	%\country{Germany}
+	%}
+	
+	
+	\author{Advisors : Gerhard Wellein\textsuperscript{*}, Georg
+		Hager\textsuperscript{*}, Olaf Schenk } \authornote{Institute of Computational
+		Science, Lugano, Switzerland}
+	%\author{Georg Hager (advisor)} \authornotemark[1]
+	%\author{Olaf Schenk (advisor)} \authornote{Institute of Computational Science,
+	%Lugano, Switzerland}
+	
+	%\orcid{1234-5678-9012-3456}
+	%\affiliation{%
+	%	\institution{Friedrich-Alexander-Universit{\"a}t (FAU) Erlangen-N{\"u}rnberg,
+	%Germany}
+	%\city{Erlangen}
+	%\country{Germany}
+	%}
+	%\email{christie.alappat@fau.de}
+	
+	
+	%\author{Advisors: \and Gerhard Wellein (FAU) \and Georg Hager (FAU) \and Olaf
+	%Schenk (ICS, Lugano)}
+	
+	%\affiliation{%
+	%	\institution{Friedrich-Alexander-Universit{\"a}t Erlangen-N{\"u}rnberg}
+	%	\city{Erlangen}
+	%	\country{Germany}
+	%}
+	%\email{georg.hager@fau.de}
+	
+	%\author{Gerhard Wellein}
+	%\affiliation{%
+	%	\institution{Friedrich-Alexander-Universit{\"a}t Erlangen-N{\"u}rnberg}
+	%	\city{Erlangen}
+	%	\country{Germany}
+	%}
+	%\email{gerhard.wellein@fau.de}
+	
+	%\author{Olaf Schenk}
+	%\affiliation{%
+	%	\institution{Institute of Computational Science}
+	%	\city{Lugano}
+	%	\country{Switzerland}
+	%}
+	%\email{olaf.schenk@usi.ch}
+	
+	% The default list of authors is too long for headers.
+	\renewcommand{\shortauthors}{C. Alappat et al.}
+	
+	
+
+	
+	
+%	\keywords{Shared memory parallel, Distance-k dependency, Graph algorithm, Sparse
+%		matrices, Sparse linear algebra, Performance}
+	
+	%\begin{teaserfigure}
+	%  \includegraphics[width=\textwidth]{sampleteaser}
+	%  \caption{This is a teaser}
+	%  \label{fig:teaser}
+	%\end{teaserfigure}
+	
+	
+	\maketitle
+	
+	\input{RACE_body}
+	
+	\bibliographystyle{ACM-Reference-Format}
+	\bibliography{RACE_references}
+	
+\end{document}
+

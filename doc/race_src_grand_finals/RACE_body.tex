@@ -1,0 +1,194 @@
+	
+\section{Problem \& Motivation}
+	Sparse linear algebra is a key component in many of the scientific simulations
+	ranging from quantum physics to fluid and structural mechanics.
+	But unfortunately many iterative numerical methods for sparse systems 
+	and important building 	blocks of sparse linear algebra feature strong 
+	data dependencies rendering them difficult to be parallelized.
+	They may be	loop-carried dependencies as they occur in
+	many iterative solvers or preconditioners (e.g., Gauss-Seidel, Kaczmarz) 
+	or write conflicts as in the parallelization of building blocks such 
+	as symmetric sparse matrix vector or sparse matrix transpose vector multiplication.
+	Scalable, hardware-efficient parallelization of such kernels is known to be a 
+	challenge. Most of the typical solutions suffer from low performance
+	on modern hardware, are highly matrix specific, or require tailored
+    matrix storage formats.
+
+	In this paper we present a novel approach called \acrshort{RACE} that helps in
+	solving the general distance-k dependency problem for sparse kernels in a
+	hardware efficient manner. The \acrshort{RACE} method is motivated by the
+	shortcomings of multicoloring methods that are frequently used in this scenario.
+	The method works on simple data storage formats
+	like \acrfull{CRS}, and is highly scalable to meet the requirements of 
+	modern CPU based compute nodes. \medskip
+
+\noindent\textbf{Outline}
+
+
+\noindent	The paper is structured as follows. In \cref{sec:background} we discuss
+	the commonly occurring dependency problems and the conventional
+	approaches used to solve such kind of dependencies. \Cref{sec:uniqueness} 
+	shows the general issues that occur while using these conventional
+	approaches. We then describe the \acrshort{RACE} method, it's uniqueness
+	and how its	basic design circumvents the commonly occurring problems. 
+	Towards the end	in \cref{sec:results} we show the performance advantage
+	of \acrshort{RACE} compared to others and apply the method to implement
+	a parallel iterative sparse eigen value solver called FEAST, which we 
+	believe is the first iterative implementation of this eigen value solver.
+	
+	\begin{comment}
+	In this paper we present a novel approach called \acrshort{RACE} that helps in
+	solving the general distance-k dependency problem for sparse kernels in a
+	hardware efficient manner. The \acrshort{RACE} method is motivated by the
+	shortcomings of multicoloring methods that are frequently used in this scenario.
+	The method uses a recursive level-based approach to find optimal permutations
+	while preserving good data locality. A thorough performance analysis shows that
+	our method achieves high hardware efficiency on modern multi-core architectures
+	and it outperforms traditional \acrfull{MC} and \acrshort{MKL} implementations
+	by a factor of 2--2.5$\times$. We are on par with \acrfull{ABMC} method for
+	small matrices, while for large matrices we gain almost a factor of
+	1.5--2$\times$. Owing to the success of parallel implementations of
+	sparse kernels having dependencies we further demonstrate first results
+	of parallel iterative FEAST eigen solver using CGMN internal solver.
+	\end{comment}
+
+
+\section{Background \& Related Work} \label{sec:background}
+Many kernels that come across in sparse linear algebra are hard to 
+be parallelized due to dependencies. 
+%The two main class of dependencies that occur in this field are \DONE
+%dependency as in Gauss-Seidel iteration or a \DTWO dependency as they 
+%occur in \acrfull{KACZ} or \acrfull{SymmSpMV}. 
+
+\begin{algorithm}[tb]
+	\caption{\label{alg:symmSpMV} \acrshort{SymmSpMV} kernel,  $b=Ax$, in \acrshort{CRS} format.}
+	\begin{algorithmic}[1]
+		\For{$row=1:nrows$}
+			\State{$diag\_idx=rowPtr[row]$}
+			\State{$b[row] += A[diag\_idx]*x[row]$}
+			\For{$idx=rowPtr[row]+1:rowPtr[row+1]$}
+				\State{$b[row] += A[idx]*x[col[idx]]$}
+				\State{$b[col[idx]] += A[idx]*x[row]$} 
+			\EndFor
+		\EndFor
+	\end{algorithmic}
+\end{algorithm}
+
+One such example is \acrfull{SymmSpMV}. \Cref{alg:symmSpMV} shows
+the pseudo-code of \acrshort{SymmSpMV} kernel in \acrshort{CRS} matrix storage
+format. The kernel exploits the symmetry of the matrix ($A_{ij} = A_{ji}$) to
+reduce storage size and overall memory traffic. 
+However \acrshort{SymmSpMV} cannot be parallelized straightforward.
+For instance if two different threads work on
+two different rows in parallel it could potentially lead to simultaneous 
+writing to the same element ($b[col[idx]]$) of the indirectly accessed $b$ vector.
+This leads to write conflicts, and such kinds of dependency is called a \DTWO
+dependency. Such dependency along with \DONE as in Gauss-Seidel iteration
+are the commonly occurring dependencies in sparse kernels. In this paper
+we concentrate on \DTWO dependency problems, although the underlying method and
+library is capable of handling general \DK dependencies.
+
+
+Many solutions to these dependency problems have been proposed, such as 
+locking method and thread-private target arrays \cite{sparseX,thread_private_symm_spmv}.
+But these approaches could lead to performance degradation depending
+on the matrix due to serialization or increase in data traffic respectively.
+Recent researches include in the direction of special storage formats like
+ CSB \cite{CSB} or RSB \cite{RSB} but this require rewriting of existing 
+ code and lot of tuning. Another popular approach in the field is matrix 
+reordering technique, on which we focus here.
+One of the earliest work on reordering is the red-black 
+Gauss--Seidel scheme~\cite{RBGS}. 
+Later it has been generalized for sparse matrices and \DK dependent 
+problems by well-known \acrfull{MC} approaches \cite{MC, COLPACK}. 
+Variants like \acrfull{ABMC} \cite{ABMC} have tried to
+improve the  performance of the \acrshort{MC} methods. In \cite{feast_mc},
+\acrshort{MC} was applied to \acrshort{KACZ} kernel having  \DTWO dependency. 
+
+\section{Uniqueness of the approach} \label{sec:uniqueness}
+Approaches like \acrshort{MC} can help in parallelization of the kernel, however
+the method can destroy data locality of the matrix leading to low performance.
+\setlength{\belowcaptionskip}{-12pt}
+\begin{figure}[tb]
+	 \subfloat[Scaling performance]{\label{fig:motivation_symm_spmv}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_symm_spmv.tex}}}\hspace{1em}
+	 \subfloat[Data traffic]{\label{fig:motivation_data}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_data_wo_RACE.tex}}}
+	\caption{\label{fig:motivation}(a) Performance of \acrshort{SymmSpMV} with 
+		\acrshort{MC} and \acrshort{ABMC} compared to \acrshort{SpMV}. 
+		(b) Average main memory data traffic in bytes (B) per nonzero entry ($\acrshort{nnz}$) 
+		of the full matrix as measured with \LIKWID tool \cite{LIKWID}.}
+\end{figure}
+To demonstrate the effect we present in \cref{fig:motivation} performance and 
+data transfer volumes of  \acrshort{SymmSpMV} operation on \texttt{Spin-26} matrix 
+taken from quantum physics application. \Cref{fig:motivation_symm_spmv}
+shows performance in gigaflops (\GF) as a function of thread (core) count 
+on a single chip (1 socket) of \Intel \IVB (E5-2660) architecture 
+clocked at 2.2\GHZ.
+The general variant  of sparse matrix-vector multiplication (\acrshort{SpMV})
+ using the full matrix  serves as the yardstick for comparison. 
+Based on a naive performance analysis, as most of the sparse
+kernels are highly memory bound on modern architectures
+one would expect \acrshort{SymmSpMV} performance 
+to be almost twice that of \acrshort{SpMV}, due to half the data traffic. 
+However the \acrshort{SymmSpMV} implementation using \acrshort{MC} is more
+than three times slower.
+
+ The reason for this is the nature of \acrlong{MC} 
+permutation (reordering). For \DTWO coloring, \acrshort{MC}
+groups rows that do not overlap in any column entries \cite{dist_k_def} 
+(structurally orthogonal rows). These group of rows are referred to as
+a color. Due to this grouping one can parallelize all the rows within a color, 
+as this ensures in our \acrshort{SymmSpMV} example (see \cref{alg:symmSpMV})
+that threads operate on different rows having entirely different 
+$col[idx]$ avoiding write conflicts in $b$ vector.
+
+\begin{figure}[b]
+	\centering
+	\subfloat[Original ordering]{\scalebox{0.625}{\input{pics/alpha_problem/mc_alpha_unsymm_only_red_1.tex}}}\hspace{0.5em}
+	\subfloat[After \acrshort{MC} applied]{\scalebox{0.625}{\input{pics/alpha_problem/mc_alpha_unsymm_only_red_2.tex}}}
+	%	\includegraphics[scale=0.6]{pics/alpha_problem/mc_alpha_unsymm_only_red.tex}
+	\caption{Illustration of data locality degradation due to \acrshort{MC}.
+		Numbers represent thread id}
+\end{figure}
+
+\begin{itemize}
+	\item Start with MC and ABMC weakness, Spin matrix
+	\item Hardware efficiency and performance
+	\item Stress on data locality
+	\item Optimal permutations
+	\item Work on simple data storage format like \acrshort{CRS}
+\end{itemize}
+
+
+\section{RACE method}
+\begin{itemize}
+	\item The three steps, stress on locality
+	\item Recursion very brief and tree
+\end{itemize}
+
+
+\section{Results \& Contribution} \label{sec:results}
+\begin{itemize}
+	\item Test setup, brief is sufficient
+	\item Start with Spin matrix, and little RLM
+	\item SymmSpMV performance
+\end{itemize}
+\subsection{FEAST with RACE}
+\begin{itemize}
+	\item Briefly describe FEAST
+	\item Tell its implemented in MKL, we use Reverse Communication Interface (RCI) of
+		\acrshort{MKL} to implement inner linear solver
+	\item Tell why we need KACZ -> ill-conditioned linear system, robustness of KACZ -> only potential iterative solver. Tell 99\% of time it uses in this CGMN solver
+	\item To our knowledge first implementation that uses iterative inner linear system, which is really inevitable to scale and for large size problems
+	\item  Test setup, discrete laplacian, 10 inner eigenvalues, complex numbers 
+	\item Comparison with default Pardiso
+	\item Discuss on Big O ....
+\end{itemize}
+
+\subsection{Acknowledgements}
+\begin{itemize}
+	\item Thomas Gruber
+	\item RRZE and RWTH for providing computations time.
+\end{itemize}
+
+\section{Future Work}
+
