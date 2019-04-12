@@ -118,7 +118,7 @@ Depending on the matrix structure these approaches could lead to performance
  degradation  due to serialization and massive increase in data traffic.
 Recent researches in this direction use specialized storage formats like
  CSB \cite{CSB} or RSB \cite{RSB} but this requires rewriting of existing 
- code and lot of tuning.
+ code and lot of tuning. 
 
 %to Kaczmarz iterative solver having  dependency. 
  
@@ -138,18 +138,37 @@ Recent researches in this direction use specialized storage formats like
 %improve the  performance of the \acrshort{MC} methods. In \cite{feast_mc},
 %\acrshort{MC} was applied to \acrshort{KACZ} kernel having  \DTWO dependency. 
 
+
 \section{Uniqueness of the approach} \label{sec:uniqueness}
-Approaches like \acrshort{MC} can help in parallelization of the kernel, however
-the method can destroy data locality of the matrix leading to low performance.
-\setlength{\belowcaptionskip}{-12pt}
+Approaches like \acrshort{MC} can help in parallelization of kernels like \acrshort{SymmSpMV},
+%\setlength{\belowcaptionskip}{-12pt}
 \begin{figure}[tb]
-	 \subfloat[Scaling performance]{\label{fig:motivation_symm_spmv}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_symm_spmv.tex}}}\hspace{1em}
-	 \subfloat[Data traffic]{\label{fig:motivation_data}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_data_wo_RACE.tex}}}
-	\caption{\label{fig:motivation}(a) Performance of \acrshort{SymmSpMV} with 
-		\acrshort{MC} and \acrshort{ABMC} compared to \acrshort{SpMV}. 
-		(b) Average main memory data traffic in bytes (B) per nonzero entry ($\acrshort{nnz}$) 
-		of the full matrix as measured with \LIKWID tool \cite{LIKWID}.}
+	\centering
+	\subfloat[\label{fig:mc_problem_a} Original ordering]{\scalebox{0.625}{\input{pics/alpha_problem/mc_alpha_unsymm_only_red_1.tex}}}\hspace{0.5em}
+	\subfloat[After \acrshort{MC} applied]{\label{fig:mc_problem_b} \scalebox{0.625}{\input{pics/alpha_problem/mc_alpha_unsymm_only_red_2.tex}}}
+	%	\includegraphics[scale=0.6]{pics/alpha_problem/mc_alpha_unsymm_only_red.tex}
+	\caption{\label{fig:mc_problem} Illustration of data locality degradation due to \acrshort{MC}.
+		Numbers represent thread id}
 \end{figure}
+however the method can destroy data locality of the matrix leading to low performance.
+The reason for this is the nature of \acrlong{MC} 
+permutation. For \DTWO coloring, \acrshort{MC}
+groups rows that do not overlap in any column 
+entries \cite{dist_k_def} (structurally orthogonal rows).
+ These groups of rows are referred to as
+a color. Due to this grouping one can parallelize all the rows within a color, 
+as this ensures in our \acrshort{SymmSpMV} example (see \cref{alg:symmSpMV})
+that threads operate on different rows having entirely different 
+$col[idx]$ avoiding write conflicts in $b$ vector. \Cref{fig:mc_problem}
+shows an illustration of the \acrshort{MC} permutation carried out on
+a matrix (see \Cref{fig:mc_problem_a}) that initially has high data locality.
+The matrix after multicoloring permutation is seen in \Cref{fig:mc_problem_b},
+observe that within a color (for \eg red) none of the rows share same column entry. 
+Traversing the elements of the original matrix row by row, would require only 
+one time loading of the right-hand-side (RHS) vector entry, as the elements 
+
+
+
 To demonstrate the effect we present in \cref{fig:motivation} performance and 
 data transfer volumes of  \acrshort{SymmSpMV} operation on \texttt{Spin-26} matrix 
 taken from quantum physics application. \Cref{fig:motivation_symm_spmv}
@@ -165,23 +184,16 @@ to be almost twice that of \acrshort{SpMV}, due to half the data traffic.
 However the \acrshort{SymmSpMV} implementation using \acrshort{MC} is more
 than three times slower.
 
- The reason for this is the nature of \acrlong{MC} 
-permutation (reordering). For \DTWO coloring, \acrshort{MC}
-groups rows that do not overlap in any column entries \cite{dist_k_def} 
-(structurally orthogonal rows). These group of rows are referred to as
-a color. Due to this grouping one can parallelize all the rows within a color, 
-as this ensures in our \acrshort{SymmSpMV} example (see \cref{alg:symmSpMV})
-that threads operate on different rows having entirely different 
-$col[idx]$ avoiding write conflicts in $b$ vector.
 
 \begin{figure}[b]
-	\centering
-	\subfloat[Original ordering]{\scalebox{0.625}{\input{pics/alpha_problem/mc_alpha_unsymm_only_red_1.tex}}}\hspace{0.5em}
-	\subfloat[After \acrshort{MC} applied]{\scalebox{0.625}{\input{pics/alpha_problem/mc_alpha_unsymm_only_red_2.tex}}}
-	%	\includegraphics[scale=0.6]{pics/alpha_problem/mc_alpha_unsymm_only_red.tex}
-	\caption{Illustration of data locality degradation due to \acrshort{MC}.
-		Numbers represent thread id}
+	\subfloat[Scaling performance]{\label{fig:motivation_symm_spmv}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_symm_spmv.tex}}}\hspace{1em}
+	\subfloat[Data traffic]{\label{fig:motivation_data}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_data_wo_RACE.tex}}}
+	\caption{\label{fig:motivation}(a) Performance of \acrshort{SymmSpMV} with 
+		\acrshort{MC} and \acrshort{ABMC} compared to \acrshort{SpMV}. 
+		(b) Average main memory data traffic in bytes (B) per nonzero entry ($\acrshort{nnz}$) 
+		of the full matrix as measured with \LIKWID tool \cite{LIKWID}.}
 \end{figure}
+
 
 \begin{itemize}
 	\item Start with MC and ABMC weakness, Spin matrix
