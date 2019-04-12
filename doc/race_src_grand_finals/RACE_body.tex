@@ -1,40 +1,50 @@
 	
 \section{Problem \& Motivation}
-	Sparse linear algebra is a key component in many of the scientific simulations
+	Sparse linear algebra is a key component in various scientific simulations
 	ranging from quantum physics to fluid and structural mechanics.
-	But unfortunately many iterative numerical methods for sparse systems 
+	Unfortunately many iterative numerical methods for sparse systems 
 	and important building 	blocks of sparse linear algebra feature strong 
 	data dependencies rendering them difficult to be parallelized.
-	They may be	loop-carried dependencies as they occur in
-	many iterative solvers or preconditioners (e.g., Gauss-Seidel, Kaczmarz) 
-	or write conflicts as in the parallelization of building blocks such 
-	as symmetric sparse matrix vector or sparse matrix transpose vector multiplication.
+	Typically	loop-carried dependencies may occur in
+	iterative solvers  or preconditioners (e.g., Kaczmarz, Gauss-Seidel) 
+	or write conflicts show up in the parallelization of building blocks such 
+	as symmetric sparse matrix vector.
 	Scalable, hardware-efficient parallelization of such kernels is known to be a 
-	challenge. Most of the typical solutions suffer from low performance
-	on modern hardware, are highly matrix specific, or require tailored
-    matrix storage formats.
+	challenge. Multicoloring is a typical approach to enable parallelization
+	of iterative solvers with distance-k dependency \eg the 
+	red-black gauss-seidel solve distance-1 dependency problem.
+	However most of the standard solutions suffer from low performance
+	on modern hardware, are highly problem specific, or require tailored
+    sparse matrix storage formats.
 
-	In this paper we present a novel approach called \acrshort{RACE} that helps in
-	solving the general distance-k dependency problem for sparse kernels in a
-	hardware efficient manner. The \acrshort{RACE} method is motivated by the
-	shortcomings of multicoloring methods that are frequently used in this scenario.
-	The method works on simple data storage formats
-	like \acrfull{CRS}, and is highly scalable to meet the requirements of 
-	modern CPU based compute nodes. \medskip
+	\Acrshort{RACE} addresses these shortcomings by covering ideas from graph traversal
+	and multicoloring to ensure data locality, appropriate levels of parallelism,
+	and using hardware efficient parallelization schemes. The method is applicable
+	to many problems (\ie matrix structures) and general sparse data storage formats.
+	
+%	In this paper we present a novel approach called \acrshort{RACE} that helps in
+%	solving the general distance-k dependency problem for sparse kernels in a
+%	hardware efficient manner. The \acrshort{RACE} method is motivated by the
+%	shortcomings of multicoloring methods that are frequently used in this scenario.
+%	The method works on simple data storage formats
+%	like \acrfull{CRS}, and is highly scalable to meet the requirements of 
+%	modern CPU based compute nodes. \medskip
 
 \noindent\textbf{Outline}
 
 
-\noindent	The paper is structured as follows. In \cref{sec:background} we discuss
-	the commonly occurring dependency problems and the conventional
+\noindent	The paper is structured as follows. \Cref{sec:background} describes
+	the underlying dependency problems and the conventional
 	approaches used to solve such kind of dependencies. \Cref{sec:uniqueness} 
 	shows the general issues that occur while using these conventional
-	approaches. We then describe the \acrshort{RACE} method, it's uniqueness
-	and how its	basic design circumvents the commonly occurring problems. 
-	Towards the end	in \cref{sec:results} we show the performance advantage
-	of \acrshort{RACE} compared to others and apply the method to implement
-	a parallel iterative sparse eigen value solver called FEAST, which we 
-	believe is the first iterative implementation of this eigen value solver.
+	approaches. We then introduce the \acrshort{RACE} method in \cref{sec:RACE_method},
+	it's uniqueness	and how its	basic design addresses the problems. 
+	In \cref{sec:results} we compare \acrshort{RACE} performance to
+	available standard approaches, and finally apply the \acrshort{RACE}
+	method to parallelize an eigenvalue solver provided by \acrshort{MKL}.
+	It demonstrates the necessity of the \acrshort{RACE} method to solve 
+	large problems that is far beyond the reach of current state-of-the-art
+	implementations.
 	
 	\begin{comment}
 	In this paper we present a novel approach called \acrshort{RACE} that helps in
@@ -54,7 +64,7 @@
 
 
 \section{Background \& Related Work} \label{sec:background}
-Many kernels that come across in sparse linear algebra are hard to 
+Many numerical methods that come across in sparse linear algebra are hard to 
 be parallelized due to dependencies. 
 %The two main class of dependencies that occur in this field are \DONE
 %dependency as in Gauss-Seidel iteration or a \DTWO dependency as they 
@@ -74,36 +84,59 @@ be parallelized due to dependencies.
 	\end{algorithmic}
 \end{algorithm}
 
-One such example is \acrfull{SymmSpMV}. \Cref{alg:symmSpMV} shows
-the pseudo-code of \acrshort{SymmSpMV} kernel in \acrshort{CRS} matrix storage
-format. The kernel exploits the symmetry of the matrix ($A_{ij} = A_{ji}$) to
-reduce storage size and overall memory traffic. 
-However \acrshort{SymmSpMV} cannot be parallelized straightforward.
-For instance if two different threads work on
-two different rows in parallel it could potentially lead to simultaneous 
-writing to the same element ($b[col[idx]]$) of the indirectly accessed $b$ vector.
-This leads to write conflicts, and such kinds of dependency is called a \DTWO
-dependency. Such dependency along with \DONE as in Gauss-Seidel iteration
-are the commonly occurring dependencies in sparse kernels. In this paper
-we concentrate on \DTWO dependency problems, although the underlying method and
-library is capable of handling general \DK dependencies.
+ 
+As a typical example for \DTWO dependency problem we use \acrfull{SymmSpMV}. 
+\Cref{alg:symmSpMV} shows the pseudo-code of \acrshort{SymmSpMV} kernel 
+in \acrfull{CRS} \cite{CRS} matrix storage format. The kernel exploits the symmetry
+of the matrix ($A_{ij} = A_{ji}$) to reduce storage size and overall 
+memory traffic which is the biggest bottleneck on modern CPUs. 
+However \acrshort{SymmSpMV} cannot be parallelized straightforward, two 
+different threads working on two different rows in parallel could potentially 
+write to the same element ($b[col[idx]]$) of the indirectly accessed $b$ vector
+causing write conflicts.
+In terms of graph theory this means a vertex (row in a matrix) and 
+its \DTWO neighbor \cite{dist_k_def} cannot be operated in parallel.
+In this paper we concentrate on such \DTWO dependency problems, although 
+the underlying method and library is capable of handling 
+general \DK dependencies.
 
 
-Many solutions to these dependency problems have been proposed, such as 
-locking method and thread-private target arrays \cite{sparseX,thread_private_symm_spmv}.
-But these approaches could lead to performance degradation depending
-on the matrix due to serialization or increase in data traffic respectively.
-Recent researches include in the direction of special storage formats like
- CSB \cite{CSB} or RSB \cite{RSB} but this require rewriting of existing 
- code and lot of tuning. Another popular approach in the field is matrix 
-reordering technique, on which we focus here.
-One of the earliest work on reordering is the red-black 
-Gauss--Seidel scheme~\cite{RBGS}. 
-Later it has been generalized for sparse matrices and \DK dependent 
-problems by well-known \acrfull{MC} approaches \cite{MC, COLPACK}. 
-Variants like \acrfull{ABMC} \cite{ABMC} have tried to
-improve the  performance of the \acrshort{MC} methods. In \cite{feast_mc},
-\acrshort{MC} was applied to \acrshort{KACZ} kernel having  \DTWO dependency. 
+A popular approach to solve such kind of dependency problem is  the
+\acrfull{MC} techniques. Earliest work on coloring is the red-black 
+Gauss-Seidel scheme~\cite{RBGS}, which was applied to  matrices with
+ known sparsity pattern. 
+Later \acrlong{MC} techniques have been expanded using graph theory
+for general sparse matrices \cite{MC, COLPACK}.
+Variants like \acrfull{ABMC} \cite{ABMC} have tried to improve the performance 
+of the \acrshort{MC} methods. 
+In \cite{feast_mc}, \acrshort{MC} has been applied to Kaczmarz iterative solver
+having \DTWO dependency.
+Specifically to \acrshort{SymmSpMV} there has been no previous attempt to use 
+graph based techniques. General solutions for \acrshort{SymmSpMV} are 
+locking-based methods and thread-private target arrays \cite{sparseX,thread_private_symm_spmv}.
+Depending on the matrix structure these approaches could lead to performance
+ degradation  due to serialization and massive increase in data traffic.
+Recent researches in this direction use specialized storage formats like
+ CSB \cite{CSB} or RSB \cite{RSB} but this requires rewriting of existing 
+ code and lot of tuning.
+
+%to Kaczmarz iterative solver having  dependency. 
+ 
+%Many solution to these dependency problems have been proposed, such as 
+%locking method and thread-private target arrays \cite{sparseX,thread_private_symm_spmv}.
+%But these approaches could lead to performance degradation depending
+%on the matrix due to serialization or increase in data traffic respectively.
+%Recent researches include in the direction of special storage formats like
+% CSB \cite{CSB} or RSB \cite{RSB} but this require rewriting of existing 
+% code and lot of tuning. Another popular approach in the field is matrix 
+%reordering technique, on which we focus here.
+%One of the earliest work on reordering is the red-black 
+%Gauss--Seidel scheme~\cite{RBGS}. 
+%Later it has been generalized for sparse matrices and \DK dependent 
+%problems by well-known \acrfull{MC} approaches \cite{MC, COLPACK}. 
+%Variants like \acrfull{ABMC} \cite{ABMC} have tried to
+%improve the  performance of the \acrshort{MC} methods. In \cite{feast_mc},
+%\acrshort{MC} was applied to \acrshort{KACZ} kernel having  \DTWO dependency. 
 
 \section{Uniqueness of the approach} \label{sec:uniqueness}
 Approaches like \acrshort{MC} can help in parallelization of the kernel, however
@@ -159,7 +192,7 @@ $col[idx]$ avoiding write conflicts in $b$ vector.
 \end{itemize}
 
 
-\section{RACE method}
+\section{RACE method} \label{sec:RACE_method}
 \begin{itemize}
 	\item The three steps, stress on locality
 	\item Recursion very brief and tree
@@ -173,6 +206,14 @@ $col[idx]$ avoiding write conflicts in $b$ vector.
 	\item SymmSpMV performance
 \end{itemize}
 \subsection{FEAST with RACE}
+\begin{figure}[b]
+	\centering
+	\scalebox{0.56}{\input{pics/feast/skx/feast_BENCH3D}}
+	%	\includegraphics[scale=0.6]{pics/alpha_problem/mc_alpha_unsymm_only_red.tex}
+	\caption{Comparison of FEAST with default \acrshort{MKL} direct solver and 
+		iterative solver CGMN parallelized using \acrshort{RACE}. The experiment is
+		run on one socket of \SKX (Platinum 8160) chip.}
+\end{figure}
 \begin{itemize}
 	\item Briefly describe FEAST
 	\item Tell its implemented in MKL, we use Reverse Communication Interface (RCI) of
@@ -184,7 +225,7 @@ $col[idx]$ avoiding write conflicts in $b$ vector.
 	\item Discuss on Big O ....
 \end{itemize}
 
-\subsection{Acknowledgements}
+\subsection{Acknowledgments}
 \begin{itemize}
 	\item Thomas Gruber
 	\item RRZE and RWTH for providing computations time.
