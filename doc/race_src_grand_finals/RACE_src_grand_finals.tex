@@ -13,6 +13,7 @@
 \usepackage{pgfplotstable}
 \usepackage{graphicx,epstopdf} 
 \usepackage[caption=false]{subfig} 
+\usepgfplotslibrary{fillbetween}
 %required
 %\glsdisablehyper
 
@@ -133,19 +134,18 @@
 	%\subtitlenote{The full version of the author's guide is available as
 	%  \texttt{acmart.pdf} document}
 	
-	\author{Christie Louis Alappat} \authornote{Friedrich-Alexander-Universit{\"a}t
-		Erlangen-N{\"u}rnberg, Germany}
-	%\affiliation{%
-	%\institution{Friedrich-Alexander-Universit{\"a}t (FAU) Erlangen-N{\"u}rnberg,
-	%Germany}
-	%\city{Erlangen}
-	%\country{Germany}
-	%}
+	\author{Christie Louis Alappat and Gerhard Wellein} 
+	%\authornote{Friedrich-Alexander-Universit{\"a}t
+	%	Erlangen-N{\"u}rnberg, Germany}
+	\affiliation{%
+	\institution{Friedrich-Alexander-Universit{\"a}t (FAU) Erlangen-N{\"u}rnberg,
+	Germany}
+%	\city{Erlangen}
+%	\country{Germany}
+	}
 	
 	
-	\author{Advisors : Gerhard Wellein\textsuperscript{*}, Georg
-		Hager\textsuperscript{*}, Olaf Schenk } \authornote{Institute of Computational
-		Science, Lugano, Switzerland}
+%	\author{ Gerhard Wellein\textsuperscript{*}} 
 	%\author{Georg Hager (advisor)} \authornotemark[1]
 	%\author{Olaf Schenk (advisor)} \authornote{Institute of Computational Science,
 	%Lugano, Switzerland}
@@ -187,7 +187,7 @@
 	%\email{olaf.schenk@usi.ch}
 	
 	% The default list of authors is too long for headers.
-	\renewcommand{\shortauthors}{C. Alappat et al.}
+	\renewcommand{\shortauthors}{C. Alappat}
 	
 	
 

@@ -138,7 +138,6 @@ Recent researches in this direction use specialized storage formats like
 %improve the  performance of the \acrshort{MC} methods. In \cite{feast_mc},
 %\acrshort{MC} was applied to \acrshort{KACZ} kernel having  \DTWO dependency. 
 
-
 \section{Uniqueness of the approach} \label{sec:uniqueness}
 Approaches like \acrshort{MC} can help in parallelization of kernels like \acrshort{SymmSpMV},
 %\setlength{\belowcaptionskip}{-12pt}
@@ -155,26 +154,66 @@ The reason for this is the nature of \acrlong{MC}
 permutation. For \DTWO coloring, \acrshort{MC}
 groups rows that do not overlap in any column 
 entries \cite{dist_k_def} (structurally orthogonal rows).
- These groups of rows are referred to as
-a color. Due to this grouping one can parallelize all the rows within a color, 
+ These groups of rows are referred to as colors. 
+ Due to this grouping one can parallelize all the rows within a color, 
 as this ensures in our \acrshort{SymmSpMV} example (see \cref{alg:symmSpMV})
 that threads operate on different rows having entirely different 
 $col[idx]$ avoiding write conflicts in $b$ vector. \Cref{fig:mc_problem}
-shows an illustration of the \acrshort{MC} permutation carried out on
-a matrix (see \Cref{fig:mc_problem_a}) that initially has high data locality.
-The matrix after multicoloring permutation is seen in \Cref{fig:mc_problem_b},
-observe that within a color (for \eg red) none of the rows share same column entry. 
-Traversing the elements of the original matrix row by row, would require only 
-one time loading of the right-hand-side (RHS) vector entry, as the elements 
+shows an illustration of a matrix before (\Cref{fig:mc_problem_a}) and 
+after (\Cref{fig:mc_problem_b}) applying \acrshort{MC} permutation.
+Observe that within a color (for \eg red) none of the rows share same column index.
+As the matrix is traversed row by row (see \cref{alg:symmSpMV}) the original matrix
+has good data locality and most of the RHS accesses correspond to nearby elements 
+that were loaded in the computation of previous rows.
+This ensures the RHS vector needs to be loaded only
+once from main memory, and the rest of the accesses are from small but
+fast caches. However coloring the matrix destroys this data locality, for example
+in \Cref{fig:mc_problem_b} computing on all the red colored rows leads to loading the 
+RHS vector completely. Now if the cache is small to hold only  six elements, 
+computation on green and blue rows require loading almost the entire RHS vector again 
+from the slow main memory. 
+
+%The matrix after multicoloring permutation is seen in \Cref{fig:mc_problem_b},
+%observe that within a color (for \eg red) none of the rows share same column entry. 
+%Traversing the elements of the original matrix row by row, would require only 
+%one time loading of the right-hand-side (RHS) vector entry, as the elements 
+% carried out on
+% a matrix (see \Cref{fig:mc_problem_a}) that initially has high data locality.
+
+\begin{figure}[b]
+	\subfloat[Scaling performance]{\label{fig:motivation_symm_spmv}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_symm_spmv.tex}}}\hspace{1em}
+	\subfloat[Data traffic]{\label{fig:motivation_data}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_data_wo_RACE.tex}}}
+	\caption{\label{fig:motivation}(a) Performance of \acrshort{SymmSpMV} with 
+		\acrshort{MC} and \acrshort{ABMC} compared to \acrshort{RACE}. 
+		(b) Average main memory data traffic in bytes (B) per nonzero entry ($\acrshort{nnz}$) 
+		of the full matrix as measured with \LIKWID tool \cite{LIKWID}. The ideal data traffic
+		as predicted by performance model is shown for reference.}
+\end{figure}
+
+The data locality along with secondary effects of coloring like 
+synchronization costs and false sharing lead to performance degradation.
+To demonstrate this we present in \Cref{fig:motivation} performance and 
+data transfer volumes of \acrshort{SymmSpMV} computation using various coloring methods.
+The experiment was done on \texttt{Spin-26} matrix taken from quantum physics application
+and the hardware was one socket of \Intel \IVB (E5-2660) clocked at 2.2\,\GHZ.
+\Cref{fig:motivation_data} shows the average main memory data traffic per non-zero \CAcomm{(Actually nnz of general matrix, but I think this is fine here)} of the 
+matrix during \acrshort{SymmSpMV} execution. It can be clearly seen that 
+the memory traffic is almost $3 \times$ and $4 \times$ higher 
+for \acrshort{ABMC} and \acrshort{MC} methods compared to ideal traffic (red line) predicted
+by performance model\footnote{See \cref{sec:RACE_method} for more details on modeling.}.
+The extra data traffic is mainly due to the low data locality and thereby incurred 
+extra accesses of RHS vector. 
+As main memory bandwidth is the main bottleneck on modern compute devices
+ this extra traffic reflects directly on the performance 
+ seen in \Cref{fig:motivation_symm_spmv}, where the ideal achievable
+ performance is $\approx 7.6\,\GF$. However with our \acrshort{RACE} method 
+both the data traffic and performance remains close to the ideal case, 
+hence having a speed-up of almost $5\times$ compared to other methods.
 
 
-
-To demonstrate the effect we present in \cref{fig:motivation} performance and 
-data transfer volumes of  \acrshort{SymmSpMV} operation on \texttt{Spin-26} matrix 
-taken from quantum physics application. \Cref{fig:motivation_symm_spmv}
-shows performance in gigaflops (\GF) as a function of thread (core) count 
-on a single chip (1 socket) of \Intel \IVB (E5-2660) architecture 
-clocked at 2.2\GHZ.
+\begin{comment}
+\Cref{fig:motivation_symm_spmv} shows performance in giga floating point 
+operations per second (\GF) as a function of thread (core).
 The general variant  of sparse matrix-vector multiplication (\acrshort{SpMV})
  using the full matrix  serves as the yardstick for comparison. 
 Based on a naive performance analysis, as most of the sparse
@@ -183,29 +222,14 @@ one would expect \acrshort{SymmSpMV} performance
 to be almost twice that of \acrshort{SpMV}, due to half the data traffic. 
 However the \acrshort{SymmSpMV} implementation using \acrshort{MC} is more
 than three times slower.
+\end{comment}
 
-
-\begin{figure}[b]
-	\subfloat[Scaling performance]{\label{fig:motivation_symm_spmv}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_symm_spmv.tex}}}\hspace{1em}
-	\subfloat[Data traffic]{\label{fig:motivation_data}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_data_wo_RACE.tex}}}
-	\caption{\label{fig:motivation}(a) Performance of \acrshort{SymmSpMV} with 
-		\acrshort{MC} and \acrshort{ABMC} compared to \acrshort{SpMV}. 
-		(b) Average main memory data traffic in bytes (B) per nonzero entry ($\acrshort{nnz}$) 
-		of the full matrix as measured with \LIKWID tool \cite{LIKWID}.}
-\end{figure}
-
-
-\begin{itemize}
-	\item Start with MC and ABMC weakness, Spin matrix
-	\item Hardware efficiency and performance
-	\item Stress on data locality
-	\item Optimal permutations
-	\item Work on simple data storage format like \acrshort{CRS}
-\end{itemize}
-
+\CAcomm{Till here}
 
 \section{RACE method} \label{sec:RACE_method}
 \begin{itemize}
+	\item Optimal permutations
+	\item Work on simple data storage format like \acrshort{CRS}
 	\item The three steps, stress on locality
 	\item Recursion very brief and tree
 \end{itemize}
@@ -217,6 +241,11 @@ than three times slower.
 	\item Start with Spin matrix, and little RLM
 	\item SymmSpMV performance
 \end{itemize}
+
+\begin{figure*}[tb]
+	\subfloat[RACE vs MKL]{\label{fig:race_vs_mkl}\includegraphics[scale=0.25]{pics/symm_spmv/skx/RACE_vs_MKL}}
+	\subfloat[RACE vs ABMC vs MC]{\label{fig:race_vs_mc}\includegraphics[scale=0.25]{pics/symm_spmv/skx/RACE_vs_MC}}
+\end{figure*}
 \subsection{FEAST with RACE}
 \begin{figure}[b]
 	\centering
@@ -239,7 +268,7 @@ than three times slower.
 
 \subsection{Acknowledgments}
 \begin{itemize}
-	\item Thomas Gruber
+	\item Georg, Olaf, Jonas, Thomas Gruber
 	\item RRZE and RWTH for providing computations time.
 \end{itemize}
 

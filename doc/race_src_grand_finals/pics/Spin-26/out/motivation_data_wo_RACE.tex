@@ -29,7 +29,7 @@
 		ymajorgrids = true,
 		grid style={dashed, gray!40},
 		ylabel = {B/$N_{NZ}$},
-		symbolic x coords={SpMV, MC, ABMC},
+		symbolic x coords={MC, ABMC, RACE},
 		x tick label style={rotate=25,font={\large}},
 		y tick label style={font={\Large}},
 		xtick = data,
@@ -63,7 +63,7 @@
 		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
 		
 		\addplot[pattern=horizontal lines]%[fill=gray!60!black]%style={ppurple,fill=ppurple}]
-		coordinates {(SpMV,\memSPMV) (MC,\memSYMMSPMVMC) (ABMC,\memSYMMSPMVABMC)};
+		coordinates {(MC,\memSYMMSPMVMC) (ABMC,\memSYMMSPMVABMC) (RACE,\memSYMMSPMVRACE)};
 			
 		\pgfkeys{/pgf/fpu=false}
 
@@ -71,7 +71,7 @@
 				
 		\legend{MEM traffic, Ideal SymmSpMV}
 		
-		\addplot[draw=red,smooth,dashed, line width=2pt, shorten >=-1em, shorten <=-4em] coordinates { (MC,\ideal) (ABMC,\ideal)};
+		\addplot[draw=red,smooth,dashed, line width=2pt, shorten >=-0.8em, shorten <=-0.8em] coordinates { (MC,\ideal) (RACE,\ideal)};
 		\end{axis}
 	%	\node at (6.5,10) {Data traffic Comparison using LIKWID};
 		\end{tikzpicture}
