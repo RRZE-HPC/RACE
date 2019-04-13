@@ -137,7 +137,7 @@ Recent researches in this direction use specialized storage formats like
 %\acrshort{MC} was applied to \acrshort{KACZ} kernel having  \DTWO dependency. 
 
 \section{Uniqueness of the Approach} \label{sec:uniqueness}
-\acrshort{MC} methods can extract parallelism for kernels with data dependencies like \acrshort{SymmSpMV}. 
+\Acrlong{MC} methods can extract parallelism for kernels with data dependencies like \acrshort{SymmSpMV}. 
 For \DTWO coloring of a matrix, \acrshort{MC}
 groups rows that do not overlap in any column 
 entries \cite{dist_k_def} (structurally orthogonal rows). These groups of rows are referred to as colors and parallelization can be done across the rows of a color (see~\Cref{fig:mc_problem} for a simple example). 
@@ -211,7 +211,7 @@ shown in giga floating point operations in seconds (\GF). The ideal
  for this matrix, but \acrshort{MC} and \acrshort{ABMC} are well below this limit.
  However our \acrshort{RACE} method closely approaches the ideal values both for
  the data traffic and performance and provides a speed-up 
- speed-up of almost  $4\times$ compared to other methods.
+of almost  $4\times$ compared to other methods.
 
 \begin{comment}
 \Cref{fig:motivation_symm_spmv} shows performance in giga floating point 
@@ -345,10 +345,10 @@ within \levelGroups of the same color. \Inorder to
  
   \setlength{\belowcaptionskip}{-10pt}
   \begin{figure}[t]
-  	\begin{minipage}[c]{0.28\textwidth}
-  	\includegraphics[height=12.4em,width=15em]{pics/race_method/load_balancing}
-  	\end{minipage}\hspace{2.5em}
-  	 \begin{minipage}[c]{0.14\textwidth}
+  	\begin{minipage}[c]{0.26\textwidth}
+  	\includegraphics[height=12.4em,width=15.2em]{pics/race_method/load_balancing}
+  	\end{minipage}\hspace{2.2em}
+  	 \begin{minipage}[c]{0.16\textwidth}
   	\caption{\label{fig:lb} Applying load balancing for five threads and resolving \DTWO
   		dependency for the 2d-7pt example from ~\Cref{fig:level_construction} but now with domain size $16\times16$.  }
   	\end{minipage}
@@ -363,7 +363,7 @@ within \levelGroups of the same color. \Inorder to
     (\eg $T(3)$) at middle maintain two levels to preserve \DK coloring.
     
 \subsection{Recursion}
-
+\CAcomm{TODO: depending on space}
 %\lipsum
 
 
