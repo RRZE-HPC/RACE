@@ -7,8 +7,8 @@
 
 \pgfplotsset{width=7.5cm,height=8.5cm,compat=1.3}
 \begin{filecontents}{data_mkl.dat}
-size, nrows,   Time,		Mem		
-40,		64000,	9.92,		968724
+size, nrows,   Time,		Mem, MemPeak		
+%40,		64000,	9.92,		968724
 60,		216000,	76.31,	2739456
 70,		343000,	 230.26,	5066384 
 80,		512000, 452.685, 7670076
@@ -18,8 +18,8 @@ size, nrows,   Time,		Mem
 \end{filecontents}
 
 \begin{filecontents}{data_cgmn.dat}
-size, nrows,   Time,		Mem		
-40,		64000,	78.99,	332364
+size, nrows,   Time,		Mem, MemPeak		
+%40,		64000,	78.99,	332364, 2202448
 60,		216000,	1007,  661684
 70,		343000,	 2277.09,  959544
 80,		512000, 4302.18, 1440628
@@ -32,10 +32,26 @@ size, nrows,   Time,		Mem
 
 \begin{filecontents}{data_cgmn_abmc.dat}
 	size, nrows,   Time,		Mem		
-	40,		64000,	468.658,	339916
+%	40,		64000,	468.658,	339916
 	60,		216000,	4025.88,  637856
+	70,		343000,	 9216.31,  930344
+	80,		512000, 17385.1, 1371296
 \end{filecontents}
 
+\begin{filecontents}{data_proj.dat}
+	size, nrows	
+60,		216000
+70,		343000
+80,		512000
+90,		729000
+120,	1728000
+140, 	2744000
+160,	4096000
+220,	10648000
+%230,	12167000
+240, 	13824000
+280,	21952000
+\end{filecontents}
 \begin{document}
 
 \begin{tikzpicture}

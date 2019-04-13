@@ -196,7 +196,7 @@ The data locality along with secondary effects of coloring like
 synchronization costs and false sharing lead to performance degradation.
 To demonstrate this we present in \Cref{fig:motivation} performance and 
 data transfer volumes of \acrshort{SymmSpMV} computation using various coloring methods.
-The experiment was done on \texttt{Spin-26} matrix taken from quantum physics application
+The experiment was done on \texttt{Spin-26} \cite{Spin} matrix taken from quantum physics application
 and the hardware was one socket of \Intel \IVB (E5-2660 v2) clocked at 2.2\,\GHZ.
 \Cref{fig:motivation_data} shows the average main memory data traffic per non-zero  of the 
 general matrix during \acrshort{SymmSpMV} execution. It can be clearly seen that 

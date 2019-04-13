@@ -43,10 +43,13 @@
   xtick={ 64000, 125000, 216000, 512000,   1728000, 5832000, 15625000 },
   xticklabels={$40^3$
     , $50^3$, $60^3$,  $80^3$,   $120^3$, $180^3$, $250^3$ },
+  ytick={ 100, 1000, 10000, 100000,   1000000},
+  yticklabels={$10^2$
+  	, $10^3$, $10^4$,  $10^5$,   $10^6$ },
   scaled ticks=false,
   xmode=log,
   ymode=log,
-  ymax=40000000,
+  ymax=1000000000,
  % xmin=27000,xmax = 15625000,
   %ymin=0, ymax=14,
   legend style={legend pos=north west}]
@@ -60,12 +63,12 @@
 	\addplot+[mark=triangle*, mark size=2pt, mark options={cyan}, draw=cyan, line width=1.5 ] table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Time},col sep=comma] {pics/feast/skx/data_cgmn_abmc.dat}; \label{plot_three}
 	\addlegendentry{FEAST: ABMC-CGMN}
 
-%   \addplot[blue,dashed] table[x = nrows,y expr=19.812
-%   *(\thisrow{nrows}/40^3)^2.0495878,col sep=comma] {data_mkl_proj.dat}; \label{plot_three}
-%   \addlegendentry{fitting -$\mathcal{O}(n^{2.05})$}
+   \addplot+[mark=none, mark options={magenta}, draw=magenta, line width=1, dashed] table[x = nrows,y expr=76.3
+   *(\thisrow{nrows}/60^3)^2.12,col sep=comma] {pics/feast/skx/data_proj.dat}; \label{plot_three}
+   \addlegendentry{fitting -$\mathcal{O}(n^{2})$}
    
- %  \addplot[red,dashed] table[x = nrows,y expr=200.534*(\thisrow{nrows}/40^3)^1.48517083,col sep=comma] {data_my_proj.dat}; \label{plot_four}
-  % \addlegendentry{fitting -$\mathcal{O}(n^{1.485})$}
+   \addplot+[mark=none,  mark options={orange}, draw=orange, line width=1, dashed] table[x = nrows,y expr=1050*(\thisrow{nrows}/60^3)^1.57,col sep=comma] {pics/feast/skx/data_proj.dat}; \label{plot_four}
+   \addlegendentry{fitting -$\mathcal{O}(n^{1.56})$}
    
    %\addplot table[x index=1,y index=4,col sep=comma] {data_mkl.dat}; \label{plot_three}
    %\addlegendentry{Flops DP}
@@ -90,7 +93,7 @@
 scaled ticks=false,
 xmode=log,
 ymode=log,
-ymax=500,
+ymax=1000,
 % xmin=27000,xmax = 15625000,
 %ymin=0, ymax=14,
 legend style={legend pos=north west}]
@@ -104,6 +107,12 @@ legend style={legend pos=north west}]
 \addplot+[mark=triangle*, mark size=1pt, mark options={cyan}, draw=cyan, line width=0.5 ] table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Mem}/(1024*1024),col sep=comma] {pics/feast/skx/data_cgmn_abmc.dat}; \label{plot_six}
 \addlegendentry{FEAST: ABMC-CGMN}
 
+%\addplot+[mark=none, mark options={magenta}, draw=magenta, line width=1, dashed] table[x = nrows,y expr=(2739460
+%*(\thisrow{nrows}/60^3)^1.25)/(1024*1024),col sep=comma] {pics/feast/skx/data_proj.dat}; \label{plot_three}
+%\addlegendentry{fitting -$\mathcal{O}(n^{1.5})$}
+   
+%\addplot+[mark=none,  mark options={orange}, draw=orange, line width=1, dashed] table[x = nrows,y expr=(661684*(\thisrow{nrows}/60^3)^0.9)/(1024*1024),col sep=comma] {pics/feast/skx/data_proj.dat}; \label{plot_four}
+%\addlegendentry{fitting -$\mathcal{O}(n^{1})$}
 \end{axis}
 
 \end{tikzpicture}
