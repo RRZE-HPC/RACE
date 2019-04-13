@@ -65,10 +65,10 @@
 
    \addplot+[mark=none, mark options={magenta}, draw=magenta, line width=1, dashed] table[x = nrows,y expr=76.3
    *(\thisrow{nrows}/60^3)^2.12,col sep=comma] {pics/feast/skx/data_proj.dat}; \label{plot_three}
-   \addlegendentry{fitting -$\mathcal{O}(n^{2})$}
+   \addlegendentry{$\mathcal{O}(n^{2})$}
    
    \addplot+[mark=none,  mark options={orange}, draw=orange, line width=1, dashed] table[x = nrows,y expr=1050*(\thisrow{nrows}/60^3)^1.57,col sep=comma] {pics/feast/skx/data_proj.dat}; \label{plot_four}
-   \addlegendentry{fitting -$\mathcal{O}(n^{1.56})$}
+   \addlegendentry{$\mathcal{O}(n^{1.56})$}
    
    %\addplot table[x index=1,y index=4,col sep=comma] {data_mkl.dat}; \label{plot_three}
    %\addlegendentry{Flops DP}

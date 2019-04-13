@@ -85,9 +85,11 @@ parallelize due to dependencies.
 \end{algorithm}
 
  
-As a typical example for \DTWO dependency problem, we use \acrfull{SymmSpMV}. 
+As a typical example for \DTWO dependency problem, we use \acrlong{SymmSpMV},
+ in short \acrshort{SymmSpMV}. 
 \Cref{alg:symmSpMV} shows the pseudo-code of \acrshort{SymmSpMV} kernel 
-for matrices stored in \acrfull{CRS} \cite{CRS} storage format. The kernel exploits the symmetry
+for upper triangular matrix stored in \acrfull{CRS} \cite{CRS} format. 
+The kernel exploits the symmetry
 of the matrix ($A_{ij} = A_{ji}$) to reduce storage size and overall 
 memory traffic which is the biggest bottleneck on modern CPUs. 
 However \acrshort{SymmSpMV} cannot be parallelized straightforward as two 
@@ -140,6 +142,7 @@ Recent researches in this direction use specialized storage formats like
 
 \section{Uniqueness of the Approach} \label{sec:uniqueness}
 Approaches like \acrshort{MC} can help in parallelization of kernels like \acrshort{SymmSpMV},
+however the method can destroy data locality of the matrix leading to low performance.
 %\setlength{\belowcaptionskip}{-12pt}
 \begin{figure}[tb]
 	\centering
@@ -149,8 +152,6 @@ Approaches like \acrshort{MC} can help in parallelization of kernels like \acrsh
 	\caption{\label{fig:mc_problem} Illustration of data locality degradation due to \acrshort{MC}.
 		Numbers represent thread id}
 \end{figure}
-
-
 \begin{figure}[b]
 	\subfloat[Scaling performance]{\label{fig:motivation_symm_spmv}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_symm_spmv.tex}}}\hspace{0.5em}
 	\subfloat[Data traffic]{\label{fig:motivation_data}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_data_wo_RACE.tex}}}
@@ -160,7 +161,6 @@ Approaches like \acrshort{MC} can help in parallelization of kernels like \acrsh
 		of the full matrix as measured with \LIKWID tool \cite{LIKWID}. The ideal data traffic
 		as predicted by performance model is shown for reference.}
 \end{figure}
-however the method can destroy data locality of the matrix leading to low performance.
 The reason for this is the nature of \acrlong{MC} 
 permutation. For \DTWO coloring, \acrshort{MC}
 groups rows that do not overlap in any column 
@@ -174,14 +174,14 @@ shows an illustration of a matrix before (\Cref{fig:mc_problem_a}) and
 after (\Cref{fig:mc_problem_b}) applying \acrshort{MC} permutation.
 Observe that within a color (for \eg red) none of the rows share same column index.
 As the matrix is traversed row by row (see \cref{alg:symmSpMV}) the original matrix
-has good data locality and most of the RHS accesses correspond to nearby elements 
-that were loaded in the computation of previous rows.
-This ensures the RHS vector needs to be loaded only
-once from main memory, and the rest of the accesses are from 
+has good data locality and most of the indirect accesses to the vector 
+correspond to nearby elements that were loaded in the computation of previous rows.
+This ensures the  vector needs to be transferred only
+once from the main memory, and the rest of the accesses are from 
 fast caches. However coloring the matrix destroys this data locality. For example
 in \Cref{fig:mc_problem_b} computing all the red colored rows leads to loading the 
-RHS vector completely. If the cache holds only  six elements, 
-computation on green and blue rows require loading almost the entire RHS vector again 
+vector completely. If the cache holds only  six elements, 
+computation on green and blue rows require loading almost the entire vector again 
 from the slow main memory. 
 
 %The matrix after multicoloring permutation is seen in \Cref{fig:mc_problem_b},
@@ -204,19 +204,20 @@ the memory traffic is almost  $4 \times$ higher
 for the \acrshort{MC} method compared to ideal traffic (red line) predicted
 by performance model\footnote{See \Cref{sec:results} for more details on modeling.}.
 The extra data traffic is mainly due to the low data locality and thereby incurred 
-extra accesses of RHS vector. 
+extra accesses of the indirectly accessed vectors. 
 \Acrfull{ABMC} tries to reduce the memory traffic by first partitioning the matrix
 into blocks and then applying coloring. This improves (reduces) the data traffic compared 
 to \acrshort{MC} but is still far from optimal in this case. 
 
 As main memory bandwidth is the main bottleneck on modern compute devices,
- this extra traffic reflects directly on the performance 
- seen in \Cref{fig:motivation_symm_spmv}. The ideal 
+ this extra traffic reflects directly on the performance.
+This is seen in \Cref{fig:motivation_symm_spmv}, where the performance is
+shown in giga floating point operations in seconds (\GF). The ideal 
  performance as predicted by performance model is $\approx 7.6\,\GF$ (not shown in figure)
- for this matrix. 
+ for this matrix, but \acrshort{MC} and \acrshort{ABMC} are well below this limit.
  However with our \acrshort{RACE} method both the data traffic and performance 
  remains close to the ideal case, hence having a speed-up of almost
-  $5\times$ compared to other methods.
+  $4\times$ compared to other methods.
 
 
 \begin{comment}
@@ -254,7 +255,12 @@ In this paper we restrict ourselves to matrices representing strongly connected
 undirected graphs.
 
 \subsection{Level Construction}
- \setlength{\belowcaptionskip}{0pt}
+In the first step we determine different levels of a graph and permute the data structure.
+This we achieve using well-known bandwidth reduction algorithms like \Acrfull{RCM}\cite{RCM}
+or \Acrfull{BFS}\cite{BFS}. Although \acrshort{RCM} is implemented in \acrshort{RACE},
+in the following we use \acrshort{BFS} reordering for simpler illustration. 
+
+% \setlength{\belowcaptionskip}{0pt}
 \begin{figure}[tb]
 	\subfloat[Original graph]{\label{fig:orig_graph}\includegraphics[scale=0.32]{pics/race_method/orig_graph}
 		\begin{picture}(0,0)
@@ -270,10 +276,7 @@ undirected graphs.
 		}
 	\caption{\label{fig:level_construction}(a) shows the original graph of 2d-7pt example, domain size $8 \times 8$  and (b) shows the graph after applying permutation according to levels. The level numbers are denoted on the superscript of the vertices. Figures in inset show the corresponding sparsity pattern of the matrix. \Cref{fig:levelPtr} shows the \levelPtr.}
 \end{figure}
-In the first step we determine different levels of a graph and permute the data structure.
-This we achieve using well-known bandwidth reduction algorithms like \Acrfull{RCM}\cite{RCM}
- or \Acrfull{BFS}\cite{BFS}. Although \acrshort{RCM} is implemented in \acrshort{RACE},
- in the following we use \acrshort{BFS} reordering for simpler illustration. 
+
  
 In this step we first choose a root vertex and assign it to the first level ($L(0)$). 
 The next levels $L(i)$ are defined to contain all vertices that are directly related to previous
@@ -351,39 +354,124 @@ within \levelGroups of the same color. \Inorder to
  minimum possible variance or no further moves are possible due to
  \DK coloring.
  
+  \setlength{\belowcaptionskip}{-10pt}
   \begin{figure}[t]
   	\begin{minipage}[c]{0.28\textwidth}
-  	\includegraphics[height=14em,width=16em]{pics/race_method/load_balancing}
+  	\includegraphics[height=12.4em,width=15em]{pics/race_method/load_balancing}
   	\end{minipage}\hspace{2.5em}
   	 \begin{minipage}[c]{0.14\textwidth}
   	\caption{\label{fig:lb} After load balancing for five threads and \DTWO
   		dependency on 2d-7pt example, domain size $16\times16$.  }
   	\end{minipage}
   \end{figure}
-  
+   \setlength{\belowcaptionskip}{0pt}
+   
   \Cref{fig:lb} shows the graph of 2d-7pt example size $16\times16$ after
    applying the load balancing. Here \DTWO coloring and five threads
     (\ie ten \levelGroups) were the input to the load balancing algorithm.
     Note that \levelGroups at extreme ends (\eg $T(0)$) have more levels
     since here each levels have low number of vertices. While bigger \levelGroups
-    at middle maintain two levels to preserve \DK coloring.
+    (\eg $T(3)$) at middle maintain two levels to preserve \DK coloring.
     
-\CAcomm{Till here}
+\subsection{Recursion}
 
+%\lipsum
 
 
 \section{Results \& Contribution} \label{sec:results}
+We evaluate the performance of \acrshort{RACE} by parallelizing the \acrshort{SymmSpMV}
+kernel shown in \Cref{alg:symmSpMV}. This allows to get a clear picture of the
+performance advantage of \acrshort{RACE} compared to other methods. Finally,
+in this section we use \acrshort{RACE} to parallelize a eigenvalue solver, 
+and compare it against standard approaches.
+
+\subsection{Analysis of SymmSpMV Performance}
+Matrix vector multiplication is a frequently used and time-consuming kernel in
+many numerical simulations. But in most of the cases, even if the matrix is symmetric,
+the full (general) matrix is used to perform these computations.
+This is due to the lack of effective widely usable \acrshort{SymmSpMV} implementations available.
+With the modern limited memory capacity HBM (High Bandwidth Memory) it 
+is critical to use the \acrshort{SymmSpMV} kernel for achieving high performance.
+
+Therefore in this section we carry out experiments using the \acrshort{SymmSpMV} kernel.
+For this comparison we choose most of the matrices from publicly available Suite
+SuiteSparse Matrix Collection \cite{UOF}, combining frequently 
+used matrices in related literatures \cite{RSB,park_ls}. We also added
+some matrices from quantum physics applications, which originates from 
+the particular context in which \acrshort{RACE} was developed \cite{ESSEX}.
+The experiments are
+run on one socket of the modern \Intel \SKX (Gold 6148) architecture
+clocked at 2.4 \GHZ. The reported performance is purely for the \acrshort{SymmSpMV}
+computation as normally these kernels are called multiple times making other
+costs (like setup time) negligible.
+
+\begin{figure*}[tb]
+	\subfloat[Performance of \acrshort{RACE} compared with MKL ]{\label{fig:race_vs_mkl}\includegraphics[scale=0.25]{pics/symm_spmv/skx/RACE_vs_MKL}}
+	\subfloat[Performance of RACE compared to coloring approaches]{\label{fig:race_vs_mc}\includegraphics[scale=0.25]{pics/symm_spmv/skx/RACE_vs_MC}}
+	\caption{\label{fig:symm_spmv_perf} \acrshort{SymmSpMV} performance of \acrshort{RACE} compared to 
+		various methods. The performance model of \acrshort{SymmSpMV} is shown in 
+		\cref{fig:race_vs_mkl} for reference. Note that the matrices are ordered according 
+		to increasing number of rows.}
+\end{figure*}
+To establish a yardstick to compare \acrshort{RACE} performance we use 
+performance modeling. The performance model is based on the Roofline  model (RLM)
+ \cite{Williams_roofline}  and derived using the principles shown 
+ in \cite{Moritz_sell}. The model is adjusted to suite for \acrshort{SymmSpMV}
+kernel. \Cref{fig:race_vs_mkl} shows the performance of \acrshort{RACE}
+on different matrices, along with the range of upper performance bounds 
+(RLM-load and RLM-copy). The range corresponds to models derived using two
+extreme cases of memory bandwidths observed on this processor. \CAcomm{Is it better to show only copy?}
+We see that in almost all the cases the \acrshort{SymmSpMV} implementation
+using \acrshort{RACE} attains higher than $85\%$ of the maximum achievable performance.
+This is made possible since \acrshort{RACE} is able to preserve good data
+locality and have minimal data traffic, which we have already seen in
+ \Cref{fig:motivation_data} for the \texttt{Spin-26} matrix. 
+ 
+%Next we compare the \acrshort{RACE} method with other approaches. 
+In \Cref{fig:race_vs_mkl} we compare it against the \acrshort{SymmSpMV} 
+implementation of a widely used numerical library, the \acrshort{MKL}. 
+We use the latest implementation of MKL, which uses the Inspector-Executor routines.
+The comparisons show that \acrshort{RACE} outperforms MKL
+versions by a factor of $1.5\times$ in average. A simple analysis
+shows that the performance of the \acrshort{MKL} \acrshort{SymmSpMV} 
+kernel coincides with the matrix vector multiplication using the full
+matrix (\acrshort{SpMV}), which indicates that MKL might be converting
+the symmetric matrix to a full matrix internally and doing a general \acrshort{SpMV}
+operation. However as MKL being closed source  the algorithm 
+used to parallelize the code is unknown.
+
+Further we compare the \acrshort{RACE} method with the two widely used
+coloring methods. For \acrshort{MC} method we apply \acrlong{MC} scheme
+generated by the COLPACK \cite{COLPACK} library to parallelize the \acrshort{SymmSpMV}
+kernel. In the \acrshort{ABMC} method we first partition the matrix into blocks
+using METIS \cite{METIS} and apply coloring using the \COLPACK library. The
+size of blocks was determined by a parameter scan (range 4 \ldots 128, see \cite{ABMC}).
+\Cref{fig:race_vs_mc} compares the performance of \acrshort{RACE} with the other 
+two coloring approaches.
+Overall \acrshort{MC} method is not competitive, while \acrshort{ABMC} delivers
+modest performance ($80 \%$ of \acrshort{RACE}) for small matrices. But for large
+matrices,  where data locality plays a vital role \acrshort{ABMC} 
+falls substantially behind \acrshort{RACE} as the indirectly
+accessed vectors no more fit in cache. To make this comparison easier
+the matrices are arranged according to increasing number of rows.
+Overall \acrshort{RACE} has an average speedup of $1.6\times$ compared to 
+\acrshort{ABMC} method, while in some cases speedup can be as high as $3\times$.
+
+
+%First we establish performance model for 
+%\acrshort{SymmSpMV} and compare it to \acrshort{RACE} performance to estimate
+%the quality of our method. Then we compare \acrshort{RACE} with the
+%two coloring approaches introduced before and the 
+
 \begin{itemize}
 	\item Test setup, brief is sufficient
 	\item Start with Spin matrix, and little RLM
 	\item SymmSpMV performance
 \end{itemize}
 
-\begin{figure*}[tb]
-	\subfloat[RACE vs MKL]{\label{fig:race_vs_mkl}\includegraphics[scale=0.25]{pics/symm_spmv/skx/RACE_vs_MKL}}
-	\subfloat[RACE vs ABMC vs MC]{\label{fig:race_vs_mc}\includegraphics[scale=0.25]{pics/symm_spmv/skx/RACE_vs_MC}}
-\end{figure*}
+
 \subsection{FEAST with RACE}
+\lipsum
 \begin{figure}[tb]
 	\centering
 	\scalebox{0.56}{\input{pics/feast/skx/feast_BENCH3D}}
@@ -393,7 +481,7 @@ within \levelGroups of the same color. \Inorder to
 		run on one socket of \SKX (Platinum 8160) chip. Please note both x and y axes
 		are in log scale.}
 \end{figure}
-\lipsum
+
 \begin{itemize}
 	\item Briefly describe FEAST
 	\item Tell its implemented in MKL, we use Reverse Communication Interface (RCI) of
