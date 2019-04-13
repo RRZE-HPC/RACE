@@ -301,7 +301,34 @@ them consists of at most $k$ edges \cite{dist_k_def}. This implies two vertices
  \DK independent, $\forall j\ge1$. The levels that satisfy this criteria
  are called \DK independent levels.
  
-This allows for many choices to form \DK independent levels.
+ %\setlength{\belowcaptionskip}{-12pt}
+ \begin{figure}[b]
+ 	\subfloat[\DONE coloring]{\label{fig:d1_color}\includegraphics[scale=0.35]{pics/race_method/d1_color}}
+ 	\subfloat[\DTWO coloring]{\label{fig:d2_color}\includegraphics[scale=0.35]{pics/race_method/d2_color}}
+ 	\caption{\label{fig:dk_color} Example of \DONE and \DTWO coloring }
+ \end{figure}
+ 
+This criteria allows for many choices to form \DK independent levels. \Cref{fig:dk_color} shows 
+one such possibility for \DONE and \DTWO coloring each. As $L(i)$ and $L(i\pm2)$ are
+distance-1 independent levels, the \DONE coloring  assigns
+two colors to alternating levels.  In case of \DTWO we group two adjacent levels and apply \DONE
+coloring to the groups. This groups of levels are called \levelGroups
+ and the $i-th$ \levelGroup is denoted as $T(i)$ (see \Cref{fig:d2_color}).
+For \DONE coloring shown in \Cref{fig:d1_color} the \levels and \levelGroups
+coincide ($L(i) = T(i)$).
+It can be clearly seen that in both cases
+ all the vertices  between \levelGroups of same color
+  are \DONE/\DTWO independent  and can be executed in parallel.
+   For example in case of \DTWO, \levelGroups $T(0), T(2), T(4)$
+ and $T(6)$ can be executed by four threads in parallel. After synchronization the remaining 
+ four blue colored \levelGroups can be executed in parallel. Note that
+ within a \levelGroup/\level the vertices are computed serially without destroying
+ any data locality.
+
+However choosing same number of \levels per \levelGroup may cause severe
+load imbalance depending on the matrix. For example in \Cref{fig:d2_color} 
+ \levelGroups at extreme ends $T(0), T(7)$  have relatively low number of 
+ rows (proportional to computational work)  compared to the \levelGroups in middle ($T(3),T(4)$).
 
 
 \CAcomm{Till here}
