@@ -51,11 +51,14 @@
   %ymin=0, ymax=14,
   legend style={legend pos=north west}]
 
-   \addplot table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Time},col sep=comma] {pics/feast/skx/data_mkl.dat}; \label{plot_one}
+   \addplot+[mark=square*, mark size=2pt, mark options={magenta}, draw=magenta, line width=1.5] table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Time},col sep=comma] {pics/feast/skx/data_mkl.dat}; \label{plot_one}
    \addlegendentry{FEAST: IntelMKL(Pardiso)}
 
-   \addplot table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Time},col sep=comma] {pics/feast/skx/data_cgmn.dat}; \label{plot_two}
+   \addplot+[mark=*, mark size=2pt, mark options={orange}, draw=orange, line width=1.5] table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Time},col sep=comma] {pics/feast/skx/data_cgmn.dat}; \label{plot_two}
    \addlegendentry{FEAST: RACE-CGMN}
+
+	\addplot+[mark=triangle*, mark size=2pt, mark options={cyan}, draw=cyan, line width=1.5 ] table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Time},col sep=comma] {pics/feast/skx/data_cgmn_abmc.dat}; \label{plot_three}
+	\addlegendentry{FEAST: ABMC-CGMN}
 
 %   \addplot[blue,dashed] table[x = nrows,y expr=19.812
 %   *(\thisrow{nrows}/40^3)^2.0495878,col sep=comma] {data_mkl_proj.dat}; \label{plot_three}
@@ -92,13 +95,14 @@ ymax=500,
 %ymin=0, ymax=14,
 legend style={legend pos=north west}]
 
-\addplot table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Mem}/(1024*1024),col sep=comma] {pics/feast/skx/data_mkl.dat}; \label{plot_three}
+\addplot+[mark=square*, mark size=2pt, mark options={magenta}, draw=magenta, line width=1.5] table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Mem}/(1024*1024),col sep=comma] {pics/feast/skx/data_mkl.dat}; \label{plot_four}
 \addlegendentry{FEAST: IntelMKL(Pardiso)}
 
-\addplot table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Mem}/(1024*1024),col sep=comma] {pics/feast/skx/data_cgmn.dat}; \label{plot_four}
+\addplot+[mark=*, mark size=2pt, mark options={orange}, draw=orange, line width=1.5]  table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Mem}/(1024*1024),col sep=comma] {pics/feast/skx/data_cgmn.dat}; \label{plot_five}
 \addlegendentry{FEAST: RACE-CGMN}
 
-
+\addplot+[mark=triangle*, mark size=1pt, mark options={cyan}, draw=cyan, line width=0.5 ] table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Mem}/(1024*1024),col sep=comma] {pics/feast/skx/data_cgmn_abmc.dat}; \label{plot_six}
+\addlegendentry{FEAST: ABMC-CGMN}
 
 \end{axis}
 

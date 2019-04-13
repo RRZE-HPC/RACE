@@ -30,6 +30,11 @@ size, nrows,   Time,		Mem
 220,	10648000, 527629.5, 23632788
 \end{filecontents}
 
+\begin{filecontents}{data_cgmn_abmc.dat}
+	size, nrows,   Time,		Mem		
+	40,		64000,	468.658,	339916
+	60,		216000,	4025.88,  637856
+\end{filecontents}
 
 \begin{document}
 
@@ -57,8 +62,10 @@ size, nrows,   Time,		Mem
    \addlegendentry{FEAST: IntelMKL(Pardiso)}
 
    \addplot table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Time},col sep=comma] {data_cgmn.dat}; \label{plot_two}
-   \addlegendentry{FEAST: CARP-CG}
+   \addlegendentry{FEAST: RACE CARP-CG}
 
+   \addplot table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Time},col sep=comma] {data_cgmn_abmc.dat}; \label{plot_three}
+   \addlegendentry{FEAST: ABMC CARP-CG}
 %   \addplot[blue,dashed] table[x = nrows,y expr=19.812
 %   *(\thisrow{nrows}/40^3)^2.0495878,col sep=comma] {data_mkl_proj.dat}; \label{plot_three}
 %   \addlegendentry{fitting -$\mathcal{O}(n^{2.05})$}
@@ -94,13 +101,14 @@ ymax=500,
 %ymin=0, ymax=14,
 legend style={legend pos=north west}]
 
-\addplot table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Mem}/(1024*1024),col sep=comma] {data_mkl.dat}; \label{plot_three}
+\addplot table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Mem}/(1024*1024),col sep=comma] {data_mkl.dat}; \label{plot_four}
 \addlegendentry{FEAST: IntelMKL(Pardiso)}
 
-\addplot table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Mem}/(1024*1024),col sep=comma] {data_cgmn.dat}; \label{plot_four}
-\addlegendentry{FEAST: CARP-CG}
+\addplot table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Mem}/(1024*1024),col sep=comma] {data_cgmn.dat}; \label{plot_five}
+\addlegendentry{FEAST: RACE CARP-CG}
 
-
+\addplot table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Mem}/(1024*1024),col sep=comma] {data_cgmn_abmc.dat}; \label{plot_six}
+\addlegendentry{FEAST: ABMC CARP-CG}
 
 \end{axis}
 

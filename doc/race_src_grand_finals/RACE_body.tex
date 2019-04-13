@@ -12,7 +12,7 @@
 	Scalable, hardware-efficient parallelization of such kernels is known to be a 
 	challenge. Multicoloring is a typical approach to enable parallelization
 	of iterative solvers with distance-k dependency \eg the 
-	red-black gauss-seidel solve distance-1 dependency problem.
+	red-black gauss-seidel solves the distance-1 dependency problem.
 	However most of the standard solutions suffer from low performance
 	on modern hardware, are highly problem specific, or require tailored
     sparse matrix storage formats.
@@ -37,13 +37,13 @@
 	the underlying dependency problems and the conventional
 	approaches used to solve such kind of dependencies. \Cref{sec:uniqueness} 
 	shows the general issues that occur while using these conventional
-	approaches. We then introduce the \acrshort{RACE} method in \cref{sec:RACE_method},
-	it's uniqueness	and how its	basic design addresses the problems. 
-	In \cref{sec:results} we compare \acrshort{RACE} performance to
+	approaches. We then introduce the \acrshort{RACE} method in \Cref{sec:RACE_method},
+	its uniqueness	and how its	basic design addresses the problems. 
+	In \Cref{sec:results} we compare \acrshort{RACE} performance to
 	available standard approaches, and finally apply the \acrshort{RACE}
 	method to parallelize an eigenvalue solver provided by \acrshort{MKL}.
 	It demonstrates the necessity of the \acrshort{RACE} method to solve 
-	large problems that is far beyond the reach of current state-of-the-art
+	large problems that are far beyond the reach of current state-of-the-art
 	implementations.
 	
 	\begin{comment}
@@ -65,7 +65,7 @@
 
 \section{Background \& Related Work} \label{sec:background}
 Many numerical methods that come across in sparse linear algebra are hard to 
-be parallelized due to dependencies. 
+parallelize due to dependencies. 
 %The two main class of dependencies that occur in this field are \DONE
 %dependency as in Gauss-Seidel iteration or a \DTWO dependency as they 
 %occur in \acrfull{KACZ} or \acrfull{SymmSpMV}. 
@@ -85,12 +85,12 @@ be parallelized due to dependencies.
 \end{algorithm}
 
  
-As a typical example for \DTWO dependency problem we use \acrfull{SymmSpMV}. 
+As a typical example for \DTWO dependency problem, we use \acrfull{SymmSpMV}. 
 \Cref{alg:symmSpMV} shows the pseudo-code of \acrshort{SymmSpMV} kernel 
-in \acrfull{CRS} \cite{CRS} matrix storage format. The kernel exploits the symmetry
+for matrices stored in \acrfull{CRS} \cite{CRS} storage format. The kernel exploits the symmetry
 of the matrix ($A_{ij} = A_{ji}$) to reduce storage size and overall 
 memory traffic which is the biggest bottleneck on modern CPUs. 
-However \acrshort{SymmSpMV} cannot be parallelized straightforward, two 
+However \acrshort{SymmSpMV} cannot be parallelized straightforward as two 
 different threads working on two different rows in parallel could potentially 
 write to the same element ($b[col[idx]]$) of the indirectly accessed $b$ vector
 causing write conflicts.
@@ -101,7 +101,7 @@ the underlying method and library is capable of handling
 general \DK dependencies.
 
 
-A popular approach to solve such kind of dependency problem is  the
+A popular approach to solve such kind of dependency problem are  the
 \acrfull{MC} techniques. Earliest work on coloring is the red-black 
 Gauss-Seidel scheme~\cite{RBGS}, which was applied to  matrices with
  known sparsity pattern. 
@@ -109,7 +109,7 @@ Later \acrlong{MC} techniques have been expanded using graph theory
 for general sparse matrices \cite{MC, COLPACK}.
 Variants like \acrfull{ABMC} \cite{ABMC} have tried to improve the performance 
 of the \acrshort{MC} methods. 
-In \cite{feast_mc}, \acrshort{MC} has been applied to Kaczmarz iterative solver
+In \cite{feast_mc}, \acrshort{MC} was applied to Kaczmarz iterative solver
 having \DTWO dependency.
 Specifically to \acrshort{SymmSpMV} there has been no previous attempt to use 
 graph based techniques. General solutions for \acrshort{SymmSpMV} are 
@@ -118,7 +118,7 @@ Depending on the matrix structure these approaches could lead to performance
  degradation  due to serialization and massive increase in data traffic.
 Recent researches in this direction use specialized storage formats like
  CSB \cite{CSB} or RSB \cite{RSB} but this requires rewriting of existing 
- code and lot of tuning. 
+ code and lots of tuning. 
 
 %to Kaczmarz iterative solver having  dependency. 
  
@@ -149,15 +149,26 @@ Approaches like \acrshort{MC} can help in parallelization of kernels like \acrsh
 	\caption{\label{fig:mc_problem} Illustration of data locality degradation due to \acrshort{MC}.
 		Numbers represent thread id}
 \end{figure}
+
+
+\begin{figure}[b]
+	\subfloat[Scaling performance]{\label{fig:motivation_symm_spmv}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_symm_spmv.tex}}}\hspace{0.5em}
+	\subfloat[Data traffic]{\label{fig:motivation_data}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_data_wo_RACE.tex}}}
+	\caption{\label{fig:motivation}(a) Performance of \acrshort{SymmSpMV} with 
+		\acrshort{MC} and \acrshort{ABMC} compared to \acrshort{RACE}. 
+		(b) Average main memory data traffic in bytes (B) per nonzero entry ($\acrshort{nnz}$) 
+		of the full matrix as measured with \LIKWID tool \cite{LIKWID}. The ideal data traffic
+		as predicted by performance model is shown for reference.}
+\end{figure}
 however the method can destroy data locality of the matrix leading to low performance.
 The reason for this is the nature of \acrlong{MC} 
 permutation. For \DTWO coloring, \acrshort{MC}
 groups rows that do not overlap in any column 
 entries \cite{dist_k_def} (structurally orthogonal rows).
  These groups of rows are referred to as colors. 
- Due to this grouping one can parallelize all the rows within a color, 
-as this ensures in our \acrshort{SymmSpMV} example (see \cref{alg:symmSpMV})
-that threads operate on different rows having entirely different 
+ Due to this grouping one can parallelize all the rows in a color.
+In the \acrshort{SymmSpMV} example (see \cref{alg:symmSpMV}) 
+threads within a color operate on different rows having entirely different 
 $col[idx]$ avoiding write conflicts in $b$ vector. \Cref{fig:mc_problem}
 shows an illustration of a matrix before (\Cref{fig:mc_problem_a}) and 
 after (\Cref{fig:mc_problem_b}) applying \acrshort{MC} permutation.
@@ -166,10 +177,10 @@ As the matrix is traversed row by row (see \cref{alg:symmSpMV}) the original mat
 has good data locality and most of the RHS accesses correspond to nearby elements 
 that were loaded in the computation of previous rows.
 This ensures the RHS vector needs to be loaded only
-once from main memory, and the rest of the accesses are from small but
-fast caches. However coloring the matrix destroys this data locality, for example
-in \Cref{fig:mc_problem_b} computing on all the red colored rows leads to loading the 
-RHS vector completely. Now if the cache is small to hold only  six elements, 
+once from main memory, and the rest of the accesses are from 
+fast caches. However coloring the matrix destroys this data locality. For example
+in \Cref{fig:mc_problem_b} computing all the red colored rows leads to loading the 
+RHS vector completely. If the cache holds only  six elements, 
 computation on green and blue rows require loading almost the entire RHS vector again 
 from the slow main memory. 
 
@@ -180,35 +191,32 @@ from the slow main memory.
 % carried out on
 % a matrix (see \Cref{fig:mc_problem_a}) that initially has high data locality.
 
-\begin{figure}[b]
-	\subfloat[Scaling performance]{\label{fig:motivation_symm_spmv}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_symm_spmv.tex}}}\hspace{1em}
-	\subfloat[Data traffic]{\label{fig:motivation_data}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_data_wo_RACE.tex}}}
-	\caption{\label{fig:motivation}(a) Performance of \acrshort{SymmSpMV} with 
-		\acrshort{MC} and \acrshort{ABMC} compared to \acrshort{RACE}. 
-		(b) Average main memory data traffic in bytes (B) per nonzero entry ($\acrshort{nnz}$) 
-		of the full matrix as measured with \LIKWID tool \cite{LIKWID}. The ideal data traffic
-		as predicted by performance model is shown for reference.}
-\end{figure}
 
 The data locality along with secondary effects of coloring like 
 synchronization costs and false sharing lead to performance degradation.
 To demonstrate this we present in \Cref{fig:motivation} performance and 
 data transfer volumes of \acrshort{SymmSpMV} computation using various coloring methods.
 The experiment was done on \texttt{Spin-26} matrix taken from quantum physics application
-and the hardware was one socket of \Intel \IVB (E5-2660) clocked at 2.2\,\GHZ.
-\Cref{fig:motivation_data} shows the average main memory data traffic per non-zero \CAcomm{(Actually nnz of general matrix, but I think this is fine here)} of the 
-matrix during \acrshort{SymmSpMV} execution. It can be clearly seen that 
-the memory traffic is almost $3 \times$ and $4 \times$ higher 
-for \acrshort{ABMC} and \acrshort{MC} methods compared to ideal traffic (red line) predicted
-by performance model\footnote{See \cref{sec:RACE_method} for more details on modeling.}.
+and the hardware was one socket of \Intel \IVB (E5-2660 v2) clocked at 2.2\,\GHZ.
+\Cref{fig:motivation_data} shows the average main memory data traffic per non-zero  of the 
+general matrix during \acrshort{SymmSpMV} execution. It can be clearly seen that 
+the memory traffic is almost  $4 \times$ higher 
+for the \acrshort{MC} method compared to ideal traffic (red line) predicted
+by performance model\footnote{See \Cref{sec:results} for more details on modeling.}.
 The extra data traffic is mainly due to the low data locality and thereby incurred 
 extra accesses of RHS vector. 
-As main memory bandwidth is the main bottleneck on modern compute devices
+\Acrfull{ABMC} tries to reduce the memory traffic by first partitioning the matrix
+into blocks and then applying coloring. This improves (reduces) the data traffic compared 
+to \acrshort{MC} but is still far from optimal in this case. 
+
+As main memory bandwidth is the main bottleneck on modern compute devices,
  this extra traffic reflects directly on the performance 
- seen in \Cref{fig:motivation_symm_spmv}, where the ideal achievable
- performance is $\approx 7.6\,\GF$. However with our \acrshort{RACE} method 
-both the data traffic and performance remains close to the ideal case, 
-hence having a speed-up of almost $5\times$ compared to other methods.
+ seen in \Cref{fig:motivation_symm_spmv}. The ideal 
+ performance as predicted by performance model is $\approx 7.6\,\GF$ (not shown in figure)
+ for this matrix. 
+ However with our \acrshort{RACE} method both the data traffic and performance 
+ remains close to the ideal case, hence having a speed-up of almost
+  $5\times$ compared to other methods.
 
 
 \begin{comment}
@@ -224,9 +232,80 @@ However the \acrshort{SymmSpMV} implementation using \acrshort{MC} is more
 than three times slower.
 \end{comment}
 
+\section{RACE method} \label{sec:RACE_method}
+The \acrshort{RACE} method is designed by  keeping the shortcomings
+of coloring approaches in mind. The idea is to have a general hardware 
+friendly approach applicable even for simple matrix storage formats 
+like \acrshort{CRS}.
+\Acrshort{RACE} method consists of three steps:
+\begin{enumerate}
+	\item level construction
+	\item \DK coloring
+	\item load balancing
+\end{enumerate}
+Depending on the matrix and hardware the steps are applied recursively 
+if required. 
+To illustrate the method we choose a
+simple matrix which is associated with an artificially constructed
+two-dimensional-seven-point (2d-7pt) stencil. \Cref{fig:orig_graph} shows
+the corresponding graph and the sparsity pattern (in inset) of the matrix.
+
+In this paper we restrict ourselves to matrices representing strongly connected 
+undirected graphs.
+
+\subsection{Level Construction}
+\begin{figure}[tb]
+	\subfloat[Original graph]{\label{fig:orig_graph}\includegraphics[scale=0.32]{pics/race_method/orig_graph}
+		\begin{picture}(0,0)
+		\put(-42.5,65.5){{\includegraphics[scale=0.065]{pics/race_method/orig_matrix}}}
+		\end{picture}
+	}
+	\subfloat[Permuted graph]{\label{fig:perm_graph}\includegraphics[scale=0.32]{pics/race_method/perm_graph}
+		\begin{picture}(0,0)
+		\put(-42.5,65.5){{\includegraphics[scale=0.065]{pics/race_method/perm_matrix}}}
+		\end{picture}
+	}
+	\subfloat[]{\label{fig:levelPtr}\includegraphics[scale=0.95]{pics/race_method/levelPtr}
+		}
+	\caption{\label{fig:level_construction}(a) shows the original graph of 2d-7pt example, domain size $8 \times 8$  and (b) shows the graph after applying permutation according to levels. The level numbers are denoted on the superscript of the vertices. Figures in inset show the corresponding sparsity pattern of the matrix. \Cref{fig:levelPtr} shows the \levelPtr.}
+\end{figure}
+In the first step we determine different levels of a graph and permute the data structure.
+This we achieve using well-known bandwidth reduction algorithms like \Acrfull{RCM}\cite{RCM}
+ or \Acrfull{BFS}\cite{BFS}. Although \acrshort{RCM} is implemented in \acrshort{RACE},
+ in the following we use \acrshort{BFS} reordering for simpler illustration. 
+ 
+In this step we first choose a root vertex and assign it to the first level ($L(0)$). 
+The next levels $L(i)$ are defined to contain all vertices that are directly related to previous
+level $L(i-1)$ but not in $L(i-2)$. This implies $i$-th level consists of all vertices
+that have a minimum distance of $i$ from root node. In \Cref{fig:level_construction} the
+level numbers ($i$) are denoted in the superscript of the vertices. 
+
+After the levels are determined we permute (reorder) the matrix (and graph) according
+to levels such that the vertices in $L(i)$ appear before $L(i+1)$.  \Cref{fig:perm_graph}
+shows the graph and matrix after applying the permutation. Note that the vertex numbering 
+in permuted graph has changed compared to original matrix, which was lexicographically ordered.
+It is well-known  that such permutation increase data locality
+of the computations and has been previously applied to for sparse matrix
+computations without any dependencies \cite{RCM_Sparse_computation}.
+
+\Inorder to resolve dependencies \acrshort{RACE} additionally stores information
+about levels. We do this by storing the index of the first vertex corresponding
+to each level in a data structure called \levelPtr (see \Cref{fig:levelPtr}).
+
+\subsection{Distance-k coloring}
+The \DK coloring step uses the information of the \levelPtr created above to resolve
+dependencies. Two vertices are called \DK neighbors if the shortest path connecting 
+them consists of at most $k$ edges \cite{dist_k_def}. This implies two vertices
+ are \DK independent if they are not \DK neighbors. Based on this definition
+ it can be proved that vertices between levels $L(i)$ and $L(i \pm (k+j))$ are
+ \DK independent, $\forall j\ge1$. The levels that satisfy this criteria
+ are called \DK independent levels.
+ 
+This allows for many choices to form \DK independent levels.
+
+
 \CAcomm{Till here}
 
-\section{RACE method} \label{sec:RACE_method}
 \begin{itemize}
 	\item Optimal permutations
 	\item Work on simple data storage format like \acrshort{CRS}
@@ -247,14 +326,16 @@ than three times slower.
 	\subfloat[RACE vs ABMC vs MC]{\label{fig:race_vs_mc}\includegraphics[scale=0.25]{pics/symm_spmv/skx/RACE_vs_MC}}
 \end{figure*}
 \subsection{FEAST with RACE}
-\begin{figure}[b]
+\begin{figure}[tb]
 	\centering
 	\scalebox{0.56}{\input{pics/feast/skx/feast_BENCH3D}}
 	%	\includegraphics[scale=0.6]{pics/alpha_problem/mc_alpha_unsymm_only_red.tex}
 	\caption{Comparison of FEAST with default \acrshort{MKL} direct solver and 
 		iterative solver CGMN parallelized using \acrshort{RACE}. The experiment is
-		run on one socket of \SKX (Platinum 8160) chip.}
+		run on one socket of \SKX (Platinum 8160) chip. Please note both x and y axes
+		are in log scale.}
 \end{figure}
+\lipsum
 \begin{itemize}
 	\item Briefly describe FEAST
 	\item Tell its implemented in MKL, we use Reverse Communication Interface (RCI) of
@@ -266,11 +347,14 @@ than three times slower.
 	\item Discuss on Big O ....
 \end{itemize}
 
-\subsection{Acknowledgments}
+
+\section{Future Work}
+
+\begin{acks}
 \begin{itemize}
 	\item Georg, Olaf, Jonas, Thomas Gruber
 	\item RRZE and RWTH for providing computations time.
 \end{itemize}
+\end{acks}
 
-\section{Future Work}
 
