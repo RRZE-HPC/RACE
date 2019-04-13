@@ -138,7 +138,7 @@ Recent researches in this direction use specialized storage formats like
 %improve the  performance of the \acrshort{MC} methods. In \cite{feast_mc},
 %\acrshort{MC} was applied to \acrshort{KACZ} kernel having  \DTWO dependency. 
 
-\section{Uniqueness of the approach} \label{sec:uniqueness}
+\section{Uniqueness of the Approach} \label{sec:uniqueness}
 Approaches like \acrshort{MC} can help in parallelization of kernels like \acrshort{SymmSpMV},
 %\setlength{\belowcaptionskip}{-12pt}
 \begin{figure}[tb]
@@ -232,7 +232,7 @@ However the \acrshort{SymmSpMV} implementation using \acrshort{MC} is more
 than three times slower.
 \end{comment}
 
-\section{RACE method} \label{sec:RACE_method}
+\section{RACE Method} \label{sec:RACE_method}
 The \acrshort{RACE} method is designed by  keeping the shortcomings
 of coloring approaches in mind. The idea is to have a general hardware 
 friendly approach applicable even for simple matrix storage formats 
@@ -254,6 +254,7 @@ In this paper we restrict ourselves to matrices representing strongly connected
 undirected graphs.
 
 \subsection{Level Construction}
+ \setlength{\belowcaptionskip}{0pt}
 \begin{figure}[tb]
 	\subfloat[Original graph]{\label{fig:orig_graph}\includegraphics[scale=0.32]{pics/race_method/orig_graph}
 		\begin{picture}(0,0)
@@ -292,7 +293,7 @@ computations without any dependencies \cite{RCM_Sparse_computation}.
 about levels. We do this by storing the index of the first vertex corresponding
 to each level in a data structure called \levelPtr (see \Cref{fig:levelPtr}).
 
-\subsection{Distance-k coloring}
+\subsection{Distance-k Coloring}
 The \DK coloring step uses the information of the \levelPtr created above to resolve
 dependencies. Two vertices are called \DK neighbors if the shortest path connecting 
 them consists of at most $k$ edges \cite{dist_k_def}. This implies two vertices
@@ -301,13 +302,14 @@ them consists of at most $k$ edges \cite{dist_k_def}. This implies two vertices
  \DK independent, $\forall j\ge1$. The levels that satisfy this criteria
  are called \DK independent levels.
  
- %\setlength{\belowcaptionskip}{-12pt}
- \begin{figure}[b]
- 	\subfloat[\DONE coloring]{\label{fig:d1_color}\includegraphics[scale=0.35]{pics/race_method/d1_color}}
- 	\subfloat[\DTWO coloring]{\label{fig:d2_color}\includegraphics[scale=0.35]{pics/race_method/d2_color}}
+ \setlength{\belowcaptionskip}{-8pt}
+ \begin{figure}[t]
+ 	\vspace*{-0.6cm}
+ 	\subfloat[\DONE coloring]{\label{fig:d1_color}\includegraphics[scale=0.32]{pics/race_method/d1_color}}
+ 	\subfloat[\DTWO coloring]{\label{fig:d2_color}\includegraphics[scale=0.32]{pics/race_method/d2_color}}
  	\caption{\label{fig:dk_color} Example of \DONE and \DTWO coloring }
  \end{figure}
- 
+  \setlength{\belowcaptionskip}{0pt}
 This criteria allows for many choices to form \DK independent levels. \Cref{fig:dk_color} shows 
 one such possibility for \DONE and \DTWO coloring each. As $L(i)$ and $L(i\pm2)$ are
 distance-1 independent levels, the \DONE coloring  assigns
@@ -328,17 +330,46 @@ It can be clearly seen that in both cases
 However choosing same number of \levels per \levelGroup may cause severe
 load imbalance depending on the matrix. For example in \Cref{fig:d2_color} 
  \levelGroups at extreme ends $T(0), T(7)$  have relatively low number of 
- rows (proportional to computational work)  compared to the \levelGroups in middle ($T(3),T(4)$).
+ vertices (proportional to computational work)  compared to the \levelGroups 
+ in the middle ($T(3),T(4)$).
 
 
+\subsection{Load Balancing}
+\Acrshort{RACE} applies a load-balancing scheme to balance the work-load
+between different threads within each color. The main idea of this step
+is to incorporate hardware features like number of threads into the 
+method. It does this by generating just sufficient amount of \levelGroups 
+as required by the hardware and then applies a load-balancing algorithm.
+The algorithm minimizes the variance between number of vertices 
+within \levelGroups of the same color. \Inorder to
+ accomplish this \levelGroups containing low workload (number of vertices)
+ grabs adjacent \levels from neighboring \levelGroups and the overloaded
+ \levelGroups shift \levels to adjacent \levelGroups. To maintain
+ \DK independence between \levelGroups of same color the algorithm 
+ takes care to ensure \atleast $k$ levels in a \levelGroup. The algorithm 
+ does this shifting process in an iterative manner until it reaches the
+ minimum possible variance or no further moves are possible due to
+ \DK coloring.
+ 
+  \begin{figure}[t]
+  	\begin{minipage}[c]{0.28\textwidth}
+  	\includegraphics[height=14em,width=16em]{pics/race_method/load_balancing}
+  	\end{minipage}\hspace{2.5em}
+  	 \begin{minipage}[c]{0.14\textwidth}
+  	\caption{\label{fig:lb} After load balancing for five threads and \DTWO
+  		dependency on 2d-7pt example, domain size $16\times16$.  }
+  	\end{minipage}
+  \end{figure}
+  
+  \Cref{fig:lb} shows the graph of 2d-7pt example size $16\times16$ after
+   applying the load balancing. Here \DTWO coloring and five threads
+    (\ie ten \levelGroups) were the input to the load balancing algorithm.
+    Note that \levelGroups at extreme ends (\eg $T(0)$) have more levels
+    since here each levels have low number of vertices. While bigger \levelGroups
+    at middle maintain two levels to preserve \DK coloring.
+    
 \CAcomm{Till here}
 
-\begin{itemize}
-	\item Optimal permutations
-	\item Work on simple data storage format like \acrshort{CRS}
-	\item The three steps, stress on locality
-	\item Recursion very brief and tree
-\end{itemize}
 
 
 \section{Results \& Contribution} \label{sec:results}
