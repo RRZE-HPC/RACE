@@ -49,19 +49,19 @@
   scaled ticks=false,
   xmode=log,
   ymode=log,
-  ymax=1000000000,
+  ymax=100000000,
  % xmin=27000,xmax = 15625000,
   %ymin=0, ymax=14,
   legend style={legend pos=north west}]
 
    \addplot+[mark=square*, mark size=2pt, mark options={magenta}, draw=magenta, line width=1.5] table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Time},col sep=comma] {pics/feast/skx/data_mkl.dat}; \label{plot_one}
-   \addlegendentry{FEAST: IntelMKL(Pardiso)}
+   \addlegendentry{Intel MKL(Pardiso)}
 
    \addplot+[mark=*, mark size=2pt, mark options={orange}, draw=orange, line width=1.5] table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Time},col sep=comma] {pics/feast/skx/data_cgmn.dat}; \label{plot_two}
-   \addlegendentry{FEAST: RACE-CGMN}
+   \addlegendentry{RACE-CGMN}
 
 	\addplot+[mark=triangle*, mark size=2pt, mark options={cyan}, draw=cyan, line width=1.5 ] table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Time},col sep=comma] {pics/feast/skx/data_cgmn_abmc.dat}; \label{plot_three}
-	\addlegendentry{FEAST: ABMC-CGMN}
+	\addlegendentry{ABMC-CGMN}
 
    \addplot+[mark=none, mark options={magenta}, draw=magenta, line width=1, dashed] table[x = nrows,y expr=76.3
    *(\thisrow{nrows}/60^3)^2.12,col sep=comma] {pics/feast/skx/data_proj.dat}; \label{plot_three}
@@ -99,13 +99,13 @@ ymax=1000,
 legend style={legend pos=north west}]
 
 \addplot+[mark=square*, mark size=2pt, mark options={magenta}, draw=magenta, line width=1.5] table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Mem}/(1024*1024),col sep=comma] {pics/feast/skx/data_mkl.dat}; \label{plot_four}
-\addlegendentry{FEAST: IntelMKL(Pardiso)}
+\addlegendentry{Intel MKL(Pardiso)}
 
 \addplot+[mark=*, mark size=2pt, mark options={orange}, draw=orange, line width=1.5]  table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Mem}/(1024*1024),col sep=comma] {pics/feast/skx/data_cgmn.dat}; \label{plot_five}
-\addlegendentry{FEAST: RACE-CGMN}
+\addlegendentry{RACE-CGMN}
 
 \addplot+[mark=triangle*, mark size=1pt, mark options={cyan}, draw=cyan, line width=0.5 ] table[x expr=\thisrow{size}*\thisrow{size}*\thisrow{size},y expr=\thisrow{Mem}/(1024*1024),col sep=comma] {pics/feast/skx/data_cgmn_abmc.dat}; \label{plot_six}
-\addlegendentry{FEAST: ABMC-CGMN}
+\addlegendentry{ABMC-CGMN}
 
 %\addplot+[mark=none, mark options={magenta}, draw=magenta, line width=1, dashed] table[x = nrows,y expr=(2739460
 %*(\thisrow{nrows}/60^3)^1.25)/(1024*1024),col sep=comma] {pics/feast/skx/data_proj.dat}; \label{plot_three}

@@ -513,7 +513,7 @@ the default MKL version (using PARDISO) and the CGMN versions
 The experiment is run for different sizes of the matrix. In tune
 with the observations of \cref{subsec:perf_symm_spmv} we see \acrshort{ABMC}
 method falls short by a factor of $4\times$ compared to \acrshort{RACE} method.
-As with all the direct solvers the time required by PARDISO to solve FEAST
+As with all the direct solvers the time required by default MKL to solve FEAST
 is comparatively less than CGMN using \acrshort{RACE} for small sizes, however as the 
 sizes grow both the methods draw close to each other. This happens as the 
 direct solvers have a higher time complexity (here $\approx \mathcal{O}(n^{2})$, 

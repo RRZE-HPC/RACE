@@ -31,22 +31,22 @@ scaled ticks=false,
 %xmode=log,
 xmin=0,xmax = 10,
 ymin=0,
-ymax=9.9,
+ymax=9,
 %xlabel style={xshift=0.75em},
 %ymin=0, ymax=14,
-legend style={legend pos=north west, font=\footnotesize}]
+legend style={legend pos=north west}] %, font=\footnotesize}]
 
 %\addplot+[line width=2, color=magenta, mark options={magenta}] table[x =THREAD,y =PERF (GFlop/s),col sep=comma] {\SPMV}; \label{plot_one}
 %\addlegendentry{SpMV}
 
 \addplot+[line width=2, color=green, mark options={green}] table[x =THREAD,y =PERF (GFlop/s),col sep=comma] {\SYMMSPMVMC}; \label{plot_two}
-\addlegendentry{SymmSpMV MC}
+\addlegendentry{MC}
 
 \addplot+[line width=2, color=cyan, mark options={cyan}] table[x =THREAD,y =PERF (GFlop/s),col sep=comma] {\SYMMSPMVABMC}; \label{plot_three}
-\addlegendentry{SymmSpMV ABMC}
+\addlegendentry{ABMC}
 
 \addplot+[line width=2, color=orange, mark options={orange}] table[x =THREAD,y =PERF (GFlop/s),col sep=comma] {\SYMMSPMVRACE}; \label{plot_four}
-\addlegendentry{SymmSpMV RACE}
+\addlegendentry{RACE}
 
 %\addplot+[name path=RLM-copy, mark=square*, mark options={red}, draw=red] coordinates {(1,\rlmCopy) (6, \rlmCopy) (8, \rlmCopy) (10, \rlmCopy)}; \label{plot_five}
 %\addlegendentry{Ideal}

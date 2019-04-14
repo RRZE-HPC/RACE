@@ -43,7 +43,7 @@
 			%anchor=south east,
 			%column sep=1ex,
 			legend pos=north west,
-			font=\footnotesize
+		%	font=\footnotesize
 		},
 		]
 		
@@ -70,7 +70,7 @@
 
 		\addplot[draw=red,smooth,dashed, line width=2pt] coordinates { (MC,\ideal) (ABMC,\ideal)};
 				
-		\legend{MEM traffic, Ideal SymmSpMV}
+		\legend{MEM traffic, Ideal traffic}
 		
 		\addplot[draw=red,smooth,dashed, line width=2pt, shorten >=-0.8em, shorten <=-0.8em] coordinates { (MC,\ideal) (RACE,\ideal)};
 		\end{axis}
