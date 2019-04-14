@@ -11,7 +11,7 @@
 	as symmetric sparse matrix-vector multiplication.
 	Scalable, hardware-efficient parallelization of such methods and kernels is known to be a 
 	challenge. Multicoloring is a widely used approach to enable parallelization
-	of iterative solvers with distance-k dependency; \eg the 
+	of iterative solvers with \DK dependency; \eg the 
 	red-black Gauss-Seidel algorithm solves the \DONE dependency problem.
 	However, most of those standard solutions suffer from low performance
 	on modern hardware, are highly problem specific, or require tailored
@@ -44,7 +44,7 @@
 		
 	\begin{comment}
 	In this paper we present a novel approach called \acrshort{RACE} that helps in
-	solving the general distance-k dependency problem for sparse kernels in a
+	solving the general \DK dependency problem for sparse kernels in a
 	hardware efficient manner. The \acrshort{RACE} method is motivated by the
 	shortcomings of multicoloring methods that are frequently used in this scenario.
 	The method uses a recursive level-based approach to find optimal permutations
@@ -67,7 +67,7 @@
 %occur in \acrfull{KACZ} or \acrfull{SymmSpMV}. 
 Data dependencies often prevent a straightforward parallelization of sparse linear algebra kernels.
 \begin{algorithm}[b]
-	\caption{\label{alg:symmSpMV} \acrshort{SymmSpMV} kernel,  $b=Ax$, in \acrshort{CRS} format. Only the upper triangular of the matrix is stored.}
+	\caption{\label{alg:symmSpMV} \acrshort{SymmSpMV} kernel,  $b=Ax$, in \acrshort{CRS} format.} %Only the upper triangular of the matrix is stored.}
 	\begin{algorithmic}[1]
 		\Statex{\textcolor{darkgray} {//Loop over all matrix rows}}
 		\For{$row=1:nrows$}
@@ -226,31 +226,26 @@ than three times slower.
 \end{comment}
 
 \section{RACE Method} \label{sec:RACE_method}
-The \acrshort{RACE} method is designed by  keeping the shortcomings
-of coloring approaches in mind. The idea is to have a general hardware 
-friendly approach applicable even for simple matrix storage formats 
+\acrshort{RACE} was designed with the shortcomings
+of coloring approaches in mind. The idea is to have a general hard\-ware-friendly
+approach applicable even for simple matrix storage formats 
 like \acrshort{CRS}.
-\Acrshort{RACE} method consists of three steps:
-\begin{enumerate}
-	\item level construction
-	\item \DK coloring
-	\item load balancing
-\end{enumerate}
+The \Acrshort{RACE} method consists of three steps: (1) level construction,
+(2) \DK coloring, and (3) load balancing.
 Depending on the matrix and hardware the steps are applied recursively 
 if required. 
 To illustrate the method we choose a
 simple matrix which is associated with an artificially constructed
 two-dimensional-seven-point (2d-7pt) stencil. \Cref{fig:orig_graph} shows
-the corresponding graph and the sparsity pattern (in inset) of the matrix.
-
+the corresponding graph and the sparsity pattern (see inset) of the matrix.
 In this paper we restrict ourselves to matrices representing strongly connected 
 undirected graphs.
 
 \subsection{Level Construction}
-In the first step we determine the different levels of a graph and permute the data structure accordingly.
+In the first step we determine the levels of a graph and permute the data structure accordingly.
 Here, we  use well-known bandwidth reduction algorithms like \Acrfull{RCM}\cite{RCM}
 or \Acrfull{BFS}\cite{BFS}. Although \acrshort{RCM} is implemented in \acrshort{RACE},
-in the following we apply \acrshort{BFS} reordering for better illustration purpose.
+in the following we apply \acrshort{BFS} reordering for better illustration.
 % \setlength{\belowcaptionskip}{0pt}
 \begin{figure}[tb]
 	\subfloat[Original graph]{\label{fig:orig_graph}\includegraphics[scale=0.32]{pics/race_method/orig_graph}
@@ -265,23 +260,24 @@ in the following we apply \acrshort{BFS} reordering for better illustration purp
 	}
 	\subfloat[]{\label{fig:levelPtr}\includegraphics[scale=0.95]{pics/race_method/levelPtr}
 		}
-	\caption{\label{fig:level_construction}(a) shows the original graph of 2d-7pt example, domain size $8 \times 8$  and (b) shows the graph after applying permutation according to levels. The level numbers are denoted on the superscript of the vertices. Figures in inset show the corresponding sparsity pattern of the matrix. \Cref{fig:levelPtr} shows the \levelPtr.}
+	\caption{\label{fig:level_construction}(a) Original graph of the 2d-7pt example, domain size $8 \times 8$. (b) Graph after permutation according to levels. The level numbers are denoted on the superscript of the vertices. Figures in inset show the corresponding sparsity pattern of the matrix. (c) \levelPtr}
 \end{figure}
 We start with choosing a root vertex and assign it to the first level ($L(0)$). 
 The next levels $L(i)$ are defined to contain all vertices that are directly related to the previous
 level $L(i-1)$ but are not in $L(i-2)$. This implies that the $i$-th level consists of all vertices
-that have a minimum distance of $i$ from root node. In \Cref{fig:level_construction} the
+that have a minimum distance of $i$ from the root node. In \Cref{fig:level_construction} the
 level numbers ($i$) are denoted in the superscript of the vertices. 
 
 After the levels are determined we permute (reorder) the matrix (and graph) according
 to the levels such that the vertices in $L(i)$ appear before $L(i+1)$.  \Cref{fig:perm_graph}
 shows the graph and matrix after applying the permutation. Note that the vertex numbering 
-in the permuted graph has changed compared to original matrix, which was lexicographically ordered.
-It is well-known  that such permutation increase data locality
-of the computations and it has been previously applied to sparse matrix
-computations without any dependencies \cite{RCM_Sparse_computation}.
+in the permuted graph has changed compared to the original lexicographically ordered
+matrix.
+It is well known  that such a permutation improves data locality,
+and it was previously applied to sparse matrix
+computations without dependencies \cite{RCM_Sparse_computation}.
 
-\Inorder to resolve dependencies \acrshort{RACE} additionally keeps information
+\Inorder to resolve dependencies, \acrshort{RACE} additionally keeps information
 about the levels by storing the index of the first vertex corresponding
 to each level in a data structure called \levelPtr (see \Cref{fig:levelPtr}).
 
@@ -291,7 +287,7 @@ dependencies. Two vertices are called \DK neighbors if the shortest path connect
 them consists of at most $k$ edges \cite{dist_k_def}. This implies two vertices
  are \DK independent if they are not \DK neighbors. Based on this definition
  it can be proven that vertices between levels $L(i)$ and $L(i \pm (k+j))$ are
- \DK independent, $\forall j\ge1$. The levels that satisfy this criterion
+ \DK independent $\forall j\ge1$. The levels that satisfy this criterion
  are called \DK independent levels.
  
  \setlength{\belowcaptionskip}{-8pt}
@@ -299,29 +295,29 @@ them consists of at most $k$ edges \cite{dist_k_def}. This implies two vertices
  	\vspace*{-0.6cm}
  	\subfloat[\DONE coloring]{\label{fig:d1_color}\includegraphics[scale=0.32]{pics/race_method/d1_color}}
  	\subfloat[\DTWO coloring]{\label{fig:d2_color}\includegraphics[scale=0.32]{pics/race_method/d2_color}}
- 	\caption{\label{fig:dk_color} Example of \DONE and \DTWO coloring of the matrix shown in ~\Cref{fig:level_construction}}
+ 	\caption{\label{fig:dk_color} Example of \DONE and \DTWO coloring of the matrix shown in \Cref{fig:level_construction}}
  \end{figure}
   \setlength{\belowcaptionskip}{0pt}
 The above approach allows for many choices to form \DK independent levels. \Cref{fig:dk_color} shows 
 one such possibility for \DONE and \DTWO coloring each. As $L(i)$ and $L(i\pm2)$ are
-distance-1 independent levels, the \DONE coloring  assigns
+distance-1 independent, the \DONE coloring  assigns
 two colors to alternating levels.  In case of \DTWO we group two adjacent levels and apply \DONE
 coloring to the groups. These groups of levels are called \levelGroups
  and the $i-th$ \levelGroup is denoted as $T(i)$ (see \Cref{fig:d2_color}).
 For \DONE coloring shown in \Cref{fig:d1_color} the \levels and \levelGroups
 coincide ($L(i) = T(i)$).
-It can be clearly seen that in both cases
+In both cases
  all the vertices  between \levelGroups of same color
   are \DONE/\DTWO independent  and can be executed in parallel.
-   For example in case of \DTWO, \levelGroups $T(0), T(2), T(4)$
+   For example, in case of \DTWO, \levelGroups $T(0), T(2), T(4)$
  and $T(6)$ can be executed by four threads in parallel. After synchronization the remaining 
- four blue colored \levelGroups can be executed in parallel. Note that
+ four blue \levelGroups can be executed in parallel. Note that
  within a \levelGroup/\level the vertices are computed serially without destroying
  any data locality.
 
-However choosing same number of \levels per \levelGroup may cause severe
-load imbalance depending on the matrix. For example in \Cref{fig:d2_color} 
- \levelGroups at extreme ends $T(0), T(7)$  have relatively low number of 
+Choosing the same number of \levels per \levelGroup may cause severe
+load imbalance depending on the matrix. For example, in \Cref{fig:d2_color} 
+ \levelGroups at extreme ends $T(0), T(7)$  have a relatively low number of 
  vertices (proportional to computational work)  compared to the \levelGroups 
  in the middle ($T(3),T(4)$).
 
