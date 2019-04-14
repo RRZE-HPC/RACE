@@ -333,7 +333,7 @@ load imbalance depending on the matrix. For example in \Cref{fig:d2_color}
 between different threads within each color. The main idea of this step
 is to incorporate hardware features like number of threads into the 
 method. It does this by generating just sufficient amount of \levelGroups 
-as required by the hardware and then applies a load-balancing algorithm.
+as required by the hardware and then applying a load-balancing algorithm.
 The algorithm minimizes the variance between number of vertices 
 within \levelGroups of the same color. \Inorder to
  accomplish this, \levelGroups containing low workload (number of vertices)
@@ -364,10 +364,19 @@ within \levelGroups of the same color. \Inorder to
     (\eg $T(3)$) at middle maintain two levels to preserve \DK coloring.
     
 \subsection{Recursion}
-\CAcomm{TODO: depending on space}
-%\lipsum
-
-
+However using the steps above the generated parallelism is limited by the total number
+of \levels, and load balancing can be a problem as it gets closer to the limit.
+To match the high levels of parallelism of modern compute devices we use the
+concept of recursion. The formulation of the \acrshort{RACE} method allows
+ to simply select a \levelGroup (sub-graph) and apply the three
+ steps recursively on this sub-graph to exploit the parallelism 
+ within a \levelGroup. The thread that was originally assigned to the
+ \levelGroup (where recursion is applied) spawns threads to parallelize
+ within the \levelGroup in a nested manner. \CAcomm{Considering space, I think it's better w/o any figures.}
+ The selection of the \levelGroup to be used for recursion and final load balancing 
+ is done by  a global load balancing algorithm.
+ 
+ 
 \section{Results \& Contribution} \label{sec:results}
 We evaluate the performance of \acrshort{RACE} by parallelizing the \acrshort{SymmSpMV}
 kernel shown in \Cref{alg:symmSpMV}. This allows to have a clear picture of the
