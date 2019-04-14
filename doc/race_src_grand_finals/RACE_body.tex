@@ -401,7 +401,7 @@ the particular context in which \acrshort{RACE} was developed \cite{ESSEX}.
 The experiments are
 run on one socket ($20$ threads) of the modern \Intel \SKX (Gold 6148) architecture
 clocked at 2.4 \GHZ. The reported performance is purely for the \acrshort{SymmSpMV}
-computation as normally these kernels are called multiple times making other
+computation as in practical applications the kernel is executed multiple times making other
 costs (like setup time) negligible.
 
 \begin{figure*}[tb]
@@ -466,7 +466,7 @@ Overall \acrshort{RACE} has an average speedup of $1.6\times$ compared to
 
 
 \subsection{FEAST with RACE}
-FEAST\cite{FEAST} is a relatively new numerical algorithm to find inner eigenvalues.
+FEAST\cite{FEAST} is a relatively new numerical algorithm to compute inner eigenvalues.
 It uses contour integration to generate a subspace (reduced system) containing the eigenvalues,
 which are then solved using classical Rayleigh-Ritz procedure. The solver is
 well-suited for very large sparse systems, and is of particular interest in the field
