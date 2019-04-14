@@ -153,20 +153,21 @@ entries \cite{dist_k_def} (structurally orthogonal rows). These groups of rows a
 However this process comes at the cost of destroying data locality in the matrix by the required permutations. 
 In the \acrshort{SymmSpMV} example (see \cref{alg:symmSpMV}) 
 threads within a color operate on different rows having entirely different 
-$col[idx]$ avoiding write conflicts in $b$ vector. 
+\texttt{col[idx]} avoiding write conflicts in $b$ vector. 
 %\Cref{fig:mc_problem}
 %shows an illustration of a matrix before (\Cref{fig:mc_problem_a}) and 
 %after (\Cref{fig:mc_problem_b}) applying \acrshort{MC} permutation.
 Note, that within a color (for \eg red) none of the rows share same column index.
 As the matrix is traversed row by row (see \cref{alg:symmSpMV}) the original matrix
-has good data locality and most of the RHS vector accesses correspond to nearby elements 
+has good data locality and most of the indirect vector accesses 
+(\texttt{x[col[idx]]} and \texttt{b[col[idx]]}) correspond to nearby elements 
 that were loaded in the computation of previous rows.
-This ensures the RHS vector needs to be loaded only
+This ensures these vectors needs to be loaded only
 once from main memory, and the rest of the accesses are served by 
 fast caches. However coloring the matrix destroys this data locality. For example
 in \Cref{fig:mc_problem_b} computing all the red colored rows leads to loading the 
-RHS vector completely. If the cache holds only  six elements, 
-computation on green and blue rows require loading almost the entire RHS vector again 
+entire vector completely. If the cache holds only  six elements, 
+computation on green and blue rows require loading almost the entire vector again 
 from the slow main memory.
 \begin{figure}[b]
 	\subfloat[Scaling performance]{\label{fig:motivation_symm_spmv}\scalebox{0.8}{\input{pics/Spin-26/out/motivation_symm_spmv.tex}}}\hspace{0.5em}
@@ -279,7 +280,7 @@ to the levels such that the vertices in $L(i)$ appear before $L(i+1)$.  \Cref{fi
 shows the graph and matrix after applying the permutation. Note that the vertex numbering 
 in the permuted graph has changed compared to original matrix, which was lexicographically ordered.
 It is well-known  that such permutation increase data locality
-of the computations and it has been previously applied to for sparse matrix
+of the computations and it has been previously applied to sparse matrix
 computations without any dependencies \cite{RCM_Sparse_computation}.
 
 \Inorder to resolve dependencies \acrshort{RACE} additionally keeps information
@@ -369,21 +370,21 @@ within \levelGroups of the same color. \Inorder to
 
 \section{Results \& Contribution} \label{sec:results}
 We evaluate the performance of \acrshort{RACE} by parallelizing the \acrshort{SymmSpMV}
-kernel shown in \Cref{alg:symmSpMV}. This allows to get a clear picture of the
+kernel shown in \Cref{alg:symmSpMV}. This allows to have a clear picture of the
 performance advantage of \acrshort{RACE} compared to other methods. Finally,
-in this section we use \acrshort{RACE} to parallelize a eigenvalue solver, 
+ we use \acrshort{RACE} to parallelize a eigenvalue solver, 
 and compare it against standard approaches.
 
-\subsection{Analysis of SymmSpMV Performance}
+\subsection{Analysis of SymmSpMV Performance} \label{subsec:perf_symm_spmv}
 Matrix vector multiplication is a frequently used and time-consuming kernel in
 many numerical simulations. But in most of the cases, even if the matrix is symmetric,
 the full (general) matrix is used to perform these computations.
 This is due to the lack of effective widely usable \acrshort{SymmSpMV} implementations available.
-With the modern limited memory capacity HBM (High Bandwidth Memory) it 
-is critical to use the \acrshort{SymmSpMV} kernel for achieving high performance.
+With the modern limited memory capacity HBM (High Bandwidth Memory), it 
+is even more important to use the \acrshort{SymmSpMV} kernel for achieving high performance.
 
-Therefore in this section we carry out experiments using the \acrshort{SymmSpMV} kernel.
-For this comparison we choose most of the matrices from publicly available Suite
+In this section we carry out experiments using this \acrshort{SymmSpMV} kernel.
+For the comparisons we choose most of the matrices from publicly available Suite
 SuiteSparse Matrix Collection \cite{UOF}, combining frequently 
 used matrices in related literatures \cite{RSB,park_ls}. We also added
 some matrices from quantum physics applications, which originates from 
@@ -412,7 +413,7 @@ on different matrices, along with the range of upper performance bounds
 extreme cases of memory bandwidths observed on this processor. \CAcomm{Is it better to show only copy?}
 We see that in almost all the cases the \acrshort{SymmSpMV} implementation
 using \acrshort{RACE} attains higher than $85\%$ of the maximum achievable performance.
-This is made possible since \acrshort{RACE} is able to preserve good data
+This is achieved by \acrshort{RACE} as it is able to preserve good data
 locality and have minimal data traffic, which we have already seen in
  \Cref{fig:motivation_data} for the \texttt{Spin-26} matrix. 
  
@@ -421,7 +422,7 @@ In \Cref{fig:race_vs_mkl} we compare it against the \acrshort{SymmSpMV}
 implementation of a widely used numerical library, the \acrshort{MKL}. 
 We use the latest implementation of MKL, which uses the Inspector-Executor routines.
 The comparisons show that \acrshort{RACE} outperforms MKL
-versions by a factor of $1.5\times$ in average. A simple analysis
+versions by a factor of $1.5\times$ on an average. A simple analysis
 shows that the performance of the \acrshort{MKL} \acrshort{SymmSpMV} 
 kernel coincides with the matrix vector multiplication using the full
 matrix (\acrshort{SpMV}), which indicates that MKL might be converting
@@ -438,13 +439,13 @@ size of blocks was determined by a parameter scan (range 4 \ldots 128, see \cite
 \Cref{fig:race_vs_mc} compares the performance of \acrshort{RACE} with the other 
 two coloring approaches.
 Overall \acrshort{MC} method is not competitive, while \acrshort{ABMC} delivers
-modest performance ($80 \%$ of \acrshort{RACE}) for small matrices. But for large
+modest performance ($85 \%$ of \acrshort{RACE}) for small matrices. But for large
 matrices,  where data locality plays a vital role \acrshort{ABMC} 
 falls substantially behind \acrshort{RACE} as the indirectly
 accessed vectors no more fit in cache. To make this comparison easier
 the matrices are arranged according to increasing number of rows.
 Overall \acrshort{RACE} has an average speedup of $1.6\times$ compared to 
-\acrshort{ABMC} method, while in some cases speedup can be as high as $3\times$.
+\acrshort{ABMC} method, while in some cases the speedup is as high as $3\times$.
 
 
 %First we establish performance model for 
@@ -452,35 +453,68 @@ Overall \acrshort{RACE} has an average speedup of $1.6\times$ compared to
 %the quality of our method. Then we compare \acrshort{RACE} with the
 %two coloring approaches introduced before and the 
 
-\begin{itemize}
-	\item Test setup, brief is sufficient
-	\item Start with Spin matrix, and little RLM
-	\item SymmSpMV performance
-\end{itemize}
 
 
 \subsection{FEAST with RACE}
-\lipsum
+FEAST\cite{FEAST} is a relatively new numerical algorithm to find inner eigenvalues.
+It uses contour integration to generate a subspace (reduced system) containing the eigenvalues,
+which are then solved using classical Rayleigh-Ritz procedure. The solver is
+well-suited for very large sparse systems, and is of particular interest in the field
+of quantum computations.
+ The main time consuming part of the algorithm (more than $95\%$) is to solve 
+ shifted linear systems ($A- \sigma I = b$). However these systems
+ that arise in FEAST are highly indefinite and ill-conditioned making it impossible
+ for most of the linear iterative solvers. Therefore the standard approach
+ is to use direct solvers. However in \cite{feast_mc} it has been shown
+ that the Kaczmarz iterative solver accelerated by Conjugate Gradient (CG) method,
+ so called CGMN solver is a robust alternative to the direct solvers. 
+ 
+Similar to \acrshort{SymmSpMV}, the Kaczmarz method has a \DTWO dependency making
+it difficult to parallelize. In \cite{feast_mc} \acrshort{MC} approach was used to
+parallelize the kernel, however as we have seen previously the \acrshort{RACE}
+approach can achieve a better performance compared to \acrshort{MC}. Therefore
+we implement a shared-memory parallel version of CGMN and use it in the FEAST eigenvalue
+solver.
+
+  \setlength{\belowcaptionskip}{-15pt}
 \begin{figure}[tb]
 	\centering
 	\scalebox{0.56}{\input{pics/feast/skx/feast_BENCH3D}}
 	%	\includegraphics[scale=0.6]{pics/alpha_problem/mc_alpha_unsymm_only_red.tex}
-	\caption{Comparison of FEAST with default \acrshort{MKL} direct solver and 
+	\caption{\label{fig:feast} Comparison of FEAST with default \acrshort{MKL} direct solver and 
 		iterative solver CGMN parallelized using \acrshort{RACE}. The experiment is
 		run on one socket of \SKX (Platinum 8160) chip. Please note both x and y axes
 		are in log scale.}
 \end{figure}
+  \setlength{\belowcaptionskip}{0pt}
+  
+We use the FEAST implementation provided by \acrshort{MKL}. By default the MKL
+uses PARDISO, a direct solver library to solve the inner linear systems. 
+But it has a Reverse Communication Interface (RCI) which allows the users to provide 
+customized linear solver, thus we use RCI to provide our CGMN implementation as the inner 
+linear solver. The following experiment measures time to find ten inner eigen values 
+of a simple discrete Laplacian matrix to an accuracy of $10^{-8}$. The experiment
+was carried out on a single socket of a latest production machine having 
+Intel \SKX (Platinum 8160) chips.
 
-\begin{itemize}
-	\item Briefly describe FEAST
-	\item Tell its implemented in MKL, we use Reverse Communication Interface (RCI) of
-		\acrshort{MKL} to implement inner linear solver
-	\item Tell why we need KACZ -> ill-conditioned linear system, robustness of KACZ -> only potential iterative solver. Tell 99\% of time it uses in this CGMN solver
-	\item To our knowledge first implementation that uses iterative inner linear system, which is really inevitable to scale and for large size problems
-	\item  Test setup, discrete laplacian, 10 inner eigenvalues, complex numbers 
-	\item Comparison with default Pardiso
-	\item Discuss on Big O ....
-\end{itemize}
+\Cref{fig:feast} shows the measured time and memory footprint of FEAST for 
+the default MKL version (using PARDISO) and the CGMN versions
+ parallelized using both \acrshort{RACE} and \acrshort{ABMC}.
+The experiment is run for different sizes of the matrix. In tune
+with our observations in \cref{subsec:perf_symm_spmv} we see \acrshort{ABMC}
+method falls short by a factor of $4\times$ compared to \acrshort{RACE} method.
+As with all the direct solvers the time required by PARDISO to solve FEAST
+is comparatively less than \acrshort{RACE} for small sizes, however as the 
+sizes grow both the methods draw closer to each other. This happens as the 
+direct solvers have a higher time complexity (here $\approx \mathcal{O}(n^{2})$, 
+see \Cref{fig:feast}) compared to iterative methods ($\approx \mathcal{O}(n^{1.5})$).
+But even worse the direct solvers requires more memory and the 
+requirement grows much faster (see \cref{fig:feast}(b)) compared to 
+iterative solvers making them impossible to solve large problems. 
+In our experiment the direct solver ran out of the memory for problem sizes
+higher than $140^3$, but even at this point the CGMN method using
+\acrshort{RACE} has not even filled half the entire memory.
+
 
 
 \section{Future Work}
