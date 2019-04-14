@@ -4,22 +4,22 @@
 	ranging from quantum physics to fluid and structural mechanics.
 	However, iterative numerical methods  
 	and important building blocks of sparse linear algebra frequently feature strong 
-	data dependencies rendering them difficult to be parallelized.
-	Typically loop-carried dependencies occur in
+	data dependencies, making them difficult to parallelize.
+	Typically, loop-carried dependencies occur in
 	iterative solvers  (e.g., Kaczmarz, Gauss-Seidel) or preconditioners 
 	and write conflicts show up in the parallelization of building blocks such 
-	as symmetric sparse matrix vector multiplication.
+	as symmetric sparse matrix-vector multiplication.
 	Scalable, hardware-efficient parallelization of such methods and kernels is known to be a 
 	challenge. Multicoloring is a widely used approach to enable parallelization
-	of iterative solvers with distance-k dependency \eg the 
-	red-black Gauss-Seidel approach solves the \DONE dependency problem.
+	of iterative solvers with distance-k dependency; \eg the 
+	red-black Gauss-Seidel algorithm solves the \DONE dependency problem.
 	However, most of those standard solutions suffer from low performance
 	on modern hardware, are highly problem specific, or require tailored
-    sparse matrix storage formats.
+        sparse matrix storage formats.
 
 	\Acrshort{RACE} addresses these shortcomings by combining ideas from graph traversal
 	and multicoloring to ensure data locality, to generate appropriate levels of parallelism,
-	and to enable hardware efficient parallelization schemes. The method is applicable
+	and to enable hardware-efficient parallelization schemes. It is applicable
 	to many problems (\ie matrix structures) and general sparse data storage formats.
 	
 %	In this paper we present a novel approach called \acrshort{RACE} that helps in
@@ -34,14 +34,13 @@
 
 
 \noindent	The paper is structured as follows. \Cref{sec:background} describes
-	the underlying dependency problems and the conventional
-	approaches used to solve these. \Cref{sec:uniqueness} 
+	the underlying dependency problems and conventional
+	solutions. \Cref{sec:uniqueness} 
 	demonstrates the major drawbacks of the existing 
 	approaches. We then introduce the \acrshort{RACE} method in \Cref{sec:RACE_method},
 	its uniqueness and how its basic design addresses the existing problems. 
 	In \Cref{sec:results} we compare \acrshort{RACE} performance for thread-level parallelization of \acrfull{SymmSpMV} to
-	available standard approaches including \acrshort{MKL}. Finally we apply the \acrshort{RACE}
-	method to parallelize a sparse eigenvalue solver provided by \acrshort{MKL} and demonstrate  \acrshort{RACE} superiority in terms of performance and attainable problem sizes. 
+	available standard solutions including \acrshort{MKL}. Finally we use \acrshort{RACE} to parallelize a sparse eigenvalue solver provided by \acrshort{MKL} and demonstrate  \acrshort{RACE}'s superiority in terms of performance and attainable problem sizes. 
 		
 	\begin{comment}
 	In this paper we present a novel approach called \acrshort{RACE} that helps in
@@ -66,8 +65,8 @@
 %The two main class of dependencies that occur in this field are \DONE
 %dependency as in Gauss-Seidel iteration or a \DTWO dependency as they 
 %occur in \acrfull{KACZ} or \acrfull{SymmSpMV}. 
-Data dependencies often prevent a straightforward parallelization in sparse linear algebra schemes.
-\begin{algorithm}[tb]
+Data dependencies often prevent a straightforward parallelization of sparse linear algebra kernels.
+\begin{algorithm}[b]
 	\caption{\label{alg:symmSpMV} \acrshort{SymmSpMV} kernel,  $b=Ax$, in \acrshort{CRS} format. Only the upper triangular of the matrix is stored.}
 	\begin{algorithmic}[1]
 		\Statex{\textcolor{darkgray} {//Loop over all matrix rows}}
@@ -82,40 +81,39 @@ Data dependencies often prevent a straightforward parallelization in sparse line
 		\EndFor
 	\end{algorithmic}
 \end{algorithm}
-
 As a representative and highly relevant example for a \DTWO dependency problem, we use \acrfull{SymmSpMV}. 
 \Cref{alg:symmSpMV} shows the pseudo-code of the basic \acrshort{SymmSpMV} kernel 
-for matrices stored in \acrfull{CRS} \cite{CRS} storage format. The kernel exploits the symmetry
+for matrices stored in \acrfull{CRS} \cite{CRS} format. The kernel exploits the symmetry
 of the matrix ($A_{ij} = A_{ji}$) to reduce storage size and overall 
-memory traffic which is known to be the most severe hardware bottleneck for this operation on all modern compute devices.  
-However \acrshort{SymmSpMV} cannot be parallelized straightforward as two 
-different threads working on two different rows in parallel could potentially 
-write to the same element ($b[col[idx]]$) of the indirectly accessed $b$ vector
+memory traffic, which is known to be pivotal hardware bottleneck for this operation on all modern compute devices.  
+However, \acrshort{SymmSpMV} cannot be parallelized easily as 
+different threads working on different rows in parallel could potentially 
+write to the same element $b[col[idx]]$,
 causing write conflicts.
 In terms of graph theory this means a vertex (row in a matrix) and 
-its \DTWO neighbors \cite{dist_k_def} cannot be operated in parallel.
-In this paper we concentrate on such \DTWO dependency problems, although 
+its \DTWO neighbors \cite{dist_k_def} cannot be operated on in parallel.
+Here we concentrate on such \DTWO dependency problems, although 
 the underlying method and library is capable of handling 
-general case of \DK dependencies as well.
+the general case of \DK dependencies as well.
 
 
-A popular approach to solve above problem is the
-\acrfull{MC} technique. The earliest work on coloring is the red-black 
-Gauss-Seidel scheme~\cite{RBGS}, which was applied to  matrices with
+A popular approach to solve the above problem is \acrfull{MC}.
+The earliest work on coloring is the red-black 
+Gauss-Seidel scheme~\cite{RBGS}, which was applied to  matrices with a
  known regular sparsity pattern. 
-Later \acrlong{MC} techniques have been expanded using graph theory
-for general sparse matrices \cite{MC, COLPACK}.
-Recent variants like \acrfull{ABMC} \cite{ABMC} have tried to improve the performance 
-of the \acrshort{MC} methods. 
-In \cite{feast_mc}, \acrshort{MC} was applied to the Kaczmarz iterative solver \cite{kaczmarz}
+Later \acrlong{MC} techniques were expanded using graph theory
+for general sparse matrices \cite{MC,COLPACK}.
+Recent variants like \acrfull{ABMC} \cite{ABMC} tried to improve the performance 
+of \acrshort{MC} methods. 
+In \cite{feast_mc}, \acrshort{MC} was applied to the Kaczmarz iterative solver \cite{kaczmarz},
  which has the same \DTWO dependency as \acrshort{SymmSpMV}.
-Specifically to \acrshort{SymmSpMV} there has been no previous attempt to use 
-\acrlong{MC} techniques . General solutions for \acrshort{SymmSpMV} are 
-locking-based methods and thread-private target arrays \cite{sparseX,thread_private_symm_spmv}.
-Depending on the matrix structure these approaches can lead to performance
+Specifically for \acrshort{SymmSpMV} there has been no previous attempt to use 
+\acrlong{MC} techniques. General solutions for \acrshort{SymmSpMV} are 
+lock-based methods and thread-private target arrays \cite{sparseX,thread_private_symm_spmv}.
+Depending on the matrix structure these solutions can lead to performance
  degradation  due to serialization and massive increase in data traffic.
-Recent researches in this direction use specialized storage formats like
- CSB \cite{CSB} or RSB \cite{RSB} but this requires rewriting of existing 
+Recent research in this direction uses specialized storage formats like
+ CSB \cite{CSB} or RSB \cite{RSB}, but this requires rewriting of existing 
  code and substantial tuning efforts. 
 
 %to Kaczmarz iterative solver having  dependency. 
@@ -329,19 +327,21 @@ load imbalance depending on the matrix. For example in \Cref{fig:d2_color}
 
 
 \subsection{Load Balancing}
-\Acrshort{RACE} applies a load-balancing scheme to balance the work-load
-between different threads within each color. The main idea of this step
-is to incorporate hardware features like number of threads into the 
-method. It does this by generating just sufficient amount of \levelGroups 
-as required by the hardware and then applying a load-balancing algorithm.
-The algorithm minimizes the variance between number of vertices 
-within \levelGroups of the same color. \Inorder to
- accomplish this, \levelGroups containing low workload (number of vertices)
- grab adjacent \levels from neighboring \levelGroups and the overloaded
- \levelGroups shift \levels to adjacent \levelGroups. To maintain
- \DK independence between \levelGroups of the same color the algorithm enforces \atleast $k$ levels in each \levelGroup. The algorithm 
- does this shifting process in an iterative manner until it reaches the
- minimum possible variance or no further moves are possible due to
+\Acrshort{RACE} applies a load-balancing scheme 
+among the threads within each color.
+%The main idea 
+%is to include hardware features like number of threads into the 
+%method.
+It generates just the right number of \levelGroups 
+as required by the hardware (i.e., the number of available threads)
+and then applies a load-balancing algorithm that
+minimizes the variance among the number of vertices 
+within \levelGroups of the same color. To this end,
+\levelGroups containing few vertices
+grab adjacent \levels from neighboring \levelGroups; overloaded
+\levelGroups shift \levels to adjacent \levelGroups. To maintain
+\DK independence between \levelGroups of the same color the algorithm enforces \atleast $k$ levels per \levelGroup. This shifting process is applied iteratively until it
+reaches the minimum possible variance or no further moves are possible due to
  \DK coloring.
  
   \setlength{\belowcaptionskip}{-10pt}
@@ -356,12 +356,12 @@ within \levelGroups of the same color. \Inorder to
   \end{figure}
    \setlength{\belowcaptionskip}{0pt}
    
-  \Cref{fig:lb} shows the graph of 2d-7pt example size $16\times16$ after
-   applying the load balancing. Here \DTWO coloring and five threads
-    (\ie ten \levelGroups) were the input to the load balancing algorithm.
+  \Cref{fig:lb} shows the graph of the 2d-7pt example at size $16\times16$ after
+   load balancing. Here \DTWO coloring and five threads
+    (\ie ten \levelGroups) were the input to the load balancer.
     Note that \levelGroups at extreme ends (\eg $T(0)$) have more levels
-    since here each levels have low number of vertices. While bigger \levelGroups
-    (\eg $T(3)$) at middle maintain two levels to preserve \DK coloring.
+    since here each level has fewer vertices, whereas bigger \levelGroups
+    (\eg $T(3)$) in the middle maintain two levels to preserve \DK coloring.
     
 \subsection{Recursion}
 However, using the steps above the generated parallelism is limited by the total number
