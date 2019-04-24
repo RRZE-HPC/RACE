@@ -69,15 +69,15 @@ As the attainable main memory bandwidth is the input parameter to the \roofline 
 Interestingly there is no sharp drop at the exact size of the \acrshort{LLC} but a rather steady performance decrease with enhanced data access rates also for data set sizes up to twice the \acrshort{LLC} size on \IVB. For \SKX this effect is even more pronounced as the noninclusive victim L3 cache architecture only stores data which are not in the L2 cache; thus the available cache size for an application may be the aggregate sizes of the L2 and L3 caches on this architecture.  The final bandwidth for the  \roofline model is chosen as the asymptotic value depicted in \cref{fig:size_vs_bw}. Of course caching effects are extremely sensitive to the data access pattern and thus the values presented here only provide simple upper bounds for the \acrshort{SymmSpMV} kernel with its potentially strong irregular data access. 
 
 \subsection{External Tools and Software}
-\LIKWID \cite{LIKWID} tool suite version 4.3.2 was used, in specific
-we used \likwidPerfctr for counting hardware events 
- and measuring derived metrics, while the bandwidths shown in 
- \cref{tab:test_bed} were measured using the \likwidBench tool.
+The \LIKWID \cite{LIKWID} tool suite in version 4.3.2 was used, specifically
+\likwidPerfctr for counting hardware events 
+ and measuring derived metrics,  and
+ \likwidBench for bandwidth benchmarks (see \cref{tab:test_bed}).
  For \acrshort{MC} we used the \COLPACK \cite{COLPACK} library
- for coloring, and \METIS \cite{METIS} version 5.1.0 was used for graph partitioning
- in \acrshort{ABMC} method. We used the \SPMP \cite{SpMP} library to perform
+ for coloring and \METIS \cite{METIS} version 5.1.0 for graph partitioning
+ with the \acrshort{ABMC} method. The \SPMP \cite{SpMP} library was employed for
   \acrshort{RCM} bandwidth reduction, and the \acrshort{MKL} version 19.0.2
- for performing some reference computations and comparisons.
+ for some reference computations and comparisons.
 %\begin{description}
 %	%TODO
 %	\item[\LIKWID 4.3.2] \cite{LIKWID}  \likwidPerfctr was used for counting hardware events and measuring derived metrics. The bandwidths shown in \cref{tab:test_bed} were taken by the  \likwidBench tool.
