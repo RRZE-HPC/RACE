@@ -78,9 +78,16 @@ pointer was not accounted for, \ie the denominator in
 $\frac{4}{\acrshort{NNZR}}\,\BYTE$. This error is only significant
 when $\acrshort{NNZR}$ is small.}  The optimal value of
 $\alpha=\acrshort{NNZR}^{-1}$ together with the corresponding
-intensity value as well as the measured $\alpha$ values (denoted by
-$\alpha_\mathrm{\acrshort{SpMV}}$) for all matrices on the two
-processor chips are given in \cref{table:alpha_values}.
+intensity value for all matrices is shown in 
+\cref{table:alpha_values}. \CAcomm{The measured $\alpha_{\acrshort{SpMV}}$
+ value is a good approximation for $\alpha_{\acrshort{SymmSpMV}}$ 
+ values (see \cref{sect:SymmSpmv}) in cases where caching effects on 
+ vectors do not play a role, therefore the table also presents the 
+ corresponding measured $\alpha_{\acrshort{SpMV}}$ ($= \alpha_{\acrshort{SymmSpMV}}$)
+values for different matrices on both the architectures.}
+%as well as the measured $\alpha$ values (denoted by
+%$\alpha_\mathrm{\acrshort{SpMV}}$) for all matrices on the two
+%processor chips are given in \cref{table:alpha_values}.
 \begin{table}[htbp]
 	\footnotesize \caption{The optimal value of $\alpha_{\acrshort{SpMV}}$
 	is shown in column three. Following \cref{eq:upper_performance} the
@@ -88,8 +95,8 @@ processor chips are given in \cref{table:alpha_values}.
 	architecture using the best intensity values
 	($I_{\acrshort{SpMV}}(\alpha_{SpMV})$ in
 	$\frac{\FLOP}{\BYTE}$) as shown in the last
-	column. The assumed $\alpha_{\acrshort{SymmSpMV}}$ on \SKX and 
-	\IVB architecture are presented in columns four and five, respectively.
+	column. \CAcomm{Move last column to fourth ??} The assumed $\alpha_{\acrshort{SymmSpMV}}$ on \SKX and 
+	\IVB architectures are presented in columns four and five, respectively.
 	The assumed $\alpha_{\acrshort{SymmSpMV}}$ is equal to 
 	the measured $\alpha_{\acrshort{SpMV}}$ for all matrices
 	except the ones marked with asterisk, where  $\alpha_{\acrshort{SymmSpMV}}$
@@ -103,10 +110,10 @@ influence of matrix structure (i.e. matrix bandwidth and number of
 rows; see \cref{tab:test_mtx}) and the cache size on the actual data
 traffic, \ie the measured values of $\alpha_{\acrshort{SpMV}}$.
  
-For most of the ten candidate matrices on on the \SKX architecture that could
+For most of the ten candidate matrices on the \SKX architecture that could
 potentially show a caching effect (see \cref{table:bench_matrices}) we
 observe the measured $\alpha_{\acrshort{SpMV}}$ to be lower than
-optimal. In this case we set their values to the optimal alpha value
+optimal. In this case we set their $\alpha_{\acrshort{SymmSpMV}}$ values to the optimal alpha value
 of \acrshort{SymmSpMV} ($\alpha_{\acrshort{SymmSpMV}}$) which will be
 defined in the following \cref{sect:SymmSpmv}. These cases are marked
 with an asterisk in \cref{table:alpha_values}.
@@ -180,7 +187,9 @@ the same compute device, as in the latter case the two vectors are
 accessed irregularly and compete for cache. Thus we
 can assume that the $\alpha$ value measured for \acrshort{SpMV}
 ($\alpha_\mathrm{\acrshort{SpMV}}$) is a lower bound
-for \acrshort{SymmSpMV}. Since an upper bound for performance is the
+for \acrshort{SymmSpMV}. \CAcomm{\Cref{table:alpha_values} show the 
+thus assumed $\alpha_{\acrshort{SymmSpMV}}$ values taken for performance
+modeling.} Since an upper bound for performance is the
 product of computational intensity and the main memory bandwidth
 (see \cref{eq:upper_performance}), this approach provides an upper
 performance bound for \acrshort{SymmSpMV}.  However, note that the
