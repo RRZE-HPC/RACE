@@ -77,21 +77,24 @@ pointer was not accounted for, \ie the denominator in
 (\ref{eq:SpMV_intensity}) is larger by
 $\frac{4}{\acrshort{NNZR}}\,\BYTE$. This error is only significant
 when $\acrshort{NNZR}$ is small.}  The optimal value of
-$\alpha=\acrshort{NNZR}^{-1}$) together with the corresponding
+$\alpha=\acrshort{NNZR}^{-1}$ together with the corresponding
 intensity value as well as the measured $\alpha$ values (denoted by
 $\alpha_\mathrm{\acrshort{SpMV}}$) for all matrices on the two
 processor chips are given in \cref{table:alpha_values}.
 \begin{table}[htbp]
-	\footnotesize \caption{The optimal value and the measured
-	values of $\alpha_{\acrshort{SpMV}}$ on \SKX (SKX) as well
-	as \IVB (IVB) for the \acrshort{SpMV} kernel (using
-	the \LIKWID tool) are presented in columns three to
-	five. Following \cref{eq:upper_performance} the
+	\footnotesize \caption{The optimal value of $\alpha_{\acrshort{SpMV}}$
+	is shown in column three. Following \cref{eq:upper_performance} the
 	maximum \acrshort{SpMV} performance can be calculated for each
 	architecture using the best intensity values
 	($I_{\acrshort{SpMV}}(\alpha_{SpMV})$ in
 	$\frac{\FLOP}{\BYTE}$) as shown in the last
-	column.}  \label{table:alpha_values}
+	column. The assumed $\alpha_{\acrshort{SymmSpMV}}$ on \SKX and 
+	\IVB architecture are presented in columns four and five, respectively.
+	The assumed $\alpha_{\acrshort{SymmSpMV}}$ is equal to 
+	the measured $\alpha_{\acrshort{SpMV}}$ for all matrices
+	except the ones marked with asterisk, where  $\alpha_{\acrshort{SymmSpMV}}$
+	is set to optimal $\alpha_{\acrshort{SymmSpMV}}$ (= 1/\acrshort{SymmNNZR}).
+	 \label{table:alpha_values}}
         \begin{center} \input{pics/results/alpha_table_generator/table.tex} \end{center}
 \end{table}
 Choosing the matrices 10, 22, and 31, which have approximately the

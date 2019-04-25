@@ -25,22 +25,22 @@ for mat in $MATRICES; do
 		if [ "$rlm_copy" != "-1" ] ; then
 			template="plot_template_with_rlm.tex"
 		fi
-		cp $template plots_tmp/$mat.tex
-		./substitute.sh "FOLDER" "$PWD/$RESULTS/$ext"  plots_tmp/$mat.tex
-		./substitute.sh "MATRIX_NAME" "$mat" plots_tmp/$mat.tex
+		cp $template plots_tmp/"$mat"_"$ext".tex
+		./substitute.sh "FOLDER" "$PWD/$RESULTS/$ext"  plots_tmp/"$mat"_"$ext".tex
+		./substitute.sh "MATRIX_NAME" "$mat" plots_tmp/"$mat"_"$ext".tex
 		if [ "$rlm_copy" != "-1" ] ; then
-			./substitute.sh "RLM_COPY" "$rlm_copy" plots_tmp/$mat.tex
-			./substitute.sh "RLM_LOAD" "$rlm_load" plots_tmp/$mat.tex
+			./substitute.sh "RLM_COPY" "$rlm_copy" plots_tmp/"$mat"_"$ext".tex
+			./substitute.sh "RLM_LOAD" "$rlm_load" plots_tmp/"$mat"_"$ext".tex
 		fi
 		cd plots_tmp
 		echo "compiling $mat"
-		pdflatex $mat.tex >> compile.txt
+		pdflatex "$mat"_"$ext".tex >> compile.txt
 		echo "finished compiling $mat"
 		cd -
-		cp plots_tmp/$mat.pdf $OUT/$ext/.
+		cp plots_tmp/"$mat"_"$ext".pdf $OUT/$ext/.
 	done
 	let ctr=$ctr+1
 done
 
-rm -r plots_tmp
+#rm -r plots_tmp
 

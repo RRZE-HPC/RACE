@@ -67,11 +67,11 @@ In \cref{fig:corner_cases_param} we basically mimic scaling tests on one Skylake
 
 \begin{figure}[tbhp]
 	\centering
-	\subfloat[\emph{crankseg\_1}]{\label{fig:crankseg_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/crankseg_1}}
-	\subfloat[\emph{inline\_1}]{\label{fig:inline_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/inline_1}}	
-	\subfloat[\emph{parabolic\_fem}]{\label{fig:parabolic_fem_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/parabolic_fem}}
-	\subfloat[\emph{Graphene-4096}]{\label{fig:Graphene-4096_scaling} \includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/Graphene-4096}}	
-	\caption{Parallel performance measurements of \acrshort{SymmSpMV} with \acrshort{RACE} on one socket of \SKX architecture for the four corner case matrices. For comparison, the performance of the basic \acrshort{SpMV} kernel is presented. For the matrices \cref{fig:inline_scaling,fig:parabolic_fem_scaling,fig:Graphene-4096_scaling} the maximum roofline performance limits \cref{eq:upper_performance} are given using the computational intensity \cref{eq:SymmSpMV_intensity} for the two extreme cases of load only memory bandwidth (RLM-load) and copy memory bandwidth (RLM-copy).}
+	\subfloat[\emph{crankseg\_1}]{\label{fig:crankseg_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/crankseg_1_RCM}}
+	\subfloat[\emph{inline\_1}]{\label{fig:inline_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/inline_1_RCM}}	
+	\subfloat[\emph{parabolic\_fem}]{\label{fig:parabolic_fem_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/parabolic_fem_RCM}}
+	\subfloat[\emph{Graphene-4096}]{\label{fig:Graphene-4096_scaling} \includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/Graphene-4096_RCM}}	
+	\caption{Parallel performance measurements of \acrshort{SymmSpMV} with \acrshort{RACE} on one socket of \SKX architecture for the four corner case matrices. For comparison, the performance of the basic \acrshort{SpMV} kernel is presented. For the matrices \cref{fig:inline_scaling,fig:parabolic_fem_scaling,fig:Graphene-4096_scaling} the maximum roofline performance limits \cref{eq:upper_performance} are given using the computational intensity \cref{eq:SymmSpMV_intensity} for the two extreme cases of load only memory bandwidth (RLM-load) and copy memory bandwidth (RLM-copy). The measured full socket main memory data traffic per nonzero entry (in \mbox{B}/\acrshort{nnz}) is also shown. }
 	\label{fig:corner_cases_scaling}
 \end{figure}
 
