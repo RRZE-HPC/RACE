@@ -18,6 +18,9 @@
 \makeglossaries
 \interfootnotelinepenalty=10000 %added so footnote doesn't go to next page
 
+\captionsetup[subfigure]{subrefformat=simple,labelformat=simple,listofformat=subsimple}
+\renewcommand\thesubfigure{(\alph{subfigure})} %For parantheses around subfig number in cref
+
 \include{race_glossary}
 
 
@@ -32,6 +35,7 @@
 % (title and author information, macros, packages, etc.) goes into
 % ex_shared.tex. If there is no supplement, this file can be included
 % directly.
+%\crefdefaultlabelformat{#2#1#3}
 
 \input{ex_shared}
 
