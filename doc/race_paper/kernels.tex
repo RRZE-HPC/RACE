@@ -1,22 +1,35 @@
 %\subsection{Kernels} \label{subsec:test_kernels}
-We evaluate our methods by parallelization of the \acrfull{SymmSpMV} kernel using \DTWO coloring, which avoids concurrent update of the same vector entries by different threads. 
+We evaluate our methods by parallelization of the \acrfull{SymmSpMV}
+kernel using \DTWO coloring, which avoids concurrent updates of the
+same vector entries by different threads.
 
 %In this case, the result is identical to the serial code (``exact kernel''). As an example of an iterative solver we have chosen \acrfull{SymmKACZ}. It reads and writes indirectly from the same vector, which leads to a change in convergence depending on the coloring scheme (``inexact kernel'').
 % {\GW To be done As an example for an iterative solver with distance2 dependency we have chosen the \acrshort{KACZ} ...}
 
-Since the kernel is closely related to the \acrfull{SpMV} kernel by structure and computational intensity, we start with a discussion of \acrshort{SpMV} and extend it towards \acrshort{SymmSpMV} later. In all cases the aim is to derive realistic upper performance bounds, which can be estimated once the computational intensity and main memory bandwidth (\acrshort{b_s}; see \cref{tab:test_bed}) is known \cite{Williams_roofline}, \ie
-  \begin{align}
+Since the kernel is closely related to the \acrfull{SpMV} kernel by
+structure and computational intensity, we start with a discussion
+of \acrshort{SpMV} and extend it towards \acrshort{SymmSpMV} later. In
+all cases the aim is to derive realistic upper performance bounds,
+which can be estimated once the computational intensity and main
+memory bandwidth (\acrshort{b_s}; see \cref{tab:test_bed}) are
+known \cite{Williams_roofline}, \ie
+\begin{align}
    	\label{eq:upper_performance}
    	P_\mathrm{kernel}  &= I_\mathrm{kernel}  \times b_S.
   \end{align}
 %Our kernels have considerably more loads compared to stores, therefore we choose $b_s$ to be the most optimistic (load-only) value from \cref{tab:test_bed}.
-Since $b_s$ depends on the ratio of load to store streams we present the model for both upper (load-only) and lower bound (copy) bandwidth case.  
+Since $b_S$ depends on the ratio of load to store streams we present
+the model for both upper (load-only) and lower bound (copy) bandwidth
+cases.
  % Due to the nature of our kernels and matrices having considerable amount of nonzeros our algorithms have considerably more loads compared to stores, therefore we choose $b_s$ to be the most optimistic (load-only) value from \cref{tab:test_bed} if not mentioned otherwise.
-  
-  In the following we choose the \acrfull{CRS} format for the  implementation of \acrshort{SpMV} as well as  \acrshort{SymmSpMV} and assume symmetric matrices.
+In the following we choose the \acrfull{CRS} format for the
+implementation of \acrshort{SpMV} as well as \acrshort{SymmSpMV} and
+assume symmetric matrices.
 
 \subsection{\acrshort{SpMV}}
-A baseline \acrshort{SpMV} kernel is presented in \Cref{alg:SpMV}. It has no loop-carried dependencies, so parallelization of the outer loop using, \eg OpenMP, is straightforward. 
+A baseline \acrshort{SpMV} kernel is presented in \Cref{alg:SpMV}. It
+has no loop-carried dependencies, so parallelization of the outer loop
+using, \eg OpenMP, is straightforward.
 \begin{algorithm}[tbp]
 	\caption{\acrshort{SpMV} using the \acrshort{CRS} format: $b=A x$} 
 	\label{alg:SpMV}
@@ -35,22 +48,65 @@ A baseline \acrshort{SpMV} kernel is presented in \Cref{alg:SpMV}. It has no loo
 Following the discussion in~\cite{Moritz_sell}, its computational intensity is
 \begin{equation}
 \label{eq:SpMV_intensity}
-I_\mathrm{\acrshort{SpMV}} (\alpha)= \frac{2}{8+4+8\alpha+\frac{20}{\acrshort{NNZR}}} \frac{\FLOP}{\BYTE}\eos
+I_\mathrm{\acrshort{SpMV}} (\alpha)= \frac{2}{8+4+8\alpha+20/\acrshort{NNZR}} \frac{\FLOP}{\BYTE}\eos
 \end{equation}
-Here we assume that the matrix data  ($A[], col[]$), the left-hand side (LHS) vector ($b[]$), and the row pointer information ($rowPtr[]$) are loaded only once from main memory, since these data structures are consecutively accessed. The intensity is calculated from the average cost of performing all computations required for one nonzero element of the matrix. Thus, contributions which are independent of the inner (short) loop are rescaled by $\acrshort{NNZR}$, which is the average number of nonzeros per row (i.e., the average length of the inner loop). 
+Here we assume that the matrix data ($A[], col[]$), the left-hand side
+(LHS) vector ($b[]$), and the row pointer information ($rowPtr[]$) are
+loaded only once from main memory, since these data structures are
+consecutively accessed. The intensity is calculated from the average
+cost of performing all computations required for one nonzero element
+of the matrix. Thus, contributions which are independent of the inner
+(short) loop are rescaled by $\acrshort{NNZR}$, which is the average
+number of nonzeros per row (i.e., the average length of the inner
+loop).
 
-The $8\alpha$ term quantifies the data traffic caused by accessing the right-hand side (RHS) vector ($x[]$). The value of $\alpha$ depends on the matrix structure as well as on the RHS vector data set size and the available cache size. The minimum value of $\alpha=\acrshort{NNZR}^{-1}$ is attained if the RHS vector is only loaded once from main memory to the cache and all subsequent accesses in the same \acrshort{SpMV} are cache hits. This limit is typically observed for matrices with low bandwidth (high access locality) or if the cache is large enough to hold the full RHS data during one \acrshort{SpMV}. The actual value of $\alpha$ can be determined experimentally by measuring the data traffic when executing the \acrshort{SpMV}; see~\cite{Moritz_sell} for more details.\footnote{In~\cite{Moritz_sell} the traffic for the row pointer was not accounted for, \ie the denominator in (\ref{eq:SpMV_intensity}) is larger by $\frac{4}{\acrshort{NNZR}}\,\BYTE$. This error is only significant when $\acrshort{NNZR}$ is small.}  The optimal value of $\alpha$ ($\acrshort{NNZR}^{-1}$) together with the corresponding intensity value as well as the measured $\alpha$ values (denoted by $\alpha_\mathrm{\acrshort{SpMV}}$) for all matrices on the two processor chips are given in \cref{table:alpha_values}. 
+The $8\alpha$ term quantifies the data traffic caused by accessing the
+right-hand side (RHS) vector ($x[]$). The value of $\alpha$ depends on
+the matrix structure as well as on the RHS vector data set size and
+the available cache size. The minimum value of
+$\alpha=\acrshort{NNZR}^{-1}$ is attained if the RHS vector is only
+loaded once from main memory to the cache and all subsequent accesses
+in the same \acrshort{SpMV} are cache hits. This limit is typically
+observed for matrices with low bandwidth (high access locality) or if
+the cache is large enough to hold the full RHS data during
+one \acrshort{SpMV}. The actual value of $\alpha$ can be determined
+experimentally by measuring the data traffic when executing
+the \acrshort{SpMV}; see~\cite{Moritz_sell} for more
+details.\footnote{In~\cite{Moritz_sell} the traffic for the row
+pointer was not accounted for, \ie the denominator in
+(\ref{eq:SpMV_intensity}) is larger by
+$\frac{4}{\acrshort{NNZR}}\,\BYTE$. This error is only significant
+when $\acrshort{NNZR}$ is small.}  The optimal value of
+$\alpha=\acrshort{NNZR}^{-1}$) together with the corresponding
+intensity value as well as the measured $\alpha$ values (denoted by
+$\alpha_\mathrm{\acrshort{SpMV}}$) for all matrices on the two
+processor chips are given in \cref{table:alpha_values}.
 \begin{table}[htbp]
-	\footnotesize
-	\caption{The optimal value and the measured values of $\alpha_{\acrshort{SpMV}}$ on \SKX (SKX) as well as \IVB (IVB) for the \acrshort{SpMV} kernel (using the \LIKWID tool) are presented in columns three to five. Following \cref{eq:upper_performance} the maximum \acrshort{SpMV} performance can be calculated for each architecture using the best intensity values  ($I_{\acrshort{SpMV}}(\alpha_{SpMV})$ in $\frac{\FLOP}{\BYTE}$) as shown in the last column.}
-	\label{table:alpha_values}
-	\begin{center}
-		\input{pics/results/alpha_table_generator/table.tex}
-	\end{center}
+	\footnotesize \caption{The optimal value and the measured
+	values of $\alpha_{\acrshort{SpMV}}$ on \SKX (SKX) as well
+	as \IVB (IVB) for the \acrshort{SpMV} kernel (using
+	the \LIKWID tool) are presented in columns three to
+	five. Following \cref{eq:upper_performance} the
+	maximum \acrshort{SpMV} performance can be calculated for each
+	architecture using the best intensity values
+	($I_{\acrshort{SpMV}}(\alpha_{SpMV})$ in
+	$\frac{\FLOP}{\BYTE}$) as shown in the last
+	column.}  \label{table:alpha_values}
+        \begin{center} \input{pics/results/alpha_table_generator/table.tex} \end{center}
 \end{table}
- Choosing the matrices 10, 22, and 31, which have approximately the same optimal $\alpha_{\acrshort{SpMV}}$, one can study the delicate influence of matrix structure (i.e. matrix bandwidth and number of rows; see \cref{tab:test_mtx}) and the cache size on the actual data traffic, \ie the measured values of $\alpha_{\acrshort{SpMV}}$.
+Choosing the matrices 10, 22, and 31, which have approximately the
+same optimal $\alpha_{\acrshort{SpMV}}$, one can study the delicate
+influence of matrix structure (i.e. matrix bandwidth and number of
+rows; see \cref{tab:test_mtx}) and the cache size on the actual data
+traffic, \ie the measured values of $\alpha_{\acrshort{SpMV}}$.
  
-For most of the ten candidate matrices on \SKX architecture that could potentially show a caching effect (see \cref{table:bench_matrices}) we observe the measured $\alpha_{\acrshort{SpMV}}$ to be lower than optimal. In this case we set their values to the optimal alpha value of \acrshort{SymmSpMV} ($\alpha_{\acrshort{SymmSpMV}}$) which will be defined in the following \cref{sect:SymmSpmv}. These cases are marked with an asterisk in \cref{table:alpha_values}.
+For most of the ten candidate matrices on on the \SKX architecture that could
+potentially show a caching effect (see \cref{table:bench_matrices}) we
+observe the measured $\alpha_{\acrshort{SpMV}}$ to be lower than
+optimal. In this case we set their values to the optimal alpha value
+of \acrshort{SymmSpMV} ($\alpha_{\acrshort{SymmSpMV}}$) which will be
+defined in the following \cref{sect:SymmSpmv}. These cases are marked
+with an asterisk in \cref{table:alpha_values}.
  
 \begin{comment}
 \subsubsection{\SpMTV}
@@ -69,7 +125,7 @@ Sparse Matrix Transpose Vector multiplication (\SpMTV) is a kernel with a \DTWO 
 In comparison to \acrshort{SpMV} it requires scattered writes, which require attention in order to avoid race conditions when executing in parallel. The arithmetic intensity of the kernel $I_\mathrm{\SpMTV}$ is
 \begin{equation}
 \label{eq:SpMTV_intensity}
-I_\mathrm{\SpMTV} (\alpha)= \frac{2}{8+4+16*\alpha+\frac{8}{\acrshort{NNZR}}} \\
+I_\mathrm{\SpMTV} (\alpha)= \frac{2}{8+4+16\alpha+8/\acrshort{NNZR}} \\
 \end{equation}
 In ideal case data traffic for this kernel should remain close to that of SpMV, if \acrshort{NNZR} are sufficiently high, and $\alpha$ factor is small enough.
 \end{comment}
@@ -77,7 +133,12 @@ In ideal case data traffic for this kernel should remain close to that of SpMV, 
 \subsection{\acrshort{SymmSpMV}}
 \label{sect:SymmSpmv}
 
-\Acrshort{SymmSpMV} exploits the symmetry of the matrix ($A_{ij}=A_{ji}$) to reduce storage size for matrix data and reduce the overall memory traffic by operating on the upper (or lower) half of the matrix only. Thus for every nonzero matrix entry we need to update two entries in the LHS vector ($b[]$) as shown in~\cref{alg:SymmSpMV}.
+\Acrshort{SymmSpMV} exploits the symmetry of the matrix ($A_{ij}=A_{ji}$)
+to reduce storage size for matrix data and reduce the overall memory
+traffic by operating on the upper (or lower) half of the matrix
+only. Thus for every nonzero matrix entry we need to update two
+entries in the LHS vector ($b[]$) as shown in~\cref{alg:SymmSpMV}.
+
 \begin{algorithm}[tbp]
 	\caption{SymmSpMV $b=Ax$, where $A$ is an upper triangular matrix} 
 	\label{alg:SymmSpMV}
@@ -97,12 +158,33 @@ In ideal case data traffic for this kernel should remain close to that of SpMV, 
 In line with the discussion above, the computational intensity of \acrshort{SymmSpMV} is
 \begin{align}
 \label{eq:SymmSpMV_intensity}
-I_\mathrm{\acrshort{SymmSpMV}} (\alpha) &= \frac{4}{8+4+24*\alpha+\frac{4}{\acrshort{SymmNNZR}}} \frac{\FLOP}{\BYTE}\cma\\
+I_\mathrm{\acrshort{SymmSpMV}} (\alpha) &= \frac{4}{8+4+24\alpha+4/\acrshort{SymmNNZR}} \frac{\FLOP}{\BYTE}\cma\\
 \label{eq:NNZR_symm}
 \text{ where  } \acrshort{SymmNNZR} &= (\acrshort{NNZR}-1)/2 + 1\eos
 \end{align}
 
-For a given nonzero matrix element $4~\FLOP$ are performed, which is twice the amount of work than in \acrshort{SpMV}. In addition we have indirect access to the LHS vector (read and write) which triples the traffic contribution quantified by $\alpha$\@. The only term scaled with \acrshort{SymmNNZR} (number of nonzeros per row in the upper triangular part of the matrix) is the row pointer. The most optimistic value of $\alpha$ ($\alpha_{\acrshort{SymmSpMV}}$) in this case is $1/{\acrshort{SymmNNZR}}$, which correspond to a one time transfer of the LHS and RHS vectors.  Note that the $\alpha$ for \acrshort{SpMV} and \acrshort{SymmSpMV} may be different even for the same matrix and the same compute device, as in the latter case the two vectors are accessed irregularly and compete for the same amount of cache. Thus we can assume that the $\alpha$ value measured for \acrshort{SpMV} ($\alpha_\mathrm{\acrshort{SpMV}}$) is a lower bound for \acrshort{SymmSpMV}. Since an upper bound for performance is the product of computational intensity and the main memory bandwidth (see \cref{eq:upper_performance}), this approach provides an upper performance bound for \acrshort{SymmSpMV}.  However, note that the performance models derived for matrices having caching effects (see \cref{table:alpha_values}) need not be strictly upper bound, as they heavily depends on  the caching strategy of the underlying architecture.
+For a given nonzero matrix element $4~\FLOP$ are performed, which is
+twice the amount of work than in \acrshort{SpMV}. In addition we have
+indirect access to the LHS vector (read and write) which triples the
+traffic contribution quantified by $\alpha$\@. The only term scaled
+with \acrshort{SymmNNZR} (number of nonzeros per row in the upper
+triangular part of the matrix) is the row pointer. The most optimistic
+value of $\alpha$ ($\alpha_{\acrshort{SymmSpMV}}$) in this case is
+$1/{\acrshort{SymmNNZR}}$, which corresponds to a one time transfer of
+the LHS and RHS vectors.  Note that the $\alpha$ for \acrshort{SpMV}
+and \acrshort{SymmSpMV} may be different even for the same matrix and
+the same compute device, as in the latter case the two vectors are
+accessed irregularly and compete for cache. Thus we
+can assume that the $\alpha$ value measured for \acrshort{SpMV}
+($\alpha_\mathrm{\acrshort{SpMV}}$) is a lower bound
+for \acrshort{SymmSpMV}. Since an upper bound for performance is the
+product of computational intensity and the main memory bandwidth
+(see \cref{eq:upper_performance}), this approach provides an upper
+performance bound for \acrshort{SymmSpMV}.  However, note that the
+performance models derived for matrices having caching effects
+(see \cref{table:alpha_values}) need not be strictly upper bound, as
+they heavily depends on the caching strategy of the underlying
+architecture.
 \begin{comment}
  for a given matrix structure:
  \begin{align}
