@@ -78,11 +78,11 @@ pointer was not accounted for, \ie the denominator in
 $\frac{4}{\acrshort{NNZR}}\,\BYTE$. This error is only significant
 when $\acrshort{NNZR}$ is small.}  The optimal value of
 $\alpha=\acrshort{NNZR}^{-1}$ together with the corresponding
-intensity value for all matrices is shown in 
+computational intensities for all matrices is shown in 
 \cref{table:alpha_values}. \CAcomm{The measured $\alpha_{\acrshort{SpMV}}$
- value is a good approximation for $\alpha_{\acrshort{SymmSpMV}}$ 
- values (see \cref{sect:SymmSpmv}) in cases where caching effects on 
- vectors do not play a role, therefore the table also presents the 
+ is used as a sensible lower bound for $\alpha_{\acrshort{SymmSpMV}}$ 
+ values (see \cref{sect:SymmSpmv}) in cases where advanced cache
+ replacement strategies  do not apply (see below); therefore the table also presents the 
  corresponding measured $\alpha_{\acrshort{SpMV}}$ ($= \alpha_{\acrshort{SymmSpMV}}$)
 values for different matrices on both the architectures.}
 %as well as the measured $\alpha$ values (denoted by
@@ -106,7 +106,7 @@ values for different matrices on both the architectures.}
 \end{table}
 Choosing the matrices 10, 22, and 31, which have approximately the
 same optimal $\alpha_{\acrshort{SpMV}}$, one can study the delicate
-influence of matrix structure (i.e. matrix bandwidth and number of
+influence of matrix structure (\ie matrix bandwidth and number of
 rows; see \cref{tab:test_mtx}) and the cache size on the actual data
 traffic, \ie the measured values of $\alpha_{\acrshort{SpMV}}$.
  

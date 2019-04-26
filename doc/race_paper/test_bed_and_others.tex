@@ -96,8 +96,15 @@ Most test matrices were taken from the Suite\-Sparse Matrix Collection (formerly
 As mentioned before we restrict ourselves to matrices representing fully connected undirected graphs.
 \cref{table:bench_matrices} gives an overview of the most important matrix properties like \acrfull{nrows}, \acrfull{nnz}, \acrfull{NNZR}, along with the bandwidth of the matrix without ($bw$) and with ($bw_{RCM}$) \acrshort{RCM} preprocessing. 
 
-Due to the extended cache size as seen in \cref{fig:size_vs_bw} it might happen that some of the matrices might attain higher effective bandwidths due to partial/full caching. The ten potential candidates for the 
-\SKX chip in terms of symmetric and full storage ($< 128$ \MB)  are marked with an asterisk in \cref{table:bench_matrices}, while only two among (\texttt{offshore} and \texttt{parabolic\_fem}) these satisfy the criteria for \IVB ($< 40$ \MB). The corresponding data set size for storing the upper triangular part of these matrices have been labeled in \cref{fig:size_vs_bw}.
+Due to the extended cache size as seen in \cref{fig:size_vs_bw} it
+might happen that some of the matrices attain higher effective
+bandwidths due to partial/full caching, especially on \SKX. The ten potential candidates
+for the \SKX chip in terms of symmetric and full storage ($< 128$ \MB)
+are marked with an asterisk in \cref{table:bench_matrices}, while only
+two among these (\texttt{offshore} and \texttt{parabolic\_fem}) 
+satisfy the criteria for \IVB ($< 40$ \MB). The corresponding data set
+size for storing the upper triangular part of these matrices have been
+labeled in \cref{fig:size_vs_bw}.
 
 \begin{table}[tb]
 	\footnotesize
