@@ -62,6 +62,13 @@ We need the following definitions from graph theory:
 	\begin{equation*}
 	  N(u) = \set{ v : uv \in E}\eos
 	\end{equation*}
+	\item \textbf{$k$th Neighborhood:} $N^{k}(u)$ of a vertex $u$ is defined as
+	 \begin{align*}
+	 	N^2(u) &= N(N(u))  \\
+	 	N^3(u) &= N^2(N(u)) \\
+	 	\vdots\\
+	 	N^k(u) &= N^{k-1}(N(u)) \eos
+	 \end{align*}
 	\item \textbf{Subgraph:} In this paper a subgraph $H$ of $G$ specifically
               refers to the subgraph induced by vertices $V' \subseteq V(G)$ and is defined as
 	\begin{equation*}
@@ -178,7 +185,13 @@ For the undirected graphs as used here, $u\xrightarrow{k}v$
 also implies $v\xrightarrow{k}u$. Based on this definition we consider
 two vertices to be \DK independent if they are not \DK
 neighbors, and two \levels are said to be \DK independent if the vertices between them are \DK independent. Thus, \levels $L(i)$ and $L(i\pm(k+j))$ of the permuted
-graph $G'$ are \DK independent for all $j\geq1$ as shown in the
+graph $G'$ are \DK independent for all $j\geq1$, denoted as
+\begin{equation}\label{corollary_dk}
+	L(i) \not\xrightarrow{k} L(i\pm(k+j)) \forall j\geq1 \eos
+\end{equation} 
+
+\begin{comment}
+ as shown in the
 following.
 \begin{corollary}\label{corollary_dk}
 $L(i)$ and $L(i\pm(k+j))$ are \DK independent $\forall j\geq1$. 
@@ -195,6 +208,7 @@ $L(i)$ and $L(i\pm(k+j))$ are \DK independent $\forall j\geq1$.
 which contradicts our assumption about $v$\@.
 Thus it follows that $u$ and $v$ are \DK independent.
 \end{proof}
+\end{comment}
 
 \Cref{corollary_dk} implies that if there is a gap of at least
 one \level between any two \levels (e.g., $L(i) \mbox{ and } L(i+2)$) all
@@ -227,20 +241,20 @@ color are \DTWO independent and can be executed in parallel. Here, the
 vertices in $T(0)$, $T(2)$, $T(4)$, and $T(6)$ can be operated on by
 four threads in parallel, i.e., one thread per \levelGroup.  After
 synchronization the remaining four blue \levelGroups can also be
-executed in parallel. Note that all vertices are computed in their
-original order within a single \levelGroup, which allows for good
-spatial access locality. This idea can be generalized such that for \DK
+executed in parallel. This idea can be generalized such that for \DK
 coloring, each \levelGroup contains $k$ adjacent \levels.
 %\atleast $k$ adjacent \levels but
 %the number of \levels  per \levelGroup may be different. 
 Thus formed \levelGroups are then \DONE
 colored. Then, all \levelGroups within a color can be executed in
 parallel. This simple approach allows one to generate workload for
-${\acrshort{totalLvl}}/{2 k}$ threads if \DK coloring is
-requested.
+a maximum of ${\acrshort{totalLvl}}/{2 k}$ threads if \DK coloring is
+requested. Note that in all cases vertices within a single \levelGroup
+ are computed in their original order, which allows for good
+spatial access locality.
  
-However, choosing the same number of \levels for each \levelGroup may
-cause severe load imbalance depending on the matrix structure. In
+Choosing the same number of \levels for each \levelGroup may
+however cause severe load imbalance depending on the matrix structure. In
 particular the use of bandwidth reduction schemes such as BFS or RCM
 will further worsen that problem due to the lenslike shape of the
 reordered matrix (see inset of \cref{fig:2d_7pt_perm}), leading to low
@@ -255,7 +269,11 @@ problem.
  %However the problem with the configurations like the one seen in \cref{fig:2d-7pt_d1_d2} {\CA is that there, check Holger's comment} is load imbalances between threads because the number of rows (\nrows) per \levelGroup is not distributed evenly. As seen here in the case of \stex the threads working on extreme ends of graph (\eg $T(1), T(7)$) have a small amount of work compared to the threads working on middle (\eg $T(3), T(4)$). 
   
   \subsection{Load balancing}\label{subsec:LB} 
-The RACE load balancing scheme tries to balance the workload between level groups within each color for a given number of threads while maintaining data locality and \DK constraint between the two colors. Level groups containing low workload will grab adjacent levels from neighboring level groups and overloaded level groups will shift levels to adjacent level groups. As a target for the load balancing scheme one can balance the number of rows (\ie vertices) of the \levelGroups ($\acrshort{nrows}(T(i))$)  or the number of nonzeros (\ie edges) of the \levelGroups ($\acrshort{nnz}(T(i))$). Both variants are supported and we choose balancing by the number of rows in the following to demonstrate our load balancing algorithm, which can be found in \cref{alg:LB}.
+The RACE load balancing scheme tries to balance the workload between level groups 
+within each color for a given number of threads while maintaining data locality 
+and \DK constraint between the two colors. \CAcomm{To achieve this we use an idea
+similar to incremental graph partitioning \cite{load_balancing}}. 
+The \levelGroups containing low workload grab adjacent levels from neighboring level groups and overloaded level groups shift levels to adjacent level groups. As a target for the load balancing scheme one can balance the number of rows (\ie vertices) of the \levelGroups ($\acrshort{nrows}(T(i))$)  or the number of nonzeros (\ie edges) of the \levelGroups ($\acrshort{nnz}(T(i))$). Both variants are supported and we choose balancing by the number of rows in the following to demonstrate our load balancing algorithm, which can be found in \cref{alg:LB}.
 %Depending on the matrix each \levelGroup contains different number of rows, that leads to load imbalances as seen above in \cref{subsec:DK}. \Inorder to avoid this problem we employ a load balancing scheme. At this step  we plug in details from the hardware side  namely the total parallelism required by the hardware. The idea is to exploit only the required parallelism while at the same time maintain \DK constraint seen in \cref{corollary_dk}. To balance the load more nearby \levels would be added to a \levelGroup ($T(x)$) which has less number of rows ($\nrowsMath(T(x))$) and at \levelGroup where we have considerably big \levels only sufficient amount of \levels to maintain \DK constraint would be assigned. Assigning nearby levels instead of others further helps in preserving data locality. 
  
 Basically our algorithm tries to reduce the variances of the workload in the level groups, \ie the number of rows ($\acrshort{nrows}(T(i))$) in each \levelGroup $T(i)$. For a given set of \levelGroups we calculate the mean and variance of $\acrshort{nrows}(T(i))$ within each color, \ie red and blue colors.  
@@ -280,7 +298,17 @@ The overall variance, which is the target of our minimization procedure, is then
       	} \label{fig:2d_7pt_lb}
       \end{minipage}
      \end{figure}
-     
+  
+      \begin{figure}
+      	\begin{minipage}[c]{0.63\textwidth}
+      		\includegraphics[height=0.26\textheight,width=0.9\textwidth]{pics/load_balancing/2d-7pt/stencil_2d_7pt_8_threads}
+      	\end{minipage}\hfill
+      	\begin{minipage}[c]{0.34\textwidth}
+      		\caption{After load balancing for eight threads and \DTWO dependency on \stex, domain size $16 \times 16$. Note the massive load imbalance between the \levelGroups at extreme ends and in 
+      			the middle. \CAcomm{I am not sure whether we need this, it consumes lot of space and we could explain it with a sentence. TODO: Explain it somewhere}}
+      		 \label{fig:2d_7pt_lb_8_threads}
+      	\end{minipage}
+      \end{figure}  
 
 	\subsection{Recursion}\label{subsec:REC}
 As discussed in \cref{subsec:DK} the maximum degree of parallelism is limited by the total number of levels (\acrshort{totalLvl}) and may be further reduced by level aggregation in the load balancing step.  To match the high levels of parallelism in modern compute devices we search for further parallelism within the \levelGroups.  Compared to methods like \acrshort{MC} we didn't require all vertices in a \levelGroup to be \DONE (or \DK in general) independent of each other, which is a consequence of our \level based approach where we required \DK independency between vertices of different levels but not within a level (see \cref{corollary_dk}). There can exist more parallelism within the \levelGroups which we can interpret as \subgraphs.  Thus, we apply the three steps of our method recursively on selected \subgraphs to exploit the parallelism within them.  
@@ -394,15 +422,25 @@ Level construction is performed on the \subgraph (\cref{fig:rec_d2_correct_c}) b
 	       		{($s=0$)} & {($s=1$)}\\
 	       		\midrule
 	       	   \multirow{2}{*}{\textcolor{red}{red}} & {\textcolor{amber}{orange}}\\
-	       	   \cmidrule(lr){2-2}
+	       	   \rule{0pt}{3ex}
+	       	   %\cmidrule(lr){2-2}
 	       		& {\textcolor{magenta}{pink}}\\
-	       		\midrule
+				\rule{0pt}{4ex} 
 	       	   \multirow{2}{*}{\textcolor{blue}{blue}} & {\textcolor{carmine}{brown}}\\
-	       	   \cmidrule(lr){2-2}
+	       	   %\cmidrule(lr){2-2}
+	       	   \rule{0pt}{3ex}
 	       	   & {\textcolor{cyan}{cyan}}\\
-	       	   \bottomrule
+	       	   %\bottomrule
 	       	\end{tabular}
-       		\caption{Graph coloring of the \stex for eight threads. Recursion is applied on \levelGroups $T_0(4-7)$ with two threads assigned to each. The parallel execution order is shown at top right.  Horizontal lines indicate synchronization and its extent. Vertical lines distinguish between \levelGroups of different stages (here $T_0$ and $T_1$) which can run in parallel. 
+	       	\begin{tikzpicture}[overlay]
+		       	\draw[-, dashed, red, line width=1.5] (-2,0.22) -- (-0.1,0.22);
+		       	\draw[-, dashed, red, line width=1.5] (-4.4,-0.4) -- (-0.1,-0.4);
+		      	\draw[-, dashed, red, line width=1.5] (-2,-1.05) -- (-0.1,-1.05);
+		       	\draw[-, dashed, red, line width=1.5] (-4.4,-1.6) -- (-0.1,-1.6);
+		       	\draw[->] (0,0.5) -- (0,-1);
+		       	\node[rotate=-90] at (0.25,-0.25) {time};
+	       	\end{tikzpicture}
+       		\caption{Graph coloring of the \stex for eight threads. Recursion is applied on \levelGroups $T_0(4-7)$ with two threads assigned to each. The parallel execution order is shown on right.  Horizontal red dooted lines indicate synchronization and its extent. Vertical lines distinguish between \levelGroups of different stages (here $T_0$ and $T_1$) which can run in parallel. 
 		%{\GW do i need to synchronize all threads working on orange color? or only those within the original \levelGroup, e.g. $T_0(4)$ ?} } {\CA only those within original \levelGroup $T_0(4)$, that is the reason why I used the term nested parallelism
 		}
        		\label{fig:rec_2d-7pt_graph}

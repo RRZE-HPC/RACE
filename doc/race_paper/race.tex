@@ -1,6 +1,8 @@
 % SIAM Article Template
 \documentclass[review,onefignum,onetabnum]{siamart171218}
 \usepackage{booktabs}
+%\usepackage{array,booktabs,arydshln,xcolor}
+%\usepackage{colortbl}
 \usepackage{graphicx,epstopdf} 
 \usepackage[caption=false]{subfig} 
 \usepackage{braket,amsfonts,amsopn} % <- Preamble
@@ -13,6 +15,7 @@
 \usepackage{amssymb}
 \usepackage[normalem]{ulem}
 \usepackage[acronym, nonumberlist]{glossaries} %texlive-generic-extra package required
+\usepackage{tikz}
 %\glsdisablehyper
 \glossarystyle{list}
 \makeglossaries
@@ -191,8 +194,7 @@ results are in \cref{sec:experiments}, and the conclusions follow in
 \label{Sec:contribution}
 \input{contribution.tex}
 
-\section{Test bed and Matrices}
-{\CA Need to change the name of the section}
+\section{Experimental Setup}
 \label{Sec:test_bed}
 \input{test_bed_and_others.tex}
 

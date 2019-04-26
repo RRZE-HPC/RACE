@@ -22,9 +22,9 @@ for i in 1:length(skx_name)
 		push!(row, string("& ", alpha_opt) )
 		p=2.0/(8.0+4.0+8.0*alpha_opt+20.0/skx_nnz[i])
 		#println("check ", p)
+		push!(row, string("& ", p) )
 		push!(row, string("& ", skx_alphas[i]) ) #intensity
 		push!(row, string("& ", ivy_alphas[i]) )
-		push!(row, string("& ", p) )
 		push!(row,string("\\\\"))
 		push!(table, row)
 	else
