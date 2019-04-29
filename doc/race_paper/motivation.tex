@@ -16,19 +16,21 @@ which serves as our performance yardstick. Note that any required
 preprocessing is excluded from the timings. In~\cref{fig:motivation}
 we present performance and data transfer volumes for
 the \emph{Spin-26} matrix on a single socket of the \IVB
-system. For \acrshort{SpMV} we recover the well-known memory bandwidth
-saturation pattern as we fill the chip (\cref{fig:motivation_symm_spmv}).
+and \SKX systems. For \acrshort{SpMV} we recover the well-known memory bandwidth
+saturation pattern as we fill the chip (\cref{fig:motivation_symm_spmv,fig:motivation_symm_spmv_skx}).
  Measuring the actual data volume from main memory using \LIKWID
-we find $16.26$ \BYTE per nonzero matrix entry (\cref{fig:motivation_data}).
+we find $16.24$ and $16.36$ \BYTE per nonzero matrix entry (\cref{fig:motivation_data,fig:motivation_data_skx})
+on \IVB and \SKX architectures.
  This corresponds to the denominator of
 $I_\mathrm{\acrshort{SpMV}}$ in~\cref{eq:SpMV_intensity}, so we can
-determine $\alpha_\mathrm{\acrshort{SpMV}}=0.354$ and calculate an 
-optimistic bound for the intensity of \acrshort{SymmSpMV} according to ~\cref{eq:SymmSpMV_intensity}. Using the copy and the load-only
-bandwidth of \IVB (see~\cref{tab:test_bed}) in \cref{eq:upper_performance} we find a maximum
+determine $\alpha_\mathrm{\acrshort{SpMV}}=0.351$ for \IVB and $0.367$ for \SKX, thus we can calculate an 
+optimistic bound for the intensity of \acrshort{SymmSpMV} according to ~\cref{eq:SymmSpMV_intensity}.
+ Using the copy and the load-only bandwidth of \IVB (see~\cref{tab:test_bed}) 
+ in \cref{eq:upper_performance} we find a maximum
 attainable {\acrshort{SymmSpMV}} performance range for this matrix of
-$P_\mathrm{\acrshort{SymmSpMV}}=7.62,\ldots,8.95\,\GF$. While this indicates a possible
+$P_\mathrm{\acrshort{SymmSpMV}}=7.63,\ldots,8.96\,\GF$, while for \SKX we expect  $P_\mathrm{\acrshort{SymmSpMV}}=19.49,\ldots,21.55\,\GF$ . This indicates a possible
 speedup of approximately 1.4$\times$ -- 1.6$\times$ compared to the \acrshort{SpMV}
-baseline of $\approx 5.5\,\GF$, the \acrshort{SymmSpMV} implementation
+baseline ($5.5\,\GF$ and $13.41\,\GF$ on \IVB and \SKX), the \acrshort{SymmSpMV} implementation
 using \acrshort{MC} falls short of this expectation and is more than
 three times slower than \acrshort{SpMV}.
 \begin{figure}[tbp]
@@ -44,7 +46,7 @@ three times slower than \acrshort{SpMV}.
   %	\subfloat[False sharing]{\label{fig:motivation_c}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_2}}
   %	\hspace{1em}
   %	\subfloat[Barrier effect]{\label{fig:motivation_d}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_4}}
-  	\caption{(a,c) Scaling performance of \acrshort{SymmSpMV} with \acrshort{MC} and \acrshort{ABMC} compared to \acrshort{SpMV} on one socket of \IVB and \SKX respectively. (b,d) Average data traffic per nonzero entry ($\acrshort{nnz}$) of the full matrix as measured with \LIKWID for all cache levels and main memory on one socket of \IVB and \SKX respectively. The Spin-26 matrix was prepermuted with \acrshort{RCM}. }
+  	\caption{Scaling performance of \acrshort{SymmSpMV} with \acrshort{MC} and \acrshort{ABMC} compared to \acrshort{SpMV} on one socket of \IVB and \SKX is shown in \cref{fig:motivation_symm_spmv,fig:motivation_symm_spmv_skx} respectively. \cref{fig:motivation_data,fig:motivation_data_skx} show average data traffic per nonzero entry ($\acrshort{nnz}$) of the full matrix as measured with \LIKWID for all cache levels and main memory on full socket of \IVB and \SKX respectively. The Spin-26 matrix was prepermuted with \acrshort{RCM}. \CAcomm{Note that the L3 measurement on \SKX architecture is qualitative as some performance counter events are missng for the architecture.} }
   	\label{fig:motivation}
   \end{figure}
  
@@ -81,10 +83,10 @@ that the \acrshort{LLC} can hold a maximum of six elements, we find
 that the RHS vector must be loaded every time for each
 new color. This is the reason why we observe 3$\times$ more bytes
 per nonzero for \acrshort{SymmSpMV} with \acrshort{MC} compared
-to \acrshort{SpMV}, as seen in~\cref{fig:motivation_data}.  However,
+to \acrshort{SpMV}, as seen in~\cref{fig:motivation_data,fig:motivation_data_skx}.  However,
 our performance model indicates that \acrshort{SymmSpMV} should
 exhibit only 0.7$\times$ the data traffic of \acrshort{SpMV} (see
-red dotted line in \cref{fig:motivation_data}). Of course this
+red dotted line in \cref{fig:motivation_data,fig:motivation_data_skx}). Of course this
 effect strongly depends on the matrix structure, the matrix size, and
 the cache size.
         
@@ -97,10 +99,10 @@ for \acrshort{MC}. The size of blocks for \acrshort{ABMC} is
 determined by a parameter scan (range 4 \ldots 128;
 see~\cite{ABMC})\@. As stated above, the timing for the performance measurements
 excludes preprocessing and the parameter search. This method reduces the 
-data traffic (see \cref{fig:motivation_data}) as there is better data
+data traffic (see \cref{fig:motivation_data,fig:motivation_data_skx}) as there is better data
 locality within a block. Consequently, the performance improves
-over plain \acrshort{MC} (see \cref{fig:motivation_symm_spmv}). However,
-we are far off the performance model prediction of 8.95~\GF. In
+over plain \acrshort{MC} (see \cref{fig:motivation_symm_spmv,fig:motivation_symm_spmv_skx}). However,
+we are far off the performance model prediction. In
 addition to data locality, other factors like global synchronizations
 and false sharing also contribute to this failure. These
 effects strongly depend on the number of colors and in general
