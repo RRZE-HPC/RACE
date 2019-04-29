@@ -56,49 +56,49 @@
 		\pgfkeys{/pgf/fpu}
 
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SPMV
-		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)} %change to SpMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)} %change to SpMV
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SPMVMC
-		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
+		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SPMVABMC
-		\pgfmathsetmacro{\memSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
+		\pgfmathsetmacro{\memSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SYMMSPMVMC
-		\pgfmathsetmacro{\memSYMMSPMVMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
+		\pgfmathsetmacro{\memSYMMSPMVMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SYMMSPMVABMC
-		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
+		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
 		\pgfplotstablegetelem{9}{MEM (GB)}\of\SYMMSPMVRACE
-		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
+		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
 		
 		\addplot[pattern=horizontal lines]%style={ppurple,fill=ppurple}]
 		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC)};
 
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMV
-		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)} %change to SpMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)} %change to SpMV
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMVMC
-		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
+		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMVABMC
-		\pgfmathsetmacro{\memSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
+		\pgfmathsetmacro{\memSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SYMMSPMVMC
-		\pgfmathsetmacro{\memSYMMSPMVMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
+		\pgfmathsetmacro{\memSYMMSPMVMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SYMMSPMVABMC
-		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
+		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
 		\pgfplotstablegetelem{9}{L3 (GB)}\of\SYMMSPMVRACE
-		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
+		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
 
 		\addplot[fill=gray!180]%style={ppurple,fill=ppurple}]
 		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC)};
 
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMV
-		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)} %change to SpMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)} %change to SpMV
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMVMC
-		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
+		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMVABMC
-		\pgfmathsetmacro{\memSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
+		\pgfmathsetmacro{\memSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SYMMSPMVMC
-		\pgfmathsetmacro{\memSYMMSPMVMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
+		\pgfmathsetmacro{\memSYMMSPMVMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SYMMSPMVABMC
-		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
+		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
 		\pgfplotstablegetelem{9}{L2 (GB)}\of\SYMMSPMVRACE
-		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*0.5*1e-8)}
+		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
 				
 		\addplot[pattern=vertical lines]%style={ppurple,fill=ppurple}]
 		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC)};

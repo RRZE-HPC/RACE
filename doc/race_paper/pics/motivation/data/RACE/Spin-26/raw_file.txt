@@ -1,3 +1,9 @@
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
 smt = 1
 Efficiency Vector = 
 40.000000
@@ -8,6 +14,7 @@ Efficiency Vector =
 2. Range:[5200300, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 5200300, reachedLimit: false, pinOrder = 0 funTime = 0.000000
 coloring efficiency = 1.000000
 max. stage depth = 1
+allocated
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -21,8 +28,8 @@ Initing RACE
 initing col
 finished col
 buffer length = 1
-MKL_SpMV: 0.976312 GFlop/s
-SpMTV: 0.957826 GFlop/s
+MKL_SpMV: 1.132633 GFlop/s
+SpMTV: 0.953948 GFlop/s
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -35,7 +42,13 @@ finished val
 Initing RACE
 initing col
 finished col
-SymmSpMV: 1.323908 GFlop/s
+SymmSpMV: 1.268192 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
 smt = 1
 Efficiency Vector = 
 40.000000
@@ -48,6 +61,7 @@ Efficiency Vector =
 4. Range:[10267496, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 133104, reachedLimit: false, pinOrder = 1 funTime = 0.000000
 coloring efficiency = 0.961370
 max. stage depth = 1
+allocated
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -61,8 +75,8 @@ Initing RACE
 initing col
 finished col
 buffer length = 1
-MKL_SpMV: 1.931113 GFlop/s
-SpMTV: 1.821729 GFlop/s
+MKL_SpMV: 2.197427 GFlop/s
+SpMTV: 1.814822 GFlop/s
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -75,7 +89,13 @@ finished val
 Initing RACE
 initing col
 finished col
-SymmSpMV: 2.490787 GFlop/s
+SymmSpMV: 2.373568 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
 smt = 1
 Efficiency Vector = 
 40.000000
@@ -90,6 +110,7 @@ Efficiency Vector =
 6. Range:[8517271, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1883329, reachedLimit: false, pinOrder = 2 funTime = 0.000000
 coloring efficiency = 0.920409
 max. stage depth = 1
+allocated
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -103,8 +124,8 @@ Initing RACE
 initing col
 finished col
 buffer length = 1
-MKL_SpMV: 2.781831 GFlop/s
-SpMTV: 2.683980 GFlop/s
+MKL_SpMV: 3.075620 GFlop/s
+SpMTV: 2.669697 GFlop/s
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -117,7 +138,13 @@ finished val
 Initing RACE
 initing col
 finished col
-SymmSpMV: 3.712006 GFlop/s
+SymmSpMV: 3.571347 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
 smt = 1
 Efficiency Vector = 
 40.000000
@@ -134,6 +161,7 @@ Efficiency Vector =
 8. Range:[9026623, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1373977, reachedLimit: false, pinOrder = 3 funTime = 0.000000
 coloring efficiency = 0.946213
 max. stage depth = 1
+allocated
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -147,8 +175,8 @@ Initing RACE
 initing col
 finished col
 buffer length = 1
-MKL_SpMV: 3.655192 GFlop/s
-SpMTV: 3.523362 GFlop/s
+MKL_SpMV: 4.025876 GFlop/s
+SpMTV: 3.492660 GFlop/s
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -161,7 +189,13 @@ finished val
 Initing RACE
 initing col
 finished col
-SymmSpMV: 4.957133 GFlop/s
+SymmSpMV: 4.748133 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
 smt = 1
 Efficiency Vector = 
 40.000000
@@ -180,6 +214,7 @@ Efficiency Vector =
 10. Range:[9243182, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1157418, reachedLimit: false, pinOrder = 4 funTime = 0.000000
 coloring efficiency = 0.898604
 max. stage depth = 1
+allocated
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -193,8 +228,8 @@ Initing RACE
 initing col
 finished col
 buffer length = 1
-MKL_SpMV: 4.435455 GFlop/s
-SpMTV: 4.240939 GFlop/s
+MKL_SpMV: 4.774720 GFlop/s
+SpMTV: 4.218911 GFlop/s
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -207,7 +242,13 @@ finished val
 Initing RACE
 initing col
 finished col
-SymmSpMV: 5.985111 GFlop/s
+SymmSpMV: 5.788522 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
 smt = 1
 Efficiency Vector = 
 40.000000
@@ -228,6 +269,7 @@ Efficiency Vector =
 12. Range:[9521863, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 878737, reachedLimit: false, pinOrder = 5 funTime = 0.000000
 coloring efficiency = 0.920409
 max. stage depth = 1
+allocated
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -241,8 +283,8 @@ Initing RACE
 initing col
 finished col
 buffer length = 1
-MKL_SpMV: 5.064188 GFlop/s
-SpMTV: 4.487479 GFlop/s
+MKL_SpMV: 5.224831 GFlop/s
+SpMTV: 4.479103 GFlop/s
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -255,7 +297,13 @@ finished val
 Initing RACE
 initing col
 finished col
-SymmSpMV: 6.722544 GFlop/s
+SymmSpMV: 6.527666 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
 smt = 1
 Efficiency Vector = 
 40.000000
@@ -278,6 +326,7 @@ Efficiency Vector =
 14. Range:[9678442, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 722158, reachedLimit: false, pinOrder = 6 funTime = 0.000000
 coloring efficiency = 0.880321
 max. stage depth = 1
+allocated
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -291,8 +340,8 @@ Initing RACE
 initing col
 finished col
 buffer length = 1
-MKL_SpMV: 5.368088 GFlop/s
-SpMTV: 4.675032 GFlop/s
+MKL_SpMV: 5.419403 GFlop/s
+SpMTV: 4.646218 GFlop/s
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -305,7 +354,13 @@ finished val
 Initing RACE
 initing col
 finished col
-SymmSpMV: 7.094050 GFlop/s
+SymmSpMV: 6.917096 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
 smt = 1
 Efficiency Vector = 
 40.000000
@@ -330,6 +385,7 @@ Efficiency Vector =
 16. Range:[9678442, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 722158, reachedLimit: false, pinOrder = 7 funTime = 0.000000
 coloring efficiency = 0.900132
 max. stage depth = 1
+allocated
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -343,8 +399,8 @@ Initing RACE
 initing col
 finished col
 buffer length = 1
-MKL_SpMV: 5.486145 GFlop/s
-SpMTV: 4.550691 GFlop/s
+MKL_SpMV: 5.483844 GFlop/s
+SpMTV: 4.523018 GFlop/s
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -357,7 +413,13 @@ finished val
 Initing RACE
 initing col
 finished col
-SymmSpMV: 7.074584 GFlop/s
+SymmSpMV: 7.005443 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
 smt = 1
 Efficiency Vector = 
 40.000000
@@ -384,6 +446,7 @@ Efficiency Vector =
 18. Range:[9813317, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 587283, reachedLimit: false, pinOrder = 8 funTime = 0.000000
 coloring efficiency = 0.924743
 max. stage depth = 1
+allocated
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -397,8 +460,8 @@ Initing RACE
 initing col
 finished col
 buffer length = 1
-MKL_SpMV: 5.508383 GFlop/s
-SpMTV: 4.658527 GFlop/s
+MKL_SpMV: 5.522698 GFlop/s
+SpMTV: 4.653959 GFlop/s
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -411,7 +474,13 @@ finished val
 Initing RACE
 initing col
 finished col
-SymmSpMV: 7.284122 GFlop/s
+SymmSpMV: 7.219374 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
 smt = 1
 Efficiency Vector = 
 40.000000
@@ -440,6 +509,7 @@ Efficiency Vector =
 20. Range:[9928167, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 472433, reachedLimit: false, pinOrder = 9 funTime = 0.000000
 coloring efficiency = 0.873786
 max. stage depth = 1
+allocated
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -453,8 +523,8 @@ Initing RACE
 initing col
 finished col
 buffer length = 1
-MKL_SpMV: 5.490675 GFlop/s
-SpMTV: 4.675696 GFlop/s
+MKL_SpMV: 5.473203 GFlop/s
+SpMTV: 4.494178 GFlop/s
 Initing RACE
 Initing chunkPtr
 Finished chunkPtr
@@ -467,4 +537,544 @@ finished val
 Initing RACE
 initing col
 finished col
-SymmSpMV: 7.190896 GFlop/s
+SymmSpMV: 7.149070 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 3, ], Parent: -1, nthreads: 1, idealNThreads:1, stage:0, subBLocks:1, effRow: 10400600, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 5200300, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 5200300, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[5200300, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 5200300, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+coloring efficiency = 1.000000
+max. stage depth = 1
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 1.132875 GFlop/s
+SpMTV: 0.952848 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 1.267231 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 5, ], Parent: -1, nthreads: 2, idealNThreads:2, stage:0, subBLocks:1, effRow: 5409260, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 4991340, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 4991340, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[4991340, 5409260, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 417920, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[5409260, 10267496, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 4858236, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[10267496, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 133104, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+coloring efficiency = 0.961370
+max. stage depth = 1
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 2.197037 GFlop/s
+SpMTV: 1.815076 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 2.364738 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 7, ], Parent: -1, nthreads: 3, idealNThreads:3, stage:0, subBLocks:1, effRow: 3766658, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 1883329, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1883329, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[1883329, 3570691, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1687362, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[3570691, 5200300, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1629609, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[5200300, 6829909, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1629609, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[6829909, 8517271, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1687362, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[8517271, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1883329, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+coloring efficiency = 0.920409
+max. stage depth = 1
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 3.114519 GFlop/s
+SpMTV: 2.668168 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 3.575350 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 9, ], Parent: -1, nthreads: 4, idealNThreads:4, stage:0, subBLocks:1, effRow: 2747954, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 1373977, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1373977, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[1373977, 2659632, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1285655, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[2659632, 3964245, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1304613, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[3964245, 5200300, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1236055, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[5200300, 6436355, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1236055, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[6436355, 7740968, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1304613, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+7. Range:[7740968, 9026623, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1285655, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+8. Range:[9026623, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1373977, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+coloring efficiency = 0.946213
+max. stage depth = 1
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 4.020988 GFlop/s
+SpMTV: 3.508358 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 4.776922 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 11, ], Parent: -1, nthreads: 5, idealNThreads:5, stage:0, subBLocks:1, effRow: 2314836, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 1157418, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1157418, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[1157418, 2175873, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1018455, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[2175873, 3192307, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1016434, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[3192307, 4165658, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 973351, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[4165658, 5200300, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1034642, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[5200300, 6234942, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1034642, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+7. Range:[6234942, 7208293, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 973351, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+8. Range:[7208293, 8224727, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1016434, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+9. Range:[8224727, 9243182, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1018455, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+10. Range:[9243182, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 1157418, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+coloring efficiency = 0.898604
+max. stage depth = 1
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 4.770284 GFlop/s
+SpMTV: 4.214294 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 5.778310 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 13, ], Parent: -1, nthreads: 6, idealNThreads:6, stage:0, subBLocks:1, effRow: 1883329, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 965636, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 965636, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[965636, 1883329, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 917693, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[1883329, 2659632, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 776303, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[2659632, 3570691, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 911059, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[3570691, 4369557, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 798866, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[4369557, 5200300, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 830743, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+7. Range:[5200300, 6031043, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 830743, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+8. Range:[6031043, 6829909, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 798866, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+9. Range:[6829909, 7740968, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 911059, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+10. Range:[7740968, 8654163, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 913195, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+11. Range:[8654163, 9521863, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 867700, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+12. Range:[9521863, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 878737, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+coloring efficiency = 0.920409
+max. stage depth = 1
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 5.232466 GFlop/s
+SpMTV: 4.465184 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 6.559662 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 15, ], Parent: -1, nthreads: 7, idealNThreads:7, stage:0, subBLocks:1, effRow: 1687794, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 965636, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 965636, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[965636, 1615905, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 650269, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[1615905, 2492623, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 876718, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[2492623, 3192307, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 699684, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[3192307, 3964245, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 771938, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[3964245, 4575466, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 611221, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+7. Range:[4575466, 5409260, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 833794, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+8. Range:[5409260, 6031043, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 621783, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+9. Range:[6031043, 6829909, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 798866, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+10. Range:[6829909, 7390837, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 560928, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+11. Range:[7390837, 8224727, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 833890, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+12. Range:[8224727, 8784695, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 559968, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+13. Range:[8784695, 9678442, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 893747, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+14. Range:[9678442, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 722158, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+coloring efficiency = 0.880321
+max. stage depth = 1
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 5.409322 GFlop/s
+SpMTV: 4.659271 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 6.906615 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 17, ], Parent: -1, nthreads: 8, idealNThreads:8, stage:0, subBLocks:1, effRow: 1444316, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 722158, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 722158, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[722158, 1373977, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 651819, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[1373977, 2026503, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 652526, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[2026503, 2659632, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 633129, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[2659632, 3379402, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 719770, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[3379402, 3964245, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 584843, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+7. Range:[3964245, 4575466, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 611221, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+8. Range:[4575466, 5200300, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 624834, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+9. Range:[5200300, 5825134, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 624834, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+10. Range:[5825134, 6436355, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 611221, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+11. Range:[6436355, 7021198, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 584843, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+12. Range:[7021198, 7740968, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 719770, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+13. Range:[7740968, 8374097, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 633129, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+14. Range:[8374097, 9026623, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 652526, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+15. Range:[9026623, 9678442, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 651819, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+16. Range:[9678442, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 722158, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+coloring efficiency = 0.900132
+max. stage depth = 1
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 5.500545 GFlop/s
+SpMTV: 4.518676 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 7.007137 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 19, ], Parent: -1, nthreads: 9, idealNThreads:9, stage:0, subBLocks:1, effRow: 1249668, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 587283, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 587283, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[587283, 1157418, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 570135, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[1157418, 1746437, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 589019, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[1746437, 2331299, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 584862, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[2331299, 2832106, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 500807, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[2832106, 3379402, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 547296, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+7. Range:[3379402, 3964245, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 584843, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+8. Range:[3964245, 4575466, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 611221, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+9. Range:[4575466, 5200300, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 624834, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+10. Range:[5200300, 5825134, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 624834, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+11. Range:[5825134, 6436355, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 611221, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+12. Range:[6436355, 7021198, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 584843, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+13. Range:[7021198, 7568494, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 547296, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+14. Range:[7568494, 8069301, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 500807, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+15. Range:[8069301, 8654163, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 584862, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+16. Range:[8654163, 9243182, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 589019, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+17. Range:[9243182, 9813317, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 570135, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+18. Range:[9813317, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 587283, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+coloring efficiency = 0.924743
+max. stage depth = 1
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 5.517564 GFlop/s
+SpMTV: 4.659521 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 7.244380 GFlop/s
+MPI startup(): shm:ofa fabric is unknown or has been removed from the product, please use ofi or shm:ofi instead
+MPI startup(): I_MPI_OFA_ADAPTER_NAME variable has been removed from the product, its value is ignored
+MPI startup(): I_MPI_OFA_ADAPTER_NAME environment variable is not supported.
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+80.000000
+80.000000
+0. Range:[0, 10400600, ] Childre:[1, 21, ], Parent: -1, nthreads: 10, idealNThreads:10, stage:0, subBLocks:1, effRow: 1190291, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 652112, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 652112, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[652112, 1157418, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 505306, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[1157418, 1746437, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 589019, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[1746437, 2175873, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 429436, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[2175873, 2832106, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 656233, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[2832106, 3192307, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 360201, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+7. Range:[3192307, 3765774, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 573467, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+8. Range:[3765774, 4165658, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 399884, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+9. Range:[4165658, 4782895, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 617237, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+10. Range:[4782895, 5200300, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 417405, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+11. Range:[5200300, 5825134, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 624834, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+12. Range:[5825134, 6234942, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 409808, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+13. Range:[6234942, 6829909, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 594967, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+14. Range:[6829909, 7208293, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 378384, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+15. Range:[7208293, 7740968, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 532675, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+16. Range:[7740968, 8224727, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 483759, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+17. Range:[8224727, 8784695, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 559968, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+18. Range:[8784695, 9243182, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 458487, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+19. Range:[9243182, 9928167, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 684985, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+20. Range:[9928167, 10400600, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 472433, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+coloring efficiency = 0.873786
+max. stage depth = 1
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 1
+MKL_SpMV: 5.493634 GFlop/s
+SpMTV: 4.656540 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 7.166185 GFlop/s
