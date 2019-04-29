@@ -35,14 +35,16 @@ three times slower than \acrshort{SpMV}.
   	\centering
  % 	\subfloat[\acrshort{SpMV}]{\label{fig:motivation_spmv}\includegraphics[width=0.26\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_spmv}}
   %	\hspace{1em}
-    \subfloat[SymmSpMV]{\label{fig:motivation_symm_spmv}\includegraphics[width=0.38\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_symm_spmv}}
-    \hspace{1em}
-  	\subfloat[Data traffic]{\label{fig:motivation_data}\includegraphics[width=0.4\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_data_wo_RACE}}
-  	
+    \subfloat[SymmSpMV]{\label{fig:motivation_symm_spmv}\includegraphics[width=0.248\textwidth, height=0.20\textheight]{pics/motivation/out/motivation_symm_spmv}}
+   % \hspace{1em}
+  	\subfloat[Data traffic]{\label{fig:motivation_data}\includegraphics[width=0.248\textwidth, height=0.20\textheight]{pics/motivation/out/motivation_data_wo_RACE}} 
+    \subfloat[SymmSpMV]{\label{fig:motivation_symm_spmv_skx}\includegraphics[width=0.248\textwidth, height=0.20\textheight]{pics/motivation/out_skx/motivation_symm_spmv}}
+    %\hspace{1em}
+    \subfloat[Data traffic]{\label{fig:motivation_data_skx}\includegraphics[width=0.248\textwidth, height=0.20\textheight]{pics/motivation/out_skx/motivation_data_wo_RACE}}
   %	\subfloat[False sharing]{\label{fig:motivation_c}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_2}}
   %	\hspace{1em}
   %	\subfloat[Barrier effect]{\label{fig:motivation_d}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_4}}
-  	\caption{(a) Performance of \acrshort{SymmSpMV} with \acrshort{MC} and \acrshort{ABMC} compared to \acrshort{SpMV}. (b) Average data traffic per nonzero entry ($\acrshort{nnz}$) of the full matrix as measured with \LIKWID for all cache levels and main memory. All measurements were done on one \IVB socket at 2.2\,\GHZ. The Spin-26 matrix was prepermuted with \acrshort{RCM}. }
+  	\caption{(a,c) Scaling performance of \acrshort{SymmSpMV} with \acrshort{MC} and \acrshort{ABMC} compared to \acrshort{SpMV} on one socket of \IVB and \SKX respectively. (b,d) Average data traffic per nonzero entry ($\acrshort{nnz}$) of the full matrix as measured with \LIKWID for all cache levels and main memory on one socket of \IVB and \SKX respectively. The Spin-26 matrix was prepermuted with \acrshort{RCM}. }
   	\label{fig:motivation}
   \end{figure}
  
