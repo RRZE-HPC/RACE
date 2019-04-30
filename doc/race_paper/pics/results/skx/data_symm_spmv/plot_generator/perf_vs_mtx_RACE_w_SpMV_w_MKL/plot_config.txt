@@ -1,0 +1,14 @@
+COL_MTX_NAMES = 2
+COL_PERF_1 = 5 6 5 3 4 7
+PERF_FILES = ../../RACE/result.txt ../../MKL/result.txt ../../MKL/result.txt ../../MKL/result.txt ../../RLM/result.txt ../../RLM/result.txt
+COLORS =  orange bronze citrine magenta gray gray
+LEGEND = RACE-SymmSpMV MKL-IE-SymmSpMV MKL-SymmSpMV MKL-SpMV RLM-copy RLM-load
+PATH = RLM-copy RLM-load
+TEMPLATE = template.tex
+GENERATED = perf.tex
+YLABEL = Perf (GF/s)
+TYPE = LINE
+TITLE = 
+#SymmSpMV comparison on 1 socket of Intel Skylake
+
+
