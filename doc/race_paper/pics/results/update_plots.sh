@@ -39,10 +39,10 @@ for arch in ivy skx; do
 	done
 done
 
-cd skx/corner_cases_scaling
-./generate_plots.sh
+#cd skx/corner_cases_scaling
+#./generate_plots.sh
 
-cd -
+#cd -
 
 ./rm_permute_files.sh
 
