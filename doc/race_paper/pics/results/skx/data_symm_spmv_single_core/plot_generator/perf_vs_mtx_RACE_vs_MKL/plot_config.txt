@@ -3,6 +3,7 @@ COL_PERF_1 = 5 3
 PERF_FILES = ../../RACE/result.txt ../../MKL/result.txt 
 COLORS =  orange magenta
 LEGEND = RACE-SymmSpMV MKL-SpMV
+MARK = default triangle*
 TEMPLATE = template.tex
 GENERATED = perf.tex
 YLABEL = Perf (GF/s)

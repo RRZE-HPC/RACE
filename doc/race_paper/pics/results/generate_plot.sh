@@ -17,8 +17,13 @@ yscale_file=`cat $1 | grep Y_SCALE_FILE | awk '{print $3}'`
 yscale_col=`cat $1 | grep Y_SCALE_COL | awk '{print $3}'`
 yscale_op=`cat $1 | grep Y_SCALE_OP | awk '{print $3}'`
 path=`cat $1 | grep PATH | awk '{ for(i=3;i<=NF;i++) {print $i} }'`
+mark=`cat $1 | grep MARK | awk '{ for(i=3;i<=NF;i++) {print $i} }'`
 
-mark="default triangle* square* default otimes* diamond*"
+if [[ -z "$mark" ]]; then
+	mark="default default default triangle* nomarks nomarks"
+fi
+#"default triangle* square* default nomarks nomarks"
+#otimes* diamond*"
 
 mtx_name_file=$(echo $perf_files | cut -d " " -f  1)
 cat $mtx_name_file | tail -n +2 >temp.txt
@@ -127,7 +132,8 @@ for file in $perf_files ; do
 
 	name_path=""
 	if [[ ! -z "$path" ]]; then
-		curr_path=$(echo $legends | cut -d " " -f  $col_counter)
+		curr_path=$col_counter
+#(echo $legends | cut -d " " -f  $col_counter)
 		name_path="name path="$curr_path","
 	fi
 
