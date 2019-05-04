@@ -1,0 +1,14 @@
+COL_MTX_NAMES = 2
+COL_PERF_1 = 5 3 4 7
+PERF_FILES = ../../RACE/result.txt ../../MKL/result.txt ../../RLM/result.txt ../../RLM/result.txt
+COLORS =  orange magenta gray gray
+LEGEND = RACE-SymmSpMV MKL-SpMV RLM-copy RLM-load
+PATH = 3 4
+TEMPLATE = template.tex
+GENERATED = perf.tex
+YLABEL = Perf (GF/s)
+TYPE = LINE
+TITLE = 
+#SymmSpMV comparison on 1 socket of Intel Ivy Bridge
+
+

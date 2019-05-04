@@ -1,0 +1,101 @@
+
+\documentclass[english,10.5pt]{ethbrief3}
+%\documentclass[ngerman,DepLogo]{ethbrief3}
+%\documentclass[english,DepLogo]{ethbrief3}
+%\documentclass[ngerman,ETHUZH]{ethbrief3}
+%\documentclass[english,ETHUZH]{ethbrief3}
+
+\usepackage[utf8]{inputenc}
+\usepackage[pdfborder={0 0 0},pdftex]{hyperref}
+\usepackage{graphicx, color, ulem}
+\usepackage{fontawesome}
+\usepackage{hyperref}
+
+\hyphenation{Procee-dings}
+
+\usepackage{fontawesome}
+\newcommand*{\marvosymbol}[1]{{\fontfamily{mvs}\fontencoding{U}\fontseries{m}\fontshape{n}\selectfont\char#1}}
+
+
+% automatic language support (Niklas Beisert)
+\EthLang{
+  \RequirePackage[document]{ragged2e}% Corrects hyphenation in german
+  \RequirePackage{ngerman}
+  \PassOptionsToPackage{ngerman}{babel}
+}{
+  \PassOptionsToPackage{english}{babel}
+}
+
+% Declaration of the personal data
+    \EthFirstUnitName{Advanced Computing Laboratory}
+    \EthSecondUnitName{Institute of Computational Science}
+    \EthName{Università della Svizzera italiana}
+    \EthPersName{Prof. Olaf Schenk}
+    % \EthPersPosition{\EthLang{Funktion}{Position}}
+    % \EthOffice{\EthLang{Geb\"aude Raum}{Building Room}}
+    \EthStreet{Via Giuseppe Buffi 13}
+     \EthTown{6900 Lugano}
+%     \EthAddress{\EthLang{Freie\\Adresseingabe}{freestyle\\address}}
+% --- country optional, typical if sendig outside CH
+%     \EthLang{}{\EthCountry{\Switzerland}} % only the country in english version
+     \EthCountry{\Switzerland} % in german and english version
+     \EthEmail{olaf.schenk@usi.ch}
+%     \EthPersInfo{\EthLang{Zus\"atzliche\\Daten}{additional\\data}}
+
+% end of declaration of the personal data
+
+%***** Einbinden einer Unterschift-Grafik
+% \signaturefile[0.5cm]{\includegraphics[height=1cm]{mysig}} % include a signature file
+% \signature{}
+     
+%\makelabels         % to get the address for an envelope
+\date{February 09, 2019} % be free to define the date manually
+%***** multilinguale Ortsnamen, \Zurich definiert als Standard
+\location{Lugano}  % be free to define the location manually
+
+%***** Umbenannt
+\subject[]{XXX}
+
+%***** Umgehung von \begin{letter} moeglich, Angabe der Zieladresse
+\recipient{
+Prof. Zhaojun Bai\\
+Editor-in-Chief, ACM TOMS \\
+\vspace{1em}
+Prof. Wolfgang Bangerth\\
+Editor-in-Chief, ACM TOMS 
+}
+
+\begin{document}
+
+%***** Umgehung von \begin{letter} moeglich
+%  \begin{letter}{Adresse}
+
+\opening{Dear Prof. Bai, dear Prof. Bangerth, }
+
+
+
+\closing{Yours sincerely,}
+
+\vspace{-2cm}
+
+\includegraphics[width=0.4\linewidth]{signature_schenk_olaf.png}
+
+Olaf Schenk
+
+Full Professor of Computational Science\\
+Director, Master in Computational Science\\
+Director, PhD Graduate School in Informatics\\ 
+Vice Chair,  SIAM Activity Group on Supercomputing\\
+IEEE Senior Member\\
+\marvosymbol{72}~+41 793682281\\
+\marvosymbol{66}~olaf.schenk@usi.ch\\
+\marvosymbol{205}~\url{http://usi.to/ovv}
+
+
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
