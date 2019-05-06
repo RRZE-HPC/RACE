@@ -38,11 +38,12 @@ All the measurements were done with \CPU clock speeds fixed at the indicated bas
 \end{comment}
 
 \begin{table}[tbp]
-	\footnotesize
-	\caption{Technical details (per socket) of the Intel CPUs used for the benchmarks.}\label{tab:test_bed}
-	\begin{center}
+	\centering
+%	\footnotesize
+	\tbl{Technical details (per socket) of the Intel CPUs used for the benchmarks.\label{tab:test_bed}}
+	%\begin{center}
 		%	\setlength{\tabcolsep}{3em}
-		\begin{tabular}{l|cc}
+		{\begin{tabular}{l|cc}
 			{Model name} & {Xeon\textsuperscript{\textregistered} E5-2660} & {Xeon\textsuperscript{\textregistered} Gold 6148} \\\midrule
 			{Microarchitecture} & {\IVB} & {\SKX} \\\midrule
 			{Base clock frequency} & {2.2 GHz} & {2.4 GHz}\\
@@ -55,8 +56,8 @@ All the measurements were done with \CPU clock speeds fixed at the indicated bas
 			{Main memory} & {32 \GiB} & {45 \GiB}\\
 			{Bandwidth per socket, load-only} & {47 \GBS} & {115 \GBS}\\ %TODO
 			{Bandwidth per socket, copy} & {40 \GBS} & {104 \GBS}\\
-		\end{tabular}
-	\end{center}
+		\end{tabular}}
+	%\end{center}
 \end{table} 
 As the attainable main memory bandwidth is the input parameter to the \roofline model used later, we have carefully measured this value depending on the data set size for two access patterns (copy and load-only). The data presented in \cref{fig:size_vs_bw} basically show the characteristic performance drop if data set size is too large to fit into the \acrfull{LLC}, which is an L3 cache on both architectures (cf. \cref{tab:test_bed} for the actual sizes). 
 \begin{figure}[tbp]
@@ -106,13 +107,14 @@ satisfy the criteria for \IVB ($< 40$ \MB). The corresponding data set
 size for storing the upper triangular part of these matrices have been
 labeled in \cref{fig:size_vs_bw}.
 
-\begin{table}[tb]
-	\footnotesize
-	\caption{Details of the benchmark matrices. \acrshort{nrows} is the number of matrix rows and \acrshort{nnz} is the number of nonzeros. $\acrshort{NNZR}=\acrshort{nnz}/\acrshort{nrows}$ is the average number of nonzeros per row. $bw$ and $bw_{RCM}$ refer to the matrix bandwidth without and with \acrshort{RCM} preprocessing. The letter ``C" in the parentheses of the matrix name indicates a corner case matrix that will be discussed in detail, while the letter ``Q" marks a matrix from quantum physics that is not part of the SuiteSparse Matrix Collection. With an asterisk (*) we have labeled all the matrices which are less than 128 \MB, which could potentially lead to some caching effects especially on the \SKX architecture.} \label{tab:test_mtx}
-	\label{table:bench_matrices}
-	\begin{center}
-		\input{pics/matrices/table.tex}
-	\end{center}
+\begin{table}[tbp]
+	\centering
+%	\footnotesize
+	\tbl{Details of the benchmark matrices. \acrshort{nrows} is the number of matrix rows and \acrshort{nnz} is the number of nonzeros. $\acrshort{NNZR}=\acrshort{nnz}/\acrshort{nrows}$ is the average number of nonzeros per row. $bw$ and $bw_{RCM}$ refer to the matrix bandwidth without and with \acrshort{RCM} preprocessing. The letter ``C" in the parentheses of the matrix name indicates a corner case matrix that will be discussed in detail, while the letter ``Q" marks a matrix from quantum physics that is not part of the SuiteSparse Matrix Collection. With an asterisk (*) we have labeled all the matrices which are less than 128 \MB, which could potentially lead to some caching effects especially on the \SKX architecture. \label{tab:test_mtx}
+	\label{table:bench_matrices}}{
+%	\begin{center}
+		\input{pics/matrices/table.tex}}
+%	\end{center}}
 \end{table}
 
 %\begin{table}[ht]

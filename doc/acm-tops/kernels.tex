@@ -89,7 +89,8 @@ values for different matrices on both the architectures.}
 %$\alpha_\mathrm{\acrshort{SpMV}}$) for all matrices on the two
 %processor chips are given in \cref{table:alpha_values}.
 \begin{table}[htbp]
-	\footnotesize \caption{The optimal value of $\alpha_{\acrshort{SpMV}}$
+	\centering
+	\tbl{The optimal value of $\alpha_{\acrshort{SpMV}}$
 	is shown in column three. Following \cref{eq:upper_performance} the
 	maximum \acrshort{SpMV} performance can be calculated for each
 	architecture using the best intensity values
@@ -102,7 +103,9 @@ values for different matrices on both the architectures.}
 	except the ones marked with asterisk, where  $\alpha_{\acrshort{SymmSpMV}}$
 	is set to optimal $\alpha_{\acrshort{SymmSpMV}}$ (= 1/\acrshort{SymmNNZR}).
 	 \label{table:alpha_values}}
-        \begin{center} \input{pics/results/alpha_table_generator/table.tex} \end{center}
+        %\begin{center} 
+      {\input{pics/results/alpha_table_generator/table.tex}}
+        %\end{center}
 \end{table}
 Choosing the matrices 10, 22, and 31, which have approximately the
 same optimal $\alpha_{\acrshort{SpMV}}$, one can study the delicate
