@@ -60,9 +60,9 @@ The figures clearly demonstrate the ability of \acrshort{RACE} to ensure high da
 We now extend our \acrshort{RACE}  performance investigation to the full set of test matrices presented in~\cref{table:bench_matrices}. In \cref{fig:spmv_vs_symm_spmv_ivy,fig:spmv_vs_symm_spmv_skx} the performance results for the full \IVB processor chip (10 cores) and the full \SKX processor chip (20 cores) are presented along with the upper roofline limits and the performance of the baseline \acrshort{SpMV} kernel using \acrshort{MKL}.  
  \begin{figure}[tbp]
 	\centering
-	\subfloat[\IVB]{\label{fig:spmv_vs_symm_spmv_ivy}\includegraphics[width=0.95\textwidth, height=0.28\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV_w_MKL/perf}}
+	\subfloat[\IVB]{\label{fig:spmv_vs_symm_spmv_ivy}\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV_w_MKL/perf}}
 	\hspace{1em}
-	\subfloat[\SKX]{\label{fig:spmv_vs_symm_spmv_skx}\includegraphics[width=0.95\textwidth, height=0.28\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV_w_MKL/perf}}
+	\subfloat[\SKX]{\label{fig:spmv_vs_symm_spmv_skx}\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV_w_MKL/perf}}
 	\caption{Performance of \acrshort{SymmSpMV} executed with \acrshort{RACE} compared to the performance model and \acrshort{MKL} implementations. \acrshort{SpMV} performance obtained using \acrshort{MKL} library is also shown for reference. The model prediction is derived for  bandwidths in the range of load and copy bandwidth, and using the measured $\alpha_{\acrshort{SpMV}}$ shown in \cref{table:alpha_values}.}
 	\label{fig:SpMV_vs_SymmSpMV}
 \end{figure}
@@ -99,7 +99,7 @@ a strong correlation with lower \acrshort{SpMV} performance as seen in \cref{fig
 %
  \begin{figure}[tbp]
  	\centering
- 	\subfloat[\SKX]{\includegraphics[width=0.95\textwidth, height=0.28\textheight]{pics/results/skx/data_symm_spmv_single_core/plot_generator/perf_vs_mtx_RACE_vs_MKL/perf}}
+ 	\subfloat[\SKX]{\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/skx/data_symm_spmv_single_core/plot_generator/perf_vs_mtx_RACE_vs_MKL/perf}}
  	\caption{Single core performance of \acrshort{SymmSpMV} executed with \acrshort{RACE} compared to \acrshort{SpMV} performance using \acrshort{MKL}.}
  	\label{fig:SpMV_vs_SymmSpMV_single_core}
  \end{figure}
@@ -128,9 +128,9 @@ Having well understood the performance characteristics of  \acrshort{SymmSpMV} w
 %
 \begin{figure}[tbp]
 	\centering
-	\subfloat[\IVB]{\label{fig:symm_spmv_ivy}\includegraphics[width=0.95\textwidth, height=0.28\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_vs_MC_ABMC/perf}}
+	\subfloat[\IVB]{\label{fig:symm_spmv_ivy}\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_vs_MC_ABMC/perf}}
 	\hspace{1em}
-	\subfloat[\SKX]{\label{fig:symm_spmv_skx}\includegraphics[width=0.95\textwidth, height=0.28\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_vs_MC_ABMC/perf}}
+	\subfloat[\SKX]{\label{fig:symm_spmv_skx}\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_vs_MC_ABMC/perf}}
 	\caption{Comparison of \acrshort{SymmSpMV} performance between \acrshort{RACE} and coloring variants \acrshort{MC} and \acrshort{ABMC}. Matrices are arranged in increasing number of rows (\acrshort{nrows}).}
 	\label{fig:symm_spmv}
 \end{figure}
