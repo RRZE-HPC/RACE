@@ -1,55 +1,78 @@
-Symmetric sparse matrix-vector multiplication (\acrshort{SymmSpMV})
-operation  is an essential building block in a number of applications
-such as algebraic multigrid methods, sparse iterative solvers,
-shortest path algorithms, breadth first search algorithms, and Markov
-cluster algorithms and therefore it is an integral part of many scientific algorithms.
+\Acrfull{SpMV} operation  is an essential building block 
+in a number of applications such as algebraic multigrid methods, 
+sparse iterative solvers, shortest path algorithms, breadth first search algorithms, 
+and Markov cluster algorithms and therefore it is an integral part 
+of many scientific algorithms.
 In the past decades, much research has been
 focusing on designing new data structures, efficient algorithms, and
-parallel coloring techniques for this sparse basic linear algebra
-subprogram.  \acrshort{SymmSpMV} is a bandwidth-limited operation and, on
+parallelization  techniques for this sparse basic linear algebra
+subprogram.  \acrshort{SpMV} is a bandwidth-limited operation and, on
 cache-based architectures, the main factors that influence performance
 are spatial locality in accessing the matrix, and temporal locality in
 reusing the elements of the vector. To address this problem, over the
-last two decades a plethora of coloring and partitioning techniques
-and data structures to improve \acrshort{SymmSpMV} multiplication on cache-based
-architectures have been suggested including greedy graph coloring
-techniques, cache-oblivious methods, and hypergraph partitioning. One
+last two decades a plethora of  partitioning techniques
+and data structures to improve \acrshort{SpMV} multiplication on cache-based
+architectures have been suggested including %greedy graph coloring techniques, 
+cache-oblivious methods, and hypergraph partitioning. One
 of the first studies, \eg to improve temporal locality was done, \eg
 by Toledo~\cite{Toledo:1997:IMP:279511.279532} who performed an
 extensive study of Cuthill--McKee (CM) ordering
 techniques on three--dimensional finite-element test matrices when
 used in combination with blocking into small dense blocks. Various
-authors~\cite{Buluc:2011:RMA:2058524.2059503,Williams:2009:OSM:1513001.1513318,doi:10.1177/1094342004041296}
-used techniques such as cache blocking for  \acrshort{SymmSpMV} by splitting the matrix into several smaller $p \times
+authors~\cite{Williams:2009:OSM:1513001.1513318,doi:10.1177/1094342004041296}
+used advanced data storage formats and techniques such as register and cache blocking  for  
+\acrshort{SpMV} by splitting the matrix into several smaller $p \times
 q$ sparse submatrices and presented an analytic cache-aware model to
 determine the optimal block size. These algorithms are, e.g.,
 included in OSKI~\cite{1742-6596-16-1-071} which is a collection of
 low-level primitives of tuned sparse kernels for modern cache-based
-superscalar machines. Xing \etal~\cite{Liu:2013:ESM:2464996.2465013}
-used similar techniques to improve SIMD efficiency on Intel Knights
-Landing architecture and compared the performance against various other
-many-core architectures. Recent work
-can be found, \eg
-in~\cite{Buluc:2011:RMA:2058524.2059503,li2017hbm,Liu:2015:CES:2751205.2751209,liu2015spmv}.
-More recently Cheshmi~\etal~\cite{Cheshmi:2018:PIT:3291656.3291739} used e.g. a
-novel task coarsening strategy to create well-balanced tasks that can
-execute in parallel, while maintaining locality of memory accesses. 
+superscalar machines. Kreutzer \etal~\cite{Moritz_sell} and 
+Xing \etal~\cite{Liu:2013:ESM:2464996.2465013} used techniques to 
+improve SIMD efficiency and performance on many-core and GPU architectures. 
+Recent work can be found, \eg
+in~\cite{li2017hbm,Liu:2015:CES:2751205.2751209,liu2015spmv}.
+ Previous work on  \acrshort{SpMV}  has also focused on reducing
+ communication volume in a distributed memory setting, often by using
+ variants of graph or hypergraph partitioning
+ techniques~\cite{Catalyurek:1999}. Yzelman and
+ Bisseling~\cite{doi:10.1137/080733243,Yzelman-thesis-2011} extended
+ hypergraph partitioning techniques by a cache-oblivious method by
+ permuting rows and columns of the input matrix using a recursive
+ hypergraph-based sparse matrix partitioning scheme so that the
+ resulting matrix induces cache-friendly behavior during the
+ \acrshort{SpMV}.
+
+%More recently Cheshmi~\etal~\cite{Cheshmi:2018:PIT:3291656.3291739} used e.g. a
+%novel task coarsening strategy to create well-balanced tasks that can
+%execute in parallel, while maintaining locality of memory accesses. 
 
 
+%\cite{Buluc:2011:RMA:2058524.2059503
 
- Previous
-work on  \acrshort{SymmSpMV}  has also focused on reducing
-communication volume in a distributed memory setting, often by using
-variants of graph or hypergraph partitioning
-techniques~\cite{Catalyurek:1999}. Yzelman and
-Bisseling~\cite{doi:10.1137/080733243,Yzelman-thesis-2011} extended
-hypergraph partitioning techniques by a cache-oblivious method by
-permuting rows and columns of the input matrix using a recursive
-hypergraph-based sparse matrix partitioning scheme so that the
-resulting matrix induces cache-friendly behavior during the
-\acrshort{SymmSpMV}. Multicoloring is another popular approach used in this
-field~\cite{MC}, but is sometimes not efficient on modern cache-based
-processors. There have been studies carried on to increase the
+Despite \acrshort{SpMV} being a bandwidth-limited operation there has
+been not much work in the direction of optimizing storage and data transfer 
+of symmetric matrices by using the \acrfull{SymmSpMV} operation. This
+is mainly due to the dependency problems that arise with the parallelization of the 
+\acrshort{SymmSpMV} operation. General solutions for \acrshort{SymmSpMV} are 
+lock based methods and thread private target
+arrays~\cite{sparseX,thread_private_symm_spmv,Krotkiewski:2010:PSS:1752612.1752682}.
+Recent researches in this direction include specialized storage formats 
+like CSB \cite{CSB}, RSB \cite{RSB}, CSX \cite{sparseX} combined with the use of bitmasked 
+register blocking techniques as in \cite{Buluc:2011:RMA:2058524.2059503}. As pointed out 
+by \cite{liu2015spmv} the use of specialized storage formats  might however
+bring new problems like backward compatibility and conversion costs. 
+
+
+\Acrfull{MC}
+reordering is a promising alternative in this perspective, as with this approach 
+typically we are not bound to a specific data structure and most of the
+other optimization strategies is orthogonal to the method. The \acrshort{MC} approach
+is widely used in iterative solvers like Gauss-Seidel, incomplete 
+Cholesky factorization, Kaczmarz method~\cite{RBGS,MC,feast_mc} and so on,
+ however there has been no work in this direction for \acrshort{SymmSpMV} 
+ operations to our knowledge.
+The \acrshort{MC} method is sometimes not efficient on modern cache-based
+processors, there have been studies carried on to increase the
 efficiency of \acrfull{MC} and
 improving the heuristics; an overview of the methods can be found
 in~\cite{dist_k_def,COLPACK,equitable_color}. However, 
@@ -88,6 +111,9 @@ computational platforms has to be revisted again. One needs to think
 deeper about the ramifications to the entire software stack so
 that one can transition the algorithms to once again realign with the
 realities of the underlying hardware constraints. 
+
+\CAcomm{Currently I have not included Cheshmi~\etal~\cite{Cheshmi:2018:PIT:3291656.3291739}  as it 
+	does not fit to the text.}
 
 In this paper we present a novel recursive algebraic coloring approach solving general distance-$k$ dependencies and demonstrate that it has more parallelism and bandwith performance. It is motivated by the shortcomings of existing \acrshort{MC} methods in terms of hardware efficiency and parallelization overhead. Our method addresses matrices that can be represented by an undirected graph. In a first step we do a \acrlong{BFS} preprocessing for bandwidth reduction of the graph, which aims to increase data locality for the underlying sparse matrix problems: Starting from a root vertex we construct level-set by using the \acrshort{BFS} algorithm \ie \level $i$ consists of all nodes having distance $i$ to the root vertex. We then permute the graph such that vertex numbering increases with distance from the root vertex. Coloring the resulting \levels would be a naive approach to generate a \DK coloring but would for, obvious reasons (\eg \level 0 contains only one vertex), often lead to severe load imbalance. Thus we perform in a second step $level$ $aggregation$ of neighboring \levels, which aims at conserving data locality. The choice of the size of each \levelGroup is subject to two major constraints: First, for a \DK coloring of the original graph/problem at least $k$ \levels are aggregated into a \levelGroup. This means that alternate \levelGroups can be executed in parallel which is equivalent to a \DONE coloring of the \levelGroups. Second, we apply a criterion for load balancing that considers the total amount of hardware threads to be used at execution time and tries to balance workload across these threads evenly. At this stage it might happen that most of the vertices end up in a few \levelGroups. Therefore, depending on the size of the \levelGroups, a different number of threads will be assigned to each of them. \Inorder to further parallelize within this \levelGroup for assigned threads the entire procedure is recursively repeated on their corresponding \subgraphs subject to the \DK constraint. The aggregation step is controlled by a single external parameter which influences the load imbalance introduced by forming each \levelGroup. Due to the recursive nature of this algorithm, nested parallelism is required. However, only local synchronization is required between the threads assigned to the same \subgraph.
 
