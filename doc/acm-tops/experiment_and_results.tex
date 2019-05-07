@@ -40,7 +40,7 @@ Before we evaluate the performance across the full set of matrices presented in 
 \label{Sec:Spin26full}
 %
 The shortcomings in terms of performance and excessive data transfer for parallelization of \acrshort{SymmSpMV} using MC and ABMC have been demonstrated in \cref{fig:motivation}. We extend this evaluation by comparison with the \acrshort{RACE} results in \cref{fig:motivation_w_RACE}.
- \begin{figure}[tbp]
+ \begin{figure}[t]
  	\centering
  	% 	\subfloat[\acrshort{SpMV}]{\label{fig:motivation_spmv}\includegraphics[width=0.26\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_spmv}}
  	%	\hspace{1em}
@@ -58,7 +58,7 @@ The figures clearly demonstrate the ability of \acrshort{RACE} to ensure high da
 \subsubsection{Analyzing absolute performance of RACE}
 %
 We now extend our \acrshort{RACE}  performance investigation to the full set of test matrices presented in~\cref{table:bench_matrices}. In \cref{fig:spmv_vs_symm_spmv_ivy,fig:spmv_vs_symm_spmv_skx} the performance results for the full \IVB processor chip (10 cores) and the full \SKX processor chip (20 cores) are presented along with the upper roofline limits and the performance of the baseline \acrshort{SpMV} kernel using \acrshort{MKL}.  
- \begin{figure}[tbp]
+ \begin{figure}[t]
 	\centering
 	\subfloat[\IVB]{\label{fig:spmv_vs_symm_spmv_ivy}\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV_w_MKL/perf}}
 	\hspace{1em}
@@ -97,7 +97,7 @@ a strong correlation with lower \acrshort{SpMV} performance as seen in \cref{fig
   where bad performance of \acrshort{SymmSpMV}  and \acrshort{SpMV} can often be 
   correlated with a small \acrshort{NNZR} value. 
 %
- \begin{figure}[tbp]
+ \begin{figure}[t]
  	\centering
  	\subfloat[\SKX]{\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/skx/data_symm_spmv_single_core/plot_generator/perf_vs_mtx_RACE_vs_MKL/perf}}
  	\caption{Single core performance of \acrshort{SymmSpMV} executed with \acrshort{RACE} compared to \acrshort{SpMV} performance using \acrshort{MKL}.}
@@ -105,7 +105,7 @@ a strong correlation with lower \acrshort{SpMV} performance as seen in \cref{fig
  \end{figure}
  %
  For several matrices these combined effects overcompensate the reduced matrix data traffic of the \acrshort{SymmSpMV} leading to worse single core performance than running \acrshort{SpMV} with the full matrix. Using the \texttt{delaunay\_n24} matrix as a representative for this class of matrices we demonstrate the basic challenge for \acrshort{SymmSpMV} to exploit its basic performance advantage over \acrshort{SpMV} in \cref{fig:scaling_delaunay}.
-  \begin{figure}[tbp]
+  \begin{figure}[t]
   	\centering
   	\subfloat[\SKX]{\includegraphics[width=0.48\textwidth, height=0.3\textheight]{pics/results/scaling_skx/plots/delaunay_n24}}
   	\caption{Parallel performance  of \acrshort{SymmSpMV} (with \acrshort{RACE})  and \acrshort{SpMV} (with \acrshort{MKL}) for the \texttt{delaunay\_n24} matrix on one socket of \SKX. To disable vectorization (SymmSpMV-Scalar) we set \texttt{VECWIDTH = 1} when compiling the \acrshort{SymmSpMV} kernel.}
@@ -126,7 +126,7 @@ Starting with an approximately 25\% lower single core performance (0.75 GF/s ver
 Having well understood the performance characteristics of  \acrshort{SymmSpMV} with \acrshort{RACE} we finally compare this with the performance achieved by the two coloring methods in \cref{fig:symm_spmv}. Here the underlying algorithm as well as implementation are known and are closely related to our approach. 
 %that were previously discussed and also with the widely used math numerical library \acrshort{MKL}.  We use the same libraries and setup as mentioned in  \cref{Sec:motivation} for pre-processing the matrix with \acrshort{MC} and \acrshort{ABMC} methods. The methods are then executed with the same inner kernel \acrshort{SymmSpMV} as used for \acrshort{RACE}.  
 %
-\begin{figure}[tbp]
+\begin{figure}[t]
 	\centering
 	\subfloat[\IVB]{\label{fig:symm_spmv_ivy}\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_vs_MC_ABMC/perf}}
 	\hspace{1em}

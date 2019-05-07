@@ -30,7 +30,7 @@ assume symmetric matrices.
 A baseline \acrshort{SpMV} kernel is presented in \Cref{alg:SpMV}. It
 has no loop-carried dependencies, so parallelization of the outer loop
 using, \eg OpenMP, is straightforward.
-\begin{algorithm}[tbp]
+\begin{algorithm}[t]
 	\caption{\acrshort{SpMV} using the \acrshort{CRS} format: $b=A x$} 
 	\label{alg:SpMV}
 	\begin{algorithmic}[1]
@@ -88,7 +88,7 @@ values for different matrices on both the architectures.}
 %as well as the measured $\alpha$ values (denoted by
 %$\alpha_\mathrm{\acrshort{SpMV}}$) for all matrices on the two
 %processor chips are given in \cref{table:alpha_values}.
-\begin{table}[htbp]
+\begin{table}[t]
 	\centering
 	\tbl{The optimal value of $\alpha_{\acrshort{SpMV}}$
 	is shown in column three. Following \cref{eq:upper_performance} the
@@ -152,7 +152,7 @@ traffic by operating on the upper (or lower) half of the matrix
 only. Thus for every nonzero matrix entry we need to update two
 entries in the LHS vector ($b[]$) as shown in~\cref{alg:SymmSpMV}.
 
-\begin{algorithm}[tbp]
+\begin{algorithm}[t]
 	\caption{SymmSpMV $b=Ax$, where $A$ is an upper triangular matrix} 
 	\label{alg:SymmSpMV}
 	\begin{algorithmic}[1]

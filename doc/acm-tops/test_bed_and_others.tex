@@ -37,7 +37,7 @@ All the measurements were done with \CPU clock speeds fixed at the indicated bas
 \end{table} 
 \end{comment}
 
-\begin{table}[tbp]
+\begin{table}[t]
 	\centering
 %	\footnotesize
 	\tbl{Technical details (per socket) of the Intel CPUs used for the benchmarks.\label{tab:test_bed}}
@@ -60,7 +60,7 @@ All the measurements were done with \CPU clock speeds fixed at the indicated bas
 	%\end{center}
 \end{table} 
 As the attainable main memory bandwidth is the input parameter to the \roofline model used later, we have carefully measured this value depending on the data set size for two access patterns (copy and load-only). The data presented in \cref{fig:size_vs_bw} basically show the characteristic performance drop if data set size is too large to fit into the \acrfull{LLC}, which is an L3 cache on both architectures (cf. \cref{tab:test_bed} for the actual sizes). 
-\begin{figure}[tbp]
+\begin{figure}[t]
 	\centering
 	\subfloat[\emph{\IVB}]{\label{fig:ivy_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/ivy}}
 	\subfloat[\emph{\SKX}]{\label{fig:skx_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/skx}}

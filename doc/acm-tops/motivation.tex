@@ -33,7 +33,7 @@ speedup of approximately 1.4$\times$ -- 1.6$\times$ compared to the \acrshort{Sp
 baseline ($5.5\,\GF$ and $13.41\,\GF$ on \IVB and \SKX), the \acrshort{SymmSpMV} implementation
 using \acrshort{MC} falls short of this expectation and is more than
 three times slower than \acrshort{SpMV}.
-\begin{figure}[tbp]
+\begin{figure}[t]
   	\centering
  % 	\subfloat[\acrshort{SpMV}]{\label{fig:motivation_spmv}\includegraphics[width=0.26\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_spmv}}
   %	\hspace{1em}
@@ -63,7 +63,7 @@ In order to get a better understanding of the underlying problem it's convenient
   %	\caption{Illustration of increase in $\alpha$ by multicoloring, numbers represents thread numbers working on a particular row}
   %	\label{fig:motivation}
   %\end{figure}
-  \begin{figure}[tbp]
+  \begin{figure}[t]
   	\centering
   	\includegraphics[scale=0.45]{pics/mc_alpha_problem/mc_alpha_unsymm}
   	\caption{Illustration of the increase of $\alpha$ by \acrshort{MC}. Numbers represent thread ids. Note that this figure shows only rows of the matrix permuted according to \acrshort{MC}, but in practice one would permute both rows and columns.}
