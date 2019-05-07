@@ -5,7 +5,7 @@
 \begin{abstract}
 
 The symmetric sparse matrix-vector multiplication kernel (\acrshort{SymmSpMV}) is an important building block for a number
-of numerical linear algebra kernel operations or other graph traversal applications. Parallelizing \acrshort{SymmSpMV} on today’s multicore platforms with up to 100  cores
+of numerical linear algebra kernel operations or other graph traversal applications. Parallelizing \acrshort{SymmSpMV} on today's multicore platforms with up to 100  cores
 is not an easy task since computing the component of the solution will be in conflict with other computed 
 components, enforcing synchronization events.  Most existing frameworks introduce a coloring phase to partition 
 the part of the vector into a group of color sets so that components within a set are 

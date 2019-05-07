@@ -1,30 +1,44 @@
-% v2-acmsmall-sample.tex, dated March 6 2012
-% This is a sample file for ACM small trim journals
-%
-% Compilation using 'acmsmall.cls' - version 1.3 (March 2012), Aptara Inc.
-% (c) 2010 Association for Computing Machinery (ACM)
-%
-% Questions/Suggestions/Feedback should be addressed to => "acmtexsupport@aptaracorp.com".
-% Users can also go through the FAQs available on the journal's submission webpage.
-%
-% Steps to compile: latex, bibtex, latex latex
-%
-% For tracking purposes => this is v1.3 - March 2012
+%%
+%% This is file `sample-acmsmall.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% samples.dtx  (with options: `acmsmall')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from sample-acmsmall.tex.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file samples.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%%
+%% The first command in your LaTeX source must be the \documentclass command.
 
-\documentclass[prodmode,screen=true,acmtopc]{acmsmall} % Aptara syntax
-
+%\documentclass[format=acmtopc, review=false, screen=true]{acmsmall}
+%\documentclass[prodmode,screen=true,acmtopc]{acmsmall} % Aptara syntax
+\documentclass[acmsmall]{acmart}
 \input{preamble.tex}
 
-% Package to generate and customize Algorithm as per ACM style
+%%
+%% \BibTeX command to typeset BibTeX logo in the docs
+\AtBeginDocument{%
+	\providecommand\BibTeX{{%
+			\normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
 
-
-% Metadata Information
-\acmVolume{9}
-\acmNumber{4}
-\acmArticle{39}
-\acmYear{XXXX}
-\acmMonth{3}
-
+%% Rights management information.  This information is sent to you
+%% when you complete the rights form.  These commands have SAMPLE
+%% values in them; it is your responsibility as an author to replace
+%% the commands and values with those provided to you when you
+%% complete the rights form.
 % Copyright
 %\setcopyright{acmcopyright}
 %\setcopyright{acmlicensed}
@@ -34,33 +48,58 @@
 %\setcopyright{cagov}
 %\setcopyright{cagovmixed}
 
-% DOI
-\doi{0000001.0000001}
+%\copyrightyear{2019}
+\acmYear{2019}
+\acmDOI{10.1145/1122445.1122456}
+
+% Package to generate and customize Algorithm as per ACM style
+
+
+% Metadata Information
+\acmJournal{TOPC}
+\acmVolume{9}
+\acmNumber{4}
+\acmArticle{39}
+\acmYear{XXXX}
+\acmMonth{3}
+
+
 
 %ISSN
-\issn{1234-56789}
+%\issn{1234-56789}
 
 % Document starts
 \begin{document}
 
 % Page heads
-\markboth{Christie Alappat et al.}{SymmSpMV with RACE}
+%\markboth{Christie Alappat et al.}{SymmSpMV with RACE}
 
 % Title portion
-\title{A Recursive Algebraic Coloring Technique for Hardware Efficient Symmetric Sparse Matrix-Vector Multiplication}
-\author{
-CHRISTIE  ALAPPAT
-\affil{Friedrich-Alexander-University of Erlangen-Nurnberg, Erlangen (FAU)}
-GEORG HAGER
-\affil{Friedrich-Alexander-University of Erlangen-Nurnberg, Erlangen (FAU)}
-GERHARD WELLEIN
-\affil{Friedrich-Alexander-University of Erlangen-Nurnberg, Erlangen (FAU)}
-\textcolor{red}{OTHER AUTHOR}
-\affil{\textcolor{red}{xxx}}
-\textcolor{red}{OTHER AUTHOR}
-\affil{\textcolor{red}{xxx}}
-OLAF SCHENK
-\affil{Institute of Computational Science, Universit\`{a} della Svizzera italiana}}
+\title[SymmSpMV with RACE]{A Recursive Algebraic Coloring Technique for Hardware Efficient Symmetric Sparse Matrix-Vector Multiplication}
+
+\author{CHRISTIE  ALAPPAT}
+\email{christie.alappat@fau.de}
+\affiliation{
+	\institution{Friedrich-Alexander-University of Erlangen-Nurnberg, Erlangen (FAU)}}
+
+\author{GEORG HAGER}
+\email{georg.hager@fau.de}
+\affiliation{
+	\institution{Friedrich-Alexander-University of Erlangen-Nurnberg, Erlangen (FAU)}}
+
+\author{GERHARD WELLEIN}
+\email{gerhard.wellein@fau.de}
+\affiliation{
+	\institution{Friedrich-Alexander-University of Erlangen-Nurnberg, Erlangen (FAU)}}
+
+\author{OTHER AUTHOR}
+\affiliation{\institution{xxx}}
+
+\author{OLAF SCHENK}
+\email{olaf.schenk@usi.ch}
+\affiliation{
+	\institution{Institute of Computational Science, Universit\`{a} della Svizzera italiana}}
+
 % NOTE! Affiliations placed here should be for the institution where the
 %       BULK of the research was done. If the author has gone to a new
 %       institution, before publication, the (above) affiliation should NOT be changed.
@@ -69,6 +108,8 @@ OLAF SCHENK
 %       currently affiliated with NASA.
 
 % ABSTRACT
+\renewcommand{\shortauthors}{Christie Alappat et al.}
+
 \input{abstract.tex}
 
 %
@@ -97,7 +138,8 @@ OLAF SCHENK
 
 \keywords{sparse matrix, sparse symmetric matrix-Vector multiplication, graph algorithms,  graph coloring, scheduling, memory hierarchies}
 
-\acmformat{\textcolor{red}{Christie Alappat, Georg Hager, Gerhard Wellein, {and} Olaf Schenk, 2019. A Recursive Algebraic Coloring Technique for Hardware Efficient Symmetric Sparse Matrix-Vector Multiplication.}}
+\maketitle
+%\acmformat{\textcolor{red}{Christie Alappat, Georg Hager, Gerhard Wellein, {and} Olaf Schenk, 2019. A Recursive Algebraic Coloring Technique for Hardware Efficient Symmetric Sparse Matrix-Vector Multiplication.}}
 % At a minimum you need to supply the author names, year and a title.
 % IMPORTANT:
 % Full first names whenever they are known, surname last, followed by a period.
@@ -109,25 +151,18 @@ OLAF SCHENK
 % is followed by a period and they are separated by a space.
 % The remaining information (journal title, volume, article number, date, etc.) is 'auto-generated'.
 
-\begin{bottomstuff}
-The project is funded by the German DFG priority programme 1648 “Software for Exascale Computing” (SPPEXA)
-and the Swiss National Science Foundation (SNF)  under the project ``Dual-Phase Steels - From Micro to Macro Properties (EXASTEEL-2)" \textcolor{red}{ and ``Equipping Sparse Solvers for Exascale (ESSEX-2)"}.
 
-Author's addresses: 
-Christie Alappat, Georg Hager, {and} Gerhard Wellein, Fredrich-Alexander-University of Erlangen-Nurnberg, Erlangen, Germany;
-Author1, Author1, XXXX, Germany; 
-Olaf Schenk, Advanced Computing Laboratory, Institute of Computational Science, Faculty of Informatics, Università della Svizzera italiana, Via Giuseppe Buffi 13, 6900 Lugano, Switzerland.
-\end{bottomstuff}
-
-\maketitle
+%\maketitle
 
 \section{Introduction}
 \label{Sec:related_work} 
 \input{related_work.tex}
 
+
 \subsection{Contribution \CAcomm{@Georg this shouldn't be a subsection or ??}} 
 \label{Sec:contribution}
 \input{contribution.tex}
+
 
 \section{Experimental Setup}
 \label{Sec:test_bed}
@@ -181,7 +216,8 @@ Olaf Schenk, Advanced Computing Laboratory, Institute of Computational Science, 
 
 % % Acknowledgments
 \begin{acks}
-
+The project is funded by the German DFG priority programme 1648 Software for Exascale Computing (SPPEXA)
+and the Swiss National Science Foundation (SNF)  under the project ``Dual-Phase Steels - From Micro to Macro Properties (EXASTEEL-2)" \textcolor{red}{ and ``Equipping Sparse Solvers for Exascale (ESSEX-2)"}.
 \end{acks}
 \clearpage
 \printglossaries
@@ -189,9 +225,10 @@ Olaf Schenk, Advanced Computing Laboratory, Institute of Computational Science, 
 
 
 % Bibliography
-\bibliographystyle{ACM-Reference-Format-Journals}
-%\bibliographystyle{plain}
+\bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
+%\bibliographystyle{plain}
+
 
 % History dates
 \received{XXXX}{XXXX}{XXXX}

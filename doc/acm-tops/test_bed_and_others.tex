@@ -8,7 +8,7 @@ We conducted all benchmarks on a single CPU socket from Intel's \IVB and  \SKX f
 %  \end{comment}
  
 \end{itemize}
-Architectural details along with the attainable memory bandwidths are given in \cref{tab:test_bed}. 
+Architectural details along with the attainable memory bandwidths are given in \Cref{tab:test_bed}. 
 All the measurements were done with \CPU clock speeds fixed at the indicated base frequencies. Note that for the \SKX architecture the clock frequency is scaled down internally to 2.2 \GHZ when using multicore support and the AVX-512 instruction set; however, this is of minor importance for the algorithms discussed here.
 \begin{comment}
 \begin{table}[tbp]
@@ -40,10 +40,10 @@ All the measurements were done with \CPU clock speeds fixed at the indicated bas
 \begin{table}[t]
 	\centering
 %	\footnotesize
-	\tbl{Technical details (per socket) of the Intel CPUs used for the benchmarks.\label{tab:test_bed}}
-	%\begin{center}
+	\caption{Technical details (per socket) of the Intel CPUs used for the benchmarks.\label{tab:test_bed}}
+	\begin{center}
 		%	\setlength{\tabcolsep}{3em}
-		{\begin{tabular}{l|cc}
+		\begin{tabular}{l|cc}
 			{Model name} & {Xeon\textsuperscript{\textregistered} E5-2660} & {Xeon\textsuperscript{\textregistered} Gold 6148} \\\midrule
 			{Microarchitecture} & {\IVB} & {\SKX} \\\midrule
 			{Base clock frequency} & {2.2 GHz} & {2.4 GHz}\\
@@ -56,24 +56,24 @@ All the measurements were done with \CPU clock speeds fixed at the indicated bas
 			{Main memory} & {32 \GiB} & {45 \GiB}\\
 			{Bandwidth per socket, load-only} & {47 \GBS} & {115 \GBS}\\ %TODO
 			{Bandwidth per socket, copy} & {40 \GBS} & {104 \GBS}\\
-		\end{tabular}}
-	%\end{center}
+		\end{tabular}
+	\end{center}
 \end{table} 
-As the attainable main memory bandwidth is the input parameter to the \roofline model used later, we have carefully measured this value depending on the data set size for two access patterns (copy and load-only). The data presented in \cref{fig:size_vs_bw} basically show the characteristic performance drop if data set size is too large to fit into the \acrfull{LLC}, which is an L3 cache on both architectures (cf. \cref{tab:test_bed} for the actual sizes). 
+As the attainable main memory bandwidth is the input parameter to the \roofline model used later, we have carefully measured this value depending on the data set size for two access patterns (copy and load-only). The data presented in \Cref{fig:size_vs_bw} basically show the characteristic performance drop if data set size is too large to fit into the \acrfull{LLC}, which is an L3 cache on both architectures (cf. \Cref{tab:test_bed} for the actual sizes). 
 \begin{figure}[t]
 	\centering
 	\subfloat[\emph{\IVB}]{\label{fig:ivy_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/ivy}}
 	\subfloat[\emph{\SKX}]{\label{fig:skx_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/skx}}
-	\caption{Attained bandwidth versus total data size for a range from 20 \MB to 2 \GB. The dotted lines show the asymptotic bandwidth given in \cref{tab:test_bed} for the load-only and copy benchmark. The benchmarks were performed on the full socket using the \likwidBench tool. The gray vertical lines correspond to the positions of matrices that might show caching effects; see \cref{subsec:bench_mat}. Note the logarithmic scales.}
+	\caption{Attained bandwidth versus total data size for a range from 20 \MB to 2 \GB. The dotted lines show the asymptotic bandwidth given in \Cref{tab:test_bed} for the load-only and copy benchmark. The benchmarks were performed on the full socket using the \likwidBench tool. The gray vertical lines correspond to the positions of matrices that might show caching effects; see \Cref{subsec:bench_mat}. Note the logarithmic scales.}
 	\label{fig:size_vs_bw}
 \end{figure}
-Interestingly there is no sharp drop at the exact size of the \acrshort{LLC} but a rather steady performance decrease with enhanced data access rates also for data set sizes up to twice the \acrshort{LLC} size on \IVB. For \SKX this effect is even more pronounced as the noninclusive victim L3 cache architecture only stores data which are not in the L2 cache; thus the available cache size for an application may be the aggregate sizes of the L2 and L3 caches on this architecture.  The final bandwidth for the  \roofline model is chosen as the asymptotic value depicted in \cref{fig:size_vs_bw}. Of course caching effects are extremely sensitive to the data access pattern and thus the values presented here only provide simple upper bounds for the \acrshort{SymmSpMV} kernel with its potentially strong irregular data access. 
+Interestingly there is no sharp drop at the exact size of the \acrshort{LLC} but a rather steady performance decrease with enhanced data access rates also for data set sizes up to twice the \acrshort{LLC} size on \IVB. For \SKX this effect is even more pronounced as the noninclusive victim L3 cache architecture only stores data which are not in the L2 cache; thus the available cache size for an application may be the aggregate sizes of the L2 and L3 caches on this architecture.  The final bandwidth for the  \roofline model is chosen as the asymptotic value depicted in \Cref{fig:size_vs_bw}. Of course caching effects are extremely sensitive to the data access pattern and thus the values presented here only provide simple upper bounds for the \acrshort{SymmSpMV} kernel with its potentially strong irregular data access. 
 
 \subsection{External Tools and Software}
 The \LIKWID \cite{LIKWID} tool suite in version 4.3.2 was used, specifically
 \likwidPerfctr for counting hardware events 
  and measuring derived metrics,  and
- \likwidBench for bandwidth benchmarks (see \cref{tab:test_bed}).
+ \likwidBench for bandwidth benchmarks (see \Cref{tab:test_bed}).
  For \acrshort{MC} we used the \COLPACK \cite{COLPACK} library
  for coloring and \METIS \cite{METIS} version 5.1.0 for graph partitioning
  with the \acrshort{ABMC} method. The \SPMP \cite{SpMP} library was employed for
@@ -81,7 +81,7 @@ The \LIKWID \cite{LIKWID} tool suite in version 4.3.2 was used, specifically
  for some reference computations and comparisons.
 %\begin{description}
 %	%TODO
-%	\item[\LIKWID 4.3.2] \cite{LIKWID}  \likwidPerfctr was used for counting hardware events and measuring derived metrics. The bandwidths shown in \cref{tab:test_bed} were taken by the  \likwidBench tool.
+%	\item[\LIKWID 4.3.2] \cite{LIKWID}  \likwidPerfctr was used for counting hardware events and measuring derived metrics. The bandwidths shown in \Cref{tab:test_bed} were taken by the  \likwidBench tool.
 %	\item[\COLPACK] \cite{COLPACK} was used for pre-processing matrices via \acrshort{MC}.
 %	\item[\SPMP] \cite{SpMP} was used to perform \acrshort{RCM}.
 %	\item[\METIS 5.1.0] \cite{METIS} was used for graph partitioning in \acrshort{ABMC}.
@@ -95,26 +95,25 @@ All code was compiled with the Intel compiler in version 19.0.2 and the followin
 Most test matrices were taken from the Suite\-Sparse Matrix Collection (formerly University of Florida Sparse Matrix Collection)~\cite{UOF} combining sets from two related papers \cite{RSB,park_ls}, which allows the reader to make a straightforward comparison of results.  We also added some matrices from quantum physics applications, which originate from the particular project context in which RACE was developed~\cite{ESSEX}. All the matrices considered are real, although our underlying software would also support complex matrices.
 %The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by  Matrices from \ESSEX project are some of the matrices that are of interest in the iterative FEAST eigen value solver that internally uses Kaczmarz solver.
 As mentioned before we restrict ourselves to matrices representing fully connected undirected graphs.
-\cref{table:bench_matrices} gives an overview of the most important matrix properties like \acrfull{nrows}, \acrfull{nnz}, \acrfull{NNZR}, along with the bandwidth of the matrix without ($bw$) and with ($bw_{RCM}$) \acrshort{RCM} preprocessing. 
+\Cref{table:bench_matrices} gives an overview of the most important matrix properties like \acrfull{nrows}, \acrfull{nnz}, \acrfull{NNZR}, along with the bandwidth of the matrix without ($bw$) and with ($bw_{RCM}$) \acrshort{RCM} preprocessing. 
 
-Due to the extended cache size as seen in \cref{fig:size_vs_bw} it
+Due to the extended cache size as seen in \Cref{fig:size_vs_bw} it
 might happen that some of the matrices attain higher effective
 bandwidths due to partial/full caching, especially on \SKX. The ten potential candidates
 for the \SKX chip in terms of symmetric and full storage ($< 128$ \MB)
-are marked with an asterisk in \cref{table:bench_matrices}, while only
+are marked with an asterisk in \Cref{table:bench_matrices}, while only
 two among these (\texttt{offshore} and \texttt{parabolic\_fem}) 
 satisfy the criteria for \IVB ($< 40$ \MB). The corresponding data set
 size for storing the upper triangular part of these matrices have been
-labeled in \cref{fig:size_vs_bw}.
+labeled in \Cref{fig:size_vs_bw}.
 
-\begin{table}[tbp]
+\begin{table}[t]
 	\centering
 %	\footnotesize
-	\tbl{Details of the benchmark matrices. \acrshort{nrows} is the number of matrix rows and \acrshort{nnz} is the number of nonzeros. $\acrshort{NNZR}=\acrshort{nnz}/\acrshort{nrows}$ is the average number of nonzeros per row. $bw$ and $bw_{RCM}$ refer to the matrix bandwidth without and with \acrshort{RCM} preprocessing. The letter ``C" in the parentheses of the matrix name indicates a corner case matrix that will be discussed in detail, while the letter ``Q" marks a matrix from quantum physics that is not part of the SuiteSparse Matrix Collection. With an asterisk (*) we have labeled all the matrices which are less than 128 \MB, which could potentially lead to some caching effects especially on the \SKX architecture. \label{tab:test_mtx}
-	\label{table:bench_matrices}}{
-%	\begin{center}
-		\input{pics/matrices/table.tex}}
-%	\end{center}}
+	\caption{Details of the benchmark matrices. \acrshort{nrows} is the number of matrix rows and \acrshort{nnz} is the number of nonzeros. $\acrshort{NNZR}=\acrshort{nnz}/\acrshort{nrows}$ is the average number of nonzeros per row. $bw$ and $bw_{RCM}$ refer to the matrix bandwidth without and with \acrshort{RCM} preprocessing. The letter ``C" in the parentheses of the matrix name indicates a corner case matrix that will be discussed in detail, while the letter ``Q" marks a matrix from quantum physics that is not part of the SuiteSparse Matrix Collection. With an asterisk (*) we have labeled all the matrices which are less than 128 \MB, which could potentially lead to some caching effects especially on the \SKX architecture. \label{tab:test_mtx}	\label{table:bench_matrices}}
+	\begin{center}
+		\input{pics/matrices/table.tex}
+	\end{center}
 \end{table}
 
 %\begin{table}[ht]
