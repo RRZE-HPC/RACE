@@ -231,7 +231,7 @@ and the Swiss National Science Foundation (SNF)  under the project ``Dual-Phase 
 
 
 % History dates
-\received{XXXX}{XXXX}{XXXX}
+%\received{XXXX}{XXXX}{XXXX}
 
 % % Electronic Appendix
 % \elecappendix
@@ -348,6 +348,14 @@ Our method has been implemented and consolidated into a library named \acrshort{
 		\STATE {$fail$=false}
 		\STATE {shift($T\_ptr,currRank,giveIdx$)}
 		\ENDIF
+		\algstore{lbAlg}
+	\end{algorithmic}
+\end{algorithm} 
+
+
+\begin{algorithm}
+	\begin{algorithmic}	
+		\algrestore{lbAlg}
 		\IF{!$fail$}
 		\STATE {$newVar$ = calculate\_variance($T\_ptr$) \textcolor{gray}{\% as seen in \textcolor{darkgray}{Line 17} to \textcolor{darkgray}{Line 23}}}
 		\ENDIF
@@ -361,6 +369,7 @@ Our method has been implemented and consolidated into a library named \acrshort{
 		\ENDWHILE
 	\end{algorithmic}
 \end{algorithm} 
+
 %\lipsum[71]
 
 \end{document}
