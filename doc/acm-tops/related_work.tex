@@ -6,7 +6,7 @@ of many scientific algorithms.
 In the past decades, much research has been
 focusing on designing new data structures, efficient algorithms, and
 parallelization  techniques for this sparse basic linear algebra
-subprogram.  \acrshort{SpMV} is a bandwidth-limited operation and, on
+subprogram.  \acrshort{SpMV} is typically a main memory bandwidth limited operation and, on
 cache-based architectures, the main factors that influence performance
 are spatial locality in accessing the matrix, and temporal locality in
 reusing the elements of the vector. To address this problem, over the
@@ -49,13 +49,16 @@ in~\cite{li2017hbm,Liu:2015:CES:2751205.2751209,liu2015spmv}.
 
 %\cite{Buluc:2011:RMA:2058524.2059503
 
-Despite \acrshort{SpMV} being a bandwidth-limited operation there has
-been not much work in the direction of optimizing storage and data transfer 
-of symmetric matrices by using the \acrfull{SymmSpMV} operation. This
+Despite \acrshort{SpMV} being a bandwidth-limited operation not much work has 
+been done to exploit the symmetry property of symmetric matrices and hence optimize
+storage and data transfers by using the \acrfull{SymmSpMV} operation.
+% and hence  optimizing storage and data transfer of symmetric matrices .
+This
 is mainly due to the dependency problems that arise with the parallelization of the 
 \acrshort{SymmSpMV} operation. General solutions for \acrshort{SymmSpMV} are 
 lock based methods and thread private target
-arrays~\cite{sparseX,thread_private_symm_spmv,Krotkiewski:2010:PSS:1752612.1752682}.
+arrays~\cite{sparseX,thread_private_symm_spmv,Krotkiewski:2010:PSS:1752612.1752682},
+which may potentially increase overhead with the level of parallelism.
 Recent researches in this direction include specialized storage formats 
 like CSB \cite{CSB}, RSB \cite{RSB}, CSX \cite{sparseX} combined with the use of bitmasked 
 register blocking techniques as in \cite{Buluc:2011:RMA:2058524.2059503}. As pointed out 
@@ -66,14 +69,14 @@ bring new problems like backward compatibility and conversion costs.
 \Acrfull{MC}
 reordering is a promising alternative in this perspective, as with this approach 
 typically we are not bound to a specific data structure and most of the
-other optimization strategies is orthogonal to the method. The \acrshort{MC} approach
+other optimization strategies are orthogonal to the method. The \acrshort{MC} approach
 is widely used in iterative solvers like Gauss-Seidel, incomplete 
 Cholesky factorization, Kaczmarz method~\cite{RBGS,MC,feast_mc} and so on,
  however there has been no work in this direction for \acrshort{SymmSpMV} 
  operations to our knowledge.
 The \acrshort{MC} method is sometimes not efficient on modern cache-based
 processors, there have been studies carried on to increase the
-efficiency of \acrfull{MC} and
+efficiency of \acrshort{MC} and
 improving the heuristics; an overview of the methods can be found
 in~\cite{dist_k_def,COLPACK,equitable_color}. However, 
 for irregular and/or large sparse 

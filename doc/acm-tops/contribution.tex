@@ -3,6 +3,18 @@
 % supplement. If no supplement is required, then this information can
 % be included directly in the main document.
 
+\begin{itemize}
+	\item Problems with coloring approaches on SymmSpMV
+	\item Performance modeling and analysis
+	\item high alpha pre-factor - preserving data locality more important
+	\item Things to take care on modern CPU's like SKX and caching
+	\item Problems for large matrices and coloring
+	\item RACE method - h/w efficient 
+	\item General approach for D-k coloring
+	\item Study on different corner cases like cache bound, low parallelism, memory bound, mixed effects 
+	\item Problems for some special cases like low nnzr
+	\item Comparisons with MKL and coloring approaches
+\end{itemize}
 We have implemented our graph coloring algorithms in the open source library \acrfull{RACE}\footnote{\href{https://bitbucket.org/christiealappatt/race}{https://bitbucket.org/christiealappatt/race \CAcomm{May be tinyurl is better???}}} and discuss the impact on a representative set of 31 sparse matrices. Most of the above coloring approaches explained above in \Cref{Sec:related_work} suffer from performance penalties in one way or the other; for example \acrshort{MC}, degrades the data locality, although this can be improved considerably using \acrshort{ABMC}, still for moderately large matrices or with the increase in $k$ of \DK dependency the method shows deterioration in performance. 
 These coloring algorithms and related software frameworks do no take advantage of both load balancing as well as the existing deep memory hierarchy and the characteristics of today's compute nodes to achieve improved node-level performance at full scale.
 
