@@ -57,57 +57,60 @@ in~\cite{li2017hbm,Liu:2015:CES:2751205.2751209,liu2015spmv}.
 %\cite{Buluc:2011:RMA:2058524.2059503
 
 Despite \acrshort{SpMV} being a bandwidth-limited operation not much work has 
-been done to exploit the symmetry property of symmetric matrices and hence optimize
-storage and data transfers by using the \acrfull{SymmSpMV} operation.
+been done to exploit the symmetry property of symmetric matrices to reduce
+storage requirements and data transfers by using only the upper/lower triangular part the matrix.
 % and hence  optimizing storage and data transfer of symmetric matrices .
-This
-is mainly due to the dependency problems that arise with the parallelization of the 
-\acrshort{SymmSpMV} operation. General solutions for \acrshort{SymmSpMV} are 
+The major challenge here is to resolve the potential write conflicts of explicit \acrshort{SymmSpMV} kernels in parallel processing.
+%is mainly due to the dependency problems that arise with the parallelization of the  \acrshort{SymmSpMV} operation. 
+There are general solutions for such problems like 
 lock based methods and thread private target
-arrays~\cite{sparseX,thread_private_symm_spmv,Krotkiewski:2010:PSS:1752612.1752682},
-which may potentially increase overhead with the level of parallelism.
-Recent researches in this direction include specialized storage formats 
+arrays~\cite{sparseX,thread_private_symm_spmv,Krotkiewski:2010:PSS:1752612.1752682}. However they have in common that their overhead may increase with degree of parallelism.
+%which may potentially increase overhead with the level of parallelism.
+Another recent research direction is the use of specialized storage formats 
 like CSB \cite{CSB}, RSB \cite{RSB}, CSX \cite{sparseX} combined with the use of bitmasked 
 register blocking techniques as in \cite{Buluc:2011:RMA:2058524.2059503}. As pointed out 
-by \cite{liu2015spmv} the use of specialized storage formats  might however
-bring new problems like backward compatibility and conversion costs. 
+by \cite{liu2015spmv} this approach has severe drawbacks like missing backward compatibility or frequent conversion costs.  
+Resolving the inherent data dependency in the \acrshort{SymmSpMV} kernel using a \DTWO coloring of the underlying undirected graph is another potential way of tackling the problem which has not been investigated so far to the best of our knowledge.
 
 \begin{itemize}
 	\item Another point in favor of coloring is most of the above approaches would work only for \acrshort{SymmSpMV} kernels and are not suitable for D-2 solvers like KACZ.
 \end{itemize}
-\Acrfull{MC}
-reordering is a promising alternative in this perspective, as with this approach 
-typically we are not bound to a specific data structure and most of the
-other optimization strategies are orthogonal to the method. The \acrshort{MC} approach
-is widely used in iterative solvers like Gauss-Seidel, incomplete 
-Cholesky factorization, Kaczmarz method~\cite{RBGS,MC,feast_mc} and so on,
- however there has been no work in this direction for \acrshort{SymmSpMV} 
- operations to our knowledge.
-The \acrshort{MC} method is sometimes not efficient on modern cache-based
-processors, there have been studies carried on to increase the
-efficiency of \acrshort{MC} and
-improving the heuristics; an overview of the methods can be found
+
+\Acrfull{MC} reordering to tackle data dependencies is a very well established strategy in parallelization of iterative solvers. As it is applied to the underlying graph it is not bound to a specific data format and may use existing highly optimized (serial) kernels, i.e. it is orthogonal to general code optimization strategies.  
+Prominent examples for  \acrshort{MC} in iterative solvers are Gauss-Seidel, incomplete 
+Cholesky factorization, Kaczmarz method~\cite{RBGS,MC,feast_mc} where typically a \DONE or \DTWO coloring is applied subject to the underlying dependencies of the iterative scheme. However, coloring changes the evaluation order of the original solver and may lead to worse convergence rates. This is different in the context of \acrshort{SymmSpMV} where we only need to ensure that a single entry of the target vector is not written in parallel and do not otherwise require strict serial ordering to get to the same result. 
+In terms of hardware efficiency long-standing \acrshort{MC} methods often generate colorings which lack efficiency on modern cache-based
+processors. Studies have been done to increase their
+efficiency and improve inherent heuristics; an overview of the methods can be found
 in~\cite{dist_k_def,COLPACK,equitable_color}. However, 
 for irregular and/or large sparse 
-matrices this method may lead to load imbalance, frequent global synchronization, 
-and loss of data locality, which will reduce the single-node performance. 
-These problems typically become more severe for higher order distance
+matrices \acrshort{MC} may lead to load imbalance, frequent global synchronization, 
+and loss of data locality, severely reducing (single-node) performance. 
+These problems typically become more stringent for higher order distance
 colorings and larger matrices.
 One of the most
 successful and effective methods in this regard is
-the \acrfull{ABMC}~\cite{ABMC} proposed by Iwashita \etal in 2012. In
-many applications it is important to compute a coloring with few
+the \acrfull{ABMC}~\cite{ABMC} proposed by Iwashita \etal in 2012, which tries to increase data locality by applying graph partitioning (blocking) before coloring. 
+Widely used and public available coloring packages such as COLPACK and ZOLTAN also aim to speed-up the coloring process by parallelization and other heuristics. 
+
+{\GW Olaf please check: Beziehen sich diese beiden Saetze un Referenzen auf den COloring Prozess? Falls ja - benoetigen wir diese? Dazu sagen wir ja gar nichts}
+In many applications it is important to compute a coloring with few
 colors in near-linear time~\cite{doi:10.1137/13093426X}.
- In parallel coloring methods, the optimistic (speculative) coloring method by Gebremedhin
+In parallel coloring methods, the optimistic (speculative) coloring method by Gebremedhin
 and Manne~\cite{gebremedhin2000scalable} is the preferred
-approach~\cite{Boman:2016}.  Until recently, only a few of these
+approach~\cite{Boman:2016}.  
+{\GW Olaf please check: Der folgende Satz steht meiner Meinung nach im Widerspruch zu unserer Aussage, dass noch niemand Coloring fuer Parallelisierung von SymmSpMV gemacht hat - siehe oben. Oder hast du da andere Informationen.}
+Until recently, only a few of these
 coloring and partitioning technique concepts made it into mainstream
 software, but the increasingly stringent performance requirements for
 fast \acrshort{SymmSpMV} multiplication have resulted in a number of recent
 implementations that have adopted these concepts, namely,
+{\GW Olaf please check: Meinst du dass MKL und KOKKOS primitives fuers Coloring oder fuer SymSpMV haben? Lt Christie hat MKL SymmSpMV Routinen aber KOKKOS nicht und beim Coloring ist es genau anders rum.}
 the \acrshort{MKL} library~\cite{MKL} and node-level programming and
 performance primitives from the Trilinos' Kokkos node
-package~\cite{kokkos}. A distributed memory coloring framework for
+package~\cite{kokkos}. 
+{\GW Olaf please check: Ist es OK wenn wir die folgenden Saetze mit dem letzten Satz des vorherigen Abschnittes abhandeln?}
+A distributed memory coloring framework for
 distance-1~\cite{BOZDAG2008515} and
 distance-2~\cite{doi:10.1137/080732158} coloring have been implemented
 in Zoltan. The framework provides efficient implementation for greedy
@@ -115,6 +118,7 @@ graph coloring algorithms and it provides parallel dynamic load
 balancing and related services for a wide variety of applications,
 including finite-element methods and matrix operations.  
 %
+{\GW Olaf please check: Das wuerde ich allgemeiner formulieren: Tebdenz: Mehr Threads; hoehere Bandbreite aber auch uU kleinere Memories (HBM etc) --> explizite hw-effiziente SymmSPMV kernels inreasingly important.}
 However, it has been very clear, for some time, that in order to provide better
 support of \acrshort{SymmSpMV} running on the next generation of
 computing platforms, fundamental problems related to model
@@ -127,6 +131,7 @@ realities of the underlying hardware constraints.
 \CAcomm{Currently I have not included Cheshmi~\etal~\cite{Cheshmi:2018:PIT:3291656.3291739}  as it 
 	does not fit to the text.}
 
+{\GW Olaf please check: Das ist eine Zusammenfassung der Methode - die passt nicht in Einleitung/Related Work; bestenfalls in die Contributions.}
 In this paper we present a novel recursive algebraic coloring approach solving general distance-$k$ dependencies and demonstrate that it has more parallelism and bandwith performance. It is motivated by the shortcomings of existing \acrshort{MC} methods in terms of hardware efficiency and parallelization overhead. Our method addresses matrices that can be represented by an undirected graph. In a first step we do a \acrlong{BFS} preprocessing for bandwidth reduction of the graph, which aims to increase data locality for the underlying sparse matrix problems: Starting from a root vertex we construct level-set by using the \acrshort{BFS} algorithm \ie \level $i$ consists of all nodes having distance $i$ to the root vertex. We then permute the graph such that vertex numbering increases with distance from the root vertex. Coloring the resulting \levels would be a naive approach to generate a \DK coloring but would for, obvious reasons (\eg \level 0 contains only one vertex), often lead to severe load imbalance. Thus we perform in a second step $level$ $aggregation$ of neighboring \levels, which aims at conserving data locality. The choice of the size of each \levelGroup is subject to two major constraints: First, for a \DK coloring of the original graph/problem at least $k$ \levels are aggregated into a \levelGroup. This means that alternate \levelGroups can be executed in parallel which is equivalent to a \DONE coloring of the \levelGroups. Second, we apply a criterion for load balancing that considers the total amount of hardware threads to be used at execution time and tries to balance workload across these threads evenly. At this stage it might happen that most of the vertices end up in a few \levelGroups. Therefore, depending on the size of the \levelGroups, a different number of threads will be assigned to each of them. \Inorder to further parallelize within this \levelGroup for assigned threads the entire procedure is recursively repeated on their corresponding \subgraphs subject to the \DK constraint. The aggregation step is controlled by a single external parameter which influences the load imbalance introduced by forming each \levelGroup. Due to the recursive nature of this algorithm, nested parallelism is required. However, only local synchronization is required between the threads assigned to the same \subgraph.
 
 

@@ -4,6 +4,12 @@
 % be included directly in the main document.
 
 \begin{itemize}
+\item We present a recursive algebraic coloring scheme (RACE) which generates hardware efficient \DK colorings of undirected graphs. Special emphasis is put on achieving data locality and load balancing for shared memory parallelization.
+\item We propose shared memory parallelization of \acrshort{SymmSpMV}  using a \DTWO coloring of the underlying undirected graph to avoid write conflicts and apply RACE for generating the colorings.
+\item We provide a comprehensive performance study of shared memory parallel \acrshort{SymmSpMV} using RACE and compare with existing coloring methods as well as with vendor optimized library (Intel MKL), which may implement different parallelization approaches.
+\item To validate the high quality of our implementation we further extend existing performance \acrshort{SpMV} modelling approaches to the \acrshort{SymmSpMV} kernel. Together with a single core performance analysis we also demonstrate that for specific classes of matrices  \acrshort{SymmSpMV}  single core as well as chip level performance may be negatively impacted by SIMD vectorization.
+\item  Sustainability of our approach is demonstrated by using two very differenet generation of Intel Xeon processors (IVB and SKX)
+\item --- Christie ---
 	\item Problems with coloring approaches on SymmSpMV
 	\item Performance modeling and analysis
 	\item high alpha pre-factor - preserving data locality more important
