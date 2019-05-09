@@ -42,6 +42,13 @@ in~\cite{li2017hbm,Liu:2015:CES:2751205.2751209,liu2015spmv}.
  resulting matrix induces cache-friendly behavior during the
  \acrshort{SpMV}.
 
+\begin{itemize}
+	\item More linking from \acrshort{SpMV} to \acrshort{SymmSpMV}
+	\item Many have concentrated on general \acrshort{SpMV}, with methods exploiting
+	 structure in matrix like blocking, tuning and using tailored data storage formats and so on.
+	 \item Performance modeling of general \acrshort{SpMV} is extensively carried out,
+	 but there is no such work on \acrshort{SymmSpMV}.
+\end{itemize}
 %More recently Cheshmi~\etal~\cite{Cheshmi:2018:PIT:3291656.3291739} used e.g. a
 %novel task coarsening strategy to create well-balanced tasks that can
 %execute in parallel, while maintaining locality of memory accesses. 
@@ -65,7 +72,9 @@ register blocking techniques as in \cite{Buluc:2011:RMA:2058524.2059503}. As poi
 by \cite{liu2015spmv} the use of specialized storage formats  might however
 bring new problems like backward compatibility and conversion costs. 
 
-
+\begin{itemize}
+	\item Another point in favor of coloring is most of the above approaches would work only for \acrshort{SymmSpMV} kernels and are not suitable for D-2 solvers like KACZ.
+\end{itemize}
 \Acrfull{MC}
 reordering is a promising alternative in this perspective, as with this approach 
 typically we are not bound to a specific data structure and most of the
