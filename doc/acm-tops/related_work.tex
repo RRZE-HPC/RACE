@@ -64,7 +64,7 @@ The major challenge here is to resolve the potential write conflicts of explicit
 %is mainly due to the dependency problems that arise with the parallelization of the  \acrshort{SymmSpMV} operation. 
 There are general solutions for such problems like 
 lock based methods and thread private target
-arrays~\cite{sparseX,thread_private_symm_spmv,Krotkiewski:2010:PSS:1752612.1752682}. However they have in common that their overhead may increase with degree of parallelism.
+arrays~\cite{sparseX,thread_private_symm_spmv,Krotkiewski:2010:PSS:1752612.1752682,Mironowicz:2015}. However they have in common that their overhead may increase with degree of parallelism.
 %which may potentially increase overhead with the level of parallelism.
 Another recent research direction is the use of specialized storage formats 
 like CSB \cite{CSB}, RSB \cite{RSB}, CSX \cite{sparseX} combined with the use of bitmasked 
@@ -91,7 +91,7 @@ colorings and larger matrices.
 One of the most
 successful and effective methods in this regard is
 the \acrfull{ABMC}~\cite{ABMC} proposed by Iwashita \etal in 2012, which tries to increase data locality by applying graph partitioning (blocking) before coloring. 
-Widely used and public available coloring packages such as COLPACK and ZOLTAN also aim to speed-up the coloring process by parallelization and other heuristics. 
+Widely used and public available coloring packages such as COLPACK\cite{COLPACK} and ZOLTAN\cite{BOZDAG2008515,doi:10.1137/080732158} also aim to speed-up the coloring process by parallelization and other heuristics. 
 
 {\GW Olaf please check: Beziehen sich diese beiden Saetze un Referenzen auf den COloring Prozess? Falls ja - benoetigen wir diese? Dazu sagen wir ja gar nichts}
 In many applications it is important to compute a coloring with few
