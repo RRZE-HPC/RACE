@@ -1,18 +1,17 @@
 {\GW Versuch einiger einleitender Worte um die beiden Themen kurz in Kontext zu setzen}
-The efficient solution of linear systems or eigenvalue problems involving large sparse matrices has been an active research field in parallel and high performance computing for many decades. Well-known, traditional application areas include quantum physics, quantum chemistry or engineering. In recent years new fields such as social graph analysis or unsupervised machine learning have further increased the need for hardware-efficient, parallel sparse solvers. Assuming sufficiently large problems, the solvers are typically based on iterative subspace method and may include advanced preconditioning techniques. In many methods two components,  \Acrfull{SpMV}  and coloring techniques, are among the most crucial parts for hardware efficiency and parallel scalability. Typically, these two components are considered to be orthogonal, i.e. hardware efficiency for \Acrshort{SpMV} is mainly related to data formats and local structures while coloring is used to address dependencies in the enclosing iteration scheme.  Interestingly, the hardware efficient parallelization of symmetric \Acrshort{SpMV} has not attracted a lot of attention over the years, though symmetry is widespread in the application fields. 
+The efficient solution of linear systems or eigenvalue problems involving large sparse matrices has been an active research field in parallel and high performance computing for many decades. Well-known, traditional application areas include quantum physics, quantum chemistry or engineering. In recent years new fields such as social graph analysis or spectral clustering in the context of learning algorithms ({\GW Olaf kannst du zu den beiden Themas was ergaenzen? Oder soll das raus?} have further increased the need for hardware-efficient, parallel sparse solvers. Assuming sufficiently large problems, the solvers are typically based on iterative subspace method and may include advanced preconditioning techniques. In many methods two components,  \acrfull{SpMV}  and coloring techniques, are among the most crucial parts for hardware efficiency and parallel scalability. Typically, these two components are considered to be orthogonal, i.e. hardware efficiency for \Acrshort{SpMV} is mainly related to data formats and local structures while coloring is used to address dependencies in the enclosing iteration scheme.  Interestingly, the hardware efficient parallelization of symmetric \Acrshort{SpMV} has not attracted a lot of attention over the years, though symmetry is widespread in the application fields. 
 
-The \Acrshort{SpMV} operation  is an essential building block 
+The \Acrshort{SpMV} operation is an essential building block 
 in a number of applications such as algebraic multigrid methods, 
 sparse iterative solvers, shortest path algorithms, breadth first search algorithms, 
 and Markov cluster algorithms and therefore it is an integral part 
-of many scientific algorithms.
+of numerous scientific algorithms.
 In the past decades, much research has been
 focusing on designing new data structures, efficient algorithms, and
-parallelization  techniques for this sparse basic linear algebra
-subprogram.  \acrshort{SpMV} is typically a main memory bandwidth limited operation and, on
-cache-based architectures, the main factors that influence performance
-are spatial locality in accessing the matrix, and temporal locality in
-reusing the elements of the vector. To address this problem, over the
+parallelization  techniques for the \acrshort{SpMV} operation. It's performance is typically limited by main memory bandwidth and, on
+cache-based architectures, main factors that influence performance
+are spatial locality in accessing the matrix data, and temporal locality in
+reusing the elements of the involved vectors. To address this problem, over the
 last two decades a plethora of  partitioning techniques
 and data structures to improve \acrshort{SpMV} multiplication on cache-based
 architectures have been suggested including %greedy graph coloring techniques, 
@@ -45,13 +44,13 @@ in~\cite{li2017hbm,Liu:2015:CES:2751205.2751209,liu2015spmv}.
  resulting matrix induces cache-friendly behavior during the
  \acrshort{SpMV}.
 
-\begin{itemize}
-	\item More linking from \acrshort{SpMV} to \acrshort{SymmSpMV}
-	\item Many have concentrated on general \acrshort{SpMV}, with methods exploiting
-	 structure in matrix like blocking, tuning and using tailored data storage formats and so on.
-	 \item Performance modeling of general \acrshort{SpMV} is extensively carried out,
-	 but there is no such work on \acrshort{SymmSpMV}.
-\end{itemize}
+%\begin{itemize}
+%	\item More linking from \acrshort{SpMV} to \acrshort{SymmSpMV}
+%	\item Many have concentrated on general \acrshort{SpMV}, with methods exploiting
+%	 structure in matrix like blocking, tuning and using tailored data storage formats and so on.
+%	 \item Performance modeling of general \acrshort{SpMV} is extensively carried out,
+%	 but there is no such work on \acrshort{SymmSpMV}.
+%\end{itemize}
 %More recently Cheshmi~\etal~\cite{Cheshmi:2018:PIT:3291656.3291739} used e.g. a
 %novel task coarsening strategy to create well-balanced tasks that can
 %execute in parallel, while maintaining locality of memory accesses. 
@@ -75,13 +74,13 @@ register blocking techniques as in \cite{Buluc:2011:RMA:2058524.2059503}. As poi
 by \cite{liu2015spmv} this approach has severe drawbacks like missing backward compatibility or frequent conversion costs.  
 Resolving the inherent data dependency in the \acrshort{SymmSpMV} kernel using a \DTWO coloring of the underlying undirected graph is another potential way of tackling the problem which has not been investigated so far to the best of our knowledge.
 
-\begin{itemize}
-	\item Another point in favor of coloring is most of the above approaches would work only for \acrshort{SymmSpMV} kernels and are not suitable for D-2 solvers like KACZ.
-\end{itemize}
+%\begin{itemize} % Das ist was fuer COnclusion and Outlook
+%	\item Another point in favor of coloring is most of the above approaches would work only for \acrshort{SymmSpMV} kernels and are not suitable for D-2 solvers like KACZ.
+%\end{itemize}
 
 \Acrfull{MC} reordering to tackle data dependencies is a very well established strategy in parallelization of iterative solvers. As it is applied to the underlying graph it is not bound to a specific data format and may use existing highly optimized (serial) kernels, i.e. it is orthogonal to general code optimization strategies.  
 Prominent examples for  \acrshort{MC} in iterative solvers are Gauss-Seidel, incomplete 
-Cholesky factorization, Kaczmarz method~\cite{RBGS,MC,feast_mc} where typically a \DONE or \DTWO coloring is applied subject to the underlying dependencies of the iterative scheme. However, coloring changes the evaluation order of the original solver and may lead to worse convergence rates. This is different in the context of \acrshort{SymmSpMV} where we only need to ensure that a single entry of the target vector is not written in parallel and do not otherwise require strict serial ordering to get to the same result. 
+Cholesky factorization or Kaczmarz method~\cite{RBGS,MC,feast_mc} where typically a \DONE or \DTWO coloring is applied subject to the underlying dependencies of the iterative scheme. However, coloring changes the evaluation order of the original solver and may lead to worse convergence rates. This is different when using  \acrshort{MC} methods for parallelization of \acrshort{SymmSpMV} where we only need to ensure that a single entry of the target vector is not written in parallel. Beyond that we do not  require strict serial ordering to get to the same result as in serial processing.
 In terms of hardware efficiency long-standing \acrshort{MC} methods often generate colorings which lack efficiency on modern cache-based
 processors. Studies have been done to increase their
 efficiency and improve inherent heuristics; an overview of the methods can be found
@@ -133,6 +132,10 @@ realities of the underlying hardware constraints.
 
 \CAcomm{Currently I have not included Cheshmi~\etal~\cite{Cheshmi:2018:PIT:3291656.3291739}  as it 
 	does not fit to the text.}
+	
+Design and implementation of hardware efficient computational kernels can be supported by a structured performance engineering process based on white box models. On the processor/node level the most prominent model is roofline model. It's basic applicability as a reasonable light-speed estimate for \acrshort{SpMV} has been early demonstrated by~\cite{Gropp:1999}, including already an extension to sparse matrix multiple vector multiplication. This approach has been refined by~\cite{Moritz_sell} which focused on modelling the performance impact of the irregular access to the right hand side vector {\GW Christie please check RHS abbrev. - is there an acronym for that?}. This approach has been successfully used to model performance on CPU and GPGPU for \acrshort{SpMV} kernels ~\cite{Moritz_sell} or augmented sparse matrix multiple vector kernels for Chebyshev filter diagonalization~\cite{ISC2018:ChebFD}. However, there is no extension towards explicit \acrshort{SymmSpMV} kernels, which have increased intensities and irregular accesses to both vectors involved. Typically the expectation is that \acrshort{SymmSpMV} is approximately twice as fast as \acrshort{SpMV} as only half of the matrix information needs to be accessed. 
+
+
 
 {\GW Olaf please check: Das ist eine Zusammenfassung der Methode - die passt nicht in Einleitung/Related Work; bestenfalls in die Contributions.}
 In this paper we present a novel recursive algebraic coloring approach solving general distance-$k$ dependencies and demonstrate that it has more parallelism and bandwith performance. It is motivated by the shortcomings of existing \acrshort{MC} methods in terms of hardware efficiency and parallelization overhead. Our method addresses matrices that can be represented by an undirected graph. In a first step we do a \acrlong{BFS} preprocessing for bandwidth reduction of the graph, which aims to increase data locality for the underlying sparse matrix problems: Starting from a root vertex we construct level-set by using the \acrshort{BFS} algorithm \ie \level $i$ consists of all nodes having distance $i$ to the root vertex. We then permute the graph such that vertex numbering increases with distance from the root vertex. Coloring the resulting \levels would be a naive approach to generate a \DK coloring but would for, obvious reasons (\eg \level 0 contains only one vertex), often lead to severe load imbalance. Thus we perform in a second step $level$ $aggregation$ of neighboring \levels, which aims at conserving data locality. The choice of the size of each \levelGroup is subject to two major constraints: First, for a \DK coloring of the original graph/problem at least $k$ \levels are aggregated into a \levelGroup. This means that alternate \levelGroups can be executed in parallel which is equivalent to a \DONE coloring of the \levelGroups. Second, we apply a criterion for load balancing that considers the total amount of hardware threads to be used at execution time and tries to balance workload across these threads evenly. At this stage it might happen that most of the vertices end up in a few \levelGroups. Therefore, depending on the size of the \levelGroups, a different number of threads will be assigned to each of them. \Inorder to further parallelize within this \levelGroup for assigned threads the entire procedure is recursively repeated on their corresponding \subgraphs subject to the \DK constraint. The aggregation step is controlled by a single external parameter which influences the load imbalance introduced by forming each \levelGroup. Due to the recursive nature of this algorithm, nested parallelism is required. However, only local synchronization is required between the threads assigned to the same \subgraph.

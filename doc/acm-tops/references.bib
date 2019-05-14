@@ -1021,4 +1021,25 @@ doi = {10.1137/14097135X},
 url = {https://dx.doi.org/10.1137/14097135X},
 }
 
+@InProceedings{ISC2018:ChebFD,
+author="Kreutzer, Moritz
+and Ernst, Dominik
+and Bishop, Alan R.
+and Fehske, Holger
+and Hager, Georg
+and Nakajima, Kengo
+and Wellein, Gerhard",
+editor="Yokota, Rio
+and Weiland, Mich{\`e}le
+and Keyes, David
+and Trinitis, Carsten",
+title="Chebyshev Filter Diagonalization on Modern Manycore Processors and GPGPUs",
+booktitle="High Performance Computing",
+year="2018",
+publisher="Springer International Publishing",
+address="Cham",
+pages="329--349",
+abstract="Chebyshev filter diagonalization is well established in quantum chemistry and quantum physics to compute bulks of eigenvalues of large sparse matrices. Choosing a block vector implementation, we investigate optimization opportunities on the new class of high-performance compute devices featuring both high-bandwidth and low-bandwidth memory. We focus on the transparent access to the full address space supported by both architectures under consideration: Intel Xeon Phi ``Knights Landing'' and Nvidia ``Pascal''/``Volta.'' After a thorough performance analysis of the single-device implementations using the roofline model we propose two optimizations: (1) Subspace blocking is applied for improved performance and data access efficiency. We also show that it allows transparently handling problems much larger than the high-bandwidth memory without significant performance penalties. (2) Pipelining of communication and computation phases of successive subspaces is implemented to hide communication costs without extra memory traffic. As an application scenario we perform filter diagonalization studies for topological quantum matter. Performance numbers on upÂ to 2048 nodes of the Oakforest-PACS and Piz Daint supercomputers are presented, achieving beyond 500Â Tflop/s for computing {\$}{\$}10^2{\$}{\$}102inner eigenvalues of sparse matrices of dimension {\$}{\$}4{\backslash}cdot 10^9{\$}{\$}4{\textperiodcentered}109.",
+isbn="978-3-319-92040-5"
+}
 
