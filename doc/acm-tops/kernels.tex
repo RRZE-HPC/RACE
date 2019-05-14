@@ -38,7 +38,7 @@ using, \eg OpenMP, is straightforward.
 	    \STATE{$integer:: col[nnz], rowPtr[nrows+1], tmp$}
 		\FOR{$row=1:nrows$}
 			\STATE{$tmp=0$}
-			\FOR{$idx=rowPtr[row]:rowPtr[row+1]$}
+			\FOR{$idx=rowPtr[row]:(rowPtr[row+1]-1)$}
 				\STATE{$tmp += A[idx]*x[col[idx]]$} 
 			\ENDFOR
 			\STATE{$b[row] = tmp$}
@@ -160,7 +160,7 @@ entries in the LHS vector ($b[]$) as shown in~\Cref{alg:SymmSpMV}.
 		\STATE{$diag\_idx=rowPtr[row]$}
 		\STATE{$b[row] += A[diag\_idx]*x[row]$}
 			\STATE{$tmp = 0$}
-			\FOR{$idx=rowPtr[row]+1:rowPtr[row+1]$}
+			\FOR{$idx=(rowPtr[row]+1):(rowPtr[row+1]-1)$}
 				\STATE{$tmp += A[idx]*x[col[idx]]$}
 				\STATE{$b[col[idx]] += A[idx]*x[row]$} 
 			\ENDFOR
@@ -192,8 +192,8 @@ can assume that the $\alpha$ value measured for \acrshort{SpMV}
 ($\alpha_\mathrm{\acrshort{SpMV}}$) is a lower bound
 for \acrshort{SymmSpMV}. \CAcomm{\Cref{table:alpha_values} show the 
 thus assumed $\alpha_{\acrshort{SymmSpMV}}$ values taken for performance
-modeling.} Since an upper bound for performance is the
-product of computational intensity and the main memory bandwidth
+modeling.} Since an upper bound for the performance is the
+product of computational intensity and main memory bandwidth
 (see \Cref{eq:upper_performance}), this approach provides an upper
 performance bound for \acrshort{SymmSpMV}.  However, note that the
 performance models derived for matrices having caching effects

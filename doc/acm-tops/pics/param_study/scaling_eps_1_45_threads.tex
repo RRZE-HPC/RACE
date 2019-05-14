@@ -3,7 +3,7 @@
 \usepackage{pgfplots}
 \usetikzlibrary{matrix}
 
-\pgfplotsset{width=18cm,height=12cm,compat=1.3}
+\pgfplotsset{width=15cm,height=10cm,compat=1.3}
 
 \usepackage{filecontents}
 
@@ -35,7 +35,7 @@
 
 \newcommand{\folder}{data/threads_45}
 \begin{document}
-	\pgfplotsset{compat=1.5}
+	%\pgfplotsset{compat=1.3}
 	%\begin{figure}
 	
 	\centering
@@ -45,9 +45,9 @@
 	\def\ymin{0}
 	\def\ymax{30}
 	
-	\begin{axis}[ xlabel={\LARGE{$\epsilon_0$}}, ylabel={\LARGE{$\eta$}},
+	\begin{axis}[ xlabel={\Huge{$\epsilon_0$}}, ylabel={\Huge{$\eta$}},
 	y label style={at={(axis description cs:-0.07,.5)},rotate=0,anchor=south},
-	x label style={at={(axis description cs:0.5,-0.13)},rotate=0,anchor=south},
+	x label style={at={(axis description cs:0.5,-0.18)},rotate=0,anchor=south},
 	 ymode=linear, %ylabel shift =-0.25cm,
 	%xtick={1000, 2744, 5832, 10648, 17576, 27000, 39304, 54872, 74088},
 	%xticklabels={$10^3$, %$14^3$
@@ -60,7 +60,7 @@
 	ymin=0, ymax=1,
 %	title = {\LARGE{$\epsilon_1$ vs $\eta$ , matrix - \emph{inline\_1}, $n\_threads = 190$}},
 	legend style={legend pos=south west, font=\LARGE},
-	tick label style={font=\Large} 
+	tick label style={font=\LARGE} 
 	]
 	
 		%BEGIN_CODE%

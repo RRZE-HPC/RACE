@@ -1,7 +1,7 @@
 \subsection{Hardware test bed}
 We conducted all benchmarks on a single CPU socket from Intel's \IVB and  \SKX families, respectively, since these  represent the oldest and the latest Intel architectures in active use within the scientific community at the time of writing:
 \begin{itemize}
-\item The \Intel \IVB architecture belongs to the class of ``classic'' designs with three inclusive cache levels. While the L1 and L2 caches are private to each core, the L3 cache is shared but scalabale in terms of bandwidth. The processor supports the AVX instruction set extension, which is capable of 256-bit wide \SIMD execution.
+\item The \Intel \IVB architecture belongs to the class of ``classic'' designs with three inclusive cache levels. While the L1 and L2 caches are private to each core, the L3 cache is shared but scalable in terms of bandwidth. The processor supports the AVX instruction set extension, which is capable of 256-bit wide \SIMD execution.
 \item Contrary to its predecessors, the \Intel \SKX architecture has a shared but noninclusive victim L3 cache and much larger private L2 caches. The model we use in this work supports AVX-512, which features 512-bit wide \SIMD execution.
 %  \begin{comment}
 %  \item {\GW \AMD \EPY is based on AMD's Zen microarchitecture. The basic building block of the architecture consists of Core Complex (CCX) consisting of three cores (can extend upto four on high end models) each having it's own private L1 and L2 cache. The L3 cache is shared between a core complex and is non-inclusive victim cache. A single socket of \EPY consists of eight such CCX.}

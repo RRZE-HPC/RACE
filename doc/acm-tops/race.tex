@@ -173,7 +173,7 @@
 \input{kernels.tex}
 
 %\subsection{Existing Approaches}
-\subsection{Analysis of \acrshort{SymmSpMV} kernel using parallel coloring schemes with Spin-26 matrix}
+\subsection{Analysis of the \acrshort{SymmSpMV} kernel using parallel coloring schemes for the Spin-26 matrix}
 \label{Sec:motivation}
 \input{motivation.tex}
 
@@ -259,7 +259,7 @@ and the Swiss National Science Foundation (SNF)  under the project ``Dual-Phase 
 
 \appendix
 \section{RACE Library}
-Our method has been implemented and consolidated into a library named \acrshort{RACE}. The library provides easy interface for parallelizing kernels having dependencies, user typically just needs to supply a callback function with the serial code (potentially with dependency) and specify the required hardware settings. Library will then parallelize and run the code in parallel. The library is made publicly available through the git repository.
+Our method has been implemented and consolidated into a library named \acrshort{RACE}. The library provides an easy interface for parallelizing kernels having dependencies, the user typically just needs to supply a callback function with the serial code (potentially with dependency) and specify the required hardware settings. The library will then parallelize and run the code in parallel. The library is made publicly available through the git repository.
 
 \CAcomm{If necessary description of \acrshort{RACE} library.}
 

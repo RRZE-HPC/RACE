@@ -13,7 +13,7 @@ To determine useful settings, we briefly analyze the interaction between these i
 As the internal tree structure contains all information about the final workload distribution, we can use it to identify the critical path in terms of workload and correspondingly the parallel efficiency. To do so we introduce the \effRow for every node (or \levelGroup) $\acrshort{nrowsEff}(T_s(i))$  which is a measure for the absolute runtime to calculate the corresponding \levelGroup. For \levelGroups which are not further refined (leaf nodes) this value is their actual workload, \ie the number of rows assigned to them ($\acrshort{nrowsEff}(T_0(0)) = 15$ in \Cref{fig:rec_2d-7pt_tree}). For an inner node the \effRow  is the sum of the maximum workload (\ie max. \effRow value) across each of the two colors of its child nodes:
 
 \begin{align*}
-\acrshort{nrowsEff}(T_s(i)) &= max(\acrshort{nrowsEff}(T_{s+1}(j) \subset T_s(i))) + max(\acrshort{nrowsEff}(T_{s+1}(j+1) \subset T_s(i)))\\
+\acrshort{nrowsEff}(T_s(i)) &= max(\acrshort{nrowsEff}(T_{s+1}(j) \subseteq T_s(i))) + max(\acrshort{nrowsEff}(T_{s+1}(j+1) \subseteq T_s(i)))\\
  & \text{for } j=0,2,\ldots.
 \end{align*}
 
@@ -64,7 +64,7 @@ In the case of \emph{inline\_1} and \emph{Graphene-4096} matrices we find good a
 %although the experimental and theoretical results match for the initial phase it shows a different behavior towards the end. This happens since the kernel saturates the memory bandwidth available for this chip, which can be easily verified by observing the close agreement of the full socket performance and the performance model prediction given by \Cref{eq:SymmSpMV_intensity,eq:upper_performance}. 
 It should be noted that even though \emph{inline\_1} matrix didn't have theoretically perfect efficiency ($\eta$ $\approx 0.85$ at $\acrshort{nthreads}=20$), it still generates sufficient parallelism to achieve main memory saturation. 
 %The only affect of the lower efficiency was a shift in saturation point to further right (at higher thread count) compared to \emph{Graphene-4096}. 
-The good agreement of theoretical and experimental results for  \emph{parabolic\_fem}  (see \Cref{fig:parabolic_fem_param,fig:parabolic_fem_scaling}) is due to the fact that it is small ($\approx 23$ \MB) enough to fit into caches of the Skylake processor (\acrshort{LLC} size $= 28$ MB). Thus, performance is not limited by main memory bandwidth constraint and the roofline model limits do not apply.
+The good agreement of theoretical and experimental results for  \emph{parabolic\_fem}  (see \Cref{fig:parabolic_fem_param,fig:parabolic_fem_scaling}) is due to the fact that it is small ($\approx 23$ \MB) enough to fit into caches of the Skylake processor (\acrshort{LLC} size $= 28$ MB). Thus, performance is not limited by the main memory bandwidth constraint and the roofline model limits do not apply.
 
 
 \begin{figure}[t]
@@ -86,7 +86,7 @@ The good agreement of theoretical and experimental results for  \emph{parabolic\
 	\label{fig:corner_cases_scaling}
 \end{figure}
 
-We have demonstrated that a simple choice for the only set of RACE input parameters $\{\epsilon_s; s=0,1,\ldots\}$ can extract a sufficient amount of parallelism for most matrices considered in this study. Moreover, the parallel efficiency as calculated by RACE in combination with the roofline performance model is a good indication for scalability and maximum performance of the actual computations.
+We have demonstrated that a simple choice for the only set of RACE input parameters $\{\epsilon_s; s=0,1,\ldots\}$ can extract sufficient parallelism for most matrices considered in this study. Moreover, the parallel efficiency as calculated by RACE in combination with the roofline performance model is a good indication for scalability and maximum performance of the actual computations.
 
 \begin{comment}
 \subsection{Corner Cases}
