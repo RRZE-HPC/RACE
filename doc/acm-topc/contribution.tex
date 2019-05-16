@@ -2,12 +2,36 @@
 % This is information that is shared \acrshort{ABMC} the main document and any
 % supplement. If no supplement is required, then this information can
 % be included directly in the main document.
-This paper addresses the general problem of generating hardware efficient \DK coloring of undirected graphs for modern multicore processors. As an application choose parallelization of \acrshort{SymmSpMV} operation. We cover thread-level parallelization and focus on a single multicore processor. The main contributions can be summarized as follows: 
+
+
+This paper addresses the general problem of generating hardware efficient \DK coloring
+ of undirected graphs for modern multicore processors. As an application we 
+ choose parallelization of \acrshort{SymmSpMV} operation. We cover thread-level 
+ parallelization and focus on a single multicore processor. The main contributions
+  can be summarized as follows: 
 \begin{itemize}
-\item A new recursive algebraic coloring scheme (RACE) is proposed, which generates hardware efficient \DK colorings of undirected graphs. Special emphasis in the design of RACE is put on achieving data locality, generating levels of parallelism matching the core count of the underlying multicore processor and load balancing for shared memory parallelization.
-\item We propose shared memory parallelization of \acrshort{SymmSpMV}  using a \DTWO coloring of the underlying undirected graph to avoid write conflicts and apply RACE for generating the colorings.
-\item A comprehensive performance study of shared memory parallel \acrshort{SymmSpMV} using RACE demonstrates the benefit of our approach. Performance modelling is deployed to substantiate our performance measurements and a comparison to existing coloring methods as well a vendor optimized library (Intel MKL) is presented. The broad applicability and the sustainability is validated by using a wide set of 31 test matrices and two very different generations of Intel Xeon processors.
-\item We extend existing the proven \acrshort{SpMV} performance modelling approach to the \acrshort{SymmSpMV} kernel. In the course of the performance analysis we further demonstrate that SIMD vectorization may negatively impact \acrshort{SymmSpMV}  performance. 
+\item A new recursive algebraic coloring scheme (RACE) is proposed, 
+which generates hardware efficient \DK colorings of undirected graphs. 
+Special emphasis in the design of RACE is put on achieving data locality, 
+generating levels of parallelism matching the core count of the underlying 
+multicore processor and load balancing for shared memory parallelization.
+\item We propose shared memory parallelization of \acrshort{SymmSpMV}  
+using a \DTWO coloring of the underlying undirected graph to avoid
+ write conflicts and apply RACE for generating the colorings.
+\item A comprehensive performance study of shared memory parallel \acrshort{SymmSpMV} 
+using RACE demonstrates the benefit of our approach. Performance modelling
+ is deployed to substantiate our performance measurements and a comparison to
+  existing coloring methods as well a vendor optimized library (Intel MKL) 
+  are presented. The broad applicability and the sustainability is validated 
+  by using a wide set of 31 test matrices and two very different generations 
+  of Intel Xeon processors.
+\item We extend existing the proven \acrshort{SpMV} performance modelling approach
+ to the \acrshort{SymmSpMV} kernel. In the course of the performance analysis we
+ further demonstrate that SIMD vectorization may negatively impact \acrshort{SymmSpMV}
+ performance. \CAcomm{Should it be so specific since other factors like nnzr and caches
+ also contributes isn't the following statement better? "In the course of the 
+ performance analysis we further demonstrate why the ideal $2\times$ speedup
+ might not always be achievable."}
 %\item  Sustainability of our approach is demonstrated by using two very differenet generation of Intel Xeon processors (IVB and SKX)
 %\item --- Christie ---
 %	\item Problems with coloring approaches on SymmSpMV
@@ -22,7 +46,9 @@ This paper addresses the general problem of generating hardware efficient \DK co
 %	\item Problems for some special cases like low nnzr
 %	\item Comparisons with MKL and coloring approaches
 \end{itemize}
-We have implemented our graph coloring algorithms in the open source library \acrfull{RACE}\footnote{\href{http://tiny.cc/RACElib}{http://tiny.cc/RACElib}}. {\GW Information required to reproduce the performance numbers provided in this paper is available for download} 
+We have implemented our graph coloring algorithms in the open source library \acrfull{RACE}\footnote{\href{http://tiny.cc/RACElib}{http://tiny.cc/RACElib}}. 
+{\GW Information required to reproduce the performance numbers provided in this 
+paper is also available \footnote{\CAcomm{@Georg Kannst du dass auch zum tinycc ?} \href{https://bitbucket.org/christiealappatt/race-ad/}{https://bitbucket.org/christiealappatt/race-ad/}}}.
 
 %and discuss the impact on a representative set of 31 sparse matrices. Most of the above coloring approaches explained above in \Cref{Sec:related_work} suffer from performance penalties in one way or the other; for example \acrshort{MC}, degrades the data locality, although this can be improved considerably using \acrshort{ABMC}, still for moderately large matrices or with the increase in $k$ of \DK dependency the method shows deterioration in performance. 
 %These coloring algorithms and related software frameworks do no take advantage of both load balancing as well as the existing deep memory hierarchy and the characteristics of today's compute nodes to achieve improved node-level performance at full scale.
