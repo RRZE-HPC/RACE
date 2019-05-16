@@ -156,8 +156,6 @@ On the \IVB architecture, \acrshort{RACE} always provides superior performance l
 \end{comment}
 
 
-{\GW Stopped HERE} 
-
 \begin{comment}
 
 For \acrshort{MKL} we use two available implementations that does \acrshort{SymmSpMV} operation. The first one is the \texttt{mkl\_cspblas\_dcsrsymv} kernel where it directly computes the product of the given sparse triangular matrix and a vector. However this kernel has been deprecated from \acrshort{MKL}.v.18 and a newer routine under Inspector-executor Sparse BLAS is to be used. In the newer method user initially provide the matrix along with hints (symmetry) and operations to be carried out. Then the optimize routine is called where the matrix could be pre-processed based on the hint and the required operation. Finally the kernel \texttt{mkl\_sparse\_d\_mv} is executed on this optimized matrix to perform the matrix vector multiplication. By this method one has no guarantee what kernel the library uses under the hood, for example the library can even change the data storage format internally and use respective kernel.
