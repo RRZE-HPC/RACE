@@ -121,11 +121,8 @@ Starting with an approximately 25\% lower single core performance (0.75 GF/s ver
 %The performance model is constructed using \Cref{eq:upper_performance} and the intensity equation seen in \Cref{eq:SymmSpMV_intensity}, the $\alpha$ value of the reference \acrshort{SpMV} kernel is taken into account. The measured $\alpha$ values for the matrices and the two architectures are shown in \Cref{table:alpha_values}. The plots show close agreement of the \acrshort{RACE} performance and the predictions. Even though the performance model should give upper limit for performance there are two outliers on \SKX architectures namely \emph{pwtk} and \emph{parabolic\_fem}, which as discussed previously in \Cref{subsec:param_analysis} is due to the fact that these matrices are small enough to fit in the cache of this architecture. The performance of \emph{offshore} matrix reflects same behavior as \emph{crankseg-1} due to the load imbalance problem as discussed earlier.
 %From the model and measurements it is well clear that even though \acrshort{SymmSpMV} requires theoretically only half the memory data volume it is not always the case we achieve two times the performance even for well memory-bound cases. This is due to the bigger pre-factor of the $\alpha$ term for \acrshort{SymmSpMV} compared to \acrshort{SpMV} ($24$ vs $8$ respectively).
 %
+
 \subsubsection{Comparing \acrshort{RACE} with \acrshort{MC} and \acrshort{ABMC}}
-%
-Having well understood the performance characteristics of  \acrshort{SymmSpMV} with \acrshort{RACE} we finally compare this with the performance achieved by the two coloring methods in \Cref{fig:symm_spmv}. Here the underlying algorithm as well as implementation are known and are closely related to our approach. 
-%that were previously discussed and also with the widely used math numerical library \acrshort{MKL}.  We use the same libraries and setup as mentioned in  \Cref{Sec:motivation} for pre-processing the matrix with \acrshort{MC} and \acrshort{ABMC} methods. The methods are then executed with the same inner kernel \acrshort{SymmSpMV} as used for \acrshort{RACE}.  
-%
 \begin{figure}[t]
 	\centering
 	\subfloat[\IVB]{\label{fig:symm_spmv_ivy}\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_vs_MC_ABMC/perf}}
@@ -134,6 +131,10 @@ Having well understood the performance characteristics of  \acrshort{SymmSpMV} w
 	\caption{Comparison of \acrshort{SymmSpMV} performance between \acrshort{RACE} and coloring variants \acrshort{MC} and \acrshort{ABMC}. Matrices are arranged in increasing number of rows (\acrshort{nrows}).}
 	\label{fig:symm_spmv}
 \end{figure}
+%
+Having well understood the performance characteristics of  \acrshort{SymmSpMV} with \acrshort{RACE} we finally compare this with the performance achieved by the two coloring methods in \Cref{fig:symm_spmv}. Here the underlying algorithm as well as implementation are known and are closely related to our approach. 
+%that were previously discussed and also with the widely used math numerical library \acrshort{MKL}.  We use the same libraries and setup as mentioned in  \Cref{Sec:motivation} for pre-processing the matrix with \acrshort{MC} and \acrshort{ABMC} methods. The methods are then executed with the same inner kernel \acrshort{SymmSpMV} as used for \acrshort{RACE}.  
+%
 Overall the \acrshort{MC} is not competitive and provides low performance levels for almost all the matrices on both the architectures. The \acrshort{ABMC} shows similar performance characteristics as \acrshort{RACE} until the two vectors involved in \acrshort{SymmSpMV} approach the size of the caches (cf. discussion of \Cref{fig:SpMV_vs_SymmSpMV}). For matrices with sufficiently small $N_r$ (left in the diagram) the method can achieve between 70\% and 90\% of \acrshort{RACE} performance on most cases. For matrices in the right part of the diagram with their higher $N_r$ and $\alpha_{SpMV}$ values, the \acrshort{ABMC} falls substantially behind \acrshort{RACE}. Here, the strict orientation of the \acrshort{RACE} design towards data locality in the vector accesses delivers its full power. See also the data transfer discussion in \Cref{Sec:Spin26full} for the \texttt{Spin-26} matrix.
 In total there are only three cases where \acrshort{ABMC} performance is on a par with or slightly above the \acrshort{RACE} measurement and the average speedup of \acrshort{RACE} is $1.5\times$ and $1.65 \times$ for \IVB and \SKX, respectively.
 Note, that all three methods use the same baseline kernels and thus performance differences between the methods do not arise from different low level code but from the ability to generate appropriate degrees of parallelism and to maintain data locality.

@@ -11,7 +11,7 @@ and the associated recursion step applied to sub-graphs.
 The hardware awareness of the method allows \acrshort{RACE} to
 enjoy good data locality, lower synchronization costs and other performance
 benefits. We demonstrated this benefit  by comparing 
-\acrshort{RACE} performance against different \acrshort{MC} methods and \acrshort{MKL}
+\acrshort{RACE} performance against two different \acrshort{MC} methods and \acrshort{MKL}
 implementations. The comparisons show 
 we attain an average speed-up of over $1.5\times$ compared to \acrshort{MC}
 approaches and $1.4\times$ compared to \acrshort{MKL} implementations.
@@ -20,15 +20,15 @@ which ensured us the optimality of the \acrshort{RACE} approach and
 threw light into the modern challenges (like high SIMD width) of the
 \acrshort{SymmSpMV} kernel.
 
-The parallelization of \acrshort{SymmSpMV} kernel using \acrshort{RACE}
+The parallelization of \acrshort{SymmSpMV} kernel 
 is a highly relevant example on todays modern processors.
 However, similar to any other \acrshort{MC} approaches \acrshort{RACE} method 
 is not just limited to the \acrshort{SymmSpMV} kernel
 and can be used to efficiently parallelize solvers and kernels 
-having general \DK dependencies. Due to the level-based formulation
+having general \DK dependencies. Moreover, due to the level-based formulation
 of \acrshort{RACE} the framework has an added advantage to address 
 other classes of problems like in-place matrix powers and polynomials,
-which are of high interest in the scientific community.
+which are of high interest in the scientific community. 
 
 \begin{comment}
 We clearly show the  \acrshort{RACE} awareness of the approach and  
