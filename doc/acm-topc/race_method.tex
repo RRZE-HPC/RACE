@@ -253,7 +253,7 @@ Thus formed \levelGroups are then \DONE
 colored. Then, all \levelGroups within a color can be executed in
 parallel. This simple approach allows one to generate workload for
 a maximum of ${\acrshort{totalLvl}}/{2 k}$ threads if \DK coloring is
-requested. \footnote{\CAcomm{This implies more the number of levels more the
+requested.\footnote{\CAcomm{This implies more the number of levels more the
 parallelism, for \eg if the matrix contains at least one row that
 is fully dense (row with \acrshort{nrows} nonzeros) it will have no parallelism, 
 as $\acrshort{totalLvl}=2$ in this case.}} Note that in all cases vertices within a single \levelGroup

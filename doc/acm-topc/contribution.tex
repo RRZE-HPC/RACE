@@ -47,8 +47,8 @@ using RACE demonstrates the benefit of our approach. Performance modelling
 %	\item Comparisons with MKL and coloring approaches
 \end{itemize}
 We have implemented our graph coloring algorithms in the open source library \acrfull{RACE}\footnote{\href{http://tiny.cc/RACElib}{http://tiny.cc/RACElib}}. 
-{\GW Information required to reproduce the performance numbers provided in this 
-paper is also available \footnote{\CAcomm{@Georg Kannst du dass auch zum tinycc ?} \href{https://bitbucket.org/christiealappatt/race-ad/}{https://bitbucket.org/christiealappatt/race-ad/}}}.
+Information required to reproduce the performance numbers provided in this 
+paper is also available.\footnote{\href{http://tiny.cc/RACElib-AD}{http://tiny.cc/RACElib-AD}}
 
 %and discuss the impact on a representative set of 31 sparse matrices. Most of the above coloring approaches explained above in \Cref{Sec:related_work} suffer from performance penalties in one way or the other; for example \acrshort{MC}, degrades the data locality, although this can be improved considerably using \acrshort{ABMC}, still for moderately large matrices or with the increase in $k$ of \DK dependency the method shows deterioration in performance. 
 %These coloring algorithms and related software frameworks do no take advantage of both load balancing as well as the existing deep memory hierarchy and the characteristics of today's compute nodes to achieve improved node-level performance at full scale.
