@@ -79,12 +79,12 @@ $\frac{4}{\acrshort{NNZR}}\,\BYTE$. This error is only significant
 when $\acrshort{NNZR}$ is small.}  The optimal value of
 $\alpha=\acrshort{NNZR}^{-1}$ together with the corresponding
 computational intensities for all matrices is shown in 
-\Cref{table:alpha_values}. \CAcomm{The measured $\alpha_{\acrshort{SpMV}}$
+\Cref{table:alpha_values}. The measured $\alpha_{\acrshort{SpMV}}$
  is used as a sensible lower bound for $\alpha_{\acrshort{SymmSpMV}}$ 
  values (see \Cref{sect:SymmSpmv}) in cases where advanced cache
  replacement strategies  do not apply; therefore the table also presents the 
- corresponding measured $\alpha_{\acrshort{SpMV}}$ ($= \alpha_{\acrshort{SymmSpMV}}$)
-values for different matrices on both the architectures.}
+ corresponding measured $\alpha_{\acrshort{SpMV}}$ (= assumed $\alpha_{\acrshort{SymmSpMV}}$)
+values for different matrices.
 %as well as the measured $\alpha$ values (denoted by
 %$\alpha_\mathrm{\acrshort{SpMV}}$) for all matrices on the two
 %processor chips are given in \Cref{table:alpha_values}.
@@ -190,9 +190,9 @@ the same compute device, as in the latter case the two vectors are
 accessed irregularly and compete for cache. Thus we
 can assume that the $\alpha$ value measured for \acrshort{SpMV}
 ($\alpha_\mathrm{\acrshort{SpMV}}$) is a lower bound
-for \acrshort{SymmSpMV}. \CAcomm{\Cref{table:alpha_values} show the 
-thus assumed $\alpha_{\acrshort{SymmSpMV}}$ values taken for performance
-modeling.} Since an upper bound for the performance is the
+for \acrshort{SymmSpMV}. \Cref{table:alpha_values} show the 
+ assumed $\alpha_{\acrshort{SymmSpMV}}$ values taken for performance
+modeling. Since an upper bound for the performance is the
 product of computational intensity and main memory bandwidth
 (see \Cref{eq:upper_performance}), this approach provides an upper
 performance bound for \acrshort{SymmSpMV}.  However, note that the

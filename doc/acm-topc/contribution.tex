@@ -26,12 +26,13 @@ using RACE demonstrates the benefit of our approach. Performance modelling
   by using a wide set of 31 test matrices and two very different generations 
   of Intel Xeon processors.
 \item We extend the existing proven \acrshort{SpMV} performance modelling approach
- to the \acrshort{SymmSpMV} kernel. In the course of the performance analysis we
- further demonstrate that SIMD vectorization may negatively impact \acrshort{SymmSpMV}
- performance. \CAcomm{Should it be so specific since other factors like nnzr and caches
- also contributes isn't the following statement better? "In the course of the 
+ to the \acrshort{SymmSpMV} kernel. 
+ %In the course of the performance analysis we
+ %further demonstrate that SIMD vectorization may negatively impact \acrshort{SymmSpMV}
+ %performance. 
+In the course of the 
  performance analysis we further demonstrate why in some cases the ideal speedup
- might not be achievable."}
+ might not be achievable.
 %\item  Sustainability of our approach is demonstrated by using two very differenet generation of Intel Xeon processors (IVB and SKX)
 %\item --- Christie ---
 %	\item Problems with coloring approaches on SymmSpMV
@@ -46,7 +47,7 @@ using RACE demonstrates the benefit of our approach. Performance modelling
 %	\item Problems for some special cases like low nnzr
 %	\item Comparisons with MKL and coloring approaches
 \end{itemize}
-We have implemented our graph coloring algorithms in the open source library \acrfull{RACE}\footnote{\href{http://tiny.cc/RACElib}{http://tiny.cc/RACElib}}. 
+We have implemented our graph coloring algorithms in the open source library \acrfull{RACE}.\footnote{\href{http://tiny.cc/RACElib}{http://tiny.cc/RACElib}}
 Information required to reproduce the performance numbers provided in this 
 paper is also available.\footnote{\href{http://tiny.cc/RACElib-AD}{http://tiny.cc/RACElib-AD}}
 
