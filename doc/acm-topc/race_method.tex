@@ -515,7 +515,7 @@ The recursive refinement of \levelGroups allows us to tackle load imbalance prob
 	
 	\item The above definition implies that if the weight is close to a natural number $b$, the corresponding workload is close to optimal for operation with $b$ threads. Thus, starting with $L_s(0)$ we aggregate successive levels until their combined weight forms a number $a$ close to a natural number $b$. Distance-k coloring is ensured by enforcing it to aggregate \atleast $2 \times k$ \levels, \ie for \DTWO coloring at least four levels (two for red and two for blue). Closeness of the number is measured by a parameter $\epsilon$ defined as
 	\begin{align*}
-		\epsilon =  1 - abs(a-b), & \text{ where } b= max(1,nint(a)),\\
+		\epsilon =  1 - abs(a-b), & \text{ where } b= \max(1,nint(a)),\\
 		 & \text{\CAcomm{ and $nint$ is nearest integer.}}
 	\end{align*}
 	and controlled by the criterion
@@ -576,7 +576,7 @@ Thus, we have to modify/replace  {\GW Christie: can you comment on that (???)} {
 	\item The above definition of weight implies if the weight is close to a natural number $b$, the load induced by rows included in the calculation of weights is close to optimal for operation with $b$ threads. Thus starting with $L_s(0)$ we sum the weights till it forms a number $a$ close to a natural number $b$. Distance-k coloring is ensured by enforcing \atleast $2 \times k$ \levels in the sum, \ie for \DTWO coloring at least four levels (two for red and two for blue) are included. Closeness of the number is measured by a parameter $\epsilon$ defined as:
 	\begin{align*}
 		\epsilon &=  1 - abs(a-b)\\
-		\text{where } b&= max(1,round(a))
+		\text{where } b&= \max(1,round(a))
 	\end{align*}
 	Closeness is controlled by the criteria:
 	\begin{align*}
