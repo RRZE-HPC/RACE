@@ -4,20 +4,32 @@
 % be included directly in the main document.
 \begin{abstract}
 
-The \acrfull{SymmSpMV} is an important building block for a number
-of numerical linear algebra kernel operations or other graph traversal applications. Parallelizing \acrshort{SymmSpMV} on today's multicore platforms with up to 100  cores
-is not an easy task since computing the component of the solution will be in conflict with other computed 
-components, enforcing synchronization events.  \sout{Most existing frameworks introduce a coloring phase to partition 
-the part of the vector into a group of color sets so that components within a set are 
-independent  and can be processed simultaneously.} However, almost all coloring algorithms and software frameworks do not take 
-advantage of both load balancing as well as the existing deep memory hierarchy  and the characteristics of today's compute nodes 
-to achieve improved node-level performance at full scale.  To address this, we propose in this paper a novel recursive algebraic coloring algorithm, 
-and describe the software approach and the open source library \acrfull{RACE} which eliminates the shortcomings of previously 
-existing coloring methods in terms of hardware efficiency  and parallelization overhead. We first detail our algorithmic abstraction layer and 
-the recursive higher order distance coloring in \acrshort{RACE} to accomplish 
-code and performance portability on various platforms.  A comparison with other popular coloring techniques and a state-of-the-art library 
-supplied by the Intel vendor, using 31 sparse matrices on the latest Intel  processors, shows that the proposed approach in \acrshort{RACE}
-obtains a speedup of over 2.5 for \acrshort{SymmSpMV} compared to current state-of-the-art coloring algorithm.
+The \acrfull{SymmSpMV} is an important building block for a number of
+numerical linear algebra kernel operations or other graph traversal
+applications. Parallelizing \acrshort{SymmSpMV} on today's multicore
+platforms with up to 100 cores is not an easy task since computing the
+component of the solution will be in conflict with other computed
+components, enforcing synchronization events.  \sout{Most existing
+  frameworks introduce a coloring phase to partition the part of the
+  vector into a group of color sets so that components within a set
+  are independent and can be processed simultaneously.} However,
+almost all coloring algorithms and software frameworks do not take
+advantage of both load balancing as well as the existing deep memory
+hierarchy and the characteristics of today's compute nodes to achieve
+improved node-level performance at full scale.  To address this, we
+propose in this paper a novel recursive algebraic coloring algorithm,
+and describe the software approach and the open source library
+\acrfull{RACE} which eliminates the shortcomings of previously
+existing coloring methods in terms of hardware efficiency and
+parallelization overhead. We first detail our algorithmic abstraction
+layer and the recursive higher order distance coloring in
+\acrshort{RACE} to accomplish code and performance portability on
+various platforms.  A comparison with other popular coloring
+techniques and a state-of-the-art library supplied by the Intel
+vendor, using 31 sparse matrices on the latest Intel processors, shows
+that the proposed approach in \acrshort{RACE} obtains a speedup of
+over 2.5 for \acrshort{SymmSpMV} compared to current state-of-the-art
+coloring algorithm.
 
 \end{abstract}
 
