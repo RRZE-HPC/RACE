@@ -74,8 +74,13 @@ The \LIKWID \cite{LIKWID} tool suite in version 4.3.2 was used, specifically
 \likwidPerfctr for counting hardware events 
  and measuring derived metrics,  and
  \likwidBench for bandwidth benchmarks (see \Cref{tab:test_bed}).
- For \acrshort{MC} we used the \COLPACK \cite{COLPACK} library
- for coloring and \METIS \cite{METIS} version 5.1.0 for graph partitioning
+  \CAcomm{\LIKWID validates the quality of it's performance counter
+  measurements and is publicly available.\footnote{\href{https://github.com/RRZE-HPC/likwid/wiki/TestAccuracy}{https://github.com/RRZE-HPC/likwid/wiki/TestAccuracy}} All the  data traffic measurements have a 
+  good accuracy except L3 traffic of \SKX architecture, which is only 
+  a qualitative measurement.}
+ 
+ For coloring we used the \COLPACK \cite{COLPACK} library
+ and \METIS \cite{METIS} version 5.1.0 for graph partitioning
  with the \acrshort{ABMC} method. The \SPMP \cite{SpMP} library was employed for
   \acrshort{RCM} bandwidth reduction, and the \acrshort{MKL} version 19.0.2
  for some reference computations and comparisons.

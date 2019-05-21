@@ -46,7 +46,7 @@ three times slower than \acrshort{SpMV}.
   %	\subfloat[False sharing]{\label{fig:motivation_c}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_2}}
   %	\hspace{1em}
   %	\subfloat[Barrier effect]{\label{fig:motivation_d}\includegraphics[width=0.45\textwidth, height=0.22\textheight]{pics/motivation/motivation_4}}
-  	\caption{Scaling performance of \acrshort{SymmSpMV} with \acrshort{MC} and \acrshort{ABMC} compared to \acrshort{SpMV} on one socket of \IVB and \SKX is shown in \Cref{fig:motivation_symm_spmv,fig:motivation_symm_spmv_skx} respectively. \Cref{fig:motivation_data,fig:motivation_data_skx} show average data traffic per nonzero entry ($\acrshort{nnz}$) of the full matrix as measured with \LIKWID for all cache levels and main memory on full socket of \IVB and \SKX respectively. The Spin-26 matrix was prepermuted with \acrshort{RCM}. \CAcomm{Note that the L3 measurement on \SKX architecture is qualitative as some performance counter events are missing for the architecture.} }
+  	\caption{Scaling performance of \acrshort{SymmSpMV} with \acrshort{MC} and \acrshort{ABMC} compared to \acrshort{SpMV} on one socket of \IVB and \SKX is shown in \Cref{fig:motivation_symm_spmv,fig:motivation_symm_spmv_skx} respectively. \Cref{fig:motivation_data,fig:motivation_data_skx} show average data traffic per nonzero entry ($\acrshort{nnz}$) of the full matrix as measured with \LIKWID for all cache levels and main memory on full socket of \IVB and \SKX respectively. The Spin-26 matrix was prepermuted with \acrshort{RCM}.}
   	\label{fig:motivation}
   \end{figure}
  

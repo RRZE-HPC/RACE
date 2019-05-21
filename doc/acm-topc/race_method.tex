@@ -253,10 +253,10 @@ Thus formed \levelGroups are then \DONE
 colored. Then, all \levelGroups within a color can be executed in
 parallel. This simple approach allows one to generate workload for
 a maximum of ${\acrshort{totalLvl}}/{2 k}$ threads if \DK coloring is
-requested.\footnote{\CAcomm{This implies more the number of levels more the
-parallelism, for \eg if the matrix contains at least one row that
-is fully dense (row with \acrshort{nrows} nonzeros) it will have no parallelism, 
-as $\acrshort{totalLvl}=2$ in this case.}} Note that in all cases vertices within a single \levelGroup
+requested.\footnote{\CAcomm{This implies as the number of levels increase 
+so does the parallelism. For \eg if the matrix contains at least one dense row 
+ it will have no parallelism, as $\acrshort{totalLvl}=2$ in this case.}} 
+Note that in all cases vertices within a single \levelGroup
  are computed in their original order, which allows for good
 spatial access locality.
  
@@ -278,8 +278,8 @@ problem.
   \subsection{Load balancing}\label{subsec:LB} 
 The RACE load balancing scheme tries to balance the workload between level groups 
 within each color for a given number of threads while maintaining data locality 
-and \DK constraint between the two colors. \CAcomm{To achieve this we use an idea
-similar to incremental graph partitioning \cite{load_balancing}}. 
+and \DK constraint between the two colors. To achieve this we use an idea
+similar to incremental graph partitioning \cite{load_balancing}. 
 The \levelGroups containing low workload grab adjacent levels from neighboring
  level groups and overloaded level groups shift levels to adjacent level groups. 
  As a target for the load balancing scheme one can balance the number of rows (\ie vertices) 
@@ -291,7 +291,7 @@ The \levelGroups containing low workload grab adjacent levels from neighboring
  
 Our algorithm tries to reduce the variances of the workload in the level groups, \ie the number of rows ($\acrshort{nrows}(T(i))$) in each \levelGroup $T(i)$. For a given set of \levelGroups we calculate the mean and variance of $\acrshort{nrows}(T(i))$ within each color, \ie red and blue colors.  
  %For example in \Cref{fig:2d_7pt_d2} we need to calculate mean of $T\_size$ of all \levelGroups in red sweep and blue sweep separately. 
-The overall variance, which is the target of our minimization procedure, is then found by summing up the variances between colors. \Inorder to reduce this value we first select the two \levelGroups with largest negative/positive deviation from the mean \CAcomm{(in step 1 of \Cref{fig:lb_alg} $T(5)$ and $T(4)$)} and try to add/remove levels to/from these \levelGroups (see top row of \Cref{fig:lb_alg}). When removing \levels from a \levelGroup one has to take care that the \DK coloring is not violated by keeping at least $k$ levels in a \levelGroup. The shift of \levels is done via a pointer array denoted as $T\_ptr$, which points to the beginning of each \levelGroup (see \Cref{fig:lb_alg}), avoiding any copy operation. If shifting levels between the two level groups with the largest deviation does not lead to a lower overall variance, no levels are exchanged and we choose the next pair of level groups according to a ranking which is based on the absolute deviation from the mean (see \Cref{alg:LB} for implementation details) and continue. Doing this process in an iterative way we finally end up in a state with the lowest overall variance at which no further moves are possible either due to a violation of \DK dependency or an increase in overall variance. \Cref{fig:lb_alg} shows the load balancing procedure under a \DTWO constraint for some initial mapping of 17 levels to six level groups. Applying the procedure to our  \stex of size $16 \times 16$  requesting \DTWO coloring and ten level groups leads to the mapping shown in \Cref{fig:2d_7pt_lb}. Note that \levelGroups at the extreme ends have more \levels due to fewer vertices (\acrshort{nrows}) in each \level, while \levelGroups in the middle having more vertices maintain two levels to preserve the \DTWO constraint.
+The overall variance, which is the target of our minimization procedure, is then found by summing up the variances between colors. \Inorder to reduce this value we first select the two \levelGroups with largest negative/positive deviation from the mean {(which is $T(5)$ and $T(4)$ in step 1 of \Cref{fig:lb_alg}) and try to add/remove levels to/from these \levelGroups (see top row of \Cref{fig:lb_alg}). When removing \levels from a \levelGroup one has to take care that the \DK coloring is not violated by keeping at least $k$ levels in a \levelGroup. The shift of \levels is done via a pointer array denoted as $T\_ptr$, which points to the beginning of each \levelGroup (see \Cref{fig:lb_alg}), avoiding any copy operation. If shifting levels between the two level groups with the largest deviation does not lead to a lower overall variance, no levels are exchanged and we choose the next pair of level groups according to a ranking which is based on the absolute deviation from the mean (see \Cref{alg:LB} for implementation details) and continue. Doing this process in an iterative way we finally end up in a state with the lowest overall variance at which no further moves are possible either due to a violation of \DK dependency or an increase in overall variance. \Cref{fig:lb_alg} shows the load balancing procedure under a \DTWO constraint for some initial mapping of 17 levels to six level groups. Applying the procedure to our  \stex of size $16 \times 16$  requesting \DTWO coloring and ten level groups leads to the mapping shown in \Cref{fig:2d_7pt_lb}. Note that \levelGroups at the extreme ends have more \levels due to fewer vertices (\acrshort{nrows}) in each \level, while \levelGroups in the middle having more vertices maintain two levels to preserve the \DTWO constraint.
 %One could also do this entire load balancing based on number of nonzeros (\acrshort{nnz}) rather than \nrows, in this case $T\_size(i)=\acrshort{nnz}(T(i))$ (nonzeros in $T(i)$).
   
    \begin{figure}[t]
@@ -338,11 +338,16 @@ The overall variance, which is the target of our minimization procedure, is then
 	\subsection{Recursion}\label{subsec:REC}
 As discussed in \Cref{subsec:DK} the maximum degree of parallelism is limited
 by the total number of levels (\acrshort{totalLvl}) and may be further reduced 
-by level aggregation in the load balancing step. \CAcomm{For example
-	requesting the maximum possible eight threads instead of five 
-	threads (\Cref{fig:2d_7pt_lb}) for the stencil $16\times16$ example, 
-	it results in massive load imbalance as seen in \Cref{fig:2d_7pt_lb_8_threads}. 
-Therefore,} to match the high levels of parallelism in modern compute devices we search for 
+by level aggregation in the load balancing step. In case of
+	stencil $16\times16$ example the maximum possible parallelism 
+	is eight threads which may lead to load imbalance as seen in 
+	\Cref{fig:2d_7pt_lb_8_threads}.
+	%For example
+	%requesting the maximum possible eight threads instead of five 
+	%threads (\Cref{fig:2d_7pt_lb}) for the stencil $16\times16$ example, 
+	%it results in massive load imbalance as seen in \Cref{fig:2d_7pt_lb_8_threads}. 
+Therefore, %to match the high levels of parallelism in modern compute devices 
+we need to search for 
 further parallelism within the \levelGroups.  Compared to methods like \acrshort{MC} 
 we didn't require all vertices in a \levelGroup to be \DONE (or \DK in general) 
 independent of each other, which is a consequence of our \level based approach 
@@ -404,7 +409,7 @@ Recursion starts with the selection of a \subgraph of the matrix, which is discu
      With this recursive process we were able to find independent \levelGroups ($T_{s+1}$) within a \levelGroup of the previous stage ($T_s$) and therefore the thread which works on $T_s$ has to spawn threads to parallelize within $T_{s+1}$.
      
 	\subsubsection{Distance-$k$ dependencies with $k>1$}  \label{subsec:Dk_dependency}
-In general, however, it is not sufficient in the recursion step to consider only the \subgraphs induced by \levelGroups as can be seen in \Cref{fig:rec_d2_wrong_a} for \DTWO coloring. Applying  the three steps (see \Cref{fig:rec_d2_wrong_b,fig:rec_d2_wrong_c,fig:rec_d2_wrong_d})  to  the \subgraph induced by $T_0(1)$ does not guarantee \DTWO independence between the new \levelGroups $T_1(0)$ and $T_1(2)$. It is obvious that for general \DK colorings two vertices $a,b$ within a \levelGroup might be connected by a shared vertex $c$ outside the \levelGroup.  \CAcomm{Thus, our three step procedure must be applied to a \subgraph which contains the actual \levelGroup ($T_s(j)$) as well as its all distance-$p$ neighbors, where $p=1,2,\ldots,(k-1)$.}
+In general, however, it is not sufficient in the recursion step to consider only the \subgraphs induced by \levelGroups as can be seen in \Cref{fig:rec_d2_wrong_a} for \DTWO coloring. Applying  the three steps (see \Cref{fig:rec_d2_wrong_b,fig:rec_d2_wrong_c,fig:rec_d2_wrong_d})  to  the \subgraph induced by $T_0(1)$ does not guarantee \DTWO independence between the new \levelGroups $T_1(0)$ and $T_1(2)$. It is obvious that for general \DK colorings two vertices $a,b$ within a \levelGroup might be connected by a shared vertex $c$ outside the \levelGroup.  Thus, our three step procedure must be applied to a \subgraph which contains the actual \levelGroup ($T_s(j)$) as well as its all distance-$p$ neighbors, where $p=1,2,\ldots,(k-1)$.
 %as they
 %For \DK the same procedure as \DONE applies, except with a slight difference in selecting the \subgraph. In \DONE we considered \subgraphs induced by \levelGroups, but for \DK coloring this is not sufficient. As seen in \Cref{fig:rec_d2_wrong_a} for \DTWO coloring the selection of $T_0(1)$ as \subgraph and applying the three steps (see \Cref{fig:rec_d2_wrong_b}, \Cref{fig:rec_d2_wrong_c} and \Cref{fig:rec_d2_wrong_d}) did not guarantee \DTWO independency within \levelGroup $T_1$ of the \subgraph, for \eg $T_1(0)$ and $T_1(2)$ are not \DTWO independent (\cf \Cref{fig:rec_d2_wrong_d}). This is due to the fact that for $k>1$ dependencies two vertices $a,b$ within a \subgraph might be connected to a common vertex ($c$) outside the \subgraph leading to a \DK dependency between $a$ and $b$. In \Cref{fig:rec_d2_wrong} we see 	$3 \xrightarrow{1} 1 \text{ \& } 6 \xrightarrow{1} 1 	\implies 3 \xrightarrow{2} 6$, but since vertex $1$ was not in the \subgraph considered we missed this dependency. 
      \begin{figure}[t]
@@ -515,8 +520,8 @@ The recursive refinement of \levelGroups allows us to tackle load imbalance prob
 	
 	\item The above definition implies that if the weight is close to a natural number $b$, the corresponding workload is close to optimal for operation with $b$ threads. Thus, starting with $L_s(0)$ we aggregate successive levels until their combined weight forms a number $a$ close to a natural number $b$. Distance-k coloring is ensured by enforcing it to aggregate \atleast $2 \times k$ \levels, \ie for \DTWO coloring at least four levels (two for red and two for blue). Closeness of the number is measured by a parameter $\epsilon$ defined as
 	\begin{align*}
-		\epsilon =  1 - abs(a-b), & \text{ where } b= \max(1,nint(a)),\\
-		 & \text{\CAcomm{ and $nint$ is nearest integer.}}
+		\epsilon =  1 - abs(a-b), & \text{ where } b= \max(1,[a]),\\
+				& \text{and } [a] \text{\CAcomm{ is the nearest integer of a}};
 	\end{align*}
 	and controlled by the criterion
 	\begin{align*}
