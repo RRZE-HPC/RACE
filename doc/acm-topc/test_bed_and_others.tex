@@ -114,7 +114,7 @@ labeled in \Cref{fig:size_vs_bw}.
 \begin{table}[t]
 	\centering
 %	\footnotesize
-	\caption{Details of the benchmark matrices. \acrshort{nrows} is the number of matrix rows and \acrshort{nnz} is the number of nonzeros. $\acrshort{NNZR}=\acrshort{nnz}/\acrshort{nrows}$ is the average number of nonzeros per row. $bw$ and $bw_{RCM}$ refer to the matrix bandwidth without and with \acrshort{RCM} preprocessing. The letter ``C" in the parentheses of the matrix name indicates a corner case matrix that will be discussed in detail, while the letter ``Q" marks a matrix from quantum physics that is not part of the SuiteSparse Matrix Collection. With an asterisk (*) we have labeled all the matrices which are less than 128 \MB, which could potentially lead to some caching effects especially on the \SKX architecture. \label{tab:test_mtx}	\label{table:bench_matrices}}
+	\caption{Details of the benchmark matrices. \acrshort{nrows} is the number of matrix rows and \acrshort{nnz} is the number of nonzeros. $\acrshort{NNZR}=\acrshort{nnz}/\acrshort{nrows}$ is the average number of nonzeros per row. $bw$ and $bw_{RCM}$ refer to the matrix bandwidth without and with \acrshort{RCM} preprocessing. The letter ``C'' in the parentheses of the matrix name indicates a corner case matrix that will be discussed in detail, while the letter ``Q'' marks a matrix from quantum physics that is not part of the SuiteSparse Matrix Collection. With an asterisk (*) we have labeled all the matrices which are less than 128 \MB, which could potentially lead to some caching effects especially on the \SKX architecture. \label{tab:test_mtx}	\label{table:bench_matrices}}
 	\begin{center}
 		\input{pics/matrices/table.tex}
 	\end{center}
