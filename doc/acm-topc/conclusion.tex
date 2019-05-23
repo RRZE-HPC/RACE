@@ -1,71 +1,36 @@
-In this paper we have briefly discussed the parallelization problems
-that commonly occur in the \acrshort{SymmSpMV} operation.
-We proposed \acrshort{MC} methods as a good solution
-for such problems and discussed on their drawbacks.
-Motivated by the shortcomings of existing \acrshort{MC} methods in 
-terms of hardware efficiency and parallelization overhead we proposed 
-a novel hardware-efficient approach called \acrshort{RACE}.
-The \acrshort{RACE} method is explained in detail using
-three steps: (1) level construction, (2) \DK coloring, (3) load balancing 
-and the associated recursion step applied to sub-graphs. 
-The hardware awareness of the method allows \acrshort{RACE} to
-enjoy good data locality, lower synchronization costs and other performance
-benefits. We demonstrated this benefit  by comparing 
-\acrshort{RACE} performance against two different \acrshort{MC} methods and \acrshort{MKL}
-implementations. The comparisons show 
-we attain an average speed-up of over $1.5\times$ compared to \acrshort{MC}
-approaches and $1.4\times$ compared to \acrshort{MKL} implementations.
-Our entire performance study was backed by a strong performance model, 
-which ensured us the optimality of the \acrshort{RACE} approach and
-threw light into the modern challenges (like high SIMD width) of the
-\acrshort{SymmSpMV} kernel.
+In this paper we described coloring algorithms and the 
+open-source library implementation \acrshort{RACE} for efficient \acrfull{SymmSpMV} on
+manycore architectures. Motivated by the shortcomings of existing \acrshort{MC} methods in  terms of hardware efficiency 
+and to address node-level performance, we derived a novel recursive algebraic  coloring algorithm 
+which eliminates the shortcomings of previously existing coloring methods.
+\acrshort{RACE} generates hardware efficient \DK colorings of undirected graphs and puts 
+emphazise on achieving data locality, load balancing, and suffient levels of parallelism that matches the 
+number of cores  of the underlying architecture. The hardware awareness of the 
+coloring method allows \acrshort{RACE} to achieve good data locality, lower synchronization costs and 
+improved load-balancing compared to other state-of-the art coloring methods.
+We demonstrated this benefit  by comparing  \acrshort{RACE} performance against two different 
+\acrshort{MC} methods and \acrshort{MKL} implementations. Futhermore, our entire performance experiments
+was backed by a strong performance model,  which ensured us the optimality of the \acrshort{RACE} approach
+and threw light into the modern challenges  of the \acrshort{SymmSpMV} kernel.
+A comparison with a state-of-the-art library  supplied by the Intel vendor, using 31 sparse matrices 
+on the latest Intel  processors, shows that the proposed approach in \acrshort{RACE}
+obtains performance very close to the estimated prediction using our derived roofline performance model for 
+\acrfull{SymmSpMV}. \acrshort{RACE} fullty takes into account  deep memory hierarchies thus hampering 
+scalability and full-chip performance. We obtained an average speedup of over 1.4 for 
+\acrshort{SymmSpMV} compared to current 
+state-of-the-art  coloring algorithm and can achieve speedups of up to 2.
 
-The parallelization of \acrshort{SymmSpMV} kernel 
-is a highly relevant example on todays modern processors.
+
+
+
 However, similar to any other \acrshort{MC} approaches \acrshort{RACE} method 
 is not just limited to the \acrshort{SymmSpMV} kernel
 and can be used to efficiently parallelize solvers and kernels 
 having general \DK dependencies. Moreover, due to the level-based formulation
 of \acrshort{RACE} the framework has an added advantage to address 
-other classes of problems like in-place matrix powers and polynomials,
-which are of high interest in the scientific community. 
-
-\begin{comment}
-We clearly show the  \acrshort{RACE} awareness of the approach and  
+other classes of problems. Future work with \acrshort{RACE} will involve the
+kernel operations like in-place matrix powers and polynomials, which are of 
+high interest in the scientific community. 
 
 
- 
-Further we present a novel recursive algebraic coloring approach called RACE,
-which generates hardware-efficient 
-solving general distance-$k$ dependencies and demonstrate that it has more parallelism and bandwith performance.
 
-\item A new recursive algebraic coloring scheme (RACE) is proposed, 
-which generates hardware efficient \DK colorings of undirected graphs. 
-Special emphasis in the design of RACE is put on achieving data locality, 
-generating levels of parallelism matching the core count of the underlying 
-multicore processor and load balancing for shared memory parallelization.
-\item We propose shared memory parallelization of \acrshort{SymmSpMV}  
-using a \DTWO coloring of the underlying undirected graph to avoid
-write conflicts and apply RACE for generating the colorings.
-\item A comprehensive performance study of shared memory parallel \acrshort{SymmSpMV} 
-using RACE demonstrates the benefit of our approach. Performance modelling
-is deployed to substantiate our performance measurements and a comparison to
-existing coloring methods as well a vendor optimized library (Intel MKL) 
-are presented. The broad applicability and the sustainability is validated 
-by using a wide set of 31 test matrices and two very different generations 
-of Intel Xeon processors.
-\item We extend existing the proven \acrshort{SpMV} performance modelling approach
-to the \acrshort{SymmSpMV} kernel. In the course of the performance analysis we
-further demonstrate that SIMD vectorization may negatively impact \acrshort{SymmSpMV}
-performance. \CAcomm{Should it be so specific since other factors like nnzr and caches
-	also contributes isn't the following statement better? "In the course of the 
-	performance analysis we further demonstrate why the ideal $2\times$ speedup
-	might not always be achievable."}
-
-In this paper we present a novel recursive algebraic coloring approach called RACE,
-which generates hardware-efficient 
-solving general distance-$k$ dependencies and demonstrate that it has more parallelism and bandwith performance. It is motivated by the shortcomings of existing \acrshort{MC} methods in terms of hardware efficiency and parallelization overhead. Our method addresses matrices that can be represented by an undirected graph. 
-
-
-In this paper we present a novel recursive algebraic coloring approach solving general distance-$k$ dependencies and demonstrate that it has more parallelism and bandwith performance. It is motivated by the shortcomings of existing \acrshort{MC} methods in terms of hardware efficiency and parallelization overhead. Our method addresses matrices that can be represented by an undirected graph. In a first step we do a \acrlong{BFS} preprocessing for bandwidth reduction of the graph, which aims to increase data locality for the underlying sparse matrix problems: Starting from a root vertex we construct level-set by using the \acrshort{BFS} algorithm \ie \level $i$ consists of all nodes having distance $i$ to the root vertex. We then permute the graph such that vertex numbering increases with distance from the root vertex. Coloring the resulting \levels would be a naive approach to generate a \DK coloring but would for, obvious reasons (\eg \level 0 contains only one vertex), often lead to severe load imbalance. Thus we perform in a second step $level$ $aggregation$ of neighboring \levels, which aims at conserving data locality. The choice of the size of each \levelGroup is subject to two major constraints: First, for a \DK coloring of the original graph/problem at least $k$ \levels are aggregated into a \levelGroup. This means that alternate \levelGroups can be executed in parallel which is equivalent to a \DONE coloring of the \levelGroups. Second, we apply a criterion for load balancing that considers the total amount of hardware threads to be used at execution time and tries to balance workload across these threads evenly. At this stage it might happen that most of the vertices end up in a few \levelGroups. Therefore, depending on the size of the \levelGroups, a different number of threads will be assigned to each of them. \Inorder to further parallelize within this \levelGroup for assigned threads the entire procedure is recursively repeated on their corresponding \subgraphs subject to the \DK constraint. The aggregation step is controlled by a single external parameter which influences the load imbalance introduced by forming each \levelGroup. Due to the recursive nature of this algorithm, nested parallelism is required. However, only local synchronization is required between the threads assigned to the same \subgraph.
-\end{comment}
