@@ -76,34 +76,31 @@ For larger matrices (\ie larger $N_r$) the reuse of vector data during a single 
 
 In short, \acrshort{RACE} has an average speedup of 1.4$\times$ and 1.5$\times$ compared to \acrshort{SpMV} on the \SKX and \IVB architectures, respectively. On \SKX \acrshort{RACE} \acrshort{SymmSpMV} attains on an average 87\% and 80\% of the roofline performance limits predicted using the copy and load bandwidth, respectively, while on \IVB we are 91\% and 83\% close to the respective performance models.
 
-\CAcomm{The MKL implementations of \acrshort{SymmSpMV} deserves a special consideration in this context.}
+The MKL implementations of \acrshort{SymmSpMV} deserves a special consideration in this context.
 Therefore,  in \Cref{fig:SpMV_vs_SymmSpMV} we also compare  our approach with the two \acrshort{MKL} options described above. For the MKL-IE variant we specify exploiting the symmetry of the matrix when calling the inspector routine. 
 On the \IVB architecture, \acrshort{RACE} always provides superior performance levels and the best performing Intel variant depends on the underlying matrix. On the \SKX, however, MKL-IE always outperforms the deprecated MKL routine and is superior to \acrshort{RACE} for two matrices (\texttt{crankseg-1,offshore}). These are the same matrices where \acrshort{RACE} is slower than the MKL \acrshort{SpMV} kernel (see \Cref{fig:spmv_vs_symm_spmv_skx}). It can be clearly seen that the MKL-IE data for \acrshort{SymmSpMV} 
  are identical with the MKL \acrshort{SpMV} numbers presented in \Cref{fig:SpMV_vs_SymmSpMV}, \ie the inspector calls the baseline \acrshort{SpMV} kernel and uses the full matrix, though it knows about the symmetry of the matrix. One reason for that strategy might be that the parallelization approach used in the deprecated MKL implementation for \acrshort{SymmSpMV} is not scalable which would explain the fact that MKL is worse than MKL-IE for all cases on \SKX.  As neither the algorithm used to parallelize the \acrshort{SymmSpMV} nor its low level code implementation is known, we refrain from a deep analysis of the Intel performance behavior. 
-In summary we find that \acrshort{RACE} is on average 1.4$\times$ faster than the best Intel variant \CAcomm{and can achieve a speedup of up to 2$\times$}.\footnote{\CAcomm{Note 
+In summary we find that \acrshort{RACE} is on average 1.4$\times$ faster than the best Intel variant and can achieve speedups of up to 2$\times$. Note 
 	that on \SKX the best MKL variant is always MKL-IE, 
 	which has almost twice the memory footprint 
-	compared to the  \acrshort{SymmSpMV} with \acrshort{RACE}.}} 
+	compared to the  \acrshort{SymmSpMV} with \acrshort{RACE}.
 % on \IVB and  1.4$\times$ faster than MKL-IE on \SKX.
 
 \subsubsection{Single core performance}
-\CAcomm{Although single core performance is often considered not to be crucial for 
-the parallelized \acrshort{SymmSpMV} performance, we demonstrate that it is
+Although single core performance is often considered not to be crucial for 
+the full chip \acrshort{SymmSpMV} performance, we demonstrate that it is
 vital to explain some of the performance behaviors. For example the drop in 
 \acrshort{SymmSpMV} performance
 %\CAcomm{Although single core performance is not crucial for the parallelized codes in discussion, its 
 %	however extremely useful in explaining some performance behaviors.
 %Here we use it  to understand the
- for matrices like  \texttt{Hubbard-14} and \texttt{delaunay\_n24} can be 
- clearly explained. This drop 
- has a strong correlation with the lower 
-\acrshort{SpMV} performance for these matrices as seen in \Cref{fig:SpMV_vs_SymmSpMV}.}
+ for matrices like  \texttt{Hubbard-12} and \texttt{delaunay\_n24} strongly correlates with
+ the lower performance of the baseline \acrshort{SpMV} (see \Cref{fig:SpMV_vs_SymmSpMV}).
  These matrices are characterized by a rather low $\acrshort{NNZR}$ and a 
  larger $\alpha_{\acrshort{SpMV}}$ value. Note, that  $\alpha_{\acrshort{SpMV}}$ 
- measured for the \acrshort{SpMV}  kernel mainly accounts for the RHS vector traffic. 
- \CAcomm{Thus it is a lower bound for $\alpha_{\acrshort{SymmSpMV}}$ which leads 
- to  an optimistic lower bound of the actual data traffic in the \acrshort{SymmSpMV} 
- kernel, that requires two vectors to stay in cache concurrently.} 
+ measured for the \acrshort{SpMV}  kernel mainly accounts for the RHS vector traffic 
+  and the actual $\alpha_{\acrshort{SymmSpMV}}$ may even be higher as \acrshort{SymmSpMV}
+  requires two vectors to stay in cache concurrently. 
  Moreover, for these matrices the inner loop lengths are typically very short (approximately $\acrshort{NNZR}/2$ on average) and consequently the SIMD vectorization performed by the 
  compiler may become inefficient. This leads to lower single core performance
   as shown in \Cref{fig:SpMV_vs_SymmSpMV_single_core} for the \SKX architecture, 

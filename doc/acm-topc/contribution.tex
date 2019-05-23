@@ -32,7 +32,7 @@ using RACE demonstrates the benefit of our approach. Performance modelling
  %performance. 
 In the course of the 
  performance analysis we further demonstrate why in some cases the ideal speedup
- might not be achievable.
+ may not be achievable.
 %\item  Sustainability of our approach is demonstrated by using two very differenet generation of Intel Xeon processors (IVB and SKX)
 %\item --- Christie ---
 %	\item Problems with coloring approaches on SymmSpMV
@@ -54,9 +54,9 @@ paper is also available.\footnote{\href{http://tiny.cc/RACElib-AD}{http://tiny.c
 %and discuss the impact on a representative set of 31 sparse matrices. Most of the above coloring approaches explained above in \Cref{Sec:related_work} suffer from performance penalties in one way or the other; for example \acrshort{MC}, degrades the data locality, although this can be improved considerably using \acrshort{ABMC}, still for moderately large matrices or with the increase in $k$ of \DK dependency the method shows deterioration in performance. 
 %These coloring algorithms and related software frameworks do no take advantage of both load balancing as well as the existing deep memory hierarchy and the characteristics of today's compute nodes to achieve improved node-level performance at full scale.
 
-This paper is organized as follows: Our experimental setup, the benchmark
-matrices, as well as the software and hardware environment are introduced
-in \Cref{Sec:test_bed}. In \Cref{Sec:test_kernels} we describe the properties
+This paper is organized as follows: Our software and hardware environment as well as
+ the benchmark matrices are introduced in \Cref{Sec:test_bed}. 
+In \Cref{Sec:test_kernels} we describe the properties
 of the \acrshort{SpMV} and \acrshort{SymmSpMV} kernels, including
 \roofline performance limits, and motivate the need for an advanced coloring scheme.
 In \Cref{Sec:race} we detail the steps of the \acrshort{RACE} algorithm

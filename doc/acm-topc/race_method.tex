@@ -253,9 +253,9 @@ Thus formed \levelGroups are then \DONE
 colored. Then, all \levelGroups within a color can be executed in
 parallel. This simple approach allows one to generate workload for
 a maximum of ${\acrshort{totalLvl}}/{2 k}$ threads if \DK coloring is
-requested.\footnote{\CAcomm{This implies as the number of levels increase 
+requested.\footnote{This implies as the number of levels increase 
 so does the parallelism. For \eg if the matrix contains at least one dense row 
- it will have no parallelism, as $\acrshort{totalLvl}=2$ in this case.}} 
+ it will have no parallelism, as $\acrshort{totalLvl}=2$ in this case.} 
 Note that in all cases vertices within a single \levelGroup
  are computed in their original order, which allows for good
 spatial access locality.
@@ -351,7 +351,7 @@ we need to search for
 further parallelism within the \levelGroups.  Compared to methods like \acrshort{MC} 
 we didn't require all vertices in a \levelGroup to be \DONE (or \DK in general) 
 independent of each other, which is a consequence of our \level based approach 
-where we required \DK independency between vertices of different levels but not 
+where we required \DK independence between vertices of different levels but not 
 within a level (see \Cref{corollary_dk}). There can exist more parallelism within 
 the \levelGroups which we can interpret as \subgraphs.  Thus, we apply the three 
 steps of our method recursively on selected \subgraphs to exploit the parallelism 
@@ -411,7 +411,7 @@ Recursion starts with the selection of a \subgraph of the matrix, which is discu
 	\subsubsection{Distance-$k$ dependencies with $k>1$}  \label{subsec:Dk_dependency}
 In general, however, it is not sufficient in the recursion step to consider only the \subgraphs induced by \levelGroups as can be seen in \Cref{fig:rec_d2_wrong_a} for \DTWO coloring. Applying  the three steps (see \Cref{fig:rec_d2_wrong_b,fig:rec_d2_wrong_c,fig:rec_d2_wrong_d})  to  the \subgraph induced by $T_0(1)$ does not guarantee \DTWO independence between the new \levelGroups $T_1(0)$ and $T_1(2)$. It is obvious that for general \DK colorings two vertices $a,b$ within a \levelGroup might be connected by a shared vertex $c$ outside the \levelGroup.  Thus, our three step procedure must be applied to a \subgraph which contains the actual \levelGroup ($T_s(j)$) as well as its all distance-$p$ neighbors, where $p=1,2,\ldots,(k-1)$.
 %as they
-%For \DK the same procedure as \DONE applies, except with a slight difference in selecting the \subgraph. In \DONE we considered \subgraphs induced by \levelGroups, but for \DK coloring this is not sufficient. As seen in \Cref{fig:rec_d2_wrong_a} for \DTWO coloring the selection of $T_0(1)$ as \subgraph and applying the three steps (see \Cref{fig:rec_d2_wrong_b}, \Cref{fig:rec_d2_wrong_c} and \Cref{fig:rec_d2_wrong_d}) did not guarantee \DTWO independency within \levelGroup $T_1$ of the \subgraph, for \eg $T_1(0)$ and $T_1(2)$ are not \DTWO independent (\cf \Cref{fig:rec_d2_wrong_d}). This is due to the fact that for $k>1$ dependencies two vertices $a,b$ within a \subgraph might be connected to a common vertex ($c$) outside the \subgraph leading to a \DK dependency between $a$ and $b$. In \Cref{fig:rec_d2_wrong} we see 	$3 \xrightarrow{1} 1 \text{ \& } 6 \xrightarrow{1} 1 	\implies 3 \xrightarrow{2} 6$, but since vertex $1$ was not in the \subgraph considered we missed this dependency. 
+%For \DK the same procedure as \DONE applies, except with a slight difference in selecting the \subgraph. In \DONE we considered \subgraphs induced by \levelGroups, but for \DK coloring this is not sufficient. As seen in \Cref{fig:rec_d2_wrong_a} for \DTWO coloring the selection of $T_0(1)$ as \subgraph and applying the three steps (see \Cref{fig:rec_d2_wrong_b}, \Cref{fig:rec_d2_wrong_c} and \Cref{fig:rec_d2_wrong_d}) did not guarantee \DTWO independence within \levelGroup $T_1$ of the \subgraph, for \eg $T_1(0)$ and $T_1(2)$ are not \DTWO independent (\cf \Cref{fig:rec_d2_wrong_d}). This is due to the fact that for $k>1$ dependencies two vertices $a,b$ within a \subgraph might be connected to a common vertex ($c$) outside the \subgraph leading to a \DK dependency between $a$ and $b$. In \Cref{fig:rec_d2_wrong} we see 	$3 \xrightarrow{1} 1 \text{ \& } 6 \xrightarrow{1} 1 	\implies 3 \xrightarrow{2} 6$, but since vertex $1$ was not in the \subgraph considered we missed this dependency. 
      \begin{figure}[t]
      	\centering
      	\subfloat[]{\label{fig:rec_d2_wrong_a}\includegraphics[width=0.23\textwidth, height=0.13\textheight]{pics/recursion/d2/wrong/recursion_graph_wrong_1}}
@@ -446,7 +446,7 @@ This ensures that there is no vertex outside the \subgraph which can mediate a \
 Level construction is performed on the \subgraph (\Cref{fig:rec_d2_correct_c}) but the new levels only contain vertices of  $T_0(1)$, \ie $L_1(1) = \{7^{3,1}\}$. Finally, \DTWO coloring by aggregation of two adjacent levels is performed, leading to three \levelGroups of the second stage $s=1$ (\Cref{fig:rec_d2_correct_d}), \ie $T_1(0)=\{L_1(0) \cup L_1(1)\}$.  Now vertices $3$ and $6$ are mapped to \levelGroups of different colors. Note, that the permutation step on the newly generated levels is not shown but is performed as well to maintain data locality. 
     
 %We finally apply the recursive step to the coloring shown in \Cref{fig:2d_7pt_lb} where parallelism is restricted to five threads at a time.  To increase parallelism to eight threads we do apply our recursive approach 
-%Requesting parallelism for eight threads for our \stex with \DTWO independency instead of five threads (see result of our procedure applying one recursive step to \levelGroups $T_0(4),T_0(5),T_0(6)$ and $T_0(7)$ is seen in \Cref{fig:rec_2d-7pt_graph} (left). 
+%Requesting parallelism for eight threads for our \stex with \DTWO independence instead of five threads (see result of our procedure applying one recursive step to \levelGroups $T_0(4),T_0(5),T_0(6)$ and $T_0(7)$ is seen in \Cref{fig:rec_2d-7pt_graph} (left). 
 %In \Cref{fig:rec_2d-7pt_graph} we demonstrate the impact of one recursive step applied to our \stex with \DTWO 
        \begin{figure}[t]
        	\begin{minipage}[c]{0.6\textwidth}
@@ -521,7 +521,7 @@ The recursive refinement of \levelGroups allows us to tackle load imbalance prob
 	\item The above definition implies that if the weight is close to a natural number $b$, the corresponding workload is close to optimal for operation with $b$ threads. Thus, starting with $L_s(0)$ we aggregate successive levels until their combined weight forms a number $a$ close to a natural number $b$. Distance-k coloring is ensured by enforcing it to aggregate \atleast $2 \times k$ \levels, \ie for \DTWO coloring at least four levels (two for red and two for blue). Closeness of the number is measured by a parameter $\epsilon$ defined as
 	\begin{align*}
 		\epsilon =  1 - abs(a-b), & \text{ where } b= \max(1,[a]),\\
-				& \text{and } [a] \text{\CAcomm{ is the nearest integer of a}};
+				& \text{and } [a] \text{ is the nearest integer of a};
 	\end{align*}
 	and controlled by the criterion
 	\begin{align*}
