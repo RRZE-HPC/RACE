@@ -27,7 +27,7 @@ we present a concept to ensure load balancing between threads. These steps
 are applied recursively if required.
 
 
-%The method is strongly coupled to the hardware underneath and exploits only the parallelism as required by the hardware. If at the end of all these four steps one does not achieve sufficient parallelism, all the steps are recursively applied to selected sub-graphs of the matrix until sufficient parallelism is attained. Due to this recursive nature of our coloring method we cal it as ``\RACfullNoSpace" (\RAC).
+%The method is strongly coupled to the hardware underneath and exploits only the parallelism as required by the hardware. If at the end of all these four steps one does not achieve sufficient parallelism, all the steps are recursively applied to selected sub-graphs of the matrix until sufficient parallelism is attained. Due to this recursive nature of our coloring method we cal it as ``\RACfullNoSpac'' (\RAC).
 
 To illustrate the method we choose a
 simple matrix which is associated with an artificially constructed
@@ -87,7 +87,7 @@ or \acrfull{BFS} \cite{BFS}\@. Although the RCM method is
 also implemented in \acrshort{RACE}, we use the \acrshort{BFS}
 reordering in the following for simpler illustration.
 
-%\acrshort{BFS} can also be replaced with better bandwidth reduction algorithms like ``(Reverse) \CMfull".  
+%\acrshort{BFS} can also be replaced with better bandwidth reduction algorithms like ``(Reverse) \CMfull''.  
 
 First we choose a \emph{root} vertex and assign it to the
 first \level, $L(0)$\@. For $i>0$, \level \acrshort{L_i}
@@ -114,8 +114,8 @@ vertex number and the superscript represents the \level number, \ie
 	v^i \implies v \in L(i)\eos
 \end{equation}
 Note that the $L(i)$ are  substantially different from the \levels used in
-the ``level-scheduling" \cite{saad} approach, which applies ``depth first
-search."
+the ``level-scheduling'' \cite{saad} approach, which applies ``depth first
+search.''
 
 \setlength{\fboxsep}{0pt}%
 
