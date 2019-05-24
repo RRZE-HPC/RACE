@@ -1,5 +1,4 @@
-
-\documentclass[english,10.5pt]{ethbrief3}
+\documentclass[english,10pt]{ethbrief3}
 %\documentclass[ngerman,DepLogo]{ethbrief3}
 %\documentclass[english,DepLogo]{ethbrief3}
 %\documentclass[ngerman,ETHUZH]{ethbrief3}
@@ -27,69 +26,88 @@
 }
 
 % Declaration of the personal data
-    \EthFirstUnitName{Advanced Computing Laboratory}
-    \EthSecondUnitName{Institute of Computational Science}
-    \EthName{Università della Svizzera italiana}
-    \EthPersName{Prof. Olaf Schenk}
+    \EthFirstUnitName{High Performance Computing group }
+    %\EthSecondUnitName{Department of Computer Science}
+    \EthName{Friedrich-Alexander-Universit\"at Erlangen-N\"urnberg}
+    \EthPersName{Christie Louis Alappat}
     % \EthPersPosition{\EthLang{Funktion}{Position}}
     % \EthOffice{\EthLang{Geb\"aude Raum}{Building Room}}
-    \EthStreet{Via Giuseppe Buffi 13}
-     \EthTown{6900 Lugano}
+    \EthStreet{Martensstr. 1}
+     \EthTown{91058 Erlangen}
 %     \EthAddress{\EthLang{Freie\\Adresseingabe}{freestyle\\address}}
 % --- country optional, typical if sendig outside CH
 %     \EthLang{}{\EthCountry{\Switzerland}} % only the country in english version
-     \EthCountry{\Switzerland} % in german and english version
-     \EthEmail{olaf.schenk@usi.ch}
+     \EthCountry{Germany} % in german and english version
+     \EthEmail{christie.alappat@fau.de}
 %     \EthPersInfo{\EthLang{Zus\"atzliche\\Daten}{additional\\data}}
+
 
 % end of declaration of the personal data
 
 %***** Einbinden einer Unterschift-Grafik
 % \signaturefile[0.5cm]{\includegraphics[height=1cm]{mysig}} % include a signature file
 % \signature{}
-     
 %\makelabels         % to get the address for an envelope
-\date{February 09, 2019} % be free to define the date manually
+\date{June 01, 2019} % be free to define the date manually
 %***** multilinguale Ortsnamen, \Zurich definiert als Standard
-\location{Lugano}  % be free to define the location manually
+\location{Erlangen}  % be free to define the location manually
 
 %***** Umbenannt
-\subject[]{XXX}
+\subject[]{Submission of a manuscript}
 
 %***** Umgehung von \begin{letter} moeglich, Angabe der Zieladresse
 \recipient{
-Prof. Zhaojun Bai\\
-Editor-in-Chief, ACM TOMS \\
-\vspace{1em}
-Prof. Wolfgang Bangerth\\
-Editor-in-Chief, ACM TOMS 
+Prof. David A Bader\\
+Editor-in-Chief, ACM TOPC \\
 }
 
 \begin{document}
-
 %***** Umgehung von \begin{letter} moeglich
 %  \begin{letter}{Adresse}
 
-\opening{Dear Prof. Bai, dear Prof. Bangerth, }
+\opening{Dear David A Bader, }
+We wish to submit a manuscript entitled "A Recursive Algebraic Coloring Technique for
+Hardware-Efficient Symmetric Sparse Matrix Vector Multiplication" for consideration for
+publication in the ACM TOPC journal. The article deals with a novel coloring based approach to 
+parallelize Symmetric Sparse Matrix Vector Multiplication (\textcolor{red}{or numerical kernels}) 
+kernel having dependency.  Compared to the existing coloring approaches out approach puts 
+special emphasis on enhancing hardware efficiency and reduction of parallelization overheads.
+This enables our approach to gain substantial performance speedups on modern multicore systems
+compared to the state-of-the-art methods. Our entire performance analysis is backed by a strong 
+performance model which ensures the quality of our method.
+We believe that this manuscript is well-suited for the journal as it aims in finding
+generic solutions to important challenges in exploiting parallelism.\footnote{\href{https://dl.acm.org/citation.cfm?doid=2632163.2661651}{https://dl.acm.org/citation.cfm?doid=2632163.2661651}}
 
+This manuscript has not been published and is not under consideration for publication elsewhere.
+A short five page summary of the method was submitted for 2019 ACM Student Research Competition (SRC) grand finals. 
+As the paper received a second place it will appear in the SRC homepage in near-future.\footnote{\href{https://src.acm.org/}{https://src.acm.org/}}
+ However, this short paper shouldn't conflict this manuscript as it does not explain
+the method in detail, does not include performance modeling, and even does not go into a detailed performance analysis
+as done in this manuscript.
 
+If you feel that the manuscript is appropriate for your journal, we suggest the following
+reviewers:
+\begin{itemize}
+	\item Rich Vuduc, Georgia Institute of Technology.
+	\item Aydin Buluç, Lawrence Berkeley National Lab.
+\end{itemize}
+
+Thank you for consideration.
 
 \closing{Yours sincerely,}
 
-\vspace{-2cm}
+\vspace{-2.7cm}
 
-\includegraphics[width=0.4\linewidth]{signature_schenk_olaf.png}
+\includegraphics[width=0.28\linewidth]{signature_alappat_christie.png}
 
-Olaf Schenk
+Christie Louis Alappat
 
-Full Professor of Computational Science\\
-Director, Master in Computational Science\\
-Director, PhD Graduate School in Informatics\\ 
-Vice Chair,  SIAM Activity Group on Supercomputing\\
-IEEE Senior Member\\
-\marvosymbol{72}~+41 793682281\\
-\marvosymbol{66}~olaf.schenk@usi.ch\\
-\marvosymbol{205}~\url{http://usi.to/ovv}
+PhD student\\
+Friedrich Alexander University\\
+Department of Computer Science\\ 
+\marvosymbol{72}~+49 9131 85 28911\\
+\marvosymbol{66}~christie.alappat@fau.de\\
+%\marvosymbol{205}~\url{http://usi.to/ovv}
 
 
 

@@ -216,7 +216,7 @@
       }% end english logo
   }% end ETH/ETH-UZH logo
   { % else the ETH logo is used
-        \newcommand{\Logo}[1][\textwidth]{\resizebox{#1}{!}{\includegraphics{logo-ics-eng}}}
+        \newcommand{\Logo}[1][\textwidth]{\resizebox{#1}{!}{\includegraphics{Logo_FAU_DinA4_RGB}}}
   }
 
 % department logo
@@ -295,7 +295,7 @@
     }
   \end{picture}
 \par
-\vspace{8mm}
+\vspace{-24mm}
 \eth@LocationText, \@date
 \par
 \vspace{5mm}
