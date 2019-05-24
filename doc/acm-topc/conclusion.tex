@@ -1,23 +1,20 @@
 In this paper we described coloring algorithms and the 
 open-source library implementation \acrshort{RACE} for efficient \acrfull{SymmSpMV} on
-\CAcomm{modern multicore \sout{manycore}} architectures. Motivated by the shortcomings of existing \acrshort{MC} methods in  terms of hardware efficiency 
+modern multicore  architectures. Motivated by the shortcomings of existing \acrshort{MC} methods in  terms of hardware efficiency 
 and to address node-level performance, we derived a novel recursive algebraic  coloring algorithm 
 which eliminates the shortcomings of previously existing coloring methods.
 \acrshort{RACE} generates hardware efficient \DK colorings of undirected graphs and puts 
-\CAcomm{emphasis \sout{emphazise}} on achieving data locality, load balancing, and sufficient levels of parallelism that matches the 
-number of cores  of the underlying architecture. The hardware awareness of the 
-coloring method allows \acrshort{RACE} to achieve good data locality, lower synchronization costs and 
-improved load-balancing compared to other state-of-the art coloring methods. 
-\CAcomm{The two previous sentence can be merged, they tell the same thing.}
-We demonstrated this benefit  by comparing  \acrshort{RACE} performance against two different 
-\acrshort{MC} methods and \acrshort{MKL} implementations. Futhermore, our entire performance experiments
+emphasis on achieving data locality, load balancing, and sufficient levels of parallelism that matches the 
+number of cores  of the underlying architecture. 
+We demonstrated these benefits by comparing \acrshort{RACE} performance against other state-of-the art
+coloring methods and  \acrshort{MKL} implementations. Futhermore, our entire performance experiments
 was backed by a strong performance model,  which ensured us the optimality of the \acrshort{RACE} approach
 and threw light into the modern challenges  of the \acrshort{SymmSpMV} kernel.
 A comparison with a state-of-the-art library  supplied by the Intel vendor, using 31 sparse matrices 
 on the latest Intel  processors, shows that the proposed approach in \acrshort{RACE}
 obtains performance very close to the estimated prediction using our derived roofline performance model for 
 \acrfull{SymmSpMV}. \acrshort{RACE} fullty takes into account  deep memory hierarchies thus 
-\CAcomm{enhancing \sout{hampering}} scalability and full-chip performance.
+hampering scalability and full-chip performance.
  We obtained an average speedup of over 1.4 for \acrshort{SymmSpMV} compared to current 
 state-of-the-art  coloring algorithm and can achieve speedups of up to 2.
 
