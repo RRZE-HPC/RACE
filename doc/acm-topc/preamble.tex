@@ -21,6 +21,7 @@
 \usepackage{xspace} 
 \usepackage{comment}
 \usepackage{siunitx} 
+\sisetup{group-separator={,}}
 \usepackage{amssymb}
 \usepackage[normalem]{ulem}
 \usepackage[acronym, nonumberlist]{glossaries} %texlive-generic-extra package required
@@ -34,6 +35,7 @@
 \renewcommand\thesubfigure{(\alph{subfigure})} %For parantheses around subfig number in cref
 
 \newcommand\mathmacro[1][A]{\ensuremath{{#1}}}
+%\citestyle{acmauthoryear}
 
 \newacronym{nrows}{\mathmacro[N_r]}{number of rows}
 \newacronym{nrowsEff}{\mathmacro[N_{r}^{eff}]}{effective number of rows}
