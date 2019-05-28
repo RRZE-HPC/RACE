@@ -1,11 +1,29 @@
-%{\GW (Versuch einiger einleitender Worte um die beiden Themen kurz in Kontext zu setzen)}
-The efficient solution of linear systems or eigenvalue problems involving large sparse matrices has been an active research field in parallel and high performance computing for many decades. Well-known, traditional application areas include quantum physics, quantum chemistry or engineering. In recent years, new fields such as social graph analysis ~\cite{Simpson:2018:BGP:3218176.3218232}
-or spectral clustering in the context of learning algorithms \cite{vonLuxburg2007,JMLR:v17:16-109} have further increased the need for hardware-efficient, parallel sparse solvers and/or efficient matrix-free solvers. Assuming sufficiently large problems, the solvers are typically based on iterative subspace methods and may include advanced preconditioning techniques. In many methods, two components,  \acrfull{SpMV}  and coloring techniques, are crucial for hardware efficiency and parallel scalability. Typically, these two components are considered to be orthogonal, i.e., hardware efficiency for \Acrshort{SpMV} is mainly related to data formats and local structures while coloring is used to address dependencies in the enclosing iteration scheme.  Interestingly, the hardware-efficient parallelization of symmetric \Acrshort{SpMV} has not attracted a lot of attention over the years, though symmetry is widespread in the application fields. 
+The efficient solution of linear systems or eigenvalue problems
+involving large sparse matrices has been an active research field in
+parallel and high performance computing for many decades. Well-known,
+traditional application areas include quantum physics, quantum
+chemistry or engineering. In recent years, new fields such as social
+graph analysis ~\cite{Simpson:2018:BGP:3218176.3218232} or spectral
+clustering in the context of learning
+algorithms \cite{vonLuxburg2007,JMLR:v17:16-109} have further
+increased the need for hardware-efficient, parallel sparse solvers
+and/or efficient matrix-free solvers. Assuming sufficiently large
+problems, the solvers are typically based on iterative subspace
+methods and may include advanced preconditioning techniques. In many
+methods, two components, \acrfull{SpMV} and coloring techniques, are
+crucial for hardware efficiency and parallel scalability. Typically,
+these two components are considered to be orthogonal, \ie hardware
+efficiency for \Acrshort{SpMV} is mainly related to data formats and
+local structures while coloring is used to address dependencies in the
+enclosing iteration scheme.  Interestingly, the hardware-efficient
+parallelization of symmetric \Acrshort{SpMV} has not attracted a lot
+of attention over the years, though symmetry is widespread in the
+application fields.
 
 The \Acrshort{SpMV} operation is an essential building block 
 in a number of applications such as algebraic multigrid methods, 
 sparse iterative solvers, shortest path algorithms, breadth first search algorithms, 
-and Markov cluster algorithms and therefore it is an integral part 
+and Markov cluster algorithms, and therefore it is an integral part 
 of numerous scientific algorithms.
 In the past decades, much research has been
 focusing on designing new data structures, efficient algorithms, and
@@ -63,7 +81,8 @@ Despite \acrshort{SpMV} being a bandwidth-limited operation not much work has
 been done to exploit the symmetry property of symmetric matrices to reduce
 storage requirements and data transfers by using only the upper/lower triangular part of the matrix.
 % and hence  optimizing storage and data transfer of symmetric matrices .
-The major challenge here is to resolve the potential write conflicts of explicit \acrshort{SymmSpMV} kernels in parallel processing.
+The major challenge here is to resolve the potential write conflicts of explicit 
+\acrfull{SymmSpMV} kernels in parallel processing.
 %is mainly due to the dependency problems that arise with the parallelization of the  \acrshort{SymmSpMV} operation. 
 There are general solutions for such problems like 
 lock based methods and thread private target
@@ -82,7 +101,7 @@ Another potential way of tackling this inherent data dependency problem is using
 %	\item Another point in favor of coloring is most of the above approaches would work only for \acrshort{SymmSpMV} kernels and are not suitable for D-2 solvers like KACZ.
 %\end{itemize}
 
-\Acrfull{MC} reordering to tackle data dependencies is a very well established strategy in parallelization of iterative solvers. As it is applied to the underlying graph it is not bound to a specific data format and may use existing highly optimized (serial) kernels, i.e. it is orthogonal to general code optimization strategies.  
+\Acrfull{MC} reordering to tackle data dependencies is a very well established strategy in parallelization of iterative solvers. As it is applied to the underlying graph it is not bound to a specific data format and may use existing highly optimized (serial) kernels, \ie it is orthogonal to general code optimization strategies.  
 Prominent examples for  \acrshort{MC} in iterative solvers are Gauss-Seidel, incomplete 
 Cholesky factorization or Kaczmarz method~\cite{RBGS,MC,feast_mc} where typically a \DONE or \DTWO coloring is applied subject to the underlying dependencies of the iterative scheme. However, coloring changes the evaluation order of the original solver and may lead to worse convergence rates. This is different when using  \acrshort{MC} methods for parallelization of \acrshort{SymmSpMV} where we only need to ensure that entries of the target vector is not written in parallel. Here we do not  require strict serial ordering to get to the same result as in serial processing.
 In terms of hardware utilization long-standing \acrshort{MC} methods often generate colorings which lack efficiency on modern cache-based

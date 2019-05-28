@@ -443,7 +443,7 @@ This ensures that there is no vertex outside the \subgraph which can mediate a \
      	\caption{Correct procedure for \DTWO coloring of \levelGroup $T_0(1)$. The \subgraph as shown in \Cref{fig:rec_d2_correct_b} contains \levelGroup $T_0(1)$ and its \DONE neighborhood. A level construction step is applied to this \subgraph in \Cref{fig:rec_d2_correct_c}. Distance-2 coloring by level aggregation leading to \levelGroups of stage 1 is shown in \Cref{fig:rec_d2_correct_d}; we get three \levelGroups at the end of the recursion on $T_0(1)$.}
      	\label{fig:rec_d2_correct}
      \end{figure}
-Level construction is performed on the \subgraph (\Cref{fig:rec_d2_correct_c}) but the new levels only contain vertices of  $T_0(1)$, \ie $L_1(1) = \{7^{3,1}\}$. Finally, \DTWO coloring by aggregation of two adjacent levels is performed, leading to three \levelGroups of the second stage $s=1$ (\Cref{fig:rec_d2_correct_d}), \ie $T_1(0)=\{L_1(0) \cup L_1(1)\}$.  Now vertices $3$ and $6$ are mapped to \levelGroups of different colors. Note, that the permutation step on the newly generated levels is not shown but is performed as well to maintain data locality. 
+Level construction is performed on the \subgraph (\Cref{fig:rec_d2_correct_c}) but the new levels only contain vertices of  $T_0(1)$, \ie $L_1(1) = \{7^{3,1}\}$. Finally, \DTWO coloring by aggregation of two adjacent levels is performed, leading to three \levelGroups of the second stage $s=1$ (\Cref{fig:rec_d2_correct_d}), \ie $T_1(0)=\{L_1(0) \cup L_1(1)\}$.  Now vertices $3$ and $6$ are mapped to \levelGroups of different colors. Note that the permutation step on the newly generated levels is not shown but is performed as well to maintain data locality. 
     
 %We finally apply the recursive step to the coloring shown in \Cref{fig:2d_7pt_lb} where parallelism is restricted to five threads at a time.  To increase parallelism to eight threads we do apply our recursive approach 
 %Requesting parallelism for eight threads for our \stex with \DTWO independence instead of five threads (see result of our procedure applying one recursive step to \levelGroups $T_0(4),T_0(5),T_0(6)$ and $T_0(7)$ is seen in \Cref{fig:rec_2d-7pt_graph} (left). 
@@ -518,10 +518,10 @@ The recursive refinement of \levelGroups allows us to tackle load imbalance prob
 		\{w(L_0(0)), w(L_0(1)), w(L_0(2)), ...\} &= \Big{\{} \frac{1}{256} \times 8 , \frac{2}{256} \times 8 , \frac{3}{256} \times 8 , ...\Big{\}}.
 	\end{align*}
 	
-	\item The above definition implies that if the weight is close to a natural number $b$, the corresponding workload is close to optimal for operation with $b$ threads. Thus, starting with $L_s(0)$ we aggregate successive levels until their combined weight forms a number $a$ close to a natural number $b$. Distance-k coloring is ensured by enforcing it to aggregate \atleast $2 \times k$ \levels, \ie for \DTWO coloring at least four levels (two for red and two for blue). Closeness of the number is measured by a parameter $\epsilon$ defined as
+	\item The above definition implies that if the weight is close to a natural number $b$, the corresponding workload is near optimal for operation with $b$ threads. Thus, starting with $L_s(0)$ we aggregate successive levels until their combined weight forms a number $a$ close to a natural number $b$. Distance-k coloring is ensured by enforcing it to aggregate \atleast $2 \times k$ \levels, \ie for \DTWO coloring at least four levels (two for red and two for blue). Closeness of the number is measured by a parameter $\epsilon$ defined as
 	\begin{align*}
-		\epsilon =  1 - abs(a-b), & \text{ where } b= \max(1,[a]),\\
-				& \text{and } [a] \text{ is the nearest integer of a};
+		\epsilon =  1 - abs(a-b), & \text{ where } b= \max(1,[a])\\
+				& \text{and } [a] \text{ is the nearest integer of a},
 	\end{align*}
 	and controlled by the criterion
 	\begin{align*}
@@ -538,7 +538,11 @@ The recursive refinement of \levelGroups allows us to tackle load imbalance prob
 	%Here the calculation of mean and variance considers the weights of the levels and \levelGroups {\GW or better: considers the number of threads assigned to each \levelGroup ?}{\CA I wouldn't use levels here, I think the sentence in your comment (blue) is  better $\rightarrow$ }
 	Here the calculation of mean and variance considers the number of threads ($\acrshort{nthreads}(T_{s}(j))$) assigned to each \levelGroup . Ideally, after this step the load per thread in each \levelGroup should approach the optimal value given above.
 	% a \levelGroup with $b$ threads will ideally have $b$ times more load (vertices) than a \levelGroup with weight one. 
-	The same algorithm \Cref{alg:LB} as presented in \Cref{subsec:LB} can be used but with slight modifications. The modifications have been shown in the beginning of \Cref{alg:LB}. The worker array now has to be replaced by the number of threads assigned to each \levelGroup ($\acrshort{nthreads}(T_{s}(j))$). The algorithm then tries to minimize the variance of the number of vertices per thread in \levelGroups.
+	The same algorithm %\Cref{alg:LB} as 
+	as presented in \Cref{subsec:LB} can be used but with slight modifications. 
+	%\Cref{alg:LB} in \cref{Sec:algo} shows the modifications in the beginning.
+	The modifications have been shown in the beginning of \Cref{alg:LB} (see \cref{Sec:algo}). 
+	The worker array now has to be replaced by the number of threads assigned to each \levelGroup ($\acrshort{nthreads}(T_{s}(j))$). The algorithm then tries to minimize the variance of the number of vertices per thread in \levelGroups.
 \end{enumerate}
 Once the \levelGroup of stage $s$ has been formed, the recursion and the above procedure are separately applied to all new \levelGroups with more than one thread assigned. This continues until every \levelGroup is assigned to one thread. The depth of the recursion is determined by the parameter $\epsilon_s$ and depends on matrix structure as well as degree of parallelism requested. 
 %\sout{ or the maximum recursion level (defined by user) is reached.} {\GW Is that correct?}{\CA No, since if recursion stops prematurely, some \levelGroups will have more than one thread assigned, and hence if these are not splitted by next stage recursion it will cause threads to have load imbalance. Only possibility to control this is via $\epsilon_s$ which can be reduced if many stages are not wished.}
