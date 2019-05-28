@@ -1,6 +1,6 @@
 %{\GW (Versuch einiger einleitender Worte um die beiden Themen kurz in Kontext zu setzen)}
-The efficient solution of linear systems or eigenvalue problems involving large sparse matrices has been an active research field in parallel and high performance computing for many decades. Well-known, traditional application areas include quantum physics, quantum chemistry or engineering. In recent years new fields such as social graph analysis ~\cite{Simpson:2018:BGP:3218176.3218232}
-or spectral clustering in the context of learning algorithms \cite{vonLuxburg2007,JMLR:v17:16-109} have further increased the need for hardware-efficient, parallel sparse solvers and/or efficient matrix-free solvers. Assuming sufficiently large problems, the solvers are typically based on iterative subspace method and may include advanced preconditioning techniques. In many methods two components,  \acrfull{SpMV}  and coloring techniques, are among the most crucial parts for hardware efficiency and parallel scalability. Typically, these two components are considered to be orthogonal, i.e. hardware efficiency for \Acrshort{SpMV} is mainly related to data formats and local structures while coloring is used to address dependencies in the enclosing iteration scheme.  Interestingly, the hardware efficient parallelization of symmetric \Acrshort{SpMV} has not attracted a lot of attention over the years, though symmetry is widespread in the application fields. 
+The efficient solution of linear systems or eigenvalue problems involving large sparse matrices has been an active research field in parallel and high performance computing for many decades. Well-known, traditional application areas include quantum physics, quantum chemistry or engineering. In recent years, new fields such as social graph analysis ~\cite{Simpson:2018:BGP:3218176.3218232}
+or spectral clustering in the context of learning algorithms \cite{vonLuxburg2007,JMLR:v17:16-109} have further increased the need for hardware-efficient, parallel sparse solvers and/or efficient matrix-free solvers. Assuming sufficiently large problems, the solvers are typically based on iterative subspace methods and may include advanced preconditioning techniques. In many methods, two components,  \acrfull{SpMV}  and coloring techniques, are crucial for hardware efficiency and parallel scalability. Typically, these two components are considered to be orthogonal, i.e., hardware efficiency for \Acrshort{SpMV} is mainly related to data formats and local structures while coloring is used to address dependencies in the enclosing iteration scheme.  Interestingly, the hardware-efficient parallelization of symmetric \Acrshort{SpMV} has not attracted a lot of attention over the years, though symmetry is widespread in the application fields. 
 
 The \Acrshort{SpMV} operation is an essential building block 
 in a number of applications such as algebraic multigrid methods, 
@@ -27,7 +27,7 @@ used advanced data storage formats and techniques such as register and cache blo
 \acrshort{SpMV} by splitting the matrix into several smaller $p \times
 q$ sparse submatrices and presented an analytic cache-aware model to
 determine the optimal block size. These algorithms are, e.g.,
-included in OSKI~\cite{1742-6596-16-1-071} which is a collection of
+included in OSKI~\cite{1742-6596-16-1-071}, which is a collection of
 low-level primitives of tuned sparse kernels for modern cache-based
 superscalar machines. Kreutzer \etal~\cite{Moritz_sell} and 
 Xing \etal~\cite{Liu:2013:ESM:2464996.2465013} used techniques to 
