@@ -1,34 +1,35 @@
-In this paper we described coloring algorithms and the 
-open-source library implementation \acrshort{RACE} for efficient \acrfull{SymmSpMV} on
-modern multicore  architectures. Motivated by the shortcomings of existing \acrshort{MC} methods in  terms of hardware efficiency 
-and to address node-level performance, we derived a novel recursive algebraic  coloring algorithm 
-which eliminates the shortcomings of previously existing coloring methods.
-\acrshort{RACE} generates hardware efficient \DK colorings of undirected graphs and puts 
-emphasis on achieving data locality, load balancing, and sufficient levels of parallelism that matches the 
-number of cores  of the underlying architecture. 
-We demonstrated these benefits by comparing \acrshort{RACE} performance against other state-of-the art
-coloring methods and  \acrshort{MKL} implementations. Futhermore, our entire performance experiments
-was backed by a strong performance model,  which ensured us the optimality of the \acrshort{RACE} approach
-and threw light into the modern challenges  of the \acrshort{SymmSpMV} kernel.
-A comparison with a state-of-the-art library  supplied by the Intel vendor, using 31 sparse matrices 
-on the latest Intel  processors, shows that the proposed approach in \acrshort{RACE}
-obtains performance very close to the estimated prediction using our derived roofline performance model for 
-\acrfull{SymmSpMV}. \acrshort{RACE} fully takes into account  deep memory hierarchies thus 
-hampering scalability and full-chip performance.
- We obtained an average speedup of over 1.4 for \acrshort{SymmSpMV} compared to current 
-state-of-the-art  coloring algorithm and can achieve speedups of up to 2.
+In this paper we have developed \acrshort{RACE}, a coloring algorithm and open-source library
+implementation for exploiting parallelism in algorithms with write conflicts.
+\acrshort{RACE} generates hardware-efficient \DK colorings of undirected graphs and puts 
+emphasis on data access locality, load balancing, and 
+parallelism that is adapted to the number of cores of the underlying architecture.  We
+demonstrated these benefits by applying \acrshort{RACE} to \acrfull{SymmSpMV} on modern
+multicore architectures and compared its performance against
+standard multicoloring, algebraic block multicoloring, and \acrshort{MKL}
+implementations. Average and maximum speedups of 1.4 and 2, respectively,
+could be observed across a representative set of 31 matrices on
+two modern Intel processors. 
+%Motivated by the shortcomings of existing \acrshort{MC}
+%methods in terms of hardware efficiency and to address node-level performance,
+%we derived a novel recursive algebraic coloring algorithm which eliminates the
+%shortcomings of previously existing coloring methods.
+Our entire experimental and performance analysis process was backed by the
+Roof{}line performance model, corroborating the optimality of
+the \acrshort{RACE} approach in terms of resource utilization and shedding some new
+light on the challenges of the \acrshort{SymmSpMV} kernel on modern hardware.
+We demonstrated that \acrshort{RACE} runs very close to the Roof{}line limit for
+most of the 31 test cases. Outliers were analyzed and discussed in detail.
+%\acrshort{RACE} fully takes into account  deep memory hierarchies thus 
+%hampering scalability and full-chip performance.
 
-
-
-
-However, similar to any other \acrshort{MC} approaches \acrshort{RACE} method 
-is not just limited to the \acrshort{SymmSpMV} kernel
-and can be used to efficiently parallelize solvers and kernels 
-having general \DK dependencies. Moreover, due to the level-based formulation
-of \acrshort{RACE} the framework has an added advantage to address 
-other classes of problems. Future work with \acrshort{RACE} will involve the
-kernel operations like in-place matrix powers and polynomials, which are of 
-high interest in the scientific community. 
+Similar to other \acrshort{MC} approaches, the \acrshort{RACE} method is not
+limited to the \acrshort{SymmSpMV} kernel and can be used to efficiently
+parallelize solvers and kernels having general \DK dependencies. Moreover, due
+to the level-based formulation of \acrshort{RACE}, the framework has an added
+advantage that allows us to address other classes of problems. Future work
+with \acrshort{RACE} will involve variants of linear solvers and kernel
+operations like in-place matrix powers and polynomials, which are of high
+interest in the scientific community.
 
 
 
