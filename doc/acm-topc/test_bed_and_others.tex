@@ -9,7 +9,7 @@ We conducted all benchmarks on a single CPU socket from Intel's \IVB and  \SKX f
  
 \end{itemize}
 Architectural details along with the attainable memory bandwidths are given in \Cref{tab:test_bed}. 
-All the measurements were done with \CPU clock speeds fixed at the indicated base frequencies. Note that for the \SKX architecture the clock frequency is scaled down internally to 2.2 \GHZ when using multicore support and the AVX-512 instruction set; however, this is of minor importance for the algorithms discussed here.
+All the measurements were made with \CPU clock speeds fixed at the indicated base frequencies. Note that for the \SKX architecture the clock frequency is scaled down internally to 2.2 \GHZ when using multicore support and the AVX-512 instruction set; however, this is of minor importance for the algorithms discussed here.
 \begin{comment}
 \begin{table}[tbp]
 \footnotesize
@@ -59,7 +59,7 @@ All the measurements were done with \CPU clock speeds fixed at the indicated bas
 		\end{tabular}
 	\end{center}
 \end{table} 
-As the attainable main memory bandwidth is the input parameter to the \roofline model used later, we have carefully measured this value depending on the data set size for two access patterns (copy and load-only). The data presented in \Cref{fig:size_vs_bw} basically show the characteristic performance drop if data set size is too large to fit into the \acrfull{LLC}, which is an L3 cache on both architectures (cf. \Cref{tab:test_bed} for the actual sizes). 
+As the attainable main memory bandwidth is the input parameter to the \roofline model used later, we have carefully measured this value depending on the data set size for two access patterns (copy and load-only). The data presented in \Cref{fig:size_vs_bw} basically show the characteristic performance drop if the data set size is too large to fit into the \acrfull{LLC}, which is an L3 cache on both architectures (cf. \Cref{tab:test_bed} for the actual sizes). 
 \begin{figure}[t]
 	\centering
 	\subfloat[\emph{\IVB}]{\label{fig:ivy_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/ivy}}
@@ -97,7 +97,7 @@ All code was compiled with the Intel compiler in version 19.0.2 and the followin
 \label{subsec:bench_mat}
 Most test matrices were taken from the Suite\-Sparse Matrix Collection (formerly University of Florida Sparse Matrix Collection)~\cite{UOF} combining sets from two related papers \cite{RSB,park_ls}, which allows the reader to make a straightforward comparison of results.  We also added some matrices from the Scalable Matrix Collection (ScaMaC) library\cite{ScaMaC}, which allows for scalable generation of large matrices related to quantum physics applications. A brief description of the background of these matrices can be found in ScaMaC documentation.\footnote{\href{https://alvbit.bitbucket.io/scamac_docs/_matrices_page.html}{https://alvbit.bitbucket.io/scamac\_docs/\_matrices\_page.html}} All the matrices considered are real, although our underlying software would also support complex matrices.
 %The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by  Matrices from \ESSEX project are some of the matrices that are of interest in the iterative FEAST eigen value solver that internally uses Kaczmarz solver.
-As mentioned before we restrict ourselves to matrices representing fully connected undirected graphs.
+As mentioned before, we restrict ourselves to matrices representing fully connected undirected graphs.
 \Cref{table:bench_matrices} gives an overview of the most important matrix properties like \acrfull{nrows}, \acrfull{nnz}, \acrfull{NNZR}, along with the bandwidth of the matrix without ($bw$) and with ($bw_{RCM}$) \acrshort{RCM} preprocessing. 
 
 Due to the extended cache size as seen in \Cref{fig:size_vs_bw} it

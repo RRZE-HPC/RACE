@@ -57,7 +57,7 @@ in~\cite{li2017hbm,Liu:2015:CES:2751205.2751209,liu2015spmv}.
  variants of graph or hypergraph partitioning
  techniques~\cite{Catalyurek:1999}. Yzelman and
  Bisseling~\cite{doi:10.1137/080733243,Yzelman-thesis-2011} extended
- hypergraph partitioning techniques by a cache-oblivious method,
+ hypergraph partitioning techniques in a cache-oblivious method,
  permuting rows and columns of the input matrix using a recursive
  hypergraph-based sparse matrix partitioning scheme so that the
  resulting matrix exhibits cache-friendly behavior during the
@@ -86,7 +86,7 @@ The major challenge here is to resolve the potential write conflicts of explicit
 %is mainly due to the dependency problems that arise with the parallelization of the  \acrshort{SymmSpMV} operation. 
 There are general solutions for such problems like 
 lock based methods and thread private target
-arrays~\cite{sparseX,thread_private_symm_spmv,Krotkiewski:2010:PSS:1752612.1752682,Mironowicz:2015}. However they have in common that their overhead may increase with degree of parallelism.
+arrays~\cite{sparseX,thread_private_symm_spmv,Krotkiewski:2010:PSS:1752612.1752682,Mironowicz:2015}. However they have in common that their overhead may increase with the degree of parallelism.
 %which may potentially increase overhead with the level of parallelism.
 Another recent research direction is the use of specialized storage formats 
 like CSB \cite{CSB}, RSB \cite{RSB}, CSX \cite{sparseX} combined with the use of bitmasked 
@@ -103,9 +103,9 @@ Another potential way of tackling this inherent data dependency problem is using
 
 \Acrfull{MC} reordering to tackle data dependencies is a very well established strategy in parallelization of iterative solvers. As it is applied to the underlying graph it is not bound to a specific data format and may use existing highly optimized (serial) kernels, \ie it is orthogonal to general code optimization strategies.  
 Prominent examples for  \acrshort{MC} in iterative solvers are Gauss-Seidel, incomplete 
-Cholesky factorization or Kaczmarz method~\cite{RBGS,MC,feast_mc} where typically a \DONE or \DTWO coloring is applied subject to the underlying dependencies of the iterative scheme. However, coloring changes the evaluation order of the original solver and may lead to worse convergence rates. This is different when using  \acrshort{MC} methods for parallelization of \acrshort{SymmSpMV} where we only need to ensure that entries of the target vector is not written in parallel. Here we do not  require strict serial ordering to get to the same result as in serial processing.
+Cholesky factorization or Kaczmarz method~\cite{RBGS,MC,feast_mc}, where typically a \DONE or \DTWO coloring is applied subject to the underlying dependencies of the iterative scheme. However, coloring changes the evaluation order of the original solver and may lead to worse convergence rates. This is different when using  \acrshort{MC} methods for parallelization of \acrshort{SymmSpMV} where we only need to ensure that entries of the target vector is not written in parallel. Here we do not  require strict serial ordering to get to the same result as in serial processing.
 In terms of hardware utilization long-standing \acrshort{MC} methods often generate colorings which lack efficiency on modern cache-based
-processors. Studies have been done to increase their
+processors. Studies have been made to increase their
 performance and improve inherent heuristics; an overview of the methods can be found in~\cite{gebremedhin2000scalable,dist_k_def,COLPACK,equitable_color}. However, 
 for irregular and/or large sparse 
 matrices \acrshort{MC} may lead to load imbalance, frequent global synchronization, 
@@ -113,7 +113,7 @@ and loss of data locality, severely reducing (single-node) performance.
 These problems typically become more stringent for higher order distance
 colorings and larger matrices.
 The \acrfull{ABMC}~\cite{ABMC} proposed by Iwashita \etal in 2012 addresses some of these issues as it tries to increase data locality by applying graph partitioning (blocking) before coloring. 
-Beyond the quality of the actual coloring the time to generate it is also critical, especially for very large problems. Here, widely used and public available coloring packages such as COLPACK\cite{COLPACK}, Kokkos\cite{kokkos} and ZOLTAN\cite{BOZDAG2008515,doi:10.1137/080732158} speed-up the coloring process itself by parallelization and other heuristics. 
+Beyond the quality of the actual coloring, the time to generate it is also critical, especially for very large problems. Here, widely used and publicly available coloring packages such as COLPACK\cite{COLPACK}, Kokkos\cite{kokkos} and ZOLTAN\cite{BOZDAG2008515,doi:10.1137/080732158} speed-up the coloring process itself by parallelization and other heuristics. 
 
 \begin{comment}
 {\GW Olaf please check: Beziehen sich diese beiden Saetze un Referenzen auf den COloring Prozess? Falls ja - benoetigen wir diese? Dazu sagen wir ja gar nichts}
@@ -169,7 +169,7 @@ successfully used to model performance on CPUs and GPGPUs for \acrshort{SpMV}
 kernels~\cite{Moritz_sell} and for augmented sparse matrix multiple vector kernels
 for Chebyshev filter diagonalization~\cite{ISC2018:ChebFD}. However, there is no
 extension towards explicit \acrshort{SymmSpMV}, which shows increased
-computational intensity and irregular accesses to both vectors involved. Typically the
+computational intensity and irregular accesses to both involved vectors. Typically the
 expectation is that \acrshort{SymmSpMV} should be approximately twice as fast
 as \acrshort{SpMV} as only half of the matrix information needs to be stored and
 accessed.
