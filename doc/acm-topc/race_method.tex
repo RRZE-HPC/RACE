@@ -253,23 +253,23 @@ Thus formed \levelGroups are then \DONE
 colored. Then, all \levelGroups within a color can be executed in
 parallel. This simple approach allows one to generate workload for
 a maximum of ${\acrshort{totalLvl}}/{2 k}$ threads if \DK coloring is
-requested.\footnote{This implies as the number of levels increase 
-so does the parallelism. For \eg if the matrix contains at least one dense row 
- it will have no parallelism, as $\acrshort{totalLvl}=2$ in this case.} 
-Note that in all cases vertices within a single \levelGroup
+requested.\footnote{This implies that as the number of levels increases,
+so does the parallelism. E.g., if the matrix contains at least one dense row,
+ there is parallelism as $\acrshort{totalLvl}=2$ in this case.} 
+Note that in all cases, vertices within a single \levelGroup
  are computed in their original order, which allows for good
 spatial access locality.
  
-Choosing the same number of \levels for each \levelGroup may
-however cause severe load imbalance depending on the matrix structure. In
-particular the use of bandwidth reduction schemes such as BFS or RCM
-will further worsen that problem due to the lenslike shape of the
+Choosing the same number of \levels for each \levelGroup may,
+however, cause severe load imbalance depending on the matrix structure. In
+particular, the use of bandwidth reduction schemes such as BFS or RCM
+will further worsen this problem due to the lenslike shape of the
 reordered matrix (see inset of \Cref{fig:2d_7pt_perm}), leading to low
 workload for \levelGroups containing the top and bottom rows of the
   matrix. Compare, \eg $T(0)$ and $T(7)$ with $T(3)$ and $T(4)$ in
 \Cref{fig:2d_7pt_d2}. However, \Cref{corollary_dk} does not require
-exactly $k$ levels to be in a \levelGroup but  
-requires only ``\atleast'' k \levels in a \levelGroup. In
+\emph{exactly} $k$ levels to be in a \levelGroup but  
+only \emph{\atleast} $k$. In
 the following we exploit this to alleviate the imbalance
 problem.
  %coloring by aggregating consecutive levels into \levelGroups (denoted by $T(i)$). In  \Cref{fig:2d_7pt_d1}  and \Cref{fig:2d_7pt_d2} we present one example for \DONE and \DTWO coloring of our \stex, respectively. The \DONE coloring uses straight forward approach by assigning two colors to alternating levels, i.e. \levelGroup and \level is equivalent here. For and applying a \DONE coloring on top of those groups as shown for \DTWO coloring in \Cref{fig:2d_7pt_d2}.  In this context \Cref{fig:2d-7pt_d1_d2} contains two potential colorings for \DONE independent \levels as \DTWO coloring also solves \DONE dependencies.  One could also group some more of nearby \levels together to form a \levelGroup, and make this \DONE or \DTWO independent of other \levelGroups. The $i$-th \levelGroup would be denoted by $T(i)$. Difference between \level and  \levelGroup can be seen in \Cref{fig:2d_7pt_d2}, for \Cref{fig:2d_7pt_d1} \levelGroup and \level coincides. In principle one could compute on all independent \levelGroups in parallel, but sequentially within a \levelGroup, \ie for example in \Cref{fig:2d_7pt_d2} $T(0)$, $T(2)$, $T(4)$, $T(6)$ can be operated by four different threads in parallel and in the next sweep rest \levelGroups. For the configurations seen in \Cref{fig:2d-7pt_d1_d2} then we have $\frac{\acrshort{totalLvl}}{2}$ and $\frac{\acrshort{totalLvl}}{4}$ parallelism for \DONE and \DTWO kernels respectively.
