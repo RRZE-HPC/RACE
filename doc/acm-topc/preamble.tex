@@ -37,20 +37,20 @@
 \newcommand\mathmacro[1][A]{\ensuremath{{#1}}}
 %\citestyle{acmauthoryear}
 
-\newacronym{nrows}{\mathmacro[N_r]}{number of rows}
-\newacronym{nrowsEff}{\mathmacro[N_{r}^{eff}]}{effective number of rows}
-\newacronym{nnz}{\mathmacro[N_{nz}]}{number of nonzeros}
-\newacronym{NNZR}{\mathmacro[N_{nzr}]}{average number of nonzeros per row}
-\newacronym{SymmNNZR}{\mathmacro[N_{nzr}^{symm}]}{number of nonzeros per row in symmetric matrix}
-\newacronym{totalLvl}{\mathmacro[N_l]}{total levels in the graph}
-\newacronym{nthreads}{\mathmacro[N_t]}{number of threads}
-\newacronym{threadEff}{\mathmacro[N_{t}^{eff}]}{effective number of threads}
+\newacronym{nrows}{\mathmacro[N_\mathrm r]}{number of rows}
+\newacronym{nrowsEff}{\mathmacro[N_\mathrm{r}^\mathrm{eff}]}{effective number of rows}
+\newacronym{nnz}{\mathmacro[N_\mathrm{nz}]}{number of nonzeros}
+\newacronym{NNZR}{\mathmacro[N_\mathrm{nzr}]}{average number of nonzeros per row}
+\newacronym{SymmNNZR}{\mathmacro[N_\mathrm{nzr}^\mathrm{symm}]}{number of nonzeros per row in symmetric matrix}
+\newacronym{totalLvl}{\mathmacro[N_\ell]}{total levels in the graph}
+\newacronym{nthreads}{\mathmacro[N_\mathrm t]}{number of threads}
+\newacronym{threadEff}{\mathmacro[N_\mathrm{t}^\mathrm{eff}]}{effective number of threads}
 \newacronym{L_i}{\mathmacro[L(i)]}{$i$th level}
 \newacronym{T_i}{\mathmacro[T(i)]}{$i$th level group}
 \newacronym{L_si}{\mathmacro[L_s(i)]}{$i$th level at stage $s$}
 \newacronym{T_si}{\mathmacro[T_s(i)]}{$i$th level group at stage $s$}
 \newacronym{s}{\mathmacro[s]}{stage number of recursion}
-\newacronym{b_s}{\mathmacro[b_s]}{single socket bandwidth}
+\newacronym{b_s}{\mathmacro[b_\mathrm s]}{single socket bandwidth}
 \newacronym{eta}{\mathmacro[\eta]}{theoretical parallel efficiency}
 
 \newacronym{RACE}{RACE}{recursive algebraic coloring engine}
@@ -112,6 +112,7 @@
 \def\CA{\color{red}}
 % use \GWcomm{bla} etc. instead
 
+\newcommand{\abs}{\mbox{abs}}
 \newcommand{\eos}{~.}
 \newcommand{\cma}{~,}
 \newcommand{\DONE}{distance-$1$\xspace}
