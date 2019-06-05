@@ -371,7 +371,7 @@ vertices, maintain two levels to preserve the \DTWO constraint.
 	\subsection{Recursion}\label{subsec:REC}
 As discussed in \Cref{subsec:DK}, the maximum degree of parallelism is limited
 by the total number of levels (\acrshort{totalLvl}) and may be further reduced 
-by level aggregation in the load balancing step.\GHcomm{load balancing does not change parallelism? I would delete ``in the load balancing step''} In case of our
+by level aggregation. In case of our
 $16\times16$ stencil example the maximum possible parallelism 
 is eight threads, which may cause load imbalance as seen in 
 \Cref{fig:2d_7pt_lb_8_threads}.
