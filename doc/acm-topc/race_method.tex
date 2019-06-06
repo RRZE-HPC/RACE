@@ -294,7 +294,8 @@ rows in the following to demonstrate our load balancing method (see
 For a given set of \levelGroups we calculate the mean and variance of
 $\acrshort{nrows}(T(i))$ within each color (red and blue).
  %For example in \Cref{fig:2d_7pt_d2} we need to calculate mean of $T\_size$ of
-all \levelGroups in red sweep and blue sweep separately.  The overall variance,
+%all \levelGroups in red sweep and blue sweep separately.
+The overall variance,
 which is the target of our minimization procedure, is then found by summing up
 the variances across colors. \Inorder to reduce this value we first select the
 two \levelGroups with largest negative/positive deviation from the mean (which
@@ -392,9 +393,9 @@ within them.
 %i.e.  \levelGroups which are recursively refined will be computed by multiple threads whereas unmodified \levelGroups will be assigned to a single thread. 
 
 In the following section we first demonstrate the basic
-idea in the context of \DONE dependencies, where all dependencies can be resolved
+idea in the context of \DONE dependencies, which can be resolved
 within the given \levelGroup by design. However, for $k>1$, vertices in a
-\levelGroup may have \DK dependencies through vertices in adjacent
+\levelGroup may have \DK dependencies via vertices in adjacent
 \levelGroups. We generalize our procedure to \DK dependencies as a second step
 in \Cref{subsec:Dk_dependency}. Finally, in \Cref{subsec:subgraph_selection} we
 apply the recursive scheme to our \stex and introduce proper \subgraph selection
