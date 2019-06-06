@@ -439,7 +439,13 @@ that they are \DONE neighbors of $L_0(i-1)$, ignoring any vertex relations
      	\label{fig:rec_d1_s1}
      \end{figure}
 
-Recursion starts with the selection of a \subgraph of the matrix, which is discussed in more detail later (see \Cref{subsec:subgraph_selection}). Here we choose a \subgraph induced by $T_0(2)$. The  \subgraph can be isolated from the rest of the graph since the \DONE coloring step in stage 0 has already made \levelGroups independent of each other. Now we just need to repeat the three steps explained previously (\Cref{subsec:LEVEL_CONST}--\Cref{subsec:LB}) on this \subgraph.
+Recursion starts with the selection of a \subgraph of the matrix, which is
+discussed in more detail later (see \Cref{subsec:subgraph_selection}). Here we
+choose the \subgraph induced by $T_0(2)$. It can be isolated from the
+rest of the graph since the \DONE coloring step in stage 0 has already made
+\levelGroups independent of each other. Now we just need to repeat the three
+steps explained previously (\Cref{subsec:LEVEL_CONST}--\Cref{subsec:LB}) on this
+\subgraph.
 %to exploit parallelism within this \subgraph.
    
      \begin{figure}[t]
