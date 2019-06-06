@@ -274,17 +274,17 @@ problem.
  %However the problem with the configurations like the one seen in \Cref{fig:2d-7pt_d1_d2} {\CA is that there, check Holger's comment} is load imbalances between threads because the number of rows (\nrows) per \levelGroup is not distributed evenly. As seen here in the case of \stex the threads working on extreme ends of graph (\eg $T(1), T(7)$) have a small amount of work compared to the threads working on middle (\eg $T(3), T(4)$). 
   
 \subsection{Load balancing}\label{subsec:LB} 
-The RACE load balancing scheme tries to balance the workload between level
+The RACE load balancing scheme tries to balance the workload across level
 groups within each color for a given number of threads while maintaining data
 locality and the \DK constraint between the two colors. To achieve this we use
 an idea similar to incremental graph partitioning \cite{load_balancing}.  The
 \levelGroups containing low workload ``grab'' adjacent levels from neighboring
-level groups; overloaded \levelGroups shift levels to adjacent \levelGroups.  As
-a target for the load balancing scheme one can balance the number of rows (\ie
-vertices) of the \levelGroups ($\acrshort{nrows}(T(i))$) or the number of
-nonzeros (\ie edges) of the \levelGroups ($\acrshort{nnz}(T(i))$). Both variants
+level groups; overloaded \levelGroups shift levels to adjacent \levelGroups.
+One can either balance the number of rows (\ie
+vertices) $\acrshort{nrows}(T(i))$ or the number of
+nonzeros (\ie edges)  $\acrshort{nnz}(T(i))$. Both variants
 are supported by our implementation, and we choose balancing by number of
-rows in the following to demonstrate our load balancing method (see
+rows in the following to demonstrate the method (see
 \Cref{alg:LB}).
 %Depending on the matrix each \levelGroup contains different number of rows, that leads to load imbalances as seen above in \Cref{subsec:DK}. \Inorder to avoid this problem we employ a load balancing scheme. At this step  we plug in details from the hardware side  namely the total parallelism required by the hardware. The idea is to exploit only the required parallelism while at the same time maintain \DK constraint seen in \Cref{corollary_dk}. To balance the load more nearby \levels would be added to a \levelGroup ($T(x)$) which has less number of rows ($\nrowsMath(T(x))$) and at \levelGroup where we have considerably big \levels only sufficient amount of \levels to maintain \DK constraint would be assigned. Assigning nearby levels instead of others further helps in preserving data locality. 
  
@@ -403,7 +403,7 @@ as well as global load balancing strategies.
 
 In order to visualize the basic concepts easily and discuss important corner
 cases of the recursive approach we start with the simple graph shown in
-\Cref{fig:rec_d1_s1_a}, which is not correlated to our \stex. To distinguish
+\Cref{fig:rec_d1_s1_a}, which is not related to our \stex. To distinguish
 between \levelGroups at different stages \acrshort{s} of the recursive procedure
 we add a subscript to the levels (\acrshort{L_si}) and \levelGroups
 (\acrshort{T_si}) indicating the stage of recursion at which they are generated,
@@ -415,7 +415,14 @@ with $s=0$ being the original distribution before recursion is applied to any
 	\subsubsection{Distance-$1$ dependency} \label{subsec:D1_dependency}
 %\LevelGroups which we constructed till now belong to first stage of recursion ($s=0$). Stage number of recursion is denoted using subscript, \ie for example $L_s(i)$ denotes \level $i$ of stage $s$. Contrary to methods like \acrfull{MC} we didn't require each nodes in a color to be \DONE independent of each other, rather we had a weak constraint as prescribed by \Cref{corollary_dk}. Due to this there can exist more parallelism within a \levelGroup. 
 
-For the \DONE coloring of the graph in \Cref{fig:rec_d1_s1} we find that the third \levelGroup of the initial stage (T$_0$(2)) still contains vertices which are \DONE independent, \eg vertices $3 \not{\xrightarrow{1}} 4$ ($3$  \DONE independent to $4$), $3 \not{\xrightarrow{1}} 5$, $3 \not{\xrightarrow{1}} 6$, and $4 \not{\xrightarrow{1}} 6$, implying each of these pairs can be computed in parallel without any \DONE conflicts. This parallelism has not been exploited in the first stage ($s=0$)  as vertices in $L_0(i)$ (here $i=2$) are chosen such that they are \DONE neighbors of \level $L_0(i-1)$ ignoring any vertex relations in $L_0(i)$. 
+For the \DONE coloring of the graph in \Cref{fig:rec_d1_s1} we find that
+three of the four \levelGroups of the initial stage still contain \DONE-independent vertices; e.g., in $T_0(2)$ we have vertices $3 \not{\xrightarrow{1}} 4$ ($3$ \DONE
+independent to $4$), $3 \not{\xrightarrow{1}} 5$, $3 \not{\xrightarrow{1}} 6$,
+and $4 \not{\xrightarrow{1}} 6$, implying each of these pairs can be computed in
+parallel without any \DONE conflicts. This parallelism is not exposed at
+the first stage ($s=0$) as vertices in $L_0(i)$ are chosen such
+that they are \DONE neighbors of $L_0(i-1)$, ignoring any vertex relations
+\emph{within} $L_0(i)$.
 %We now apply our method recursively to the levels or \levelGroups to identify further paralleism within them.  	
      \begin{figure}[t]
      	\centering
@@ -424,7 +431,11 @@ For the \DONE coloring of the graph in \Cref{fig:rec_d1_s1} we find that the thi
      	\subfloat[Stage 0, levels in graph]{\label{fig:rec_d1_s1_b}\includegraphics[width=0.32\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s1/recursion_graph_2}}
      	\hspace{1.5em}
      	\subfloat[\DONE coloring]{\label{fig:rec_d1_s1_c}\includegraphics[width=0.32\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s1/recursion_graph_3}}
-        \caption{Shows potential for more parallelism. $T_0(1),T_0(2),$ and $T_0(3)$ have more parallelism. Note that the graph shown here is not related to the previous \stex.}
+        \caption{Exposing potential for more parallelism in a graph with \DONE coloring.
+          $T_0(1),T_0(2),$ and
+          $T_0(3)$ have internal unexposed parallelism.
+          Note that the graph shown here is not
+          related to the previous \stex.}
      	\label{fig:rec_d1_s1}
      \end{figure}
 
