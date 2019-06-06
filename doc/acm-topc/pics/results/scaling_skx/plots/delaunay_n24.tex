@@ -1,7 +1,7 @@
 \documentclass{standalone}
 \usepackage{tikz}
 \usepackage{pgfplots}
-\pgfplotsset{width=10cm,height=12cm,compat=1.3}
+\pgfplotsset{width=10cm,height=11cm,compat=1.3}
 \usetikzlibrary{patterns}
 \usepackage{pgfplotstable}
 
@@ -26,7 +26,7 @@
 	  scaled ticks=false,
 	  xmin=0,xmax = 20,
 	%  title={Scaling test on 1 Socket of Sky-Lake @2.4GHz, matrix-\MNAME},
-	  legend style={legend pos=south east, font=\LARGE}]
+	  legend style={legend pos=south east, font=\Large}]
 
 	   \addplot+[color=gray,line width=2, mark=square, mark options=gray] table[x=Threads,y=Perf,col sep=comma] {\PERFSpMV}; \label{plot_one}
 	   \addlegendentry{SpMV}
