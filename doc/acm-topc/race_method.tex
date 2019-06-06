@@ -274,17 +274,17 @@ problem.
  %However the problem with the configurations like the one seen in \Cref{fig:2d-7pt_d1_d2} {\CA is that there, check Holger's comment} is load imbalances between threads because the number of rows (\nrows) per \levelGroup is not distributed evenly. As seen here in the case of \stex the threads working on extreme ends of graph (\eg $T(1), T(7)$) have a small amount of work compared to the threads working on middle (\eg $T(3), T(4)$). 
   
 \subsection{Load balancing}\label{subsec:LB} 
-The RACE load balancing scheme tries to balance the workload between level
+The RACE load balancing scheme tries to balance the workload across level
 groups within each color for a given number of threads while maintaining data
 locality and the \DK constraint between the two colors. To achieve this we use
 an idea similar to incremental graph partitioning \cite{load_balancing}.  The
 \levelGroups containing low workload ``grab'' adjacent levels from neighboring
-level groups; overloaded \levelGroups shift levels to adjacent \levelGroups.  As
-a target for the load balancing scheme one can balance the number of rows (\ie
-vertices) of the \levelGroups ($\acrshort{nrows}(T(i))$) or the number of
-nonzeros (\ie edges) of the \levelGroups ($\acrshort{nnz}(T(i))$). Both variants
+level groups; overloaded \levelGroups shift levels to adjacent \levelGroups.
+One can either balance the number of rows (\ie
+vertices) $\acrshort{nrows}(T(i))$ or the number of
+nonzeros (\ie edges)  $\acrshort{nnz}(T(i))$. Both variants
 are supported by our implementation, and we choose balancing by number of
-rows in the following to demonstrate our load balancing method (see
+rows in the following to demonstrate the method (see
 \Cref{alg:LB}).
 %Depending on the matrix each \levelGroup contains different number of rows, that leads to load imbalances as seen above in \Cref{subsec:DK}. \Inorder to avoid this problem we employ a load balancing scheme. At this step  we plug in details from the hardware side  namely the total parallelism required by the hardware. The idea is to exploit only the required parallelism while at the same time maintain \DK constraint seen in \Cref{corollary_dk}. To balance the load more nearby \levels would be added to a \levelGroup ($T(x)$) which has less number of rows ($\nrowsMath(T(x))$) and at \levelGroup where we have considerably big \levels only sufficient amount of \levels to maintain \DK constraint would be assigned. Assigning nearby levels instead of others further helps in preserving data locality. 
  
