@@ -11,16 +11,13 @@ The \acrshort{RACE} method introduced above has a set of input parameters $\{\ep
 To determine useful settings, we briefly analyze the interaction between these input parameters, the number of threads used, and the parallel efficiency of the generated workload distribution. 
 
 As the internal tree structure contains all information about the final workload distribution, we can use it to identify the critical path in terms of workload and correspondingly the parallel efficiency. To do so we introduce the \effRow for every node (or \levelGroup) $\acrshort{nrowsEff}(T_s(i))$  which is a measure for the absolute runtime to calculate the corresponding \levelGroup. For \levelGroups which are not further refined (leaf nodes) this value is their actual workload, \ie the number of rows assigned to them ($\acrshort{nrowsEff}(T_0(0)) = 15$ in \Cref{fig:rec_2d-7pt_tree}). For an inner node the \effRow  is the sum of the maximum workload (\ie max. \effRow value) across each of the two colors of its child nodes:
-
 \begin{align*}
-\acrshort{nrowsEff}(T_s(i)) &= max(\acrshort{nrowsEff}(T_{s+1}(j) \subseteq T_s(i))) + max(\acrshort{nrowsEff}(T_{s+1}(j+1) \subseteq T_s(i)))\\
- & \text{for } j=0,2,\ldots.
+\acrshort{nrowsEff}(T_s(i)) &= \max\left(\acrshort{nrowsEff}(T_{s+1}(j) \subseteq T_s(i))\right) + \max\left(\acrshort{nrowsEff}(T_{s+1}(j+1) \subseteq T_s(i))\right)\\
+ & \text{for } j=0,2,\ldots
 \end{align*}
-
-Such a definition is based on the idea that nodes at a given stage $s$ have to synchronize with each other and have to wait for their siblings with the largest workload in each sweep (color). Propagating this information upwards on the tree until we reach the root node constructs the critical path in terms of longest runtime taking into account single thread workloads, dependencies, and synchronizations. Thus, the final value in the root node $\acrshort{nrowsEff}(T_{-1}(0))$ can be considered as the effective maximum workload of a single thread. Dividing the globally optimal workload per thread ($\frac{\acrshort{nrows}^{total}}{\acrshort{nthreads}}$) by this number gives the parallel efficiency ($\eta$) of our workload distribution: 
-
+Such a definition is based on the idea that nodes at a given stage $s$ have to synchronize with each other and have to wait for their siblings with the largest workload in each sweep (color). Propagating this information upwards on the tree until we reach the root node constructs the critical path in terms of longest runtime taking into account single thread workloads, dependencies, and synchronizations. Thus, the final value in the root node $\acrshort{nrowsEff}(T_{-1}(0))$ can be considered as the effective maximum workload of a single thread. Dividing the globally optimal workload per thread ($\frac{\acrshort{nrows}^\mathrm{total}}{\acrshort{nthreads}}$) by this number gives the parallel efficiency ($\eta$) of our workload distribution: 
 \begin{align*}
-	\eta &= \frac{ \acrshort{nrows}^{total}} {\acrshort{nrowsEff}(T_{-1}(0)) \times \acrshort{nthreads}}. 
+	\eta &= \frac{ \acrshort{nrows}^\mathrm{total}} {\acrshort{nrowsEff}(T_{-1}(0)) \times \acrshort{nthreads}}. 
 \end{align*}
 For the tree presented in \Cref{fig:rec_2d-7pt_tree} the parallel efficiency is limited to $\eta=\frac{256}{44 \times 8 } = 0.73$ on eight threads, \ie the maximum parallel speedup is $5.8$.
 
@@ -99,7 +96,7 @@ The \emph{crankseg\_1} matrix is the worst in terms of performance. It does not 
 
 The \emph{inline\_1} matrix although being third lowest in terms of parallelism in the entire set of test matrices, but it still achieves a high efficiency ($\eta$ = 0.85) for 20 threads (see \Cref{fig:inline_param}), leading to good scaling as seen in \Cref{fig:inline_scaling}. The saturation in performance after 15 threads is due to the fact that we hit the memory bottleneck, similar saturation behavior can also be observed for \acrshort{SpMV} which is embarrassingly parallel. The saturation occurs at the maximum achievable performance on the given architecture which could easily be verified using the \roofline model \cite{Williams_roofline} and intensity equations (see \Cref{subsec:test_kernels}) as shown below:
 \begin{align*}
-	% P_{max} =&  2 \fracUnit{FMA AVX-512 instruction}{cy*cores}  * 8 \fracUnit{FMA}{FMA AVX-512 instruction} \\
+	% P_\mathrm{max} =&  2 \fracUnit{FMA AVX-512 instruction}{cy*cores}  * 8 \fracUnit{FMA}{FMA AVX-512 instruction} \\
 	% & * 2 \fracUnit{Flop}{FMA} * 2.4 \fracUnit{Gcy}{s} * 20 \unit{cores} = 1536  \fracUnit{GFlop}{s} \\	 
 	I_\mathrm{\acrshort{SpMV}} &= \frac{2}{8+4+\frac{8+16}{73}} = 0.162 \fracUnit{Flop}{byte} \text{, assuming best case : $\alpha = \frac{1}{\acrshort{NNZR}}$}\\
 	P_\mathrm{\acrshort{SpMV}} &= b_s*I_\mathrm{\acrshort{SpMV}}; \text{  for memory-bound case}\\
@@ -118,7 +115,7 @@ In the case of \emph{parabolic\_fem} matrix we theoretically have a good efficie
 Quantifying quality of the method in a well-defined way is a primary and most vital step for parameter study. We do this using the concept of \effPar. From \Cref{Sec:race} we saw that even though one tries to achieve parallelism exactly as that required by the hardware, in practice one might not be able to utilize this parallelism to 100 \% due to load imbalances. Therefore we use a simple calculation based on the \levelTree to determine efficiency. This takes into account load imbalances incurred from different stages of recursion. We first calculate \effRow for each of the worker leaves (leaves in finest level) in \levelTree.
 The \levelGroups (leaves) in \levelTree that are not further refined form worker leaves and they are responsible for executing the rows (nodes) in their range, the work done by these leaves is therefore directly proportional to the number of rows. Hence the \effRow of these worker leaves is same as number of rows (\acrshort{nrows}), for example in case of $T_0(0)$ \effRow ( $\acrshort{nrowsEff}(T_0(0))$ = $\acrshort{nrows}(T_0(0))$ ) is 14 and $\acrshort{nrowsEff}(T_1(0) \subset T_0(4))$ is 6. After calculating the \effRow for worker leaves the information is propagated to other leaves in lower stages (up in the \levelTree) as follows: 
 \begin{align*}
-\acrshort{nrowsEff}(T_s(i)) &= max(\acrshort{nrowsEff}(T_{s+1}(j) \subset T_s(i))) + max(\acrshort{nrowsEff}(T_{s+1}(k) \subset T_s(i)))\\
+\acrshort{nrowsEff}(T_s(i)) &= \max\left(\acrshort{nrowsEff}(T_{s+1}(j) \subset T_s(i))\right) + \max\left(\acrshort{nrowsEff}(T_{s+1}(k) \subset T_s(i))\right)\\
  & \text{for } j \text{ is even and } k \text{ is odd}
 \end{align*}
 
