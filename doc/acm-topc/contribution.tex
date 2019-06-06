@@ -6,7 +6,7 @@
 
 This paper addresses the general problem of generating hardware efficient \DK coloring
  of undirected graphs for modern multicore processors. As an application we 
- choose parallelization of \acrshort{SymmSpMV} operation. We cover thread-level 
+ choose parallelization of the \acrshort{SymmSpMV} operation. We cover thread-level 
  parallelization and focus on a single multicore processor. The main contributions
   can be summarized as follows: 
 \begin{itemize}
@@ -20,7 +20,7 @@ using a \DTWO coloring of the underlying undirected graph to avoid
  write conflicts and apply RACE for generating the colorings.
 \item A comprehensive performance study of shared memory parallel \acrshort{SymmSpMV} 
 using RACE demonstrates the benefit of our approach. Performance modeling
- is deployed to substantiate our performance measurements and a comparison to
+ is deployed to substantiate our performance measurements, and a comparison to
   existing coloring methods as well a vendor optimized library (Intel MKL) 
   are presented. The broad applicability and the sustainability is validated 
   by using a wide set of 31 test matrices and two very different generations 
