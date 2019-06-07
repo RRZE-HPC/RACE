@@ -1,0 +1,1686 @@
+THREAD = 1
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 3, ], Parent: -1, nthreads: 1, idealNThreads:1, stage:0, subBLocks:1, effRow: 259789, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 41376, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 41376, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[41376, 259789, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 218413, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+coloring efficiency = 1.000000
+max. stage depth = 1
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 1.417904 GFlop/s
+SpMTV: 1.041759 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 1.169783 GFlop/s
+THREAD = 2
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 5, ], Parent: -1, nthreads: 2, idealNThreads:2, stage:0, subBLocks:1, effRow: 132969, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 53753, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 53753, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[53753, 130675, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 76922, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[130675, 180573, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 49898, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[180573, 259789, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 79216, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+coloring efficiency = 0.976878
+max. stage depth = 1
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 2.772692 GFlop/s
+SpMTV: 2.035160 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 2.262233 GFlop/s
+THREAD = 3
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 7, ], Parent: -1, nthreads: 3, idealNThreads:3, stage:0, subBLocks:1, effRow: 93064, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 41376, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 41376, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[41376, 87509, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 46133, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[87509, 130675, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 43166, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[130675, 180573, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 49898, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[180573, 222288, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 41715, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[222288, 259789, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 37501, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+coloring efficiency = 0.930503
+max. stage depth = 1
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 4.104232 GFlop/s
+SpMTV: 2.858061 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 3.128655 GFlop/s
+THREAD = 4
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 7, ], Parent: -1, nthreads: 4, idealNThreads:4, stage:0, subBLocks:1, effRow: 76922, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 17649, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 17649, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[17649, 53753, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 36104, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[53753, 87509, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 33756, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[87509, 130675, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 43166, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[130675, 180573, ] Childre:[7, 11, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 25278, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[180573, 259789, ] Childre:[11, 15, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 40357, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+7. Range:[130675, 152931, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 22256, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+8. Range:[152931, 155736, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2805, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+9. Range:[155736, 177551, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 21815, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+10. Range:[177551, 180573, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3022, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+11. Range:[180573, 197741, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 17168, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+12. Range:[197741, 219809, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 22068, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+13. Range:[219809, 236600, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 16791, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+14. Range:[236600, 259789, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 23189, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+coloring efficiency = 0.844326
+max. stage depth = 2
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 5.430207 GFlop/s
+SpMTV: 3.444779 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 3.757385 GFlop/s
+THREAD = 5
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 7, ], Parent: -1, nthreads: 5, idealNThreads:5, stage:0, subBLocks:1, effRow: 66654, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 9690, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 9690, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[9690, 41376, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 31686, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[41376, 69332, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 27956, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[69332, 108030, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 38698, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[108030, 155499, ] Childre:[7, 13, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 16412, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+6. Range:[155499, 259789, ] Childre:[13, 19, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 36181, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+7. Range:[108030, 112004, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3974, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+8. Range:[112004, 123398, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 11394, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+9. Range:[123398, 127596, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4198, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+10. Range:[127596, 139259, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 11663, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+11. Range:[139259, 144008, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4749, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+12. Range:[144008, 155499, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 11491, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+13. Range:[155499, 175859, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 20360, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+14. Range:[175859, 189646, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 13787, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+15. Range:[189646, 208603, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 18957, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+16. Range:[208603, 224424, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 15821, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+17. Range:[224424, 244281, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 19857, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+18. Range:[244281, 259789, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 15508, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+coloring efficiency = 0.779515
+max. stage depth = 2
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 6.691261 GFlop/s
+SpMTV: 3.948855 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 4.331939 GFlop/s
+THREAD = 6
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 9, ], Parent: -1, nthreads: 6, idealNThreads:6, stage:0, subBLocks:1, effRow: 48557, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 23592, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 23592, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[23592, 41376, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 17784, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[41376, 87509, ] Childre:[9, 13, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 23349, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[87509, 130675, ] Childre:[13, 17, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 21724, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[130675, 180573, ] Childre:[17, 21, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 25278, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+6. Range:[180573, 222288, ] Childre:[21, 25, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 21335, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+7. Range:[222288, 249121, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 26833, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+8. Range:[249121, 259789, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 10668, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+9. Range:[41376, 49690, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 8314, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+10. Range:[49690, 64255, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 14565, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+11. Range:[64255, 73039, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 8784, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+12. Range:[73039, 87509, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 14470, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+13. Range:[87509, 90427, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2918, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+14. Range:[90427, 109233, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 18806, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+15. Range:[109233, 112093, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2860, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+16. Range:[112093, 130675, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 18582, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+17. Range:[130675, 152931, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 22256, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+18. Range:[152931, 155736, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2805, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+19. Range:[155736, 177551, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 21815, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+20. Range:[177551, 180573, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3022, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+21. Range:[180573, 186725, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6152, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+22. Range:[186725, 200953, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 14228, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+23. Range:[200953, 207825, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6872, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+24. Range:[207825, 222288, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 14463, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+coloring efficiency = 0.891698
+max. stage depth = 2
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 7.997533 GFlop/s
+SpMTV: 5.178087 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 6.169035 GFlop/s
+THREAD = 7
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 9, ], Parent: -1, nthreads: 7, idealNThreads:7, stage:0, subBLocks:1, effRow: 46245, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 17649, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 17649, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[17649, 31449, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 13800, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[31449, 69332, ] Childre:[9, 13, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 19715, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[69332, 108030, ] Childre:[13, 17, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 19412, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[108030, 180573, ] Childre:[17, 23, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 25421, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+6. Range:[180573, 222288, ] Childre:[23, 29, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 14162, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+7. Range:[222288, 249121, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 26833, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+8. Range:[249121, 259789, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 10668, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+9. Range:[31449, 36201, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4752, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+10. Range:[36201, 49617, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 13416, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+11. Range:[49617, 55328, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5711, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+12. Range:[55328, 69332, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 14004, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+13. Range:[69332, 77046, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7714, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+14. Range:[77046, 88718, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 11672, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+15. Range:[88718, 96458, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7740, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+16. Range:[96458, 108030, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 11572, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+17. Range:[108030, 119197, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 11167, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+18. Range:[119197, 132197, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 13000, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+19. Range:[132197, 144131, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 11934, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+20. Range:[144131, 156654, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 12523, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+21. Range:[156654, 167086, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 10432, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+22. Range:[167086, 180573, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 13487, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+23. Range:[180573, 182289, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1716, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+24. Range:[182289, 194352, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 12063, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+25. Range:[194352, 196195, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1843, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+26. Range:[196195, 208340, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 12145, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+27. Range:[208340, 209969, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1629, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+28. Range:[209969, 222288, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 12319, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+coloring efficiency = 0.802524
+max. stage depth = 2
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 9.285003 GFlop/s
+SpMTV: 5.303033 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 6.228037 GFlop/s
+THREAD = 8
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 9, ], Parent: -1, nthreads: 8, idealNThreads:8, stage:0, subBLocks:1, effRow: 41126, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 13152, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 13152, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[13152, 31449, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 18297, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[31449, 53753, ] Childre:[9, 13, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 11496, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[53753, 87509, ] Childre:[13, 17, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 17229, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[87509, 130675, ] Childre:[17, 23, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 14956, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+6. Range:[130675, 180573, ] Childre:[23, 29, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 17425, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+7. Range:[180573, 222288, ] Childre:[29, 33, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 21335, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+8. Range:[222288, 259789, ] Childre:[33, 37, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 19791, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+9. Range:[31449, 34831, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3382, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+10. Range:[34831, 42945, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 8114, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+11. Range:[42945, 46007, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3062, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+12. Range:[46007, 53753, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7746, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+13. Range:[53753, 59334, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5581, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+14. Range:[59334, 70280, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 10946, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+15. Range:[70280, 76479, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6199, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+16. Range:[76479, 87509, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 11030, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+17. Range:[87509, 95175, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7666, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+18. Range:[95175, 102086, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6911, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+19. Range:[102086, 109233, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7147, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+20. Range:[109233, 116523, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7290, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+21. Range:[116523, 123762, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7239, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+22. Range:[123762, 130675, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6913, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+23. Range:[130675, 136802, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6127, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+24. Range:[136802, 147177, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 10375, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+25. Range:[147177, 152931, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5754, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+26. Range:[152931, 163148, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 10217, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+27. Range:[163148, 169917, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6769, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+28. Range:[169917, 180573, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 10656, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+29. Range:[180573, 186725, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6152, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+30. Range:[186725, 200953, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 14228, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+31. Range:[200953, 207825, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6872, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+32. Range:[207825, 222288, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 14463, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+33. Range:[222288, 232590, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 10302, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+34. Range:[232590, 239998, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7408, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+35. Range:[239998, 250537, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 10539, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+36. Range:[250537, 259789, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 9252, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+coloring efficiency = 0.789613
+max. stage depth = 2
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 10.338890 GFlop/s
+SpMTV: 6.146380 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 7.305617 GFlop/s
+THREAD = 9
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 9, ], Parent: -1, nthreads: 9, idealNThreads:9, stage:0, subBLocks:1, effRow: 33253, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 13152, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 13152, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[13152, 31449, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 18297, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[31449, 53753, ] Childre:[9, 13, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 11496, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[53753, 87509, ] Childre:[13, 17, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 17229, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[87509, 130675, ] Childre:[17, 23, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 14956, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+6. Range:[130675, 180573, ] Childre:[23, 29, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 17425, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+7. Range:[180573, 222288, ] Childre:[29, 35, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 14162, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+8. Range:[222288, 259789, ] Childre:[35, 41, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 14520, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+9. Range:[31449, 34831, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3382, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+10. Range:[34831, 42945, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 8114, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+11. Range:[42945, 46007, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3062, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+12. Range:[46007, 53753, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7746, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+13. Range:[53753, 59334, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5581, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+14. Range:[59334, 70280, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 10946, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+15. Range:[70280, 76479, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6199, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+16. Range:[76479, 87509, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 11030, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+17. Range:[87509, 95175, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7666, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+18. Range:[95175, 102086, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6911, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+19. Range:[102086, 109233, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7147, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+20. Range:[109233, 116523, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7290, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+21. Range:[116523, 123762, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7239, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+22. Range:[123762, 130675, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6913, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+23. Range:[130675, 136802, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6127, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+24. Range:[136802, 147177, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 10375, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+25. Range:[147177, 152931, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5754, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+26. Range:[152931, 163148, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 10217, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+27. Range:[163148, 169917, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6769, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+28. Range:[169917, 180573, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 10656, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+29. Range:[180573, 182289, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1716, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+30. Range:[182289, 194352, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 12063, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+31. Range:[194352, 196195, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1843, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+32. Range:[196195, 208340, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 12145, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+33. Range:[208340, 209969, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1629, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+34. Range:[209969, 222288, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 12319, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+35. Range:[222288, 223895, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1607, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+36. Range:[223895, 232590, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 8695, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+37. Range:[232590, 237564, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4974, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+38. Range:[237564, 246952, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 9388, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+39. Range:[246952, 250243, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3291, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+40. Range:[250243, 259789, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 9546, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+coloring efficiency = 0.868055
+max. stage depth = 2
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 11.484904 GFlop/s
+SpMTV: 7.422188 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 8.675743 GFlop/s
+THREAD = 10
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 11, ], Parent: -1, nthreads: 10, idealNThreads:10, stage:0, subBLocks:1, effRow: 34354, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 13152, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 13152, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[13152, 23592, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 10440, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[23592, 41376, ] Childre:[11, 15, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 9290, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[41376, 69332, ] Childre:[15, 19, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 14595, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[69332, 108030, ] Childre:[19, 25, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 13765, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+6. Range:[108030, 155499, ] Childre:[25, 31, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 16412, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+7. Range:[155499, 203441, ] Childre:[31, 37, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 16653, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+8. Range:[203441, 237582, ] Childre:[37, 43, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 12177, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+9. Range:[237582, 255524, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 17942, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+10. Range:[255524, 259789, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 4265, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+11. Range:[23592, 26300, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2708, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+12. Range:[26300, 32086, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5786, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+13. Range:[32086, 35148, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3062, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+14. Range:[35148, 41376, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6228, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+15. Range:[41376, 45927, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4551, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+16. Range:[45927, 54737, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 8810, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+17. Range:[54737, 59620, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4883, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+18. Range:[59620, 69332, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 9712, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+19. Range:[69332, 76248, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6916, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+20. Range:[76248, 81760, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5512, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+21. Range:[81760, 88718, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6958, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+22. Range:[88718, 94533, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5815, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+23. Range:[94533, 102483, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7950, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+24. Range:[102483, 108030, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5547, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+25. Range:[108030, 112004, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3974, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+26. Range:[112004, 123398, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 11394, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+27. Range:[123398, 127596, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4198, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+28. Range:[127596, 139259, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 11663, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+29. Range:[139259, 144008, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4749, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+30. Range:[144008, 155499, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 11491, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+31. Range:[155499, 161866, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6367, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+32. Range:[161866, 172152, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 10286, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+33. Range:[172152, 177959, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5807, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+34. Range:[177959, 188118, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 10159, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+35. Range:[188118, 193530, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5412, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+36. Range:[193530, 203441, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 9911, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+37. Range:[203441, 206957, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3516, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+38. Range:[206957, 215520, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 8563, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+39. Range:[215520, 219134, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3614, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+40. Range:[219134, 226658, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7524, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+41. Range:[226658, 230077, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3419, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+42. Range:[230077, 237582, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7505, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+coloring efficiency = 0.756212
+max. stage depth = 2
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 12.592263 GFlop/s
+SpMTV: 7.017494 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 8.444134 GFlop/s
+THREAD = 11
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 11, ], Parent: -1, nthreads: 11, idealNThreads:11, stage:0, subBLocks:1, effRow: 32537, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 9690, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 9690, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[9690, 17649, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 7959, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[17649, 41376, ] Childre:[11, 15, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 12084, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[41376, 69332, ] Childre:[15, 19, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 14595, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[69332, 108030, ] Childre:[19, 27, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 10096, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+6. Range:[108030, 155499, ] Childre:[27, 35, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 12659, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+7. Range:[155499, 203441, ] Childre:[35, 41, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 16653, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+8. Range:[203441, 237582, ] Childre:[41, 47, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 12177, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+9. Range:[237582, 255524, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 17942, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+10. Range:[255524, 259789, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 4265, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+11. Range:[17649, 21949, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4300, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+12. Range:[21949, 29733, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7784, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+13. Range:[29733, 34032, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4299, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+14. Range:[34032, 41376, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7344, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+15. Range:[41376, 45927, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4551, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+16. Range:[45927, 54737, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 8810, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+17. Range:[54737, 59620, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4883, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+18. Range:[59620, 69332, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 9712, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+19. Range:[69332, 73225, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3893, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+20. Range:[73225, 79109, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5884, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+21. Range:[79109, 83262, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4153, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+22. Range:[83262, 88718, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5456, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+23. Range:[88718, 92523, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3805, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+24. Range:[92523, 98271, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5748, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+25. Range:[98271, 102483, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4212, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+26. Range:[102483, 108030, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5547, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+27. Range:[108030, 112749, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4719, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+28. Range:[112749, 120689, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7940, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+29. Range:[120689, 125321, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4632, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+30. Range:[125321, 132555, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7234, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+31. Range:[132555, 136879, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4324, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+32. Range:[136879, 144008, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7129, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+33. Range:[144008, 148180, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4172, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+34. Range:[148180, 155499, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7319, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+35. Range:[155499, 161866, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6367, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+36. Range:[161866, 172152, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 10286, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+37. Range:[172152, 177959, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5807, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+38. Range:[177959, 188118, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 10159, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+39. Range:[188118, 193530, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5412, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+40. Range:[193530, 203441, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 9911, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+41. Range:[203441, 206957, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3516, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+42. Range:[206957, 215520, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 8563, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+43. Range:[215520, 219134, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3614, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+44. Range:[219134, 226658, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7524, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+45. Range:[226658, 230077, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3419, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+46. Range:[230077, 237582, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7505, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+coloring efficiency = 0.725856
+max. stage depth = 2
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 13.859496 GFlop/s
+SpMTV: 7.440878 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 8.789359 GFlop/s
+THREAD = 12
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 11, ], Parent: -1, nthreads: 12, idealNThreads:12, stage:0, subBLocks:1, effRow: 32537, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 9690, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 9690, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[9690, 17649, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 7959, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[17649, 41376, ] Childre:[11, 15, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 12084, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[41376, 69332, ] Childre:[15, 19, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 14595, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[69332, 108030, ] Childre:[19, 27, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 10096, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+6. Range:[108030, 155499, ] Childre:[27, 35, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 12659, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+7. Range:[155499, 203441, ] Childre:[35, 43, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 13000, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+8. Range:[203441, 237582, ] Childre:[43, 51, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 9579, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+9. Range:[237582, 255524, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 17942, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+10. Range:[255524, 259789, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 4265, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+11. Range:[17649, 21949, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4300, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+12. Range:[21949, 29733, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7784, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+13. Range:[29733, 34032, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4299, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+14. Range:[34032, 41376, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7344, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+15. Range:[41376, 45927, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4551, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+16. Range:[45927, 54737, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 8810, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+17. Range:[54737, 59620, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4883, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+18. Range:[59620, 69332, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 9712, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+19. Range:[69332, 73225, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3893, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+20. Range:[73225, 79109, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5884, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+21. Range:[79109, 83262, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4153, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+22. Range:[83262, 88718, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5456, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+23. Range:[88718, 92523, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3805, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+24. Range:[92523, 98271, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5748, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+25. Range:[98271, 102483, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4212, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+26. Range:[102483, 108030, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5547, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+27. Range:[108030, 112749, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4719, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+28. Range:[112749, 120689, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7940, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+29. Range:[120689, 125321, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4632, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+30. Range:[125321, 132555, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7234, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+31. Range:[132555, 136879, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4324, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+32. Range:[136879, 144008, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7129, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+33. Range:[144008, 148180, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4172, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+34. Range:[148180, 155499, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7319, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+35. Range:[155499, 162716, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7217, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+36. Range:[162716, 167333, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4617, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+37. Range:[167333, 174407, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7074, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+38. Range:[174407, 179031, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4624, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+39. Range:[179031, 185808, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6777, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+40. Range:[185808, 190756, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4948, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+41. Range:[190756, 198808, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 8052, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+42. Range:[198808, 203441, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4633, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+43. Range:[203441, 205024, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1583, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+44. Range:[205024, 211726, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6702, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+45. Range:[211726, 214052, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2326, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+46. Range:[214052, 221147, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7095, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+47. Range:[221147, 223631, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2484, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+48. Range:[223631, 229378, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5747, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+49. Range:[229378, 230819, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1441, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+50. Range:[230819, 237582, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6763, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+coloring efficiency = 0.665368
+max. stage depth = 2
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 14.607606 GFlop/s
+SpMTV: 7.490140 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 9.281203 GFlop/s
+THREAD = 13
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 11, ], Parent: -1, nthreads: 13, idealNThreads:13, stage:0, subBLocks:1, effRow: 30958, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 9690, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 9690, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[9690, 17649, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 7959, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[17649, 31449, ] Childre:[11, 15, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 7133, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[31449, 53753, ] Childre:[15, 19, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 11496, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[53753, 87509, ] Childre:[19, 27, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 9094, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+6. Range:[87509, 130675, ] Childre:[27, 35, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 11603, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+7. Range:[130675, 180573, ] Childre:[35, 45, ], Parent: 0, nthreads: 5, idealNThreads:5, stage:1, subBLocks:1, effRow: 12510, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+8. Range:[180573, 237582, ] Childre:[45, 55, ], Parent: 0, nthreads: 5, idealNThreads:5, stage:1, subBLocks:1, effRow: 13016, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+9. Range:[237582, 255524, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 17942, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+10. Range:[255524, 259789, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 4265, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+11. Range:[17649, 20128, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2479, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+12. Range:[20128, 24782, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4654, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+13. Range:[24782, 26986, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2204, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+14. Range:[26986, 31449, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4463, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+15. Range:[31449, 34831, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3382, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+16. Range:[34831, 42945, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 8114, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+17. Range:[42945, 46007, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3062, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+18. Range:[46007, 53753, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7746, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+19. Range:[53753, 58193, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4440, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+20. Range:[58193, 62574, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4381, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+21. Range:[62574, 66582, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4008, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+22. Range:[66582, 71236, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4654, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+23. Range:[71236, 75332, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4096, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+24. Range:[75332, 79602, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4270, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+25. Range:[79602, 83449, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3847, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+26. Range:[83449, 87509, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4060, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+27. Range:[87509, 92302, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4793, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+28. Range:[92302, 98969, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6667, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+29. Range:[98969, 103041, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4072, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+30. Range:[103041, 109233, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6192, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+31. Range:[109233, 113557, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4324, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+32. Range:[113557, 120367, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6810, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+33. Range:[120367, 124798, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4431, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+34. Range:[124798, 130675, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5877, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+35. Range:[130675, 135364, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4689, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+36. Range:[135364, 139618, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4254, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+37. Range:[139618, 144204, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4586, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+38. Range:[144204, 148215, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4011, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+39. Range:[148215, 152931, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4716, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+40. Range:[152931, 157706, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4775, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+41. Range:[157706, 163148, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5442, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+42. Range:[163148, 169917, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6769, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+43. Range:[169917, 175658, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5741, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+44. Range:[175658, 180573, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4915, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+45. Range:[180573, 187413, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6840, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+46. Range:[187413, 192714, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5301, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+47. Range:[192714, 197785, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5071, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+48. Range:[197785, 202662, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4877, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+49. Range:[202662, 208945, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6283, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+50. Range:[208945, 214049, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5104, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+51. Range:[214049, 220236, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6187, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+52. Range:[220236, 225592, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5356, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+53. Range:[225592, 231406, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5814, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+54. Range:[231406, 237582, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6176, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+coloring efficiency = 0.645512
+max. stage depth = 2
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 16.360610 GFlop/s
+SpMTV: 8.158854 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 10.505230 GFlop/s
+THREAD = 14
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 11, ], Parent: -1, nthreads: 14, idealNThreads:14, stage:0, subBLocks:1, effRow: 26245, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 9690, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 9690, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[9690, 17649, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 7959, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[17649, 31449, ] Childre:[11, 15, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 7133, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[31449, 53753, ] Childre:[15, 19, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 11496, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[53753, 87509, ] Childre:[19, 27, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 9094, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+6. Range:[87509, 130675, ] Childre:[27, 35, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 11603, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+7. Range:[130675, 180573, ] Childre:[35, 45, ], Parent: 0, nthreads: 5, idealNThreads:5, stage:1, subBLocks:1, effRow: 12510, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+8. Range:[180573, 222288, ] Childre:[45, 55, ], Parent: 0, nthreads: 5, idealNThreads:5, stage:1, subBLocks:1, effRow: 9455, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+9. Range:[222288, 249121, ] Childre:[55, 59, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 14642, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+10. Range:[249121, 259789, ] Childre:[59, 63, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 5633, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+11. Range:[17649, 20128, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2479, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+12. Range:[20128, 24782, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4654, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+13. Range:[24782, 26986, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2204, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+14. Range:[26986, 31449, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4463, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+15. Range:[31449, 34831, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3382, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+16. Range:[34831, 42945, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 8114, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+17. Range:[42945, 46007, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3062, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+18. Range:[46007, 53753, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7746, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+19. Range:[53753, 58193, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4440, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+20. Range:[58193, 62574, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4381, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+21. Range:[62574, 66582, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4008, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+22. Range:[66582, 71236, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4654, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+23. Range:[71236, 75332, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4096, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+24. Range:[75332, 79602, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4270, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+25. Range:[79602, 83449, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3847, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+26. Range:[83449, 87509, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4060, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+27. Range:[87509, 92302, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4793, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+28. Range:[92302, 98969, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6667, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+29. Range:[98969, 103041, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4072, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+30. Range:[103041, 109233, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6192, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+31. Range:[109233, 113557, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4324, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+32. Range:[113557, 120367, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6810, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+33. Range:[120367, 124798, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4431, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+34. Range:[124798, 130675, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5877, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+35. Range:[130675, 135364, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4689, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+36. Range:[135364, 139618, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4254, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+37. Range:[139618, 144204, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4586, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+38. Range:[144204, 148215, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4011, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+39. Range:[148215, 152931, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4716, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+40. Range:[152931, 157706, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4775, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+41. Range:[157706, 163148, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5442, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+42. Range:[163148, 169917, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6769, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+43. Range:[169917, 175658, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5741, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+44. Range:[175658, 180573, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4915, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+45. Range:[180573, 183772, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3199, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+46. Range:[183772, 188611, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4839, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+47. Range:[188611, 192342, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3731, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+48. Range:[192342, 197084, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4742, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+49. Range:[197084, 200042, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2958, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+50. Range:[200042, 205077, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5035, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+51. Range:[205077, 208465, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3388, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+52. Range:[208465, 214189, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5724, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+53. Range:[214189, 217685, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3496, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+54. Range:[217685, 222288, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4603, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+55. Range:[222288, 230591, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 8303, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+56. Range:[230591, 234479, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3888, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+57. Range:[234479, 243842, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 9363, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+58. Range:[243842, 249121, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5279, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+59. Range:[249121, 250269, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1148, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+60. Range:[250269, 254156, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3887, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+61. Range:[254156, 255329, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1173, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+62. Range:[255329, 259789, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4460, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+coloring efficiency = 0.707044
+max. stage depth = 2
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 17.284868 GFlop/s
+SpMTV: 9.060576 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 11.352412 GFlop/s
+THREAD = 15
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 11, ], Parent: -1, nthreads: 15, idealNThreads:15, stage:0, subBLocks:1, effRow: 22867, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 7088, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 7088, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[7088, 13152, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 6064, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[13152, 23592, ] Childre:[11, 15, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 5413, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[23592, 41376, ] Childre:[15, 19, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 9290, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[41376, 69332, ] Childre:[19, 27, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 7480, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+6. Range:[69332, 108030, ] Childre:[27, 35, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 10096, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+7. Range:[108030, 155499, ] Childre:[35, 45, ], Parent: 0, nthreads: 5, idealNThreads:5, stage:1, subBLocks:1, effRow: 10543, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+8. Range:[155499, 203441, ] Childre:[45, 55, ], Parent: 0, nthreads: 5, idealNThreads:5, stage:1, subBLocks:1, effRow: 10690, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+9. Range:[203441, 237582, ] Childre:[55, 61, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 12177, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+10. Range:[237582, 259789, ] Childre:[61, 67, ], Parent: 0, nthreads: 3, idealNThreads:3, stage:1, subBLocks:1, effRow: 8086, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+11. Range:[13152, 16390, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3238, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+12. Range:[16390, 18179, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1789, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+13. Range:[18179, 21450, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3271, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+14. Range:[21450, 23592, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2142, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+15. Range:[23592, 26300, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2708, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+16. Range:[26300, 32086, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5786, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+17. Range:[32086, 35148, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3062, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+18. Range:[35148, 41376, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6228, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+19. Range:[41376, 44901, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3525, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+20. Range:[44901, 48580, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3679, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+21. Range:[48580, 52381, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3801, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+22. Range:[52381, 56040, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3659, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+23. Range:[56040, 59620, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3580, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+24. Range:[59620, 62886, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3266, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+25. Range:[62886, 65988, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3102, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+26. Range:[65988, 69332, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3344, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+27. Range:[69332, 73225, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3893, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+28. Range:[73225, 79109, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5884, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+29. Range:[79109, 83262, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4153, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+30. Range:[83262, 88718, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5456, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+31. Range:[88718, 92523, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3805, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+32. Range:[92523, 98271, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5748, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+33. Range:[98271, 102483, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4212, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+34. Range:[102483, 108030, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5547, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+35. Range:[108030, 112749, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4719, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+36. Range:[112749, 117496, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4747, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+37. Range:[117496, 122573, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5077, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+38. Range:[122573, 127596, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5023, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+39. Range:[127596, 132555, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4959, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+40. Range:[132555, 136879, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4324, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+41. Range:[136879, 141653, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4774, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+42. Range:[141653, 146196, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4543, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+43. Range:[146196, 151716, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5520, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+44. Range:[151716, 155499, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3783, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+45. Range:[155499, 160364, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4865, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+46. Range:[160364, 165359, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4995, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+47. Range:[165359, 169615, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4256, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+48. Range:[169615, 174407, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4792, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+49. Range:[174407, 179031, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4624, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+50. Range:[179031, 183628, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4597, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+51. Range:[183628, 188118, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4490, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+52. Range:[188118, 193530, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5412, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+53. Range:[193530, 198808, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5278, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+54. Range:[198808, 203441, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4633, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+55. Range:[203441, 206957, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3516, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+56. Range:[206957, 215520, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 8563, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+57. Range:[215520, 219134, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3614, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+58. Range:[219134, 226658, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7524, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+59. Range:[226658, 230077, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3419, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+60. Range:[230077, 237582, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7505, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+61. Range:[237582, 238552, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 970, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+62. Range:[238552, 244456, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5904, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+63. Range:[244456, 245630, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1174, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+64. Range:[245630, 251703, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6073, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+65. Range:[251703, 253006, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1303, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+66. Range:[253006, 259789, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6783, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+coloring efficiency = 0.757391
+max. stage depth = 2
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 18.216999 GFlop/s
+SpMTV: 9.504698 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 11.719644 GFlop/s
+THREAD = 16
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 11, ], Parent: -1, nthreads: 16, idealNThreads:16, stage:0, subBLocks:1, effRow: 24049, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 7088, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 7088, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[7088, 13152, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 6064, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[13152, 23592, ] Childre:[11, 15, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 5413, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[23592, 41376, ] Childre:[15, 19, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 9290, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[41376, 87509, ] Childre:[19, 29, ], Parent: 0, nthreads: 5, idealNThreads:5, stage:1, subBLocks:1, effRow: 10450, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+6. Range:[87509, 130675, ] Childre:[29, 39, ], Parent: 0, nthreads: 5, idealNThreads:5, stage:1, subBLocks:1, effRow: 9407, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+7. Range:[130675, 180573, ] Childre:[39, 49, ], Parent: 0, nthreads: 6, idealNThreads:6, stage:1, subBLocks:1, effRow: 8950, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+8. Range:[180573, 222288, ] Childre:[57, 69, ], Parent: 0, nthreads: 6, idealNThreads:6, stage:1, subBLocks:1, effRow: 8099, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+9. Range:[222288, 249121, ] Childre:[69, 73, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 14642, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+10. Range:[249121, 259789, ] Childre:[73, 77, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 5633, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+11. Range:[13152, 16390, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3238, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+12. Range:[16390, 18179, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1789, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+13. Range:[18179, 21450, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3271, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+14. Range:[21450, 23592, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2142, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+15. Range:[23592, 26300, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2708, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+16. Range:[26300, 32086, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5786, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+17. Range:[32086, 35148, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3062, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+18. Range:[35148, 41376, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6228, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+19. Range:[41376, 45735, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4359, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+20. Range:[45735, 50694, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4959, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+21. Range:[50694, 55992, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5298, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+22. Range:[55992, 59764, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3772, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+23. Range:[59764, 64255, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4491, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+24. Range:[64255, 68753, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4498, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+25. Range:[68753, 73039, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4286, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+26. Range:[73039, 77261, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4222, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+27. Range:[77261, 82752, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5491, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+28. Range:[82752, 87509, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4757, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+29. Range:[87509, 91324, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3815, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+30. Range:[91324, 95986, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4662, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+31. Range:[95986, 100029, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4043, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+32. Range:[100029, 104131, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4102, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+33. Range:[104131, 107877, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3746, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+34. Range:[107877, 112093, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4216, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+35. Range:[112093, 116523, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4430, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+36. Range:[116523, 121500, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4977, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+37. Range:[121500, 125752, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4252, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+38. Range:[125752, 130675, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4923, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+39. Range:[130675, 133803, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3128, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+40. Range:[133803, 138612, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4809, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+41. Range:[138612, 141844, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3232, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+42. Range:[141844, 146191, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4347, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+43. Range:[146191, 149377, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3186, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+44. Range:[149377, 154198, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4821, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+45. Range:[154198, 157706, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3508, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+46. Range:[157706, 163148, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5442, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+47. Range:[163148, 169917, ] Childre:[49, 53, ], Parent: 7, nthreads: 2, idealNThreads:2, stage:2, subBLocks:1, effRow: 3403, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+48. Range:[169917, 180573, ] Childre:[53, 57, ], Parent: 7, nthreads: 2, idealNThreads:2, stage:2, subBLocks:1, effRow: 5369, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+49. Range:[163148, 165119, ] Childre:[], Parent: 47, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1971, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+50. Range:[165119, 166518, ] Childre:[], Parent: 47, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1399, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+51. Range:[166518, 168485, ] Childre:[], Parent: 47, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1967, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+52. Range:[168485, 169917, ] Childre:[], Parent: 47, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1432, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+53. Range:[169917, 171672, ] Childre:[], Parent: 48, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1755, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+54. Range:[171672, 175286, ] Childre:[], Parent: 48, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 3614, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+55. Range:[175286, 177017, ] Childre:[], Parent: 48, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1731, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+56. Range:[177017, 180573, ] Childre:[], Parent: 48, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 3556, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+57. Range:[180573, 184968, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4395, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+58. Range:[184968, 187649, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2681, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+59. Range:[187649, 191437, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3788, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+60. Range:[191437, 194352, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2915, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+61. Range:[194352, 198066, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3714, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+62. Range:[198066, 200953, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2887, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+63. Range:[200953, 205077, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4124, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+64. Range:[205077, 207810, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2733, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+65. Range:[207810, 211525, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3715, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+66. Range:[211525, 214189, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2664, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+67. Range:[214189, 219186, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4997, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+68. Range:[219186, 222288, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3102, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+69. Range:[222288, 230591, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 8303, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+70. Range:[230591, 234479, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3888, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+71. Range:[234479, 243842, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 9363, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+72. Range:[243842, 249121, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5279, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+73. Range:[249121, 250269, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1148, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+74. Range:[250269, 254156, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3887, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+75. Range:[254156, 255329, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1173, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+76. Range:[255329, 259789, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4460, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+coloring efficiency = 0.675155
+max. stage depth = 3
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 19.213114 GFlop/s
+SpMTV: 9.324596 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 12.041179 GFlop/s
+THREAD = 17
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 11, ], Parent: -1, nthreads: 17, idealNThreads:17, stage:0, subBLocks:1, effRow: 20269, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 7088, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 7088, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[7088, 13152, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 6064, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[13152, 23592, ] Childre:[11, 15, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 5413, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[23592, 41376, ] Childre:[15, 19, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 9290, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[41376, 69332, ] Childre:[19, 27, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 7480, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+6. Range:[69332, 108030, ] Childre:[27, 35, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 10096, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+7. Range:[108030, 155499, ] Childre:[35, 47, ], Parent: 0, nthreads: 6, idealNThreads:6, stage:1, subBLocks:1, effRow: 9351, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+8. Range:[155499, 203441, ] Childre:[47, 59, ], Parent: 0, nthreads: 6, idealNThreads:6, stage:1, subBLocks:1, effRow: 10690, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+9. Range:[203441, 237582, ] Childre:[59, 67, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 9579, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+10. Range:[237582, 259789, ] Childre:[67, 75, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 6457, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+11. Range:[13152, 16390, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3238, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+12. Range:[16390, 18179, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1789, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+13. Range:[18179, 21450, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3271, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+14. Range:[21450, 23592, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2142, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+15. Range:[23592, 26300, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2708, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+16. Range:[26300, 32086, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5786, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+17. Range:[32086, 35148, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3062, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+18. Range:[35148, 41376, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6228, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+19. Range:[41376, 44901, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3525, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+20. Range:[44901, 48580, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3679, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+21. Range:[48580, 52381, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3801, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+22. Range:[52381, 56040, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3659, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+23. Range:[56040, 59620, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3580, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+24. Range:[59620, 62886, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3266, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+25. Range:[62886, 65988, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3102, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+26. Range:[65988, 69332, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3344, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+27. Range:[69332, 73225, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3893, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+28. Range:[73225, 79109, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5884, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+29. Range:[79109, 83262, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4153, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+30. Range:[83262, 88718, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5456, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+31. Range:[88718, 92523, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3805, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+32. Range:[92523, 98271, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5748, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+33. Range:[98271, 102483, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4212, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+34. Range:[102483, 108030, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5547, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+35. Range:[108030, 111299, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3269, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+36. Range:[111299, 115269, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3970, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+37. Range:[115269, 118634, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3365, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+38. Range:[118634, 122573, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3939, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+39. Range:[122573, 126394, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3821, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+40. Range:[126394, 130672, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4278, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+41. Range:[130672, 134657, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3985, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+42. Range:[134657, 139259, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4602, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+43. Range:[139259, 144008, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4749, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+44. Range:[144008, 148180, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4172, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+45. Range:[148180, 151716, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3536, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+46. Range:[151716, 155499, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3783, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+47. Range:[155499, 159723, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4224, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+48. Range:[159723, 162716, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2993, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+49. Range:[162716, 167333, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4617, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+50. Range:[167333, 170844, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3511, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+51. Range:[170844, 175402, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4558, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+52. Range:[175402, 179031, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3629, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+53. Range:[179031, 183628, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4597, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+54. Range:[183628, 188118, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4490, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+55. Range:[188118, 193530, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5412, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+56. Range:[193530, 198808, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5278, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+57. Range:[198808, 203150, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4342, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+58. Range:[203150, 203441, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 291, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+59. Range:[203441, 205024, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1583, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+60. Range:[205024, 211726, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6702, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+61. Range:[211726, 214052, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2326, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+62. Range:[214052, 221147, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7095, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+63. Range:[221147, 223631, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2484, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+64. Range:[223631, 229378, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5747, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+65. Range:[229378, 230819, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1441, reachedLimit: false, pinOrder = 16 funTime = 0.000000
+66. Range:[230819, 237582, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6763, reachedLimit: false, pinOrder = 16 funTime = 0.000000
+67. Range:[237582, 241788, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4206, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+68. Range:[241788, 243689, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1901, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+69. Range:[243689, 247319, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3630, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+70. Range:[247319, 248735, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1416, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+71. Range:[248735, 253002, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4267, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+72. Range:[253002, 254034, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1032, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+73. Range:[254034, 258590, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4556, reachedLimit: false, pinOrder = 16 funTime = 0.000000
+74. Range:[258590, 259789, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1199, reachedLimit: false, pinOrder = 16 funTime = 0.000000
+coloring efficiency = 0.753945
+max. stage depth = 2
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 19.902794 GFlop/s
+SpMTV: 10.296568 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 12.948998 GFlop/s
+THREAD = 18
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 11, ], Parent: -1, nthreads: 18, idealNThreads:18, stage:0, subBLocks:1, effRow: 20269, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 7088, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 7088, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[7088, 13152, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 6064, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[13152, 23592, ] Childre:[11, 15, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 5413, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[23592, 41376, ] Childre:[15, 19, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 9290, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[41376, 69332, ] Childre:[19, 29, ], Parent: 0, nthreads: 5, idealNThreads:5, stage:1, subBLocks:1, effRow: 6388, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+6. Range:[69332, 108030, ] Childre:[29, 39, ], Parent: 0, nthreads: 5, idealNThreads:5, stage:1, subBLocks:1, effRow: 8511, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+7. Range:[108030, 155499, ] Childre:[39, 51, ], Parent: 0, nthreads: 6, idealNThreads:6, stage:1, subBLocks:1, effRow: 9351, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+8. Range:[155499, 203441, ] Childre:[51, 63, ], Parent: 0, nthreads: 6, idealNThreads:6, stage:1, subBLocks:1, effRow: 10690, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+9. Range:[203441, 237582, ] Childre:[63, 71, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 9579, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+10. Range:[237582, 259789, ] Childre:[71, 79, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 6457, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+11. Range:[13152, 16390, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3238, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+12. Range:[16390, 18179, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1789, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+13. Range:[18179, 21450, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3271, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+14. Range:[21450, 23592, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2142, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+15. Range:[23592, 26300, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2708, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+16. Range:[26300, 32086, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5786, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+17. Range:[32086, 35148, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3062, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+18. Range:[35148, 41376, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6228, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+19. Range:[41376, 44457, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3081, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+20. Range:[44457, 47186, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2729, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+21. Range:[47186, 50299, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3113, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+22. Range:[50299, 52381, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2082, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+23. Range:[52381, 56040, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3659, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+24. Range:[56040, 58447, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2407, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+25. Range:[58447, 61806, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3359, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+26. Range:[61806, 63931, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2125, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+27. Range:[63931, 66856, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2925, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+28. Range:[66856, 69332, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2476, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+29. Range:[69332, 72470, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3138, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+30. Range:[72470, 77046, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4576, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+31. Range:[77046, 80386, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3340, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+32. Range:[80386, 84959, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4573, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+33. Range:[84959, 88718, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3759, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+34. Range:[88718, 92523, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3805, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+35. Range:[92523, 96458, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3935, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+36. Range:[96458, 99867, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3409, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+37. Range:[99867, 103639, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3772, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+38. Range:[103639, 108030, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4391, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+39. Range:[108030, 111299, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3269, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+40. Range:[111299, 115269, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3970, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+41. Range:[115269, 118634, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3365, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+42. Range:[118634, 122573, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3939, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+43. Range:[122573, 126394, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3821, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+44. Range:[126394, 130672, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4278, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+45. Range:[130672, 134657, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3985, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+46. Range:[134657, 139259, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4602, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+47. Range:[139259, 144008, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4749, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+48. Range:[144008, 148180, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4172, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+49. Range:[148180, 151716, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3536, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+50. Range:[151716, 155499, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3783, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+51. Range:[155499, 159723, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4224, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+52. Range:[159723, 162716, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2993, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+53. Range:[162716, 167333, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4617, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+54. Range:[167333, 170844, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3511, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+55. Range:[170844, 175402, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4558, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+56. Range:[175402, 179031, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3629, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+57. Range:[179031, 183628, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4597, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+58. Range:[183628, 188118, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4490, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+59. Range:[188118, 193530, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5412, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+60. Range:[193530, 198808, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5278, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+61. Range:[198808, 203150, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4342, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+62. Range:[203150, 203441, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 291, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+63. Range:[203441, 205024, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1583, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+64. Range:[205024, 211726, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6702, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+65. Range:[211726, 214052, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2326, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+66. Range:[214052, 221147, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7095, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+67. Range:[221147, 223631, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2484, reachedLimit: false, pinOrder = 16 funTime = 0.000000
+68. Range:[223631, 229378, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5747, reachedLimit: false, pinOrder = 16 funTime = 0.000000
+69. Range:[229378, 230819, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1441, reachedLimit: false, pinOrder = 17 funTime = 0.000000
+70. Range:[230819, 237582, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6763, reachedLimit: false, pinOrder = 17 funTime = 0.000000
+71. Range:[237582, 241788, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4206, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+72. Range:[241788, 243689, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1901, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+73. Range:[243689, 247319, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3630, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+74. Range:[247319, 248735, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1416, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+75. Range:[248735, 253002, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4267, reachedLimit: false, pinOrder = 16 funTime = 0.000000
+76. Range:[253002, 254034, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1032, reachedLimit: false, pinOrder = 16 funTime = 0.000000
+77. Range:[254034, 258590, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4556, reachedLimit: false, pinOrder = 17 funTime = 0.000000
+78. Range:[258590, 259789, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1199, reachedLimit: false, pinOrder = 17 funTime = 0.000000
+coloring efficiency = 0.712059
+max. stage depth = 2
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 20.903627 GFlop/s
+SpMTV: 10.375763 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 13.803643 GFlop/s
+THREAD = 19
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 11, ], Parent: -1, nthreads: 19, idealNThreads:19, stage:0, subBLocks:1, effRow: 18869, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 7088, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 7088, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[7088, 13152, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 6064, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[13152, 23592, ] Childre:[11, 15, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 5413, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[23592, 41376, ] Childre:[15, 19, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 9290, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[41376, 69332, ] Childre:[19, 29, ], Parent: 0, nthreads: 5, idealNThreads:5, stage:1, subBLocks:1, effRow: 6388, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+6. Range:[69332, 108030, ] Childre:[29, 39, ], Parent: 0, nthreads: 5, idealNThreads:5, stage:1, subBLocks:1, effRow: 8511, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+7. Range:[108030, 155499, ] Childre:[39, 53, ], Parent: 0, nthreads: 7, idealNThreads:7, stage:1, subBLocks:1, effRow: 9317, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+8. Range:[155499, 203441, ] Childre:[53, 65, ], Parent: 0, nthreads: 7, idealNThreads:7, stage:1, subBLocks:1, effRow: 8311, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+9. Range:[203441, 237582, ] Childre:[73, 81, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 9579, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+10. Range:[237582, 259789, ] Childre:[81, 89, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 6457, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+11. Range:[13152, 16390, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3238, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+12. Range:[16390, 18179, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1789, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+13. Range:[18179, 21450, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3271, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+14. Range:[21450, 23592, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2142, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+15. Range:[23592, 26300, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2708, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+16. Range:[26300, 32086, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5786, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+17. Range:[32086, 35148, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3062, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+18. Range:[35148, 41376, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6228, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+19. Range:[41376, 44457, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3081, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+20. Range:[44457, 47186, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2729, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+21. Range:[47186, 50299, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3113, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+22. Range:[50299, 52381, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2082, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+23. Range:[52381, 56040, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3659, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+24. Range:[56040, 58447, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2407, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+25. Range:[58447, 61806, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3359, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+26. Range:[61806, 63931, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2125, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+27. Range:[63931, 66856, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2925, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+28. Range:[66856, 69332, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2476, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+29. Range:[69332, 72470, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3138, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+30. Range:[72470, 77046, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4576, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+31. Range:[77046, 80386, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3340, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+32. Range:[80386, 84959, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4573, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+33. Range:[84959, 88718, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3759, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+34. Range:[88718, 92523, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3805, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+35. Range:[92523, 96458, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3935, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+36. Range:[96458, 99867, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3409, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+37. Range:[99867, 103639, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3772, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+38. Range:[103639, 108030, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4391, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+39. Range:[108030, 111299, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3269, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+40. Range:[111299, 114357, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3058, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+41. Range:[114357, 117496, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3139, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+42. Range:[117496, 120689, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3193, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+43. Range:[120689, 123398, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2709, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+44. Range:[123398, 126394, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2996, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+45. Range:[126394, 129064, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2670, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+46. Range:[129064, 132555, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3491, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+47. Range:[132555, 136879, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4324, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+48. Range:[136879, 141653, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4774, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+49. Range:[141653, 146196, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4543, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+50. Range:[146196, 150125, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3929, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+51. Range:[150125, 152988, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2863, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+52. Range:[152988, 155499, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2511, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+53. Range:[155499, 158125, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2626, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+54. Range:[158125, 161866, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3741, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+55. Range:[161866, 164511, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2645, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+56. Range:[164511, 168484, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3973, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+57. Range:[168484, 170844, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2360, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+58. Range:[170844, 174407, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3563, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+59. Range:[174407, 177067, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2660, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+60. Range:[177067, 180288, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3221, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+61. Range:[180288, 183628, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3340, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+62. Range:[183628, 188118, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4490, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+63. Range:[188118, 193530, ] Childre:[65, 69, ], Parent: 8, nthreads: 2, idealNThreads:2, stage:2, subBLocks:1, effRow: 2746, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+64. Range:[193530, 203441, ] Childre:[69, 73, ], Parent: 8, nthreads: 2, idealNThreads:2, stage:2, subBLocks:1, effRow: 4971, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+65. Range:[188118, 189566, ] Childre:[], Parent: 63, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1448, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+66. Range:[189566, 190864, ] Childre:[], Parent: 63, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1298, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+67. Range:[190864, 192288, ] Childre:[], Parent: 63, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1424, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+68. Range:[192288, 193530, ] Childre:[], Parent: 63, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1242, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+69. Range:[193530, 194843, ] Childre:[], Parent: 64, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1313, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+70. Range:[194843, 198489, ] Childre:[], Parent: 64, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 3646, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+71. Range:[198489, 199814, ] Childre:[], Parent: 64, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1325, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+72. Range:[199814, 203441, ] Childre:[], Parent: 64, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 3627, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+73. Range:[203441, 205024, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1583, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+74. Range:[205024, 211726, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6702, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+75. Range:[211726, 214052, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2326, reachedLimit: false, pinOrder = 16 funTime = 0.000000
+76. Range:[214052, 221147, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 7095, reachedLimit: false, pinOrder = 16 funTime = 0.000000
+77. Range:[221147, 223631, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2484, reachedLimit: false, pinOrder = 17 funTime = 0.000000
+78. Range:[223631, 229378, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 5747, reachedLimit: false, pinOrder = 17 funTime = 0.000000
+79. Range:[229378, 230819, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1441, reachedLimit: false, pinOrder = 18 funTime = 0.000000
+80. Range:[230819, 237582, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 6763, reachedLimit: false, pinOrder = 18 funTime = 0.000000
+81. Range:[237582, 241788, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4206, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+82. Range:[241788, 243689, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1901, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+83. Range:[243689, 247319, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3630, reachedLimit: false, pinOrder = 16 funTime = 0.000000
+84. Range:[247319, 248735, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1416, reachedLimit: false, pinOrder = 16 funTime = 0.000000
+85. Range:[248735, 253002, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4267, reachedLimit: false, pinOrder = 17 funTime = 0.000000
+86. Range:[253002, 254034, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1032, reachedLimit: false, pinOrder = 17 funTime = 0.000000
+87. Range:[254034, 258590, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4556, reachedLimit: false, pinOrder = 18 funTime = 0.000000
+88. Range:[258590, 259789, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1199, reachedLimit: false, pinOrder = 18 funTime = 0.000000
+coloring efficiency = 0.724633
+max. stage depth = 3
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 18.499904 GFlop/s
+SpMTV: 10.895903 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 13.885754 GFlop/s
+THREAD = 20
+MPI startup(): I_MPI_HARD_FINALIZE environment variable is not supported.
+MPI startup(): To check the list of supported variables, use the impi_info utility or refer to https://software.intel.com/en-us/mpi-library/documentation/get-started.
+allocated
+smt = 1
+Efficiency Vector = 
+40.000000
+0. Range:[0, 259789, ] Childre:[1, 11, ], Parent: -1, nthreads: 20, idealNThreads:20, stage:0, subBLocks:1, effRow: 17577, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+1. Range:[0, 2814, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 2814, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+2. Range:[2814, 9690, ] Childre:[], Parent: 0, nthreads: 1, idealNThreads:1, stage:1, subBLocks:1, effRow: 6876, reachedLimit: false, pinOrder = 0 funTime = 0.000000
+3. Range:[9690, 17649, ] Childre:[11, 15, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 4045, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+4. Range:[17649, 31449, ] Childre:[15, 19, ], Parent: 0, nthreads: 2, idealNThreads:2, stage:1, subBLocks:1, effRow: 7133, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+5. Range:[31449, 53753, ] Childre:[19, 27, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 6156, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+6. Range:[53753, 87509, ] Childre:[27, 35, ], Parent: 0, nthreads: 4, idealNThreads:4, stage:1, subBLocks:1, effRow: 9094, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+7. Range:[87509, 130675, ] Childre:[35, 49, ], Parent: 0, nthreads: 7, idealNThreads:7, stage:1, subBLocks:1, effRow: 7100, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+8. Range:[130675, 180573, ] Childre:[49, 61, ], Parent: 0, nthreads: 7, idealNThreads:7, stage:1, subBLocks:1, effRow: 8036, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+9. Range:[180573, 222288, ] Childre:[69, 81, ], Parent: 0, nthreads: 6, idealNThreads:6, stage:1, subBLocks:1, effRow: 8099, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+10. Range:[222288, 259789, ] Childre:[81, 91, ], Parent: 0, nthreads: 6, idealNThreads:6, stage:1, subBLocks:1, effRow: 9478, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+11. Range:[9690, 12023, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2333, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+12. Range:[12023, 13646, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1623, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+13. Range:[13646, 15937, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2291, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+14. Range:[15937, 17649, ] Childre:[], Parent: 3, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1712, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+15. Range:[17649, 20128, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2479, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+16. Range:[20128, 24782, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4654, reachedLimit: false, pinOrder = 1 funTime = 0.000000
+17. Range:[24782, 26986, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2204, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+18. Range:[26986, 31449, ] Childre:[], Parent: 4, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4463, reachedLimit: false, pinOrder = 2 funTime = 0.000000
+19. Range:[31449, 34258, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2809, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+20. Range:[34258, 36789, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2531, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+21. Range:[36789, 40113, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3324, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+22. Range:[40113, 42945, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2832, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+23. Range:[42945, 46007, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3062, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+24. Range:[46007, 48613, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2606, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+25. Range:[48613, 51359, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2746, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+26. Range:[51359, 53753, ] Childre:[], Parent: 5, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2394, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+27. Range:[53753, 58193, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4440, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+28. Range:[58193, 62574, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4381, reachedLimit: false, pinOrder = 3 funTime = 0.000000
+29. Range:[62574, 66582, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4008, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+30. Range:[66582, 71236, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4654, reachedLimit: false, pinOrder = 4 funTime = 0.000000
+31. Range:[71236, 75332, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4096, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+32. Range:[75332, 79602, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4270, reachedLimit: false, pinOrder = 5 funTime = 0.000000
+33. Range:[79602, 83449, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3847, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+34. Range:[83449, 87509, ] Childre:[], Parent: 6, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4060, reachedLimit: false, pinOrder = 6 funTime = 0.000000
+35. Range:[87509, 90254, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2745, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+36. Range:[90254, 93676, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3422, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+37. Range:[93676, 96922, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3246, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+38. Range:[96922, 100029, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3107, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+39. Range:[100029, 103041, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3012, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+40. Range:[103041, 106579, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3538, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+41. Range:[106579, 109233, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2654, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+42. Range:[109233, 112093, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2860, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+43. Range:[112093, 115073, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2980, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+44. Range:[115073, 117938, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2865, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+45. Range:[117938, 121500, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3562, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+46. Range:[121500, 124798, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3298, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+47. Range:[124798, 127640, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2842, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+48. Range:[127640, 130675, ] Childre:[], Parent: 7, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3035, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+49. Range:[130675, 134738, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4063, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+50. Range:[134738, 137680, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2942, reachedLimit: false, pinOrder = 7 funTime = 0.000000
+51. Range:[137680, 141844, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4164, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+52. Range:[141844, 144204, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2360, reachedLimit: false, pinOrder = 8 funTime = 0.000000
+53. Range:[144204, 148215, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4011, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+54. Range:[148215, 150556, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2341, reachedLimit: false, pinOrder = 9 funTime = 0.000000
+55. Range:[150556, 154198, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3642, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+56. Range:[154198, 157706, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3508, reachedLimit: false, pinOrder = 10 funTime = 0.000000
+57. Range:[157706, 166463, ] Childre:[61, 65, ], Parent: 8, nthreads: 2, idealNThreads:2, stage:2, subBLocks:1, effRow: 4416, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+58. Range:[166463, 173023, ] Childre:[65, 69, ], Parent: 8, nthreads: 2, idealNThreads:2, stage:2, subBLocks:1, effRow: 3311, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+59. Range:[173023, 177551, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4528, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+60. Range:[177551, 180573, ] Childre:[], Parent: 8, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3022, reachedLimit: false, pinOrder = 13 funTime = 0.000000
+61. Range:[157706, 158915, ] Childre:[], Parent: 57, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1209, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+62. Range:[158915, 162122, ] Childre:[], Parent: 57, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 3207, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+63. Range:[162122, 163287, ] Childre:[], Parent: 57, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1165, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+64. Range:[163287, 166463, ] Childre:[], Parent: 57, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 3176, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+65. Range:[166463, 168332, ] Childre:[], Parent: 58, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1869, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+66. Range:[168332, 169774, ] Childre:[], Parent: 58, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1442, reachedLimit: false, pinOrder = 11 funTime = 0.000000
+67. Range:[169774, 171601, ] Childre:[], Parent: 58, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1827, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+68. Range:[171601, 173023, ] Childre:[], Parent: 58, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1422, reachedLimit: false, pinOrder = 12 funTime = 0.000000
+69. Range:[180573, 184968, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4395, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+70. Range:[184968, 187649, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2681, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+71. Range:[187649, 191437, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3788, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+72. Range:[191437, 194352, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2915, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+73. Range:[194352, 198066, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3714, reachedLimit: false, pinOrder = 16 funTime = 0.000000
+74. Range:[198066, 200953, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2887, reachedLimit: false, pinOrder = 16 funTime = 0.000000
+75. Range:[200953, 205077, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4124, reachedLimit: false, pinOrder = 17 funTime = 0.000000
+76. Range:[205077, 207810, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2733, reachedLimit: false, pinOrder = 17 funTime = 0.000000
+77. Range:[207810, 211525, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3715, reachedLimit: false, pinOrder = 18 funTime = 0.000000
+78. Range:[211525, 214189, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2664, reachedLimit: false, pinOrder = 18 funTime = 0.000000
+79. Range:[214189, 219186, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4997, reachedLimit: false, pinOrder = 19 funTime = 0.000000
+80. Range:[219186, 222288, ] Childre:[], Parent: 9, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3102, reachedLimit: false, pinOrder = 19 funTime = 0.000000
+81. Range:[222288, 223698, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 1410, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+82. Range:[223698, 226843, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3145, reachedLimit: false, pinOrder = 14 funTime = 0.000000
+83. Range:[226843, 229053, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2210, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+84. Range:[229053, 232590, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3537, reachedLimit: false, pinOrder = 15 funTime = 0.000000
+85. Range:[232590, 237564, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4974, reachedLimit: false, pinOrder = 16 funTime = 0.000000
+86. Range:[237564, 242068, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 4504, reachedLimit: false, pinOrder = 16 funTime = 0.000000
+87. Range:[242068, 244525, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 2457, reachedLimit: false, pinOrder = 17 funTime = 0.000000
+88. Range:[244525, 247790, ] Childre:[], Parent: 10, nthreads: 1, idealNThreads:1, stage:2, subBLocks:1, effRow: 3265, reachedLimit: false, pinOrder = 17 funTime = 0.000000
+89. Range:[247790, 252877, ] Childre:[91, 95, ], Parent: 10, nthreads: 2, idealNThreads:2, stage:2, subBLocks:1, effRow: 2645, reachedLimit: false, pinOrder = 18 funTime = 0.000000
+90. Range:[252877, 259789, ] Childre:[95, 99, ], Parent: 10, nthreads: 2, idealNThreads:2, stage:2, subBLocks:1, effRow: 3524, reachedLimit: false, pinOrder = 18 funTime = 0.000000
+91. Range:[247790, 248870, ] Childre:[], Parent: 89, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1080, reachedLimit: false, pinOrder = 18 funTime = 0.000000
+92. Range:[248870, 250232, ] Childre:[], Parent: 89, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1362, reachedLimit: false, pinOrder = 18 funTime = 0.000000
+93. Range:[250232, 251399, ] Childre:[], Parent: 89, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1167, reachedLimit: false, pinOrder = 19 funTime = 0.000000
+94. Range:[251399, 252877, ] Childre:[], Parent: 89, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 1478, reachedLimit: false, pinOrder = 19 funTime = 0.000000
+95. Range:[252877, 255398, ] Childre:[], Parent: 90, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 2521, reachedLimit: false, pinOrder = 18 funTime = 0.000000
+96. Range:[255398, 256265, ] Childre:[], Parent: 90, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 867, reachedLimit: false, pinOrder = 18 funTime = 0.000000
+97. Range:[256265, 258903, ] Childre:[], Parent: 90, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 2638, reachedLimit: false, pinOrder = 19 funTime = 0.000000
+98. Range:[258903, 259789, ] Childre:[], Parent: 90, nthreads: 1, idealNThreads:1, stage:3, subBLocks:1, effRow: 886, reachedLimit: false, pinOrder = 19 funTime = 0.000000
+coloring efficiency = 0.739003
+max. stage depth = 3
+allocated
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+buffer length = 26
+MKL_SpMV: 22.392260 GFlop/s
+SpMTV: 12.124127 GFlop/s
+Initing RACE
+Initing chunkPtr
+Finished chunkPtr
+Initing RACE
+Initing rowLen
+Finished rowLen
+Initing RACE
+initing val
+finished val
+Initing RACE
+initing col
+finished col
+SymmSpMV: 16.244159 GFlop/s

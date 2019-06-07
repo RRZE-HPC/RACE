@@ -1,0 +1,49 @@
+\documentclass{standalone}
+\usepackage{tikz}
+
+\usepackage{amssymb}
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+\definecolor{carmine}{rgb}{0.59, 0.0, 0.09}
+
+\begin{document}
+	\tikzset{
+	font=\normalsize,
+	minimum width=20
+		}
+
+\newcommand{\scale}{1.5}%
+	\begin{tikzpicture}
+	
+	\fill[color=blue,opacity=0.1,rounded corners=15pt] (8*\scale,-3.5*\scale) rectangle (12*\scale,-1.5*\scale);
+	
+	\node[shape=circle,draw,dashed, minimum size=25, inner sep=0.2pt] (b) at (9*\scale,-1*\scale) {\LARGE{1$^1$}};
+	\node[shape=circle,fill=carmine, text=white, minimum size=24, inner sep=0.2pt] (d) at (8.5*\scale,-2*\scale) {\LARGE{3$^{2,0}$}};
+	\node[shape=circle,fill=cyan, minimum size=24, inner sep=0.2pt] (e) at (9.5*\scale,-2*\scale) {\LARGE{4$^{2,3}$}};
+	\node[shape=circle,fill=cyan, minimum size=24, inner sep=0.2pt] (f) at (10.5*\scale,-2*\scale) {\LARGE{5$^{2,3}$}};
+	\node[shape=circle,fill=carmine, text=white, minimum size=24, inner sep=0.2pt] (g) at (11.5*\scale,-2*\scale) {\LARGE{6$^{2,4}$}};
+	\node[shape=circle,fill=carmine, text=white, minimum size=24, inner sep=0.2pt] (x) at (9*\scale,-3*\scale) {\LARGE{7$^{3,1}$}};
+	\node[shape=circle,fill=cyan, minimum size=24, inner sep=0.2pt] (y) at (10*\scale,-3*\scale) {\LARGE{8$^{3,2}$}};
+	\node[shape=circle,fill=carmine, text=white, minimum size=24, inner sep=0.2pt] (z) at (11*\scale,-3*\scale) {\LARGE{9$^{3,4}$}};
+	\draw 
+	%	(h) edge[<->] (c)
+	(b) edge[<->,dashed] (d) (b) edge[<->,dashed] (g)
+	(e) edge[<->] (f) (f) edge[<->] (g)
+	(d) edge[<->] (x) (e) edge[<->] (y) (f) edge[<->] (z) (f) edge[<->] (y)
+	(x) edge[<->] (y); 
+
+	\node at (17,-0.5) {\textcolor{red}{\Huge{\xmark}}};
+	
+	\draw[dashed,rounded corners=5mm,color=red] (8*\scale,-1.65*\scale) -- (8.75*\scale,-3.4*\scale) -- (9.55*\scale,-3.4*\scale) -- (8.8*\scale,-1.65*\scale) --cycle;
+		
+	\draw[dashed,rounded corners=5mm,color=blue] (8.95*\scale,-1.65*\scale) -- (9.8*\scale,-3.4*\scale) -- (10.3*\scale,-3.4*\scale) -- (11*\scale,-1.65*\scale) -- cycle;
+		
+	\draw[dashed,rounded corners=5mm,color=red] (10.4*\scale,-3.4*\scale) -- (11.3*\scale,-3.4*\scale) -- (12*\scale,-1.65*\scale) -- (11.2*\scale,-1.65*\scale) -- cycle;
+		
+	\node[color=red] at (8.35*\scale,-3.2*\scale) {\large{$T_1(0)$}};
+	\node[color=blue] at (9.7*\scale,-1.5*\scale) {\large{$T_1(1)$}};
+	\node[color=red] at (11.65*\scale,-3.2*\scale) {\large{$T_1(2)$}};
+	\end{tikzpicture}
+\end{document}  

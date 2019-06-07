@@ -1,0 +1,220 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{width=15cm,height=12cm,compat=1.3}
+\usepackage{filecontents}
+\usetikzlibrary{patterns}
+\usepackage{pgfplotstable}
+
+\def\matrixFile{../motivation/motivation/Spin-26}
+\def\matrixFileNowait{../motivation/motivation_nowait/Spin-26}
+\def\matrixFileMKL{../motivation/motivation_mkl/Spin-26}
+\def\matrixName{Spin-26 }
+
+\begin{document}
+	\pgfplotstableread[col sep=comma] {\matrixFileMKL/spmv.txt} \SPMV
+	\pgfplotstableread[col sep=comma] {\matrixFile/spmv.txt} \SPMVMC
+	\pgfplotstableread[col sep=comma] {\matrixFile/spmtv.txt} \SPMTV
+	\pgfplotstableread[col sep=comma] {\matrixFileNowait/spmtv.txt} \SPMTVnowait
+	\pgfplotstableread[col sep=space] {\matrixFile/nnz} \NNZfile
+		
+	\pgfplotstablegetelem{0}{nnz}\of\NNZfile
+	\pgfmathsetmacro{\NNZ}{\pgfplotsretval}
+		
+	
+\begin{minipage}{1.3\textwidth}
+\begin{minipage}{1\textwidth}
+\centering
+\begin{tikzpicture}
+
+
+  \def\xmin{0}
+  \def\xmax{10}
+  \def\ymin{0}
+  \def\ymax{30}
+
+  \begin{axis}[ xlabel={Threads}, ylabel={GFlop/s}, ymode=linear,
+  %xtick={1000, 2744, 5832, 10648, 17576, 27000, 39304, 54872, 74088},
+  %xticklabels={$10^3$, %$14^3$
+  %  , $18^3$, $22^3$, $26^3$, $30^3$, $34^3$, $38^3$, $42^3$},
+  scaled ticks=false,
+  %xmode=log,
+  xmin=1,xmax = 10,
+  %ymin=0, ymax=14,
+  legend style={legend pos=north west}]
+
+   \addplot+[line width=2] table[x =THREAD,y =PERF (GFlop/s),col sep=comma] {\SPMV}; \label{plot_one}
+   \addlegendentry{SpMTV} %put here plain SpMV
+
+
+   \addplot+[line width=2] table[x =THREAD,y =PERF (GFlop/s),col sep=comma] {\SPMVMC}; \label{plot_two}
+  \addlegendentry{SpMV MC}
+
+  % \addplot table[x index=0,y index=1,col sep=space] {data.dat}; \label{plot_three}
+   %\addlegendentry{SPMV MC}
+   
+   
+ \end{axis}
+
+\node at (6.5,11) {\large{Scaling Test on 1 socket of Ivy-Bridge @2.2GHz, \matrixName matrix}};
+\node at (6.5,-1.2) {\textbf{\large{a. Effect of $\alpha$}}};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{1\textwidth}
+\centering
+	\begin{tikzpicture}
+	
+	
+	\def\xmin{0}
+	\def\xmax{10}
+	\def\ymin{0}
+	\def\ymax{30}
+	
+	\begin{axis}[ xlabel={Threads}, ylabel={GFlop/s}, ymode=linear,
+	 axis y line*=left,
+	%xtick={1000, 2744, 5832, 10648, 17576, 27000, 39304, 54872, 74088},
+	%xticklabels={$10^3$, %$14^3$
+	%  , $18^3$, $22^3$, $26^3$, $30^3$, $34^3$, $38^3$, $42^3$},
+	scaled ticks=false,
+	%xmode=log,
+	xmin=1,xmax = 10,
+	%ymin=0, ymax=14,
+	legend style={legend pos=north west}]
+	
+   \addplot+[color=olive, mark options=olive, line width=2] table[x =THREAD,y =PERF (GFlop/s),col sep=comma] {\SPMTV}; \label{plot_three}
+   \addlegendentry{SpMTV}
+   
+   
+   \addplot+[line width=2] table[x =THREAD,y =PERF (GFlop/s),col sep=comma] {\SPMVMC}; \label{plot_four}
+   \addlegendentry{SpMV MC}
+	
+	
+
+	
+	\end{axis}	
+ \begin{axis}[
+ axis y line*=right,
+ axis x line=none,
+ scaled ticks=false,
+ xmin=1,xmax = 10,
+ ylabel={False Sharing Data Volume (MB)},
+ %xmode=log,
+ legend style={legend pos=north west}]
+ \addlegendimage{/pgfplots/refstyle=plot_three}\addlegendentry{SpMTV}
+ \addlegendimage{/pgfplots/refstyle=plot_four}\addlegendentry{SpMV MC}
+\addplot[line width=2, color=cyan, mark=*,dashed] table[x =THREAD,y expr=(\thisrow{FS (MB)})/100 ,col sep=comma] {\SPMTV}; \label{plot_five}
+\addlegendentry{False sharing Data volume}
+%	\addplot[color=black, mark=*,dashed] table[x index=0,y index=9,col sep=space] {data.dat}; \label{plot_four}
+%	\addlegendentry{Remote False sharing Data volume}
+
+ \end{axis}
+ 
+	\node at (6.5,12) {};	
+	\node at (6.5,11) {\large{Scaling Test on 1 socket of Ivy-Bridge @2.2GHz, \matrixName matrix}};
+	\node at (6.5,-1.2) {\textbf{\large{c. False Sharing}}};
+	\end{tikzpicture}
+\end{minipage}
+\end{minipage}
+
+\begin{minipage}{1.3\textwidth}
+	\begin{minipage}{1\textwidth}
+		\centering
+		\begin{tikzpicture}
+		\begin{axis}[
+		width  = 14cm,
+		height = 11cm,
+		major x tick style = transparent,
+		minor ytick={1, 5, 10, 15, 20, 25, 30 ,35,40},
+		grid = minor,
+		ybar=2*\pgflinewidth,
+		bar width=14pt,
+		ymajorgrids = true,
+		grid style={dashed, gray!40},
+		ylabel = {Bytes/NNZ},
+		symbolic x coords={SpMV, SpMV MC, SpMTV},
+		xtick = data,
+		scaled y ticks = false,
+		enlarge x limits=0.25,
+		ymin=0,% ymax=42,
+		legend cell align=left,
+		legend style={
+			%at={(1,1.05)},
+			%anchor=south east,
+			%column sep=1ex,
+			legend pos=north west
+		}
+		]
+		
+		\pgfkeys{/pgf/fpu}
+		\pgfplotstablegetelem{9}{MEM (GB)}\of\SPMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval/(\NNZ*1e-7)} %change to SpMV
+		\pgfplotstablegetelem{9}{MEM (GB)}\of\SPMVMC
+		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfplotstablegetelem{9}{MEM (GB)}\of\SPMTV
+		\pgfmathsetmacro{\memSPMTV}{\pgfplotsretval/(\NNZ*1e-7)}
+		
+		\addplot[pattern=horizontal lines]%style={ppurple,fill=ppurple}]
+		coordinates {(SpMV,\memSPMV) (SpMV MC,\memSPMVMC) (SpMTV,\memSPMTV)};
+		
+		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval/(\NNZ*1e-7)} %change to SpMV
+		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMVMC
+		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMTV
+		\pgfmathsetmacro{\memSPMTV}{\pgfplotsretval/(\NNZ*1e-7)}
+				
+		\addplot[fill=gray!180]%style={ppurple,fill=ppurple}]
+		coordinates {(SpMV,\memSPMV) (SpMV MC,\memSPMVMC) (SpMTV,\memSPMTV)};
+		
+		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval/(\NNZ*1e-7)} %change to SpMV
+		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMVMC
+		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval/(\NNZ*1e-7)}
+		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMTV
+		\pgfmathsetmacro{\memSPMTV}{\pgfplotsretval/(\NNZ*1e-7)}
+			
+		\addplot[pattern=vertical lines]%style={bblue,fill=bblue}]
+		coordinates {(SpMV,\memSPMV) (SpMV MC,\memSPMVMC) (SpMTV,\memSPMTV)};
+		\pgfkeys{/pgf/fpu=false}
+		
+		\legend{MEM, L3, L2}
+		\end{axis}
+		\node at (6.5,10) {Data traffic Comparison using LIKWID};
+		\node at (6.5,-1.7) {\textbf{\large{b. Data Traffic validation}}};
+		\end{tikzpicture}
+	\end{minipage}
+\begin{minipage}{1\textwidth}
+	\centering
+	\begin{tikzpicture}
+	
+	
+	\def\xmin{0}
+	\def\xmax{10}
+	\def\ymin{0}
+	\def\ymax{30}
+	
+	\begin{axis}[ xlabel={Threads}, ylabel={GFlop/s}, ymode=linear,
+	%xtick={1000, 2744, 5832, 10648, 17576, 27000, 39304, 54872, 74088},
+	%xticklabels={$10^3$, %$14^3$
+	%  , $18^3$, $22^3$, $26^3$, $30^3$, $34^3$, $38^3$, $42^3$},
+	scaled ticks=false,
+	%xmode=log,
+	xmin=1,xmax = 10,
+	%ymin=0, ymax=14,
+	legend style={legend pos=north west}]
+	
+	\addplot+[color=olive, mark options=olive, line width=2] table[x =THREAD,y =PERF (GFlop/s),col sep=comma] {\SPMTV};\label{plot_six}
+	\addlegendentry{SpMTV}
+
+   
+	\addplot[line width=2, color=magenta, mark=*] table[x =THREAD,y =PERF (GFlop/s),col sep=comma] {\SPMTVnowait}; \label{plot_eight}
+	\addlegendentry{SpMTV w\_o barrier}
+	
+	\end{axis}
+	\node at (6.5,12) {};
+	\node at (6.5,11) {\large{Scaling Test on 1 socket of Ivy-Bridge @2.2GHz, \matrixName matrix}};
+	\node at (6.5,-1.2) {\textbf{\large{d. Effect of Barriers}}};
+	\end{tikzpicture}
+\end{minipage}
+\end{minipage}
+\end{document}
