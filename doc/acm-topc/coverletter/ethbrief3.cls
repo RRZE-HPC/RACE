@@ -217,6 +217,7 @@
   }% end ETH/ETH-UZH logo
   { % else the ETH logo is used
         \newcommand{\Logo}[1][\textwidth]{\resizebox{#1}{!}{\includegraphics{Logo_FAU_DinA4_RGB}}}
+        \newcommand{\SecondLogo}[1][\textwidth]{\resizebox{#1}{!}{\includegraphics{HPCatRRZE_nice}}}
   }
 
 % department logo
@@ -239,12 +240,13 @@
       	   \ifthenelse{\boolean{@EthUzhLogo}} % Dieter Hennig
           { % letter with ETH-UZH logo
         	    \put(0,-8){\makebox(0,0)[lt]{\Logo[208.3mm]}}
+        	    \put(120,-8){\makebox(0,0)[lt]{\SecondLogo[208.3mm]}}
         	    \put(0,-53){\makebox(0,0)[lt]{%
           	\begin{minipage}[t]{98mm}
             	\raggedright \toname \\ \toaddress \par
           	\end{minipage}
        	    }}
-            \put(98,-34){\makebox(0,0)[lt]{%
+            \put(98,-74){\makebox(0,0)[lt]{%
             \begin{minipage}[t]{68mm}
                 \eth@xiiiv
                 \baselineskip=11pt
@@ -265,12 +267,13 @@
           } % end ETH-UZH logo
           { % letter only with the ETH logo
         	       \put(0,-16){\makebox(0,0)[lt]{\Logo[52mm]}}
+        	       \put(105,-16){\makebox(0,0)[lt]{\SecondLogo[60mm]}}
         	       \put(0,-53){\makebox(0,0)[lt]{%
           	   \begin{minipage}[t]{98mm}
             	   \raggedright \toname \\ \toaddress \par
           	   \end{minipage}
        	       }}
-               \put(98,-18){\makebox(0,0)[lt]{%
+               \put(98,-34){\makebox(0,0)[lt]{%
                \begin{minipage}[t]{68mm}
                    \eth@xiiivb
                    \baselineskip=11pt

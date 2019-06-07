@@ -322,6 +322,8 @@ bool sparsemat::writeFile(char* filename)
 
     delete[] row_1_based;
     delete[] col_1_based;
+
+    return true;
 }
 
 bool sparsemat::computeSymmData()
