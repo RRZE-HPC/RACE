@@ -24,8 +24,8 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -xHOST -save-temps -fsource-asm")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -xHOST -save-temps -fsource-asm")
 else()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wno-write-strings")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wno-write-strings")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Ofast -mtune=native -Wno-write-strings")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast -mtune=native -Wno-write-strings")
 endif()
 
 find_package(OpenMP)
@@ -38,5 +38,6 @@ endif()
 
 file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/helpers/*.cpp)
 add_executable(race ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/main.cpp)
-
 add_executable(param_study ${SOURCES} ${PROJECT_SOURCE_DIR}/src/param_study.cpp)
+add_executable(spmv ${SOURCES} ${PROJECT_SOURCE_DIR}/src/spmv.cpp)
+add_executable(mat_stat ${SOURCES} ${PROJECT_SOURCE_DIR}/src/mat_stat.cpp)
