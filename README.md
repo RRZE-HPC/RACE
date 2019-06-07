@@ -37,6 +37,4 @@ RACE provides examples to illustrate the usage and easiness of using the RACE li
 ![Screenshot](animations/domain_anim.gif)
 ![Scrrentshot](animations/zone_tree_anim.gif)
 
-### Who do I talk to? ###
 
-* Christie Louis Alappat <christie.alappat@fau.de>
