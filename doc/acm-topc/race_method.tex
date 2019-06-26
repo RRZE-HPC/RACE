@@ -628,13 +628,31 @@ as well to maintain data locality.
           
 \subsubsection{Level group construction and global load balancing} \label{subsec:subgraph_selection}
 
-The recursive refinement of \levelGroups allows us to tackle load imbalance problems and limited degree of parallelism as we are no longer restricted by the one thread per \levelGroup constraint.  Instead we have the opportunity to form \levelGroups and assign appropriate thread counts to them such that the load per thread approaches the optimal value, \ie total workload divided by the number of threads available. For simplicity we enforce an equal number of threads to adjacent \levelGroups having different color, \ie $T_s(i)$ and $T_s(i+1)$ with $i=0,2,4,...$. We then apply recursion to the \levelGroups with more than one thread assigned. Starting with the original graph as the base \levelGroup ($T_{-1}(0)$) to which all available threads $\acrshort{nthreads}(T_{-1}(0))=\acrshort{nthreads}$ and all vertices $\acrshort{nrows}(T_{-1}(0))=\acrshort{nrows}^{total}$ are assigned, we perform the following steps to form \levelGroups $T_s(:)$ at stage $s \ge 0$  to which we assign $\acrshort{nthreads}(T_{s}(:))$ threads. To illustrate the procedure we use the $16 \times 16$ \stex and construct a coloring scheme for eight threads (see \Cref{fig:rec_2d-7pt_graph}).
+The recursive refinement of \levelGroups allows us to tackle load imbalance
+problems and limited degree of parallelism as we are no longer restricted by the
+one thread per \levelGroup constraint.  Instead, we have the opportunity to form
+\levelGroups and assign appropriate thread counts to them such that the load per
+thread approaches the optimal value, \ie the total workload divided by the number of
+threads available. For convenience we assign the same number of threads to
+adjacent \levelGroups of different color, \ie $T_s(i)$ and $T_s(i+1)$ with
+$i=0,2,4,...$. We then apply recursion to the \levelGroups with more than one
+thread assigned. Starting with the original graph as the base \levelGroup
+($T_{-1}(0)$) to which all available threads
+$\acrshort{nthreads}(T_{-1}(0))=\acrshort{nthreads}$ and all vertices
+$\acrshort{nrows}(T_{-1}(0))=\acrshort{nrows}^\mathrm{total}$ are assigned, we perform
+the following steps to form \levelGroups $T_s(:)$ at stage $s \ge 0$ to which we
+assign $\acrshort{nthreads}(T_{s}(:))$ threads. To illustrate the procedure we
+use the $16 \times 16$ \stex and construct a coloring scheme for eight threads
+(see \Cref{fig:rec_2d-7pt_graph}).
 
 \begin{enumerate}
-	\item  Assign weights to all levels at stage ($s$) of the recursion. Assuming that $L_s(i) \subset T_{s-1}(j)$, its weight is defined by
-	
+\item Assign weights to all levels at stage ($s$) of the recursion. Assuming
+  that $L_s(i) \subset T_{s-1}(j)$, its weight is defined by
 	\begin{align*}
-		w(L_s(i)) &= \frac{\acrshort{nrows}(L_s(i))}{\frac{\acrshort{nrows}(T_{s-1}(j))}{\acrshort{nthreads}(T_{s-1}(j))}} = \frac{\acrshort{nrows}(L_s(i))}{\acrshort{nrows}(T_{s-1}(j))}  \acrshort{nthreads}(T_{s-1}(j)).\\
+		w(L_s(i)) &=
+                \frac{\acrshort{nrows}(L_s(i))}{\frac{\acrshort{nrows}(T_{s-1}(j))}{\acrshort{nthreads}(T_{s-1}(j))}}
+                = \frac{\acrshort{nrows}(L_s(i))}{\acrshort{nrows}(T_{s-1}(j))}
+                \acrshort{nthreads}(T_{s-1}(j)).\\
 %		\acrshort{nthreads} &: \text{total number of threads to be used for computing $T_{s-1}(j)$}\\
 %		\nrowsMath^{total} &\acrshort{nrows}= n_r(T_{s-1}(j)) %\text{, i.e. number of vertices in graph}
 	\end{align*}
@@ -642,7 +660,11 @@ The recursive refinement of \levelGroups allows us to tackle load imbalance prob
 	%This weight describes the fraction of the optimal load per thread ($\frac{n_r(T_{s-1}(j))}{\acrshort{nthreads}(T_{s-1}(j))}$) in the specific level ($L_s(i)$) for a given \levelGroup ($T_{s-1}(j)$) which has to be split up, i.e.  $\acrshort{nthreads}(T_{s-1}(j)) > 1$
 	%{\CA May be rewrite sentence before as:}
 	
-	 For a given \levelGroup ($T_{s-1}(j)$) that has to be split up ( $\acrshort{nthreads}(T_{s-1}(j)) > 1$), the weight describes the fraction of the optimal load per thread  ($\frac{\acrshort{nrows}(T_{s-1}(j))}{\acrshort{nthreads}(T_{s-1}(j))}$) in the specific level ($L_s(i)$).
+For a given \levelGroup ($T_{s-1}(j)$) that has to be split up
+($\acrshort{nthreads}(T_{s-1}(j)) > 1$), the weight describes the fraction of
+the optimal load per thread,
+$\frac{\acrshort{nrows}(T_{s-1}(j))}{\acrshort{nthreads}(T_{s-1}(j))}$, in the
+specific level ($L_s(i)$).
 
 	Requesting $\acrshort{nthreads}(T_{-1}(0))=8$ threads for the $\acrshort{nrows}(T_{-1}(0)) = 256$ vertices of the \stex in \Cref{fig:rec_2d-7pt_graph} produces the following weights for the initial ($s=0$) levels:
 	\begin{align*}
