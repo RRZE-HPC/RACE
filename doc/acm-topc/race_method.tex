@@ -442,12 +442,11 @@ that they are \DONE neighbors of $L_0(i-1)$, ignoring any vertex relations
 Recursion starts with the selection of a \subgraph of the matrix, which is
 discussed in more detail later (see \Cref{subsec:subgraph_selection}). Here we
 choose the \subgraph induced by $T_0(2)$. It can be isolated from the
-rest of the graph since the \DONE coloring step in stage 0 has already made
-\levelGroups independent of each other. Now we just need to repeat the three
+rest of the graph since the \DONE coloring step in stage 0 has already produced
+independent \levelGroups. Now we just need to repeat the three
 steps explained previously (\Cref{subsec:LEVEL_CONST}--\Cref{subsec:LB}) on this
 \subgraph.
 %to exploit parallelism within this \subgraph.
-   
      \begin{figure}[t]
      	\centering
      	\subfloat[]{\label{fig:rec_d1_s2_a}\includegraphics[width=0.28\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_1}}
@@ -459,7 +458,11 @@ steps explained previously (\Cref{subsec:LEVEL_CONST}--\Cref{subsec:LB}) on this
      	\subfloat[]{\label{fig:rec_d1_s2_d}\includegraphics[width=0.065\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_4}}
 	     \hspace{1.75em}
 	     \subfloat[]{\label{fig:rec_d1_s2_e}\includegraphics[width=0.065\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_5}}
-     	\caption{Applying recursion to the \subgraph induced by $T_0(2)$. \Cref{fig:rec_d1_s2_b} shows the isolated \subgraph, \Cref{fig:rec_d1_s2_c} presents the level construction step on the \subgraph. Two potential \DONE colorings of this  \subgraph are shown in \Cref{fig:rec_d1_s2_d,fig:rec_d1_s2_e}.}
+     	\caption{Applying recursion to the \subgraph induced by
+          $T_0(2)$. \Cref{fig:rec_d1_s2_b} shows the isolated \subgraph,
+          while \Cref{fig:rec_d1_s2_c} presents the level construction step on the
+          \subgraph. Two potential \DONE colorings of this \subgraph are shown
+          in \Cref{fig:rec_d1_s2_d,fig:rec_d1_s2_e}.}
      	
      	\label{fig:rec_d1_s2}
      \end{figure}
@@ -468,13 +471,39 @@ steps explained previously (\Cref{subsec:LEVEL_CONST}--\Cref{subsec:LB}) on this
 	 \begin{equation}
 	    v^{i,j,k...} \implies v \in \set{L_0(i) \cap L_1(j) \cap L_2(k) \cap \cdots}.
 	 \end{equation}
-	 
-     In this case at the end of the recursion (\cf \Cref{fig:rec_d1_s2_d,fig:rec_d1_s2_e}) on $T_0(2)$ we obtain parallelism for two more threads. Note that the \subgraphs might have islands (group of vertices that are not connected to the rest of the graph), \eg vertex 3 and vertices 4,5,6 form two islands in \Cref{fig:rec_d1_s2_b}. Since an island is totally disconnected from the rest of the (sub)graph it can be executed in parallel to the rest of the (sub)graph. To take advantage of this the starting node in the next island is assigned with an increment of two levels, as seen in \Cref{fig:rec_d1_s2_c}. Therefore multiple valid \DONE configurations (\cf \Cref{fig:rec_d1_s2_d,fig:rec_d1_s2_e}) exist and the selection of the optimal one will be done in the final load balancing step as described in \Cref{subsec:LB}.    
+At the end of the recursion (\cf
+\Cref{fig:rec_d1_s2_d,fig:rec_d1_s2_e}) on $T_0(2)$, we obtain parallelism for
+two more threads in this case.
+Note that the \subgraphs might have ``islands'' (groups of vertices
+that are not connected to the rest of the graph); \eg vertex 3 and vertices
+4,5,6 form two islands in \Cref{fig:rec_d1_s2_b}. Since an island is 
+disconnected from the rest of the (sub)graph it can be executed independently
+and in parallel to it. To take advantage of this, the starting node in the
+next island is assigned a level number with an increment of two, as seen in
+\Cref{fig:rec_d1_s2_c}. This allows for two different colorings of the island,
+increasing the
+number of valid \DONE configurations (\cf
+\Cref{fig:rec_d1_s2_d,fig:rec_d1_s2_e}). The selection of the optimal
+one will be done in the final load balancing step as described in
+\Cref{subsec:LB}.
      
-     With this recursive process we were able to find independent \levelGroups ($T_{s+1}$) within a \levelGroup of the previous stage ($T_s$) and therefore the thread which works on $T_s$ has to spawn threads to parallelize within $T_{s+1}$.
-     
-	\subsubsection{Distance-$k$ dependencies with $k>1$}  \label{subsec:Dk_dependency}
-In general, however, it is not sufficient in the recursion step to consider only the \subgraphs induced by \levelGroups as can be seen in \Cref{fig:rec_d2_wrong_a} for \DTWO coloring. Applying  the three steps (see \Cref{fig:rec_d2_wrong_b,fig:rec_d2_wrong_c,fig:rec_d2_wrong_d})  to  the \subgraph induced by $T_0(1)$ does not guarantee \DTWO independence between the new \levelGroups $T_1(0)$ and $T_1(2)$. It is obvious that for general \DK colorings two vertices $a,b$ within a \levelGroup might be connected by a shared vertex $c$ outside the \levelGroup.  Thus, our three step procedure must be applied to a \subgraph which contains the actual \levelGroup ($T_s(j)$) as well as its all distance-$p$ neighbors, where $p=1,2,\ldots,(k-1)$.
+As this recursive process finds independent \levelGroups
+($T_{s+1}$) within a \levelGroup of the previous stage ($T_s$), the
+thread assigned to $T_s$ has to spawn threads to parallelize within
+$T_{s+1}$.
+
+\subsubsection{Distance-$k$ dependencies with $k>1$}  \label{subsec:Dk_dependency}
+
+In general, however, it is not sufficient in the recursion step to consider only
+the \subgraphs induced by \levelGroups as can be seen in
+\Cref{fig:rec_d2_wrong_a} for \DTWO coloring. Applying the three steps (see
+\Cref{fig:rec_d2_wrong_b,fig:rec_d2_wrong_c,fig:rec_d2_wrong_d}) to the
+\subgraph induced by $T_0(1)$ does not guarantee \DTWO independence between the
+new \levelGroups $T_1(0)$ and $T_1(2)$. It is obvious that for general \DK
+colorings two vertices $a,b$ within a \levelGroup might be connected by a shared
+vertex $c$ outside the \levelGroup.  Thus, our three step procedure must be
+applied to a \subgraph which contains the actual \levelGroup ($T_s(j)$) as well
+as its all distance-$p$ neighbors, where $p=1,2,\ldots,(k-1)$.
 %as they
 %For \DK the same procedure as \DONE applies, except with a slight difference in selecting the \subgraph. In \DONE we considered \subgraphs induced by \levelGroups, but for \DK coloring this is not sufficient. As seen in \Cref{fig:rec_d2_wrong_a} for \DTWO coloring the selection of $T_0(1)$ as \subgraph and applying the three steps (see \Cref{fig:rec_d2_wrong_b}, \Cref{fig:rec_d2_wrong_c} and \Cref{fig:rec_d2_wrong_d}) did not guarantee \DTWO independence within \levelGroup $T_1$ of the \subgraph, for \eg $T_1(0)$ and $T_1(2)$ are not \DTWO independent (\cf \Cref{fig:rec_d2_wrong_d}). This is due to the fact that for $k>1$ dependencies two vertices $a,b$ within a \subgraph might be connected to a common vertex ($c$) outside the \subgraph leading to a \DK dependency between $a$ and $b$. In \Cref{fig:rec_d2_wrong} we see 	$3 \xrightarrow{1} 1 \text{ \& } 6 \xrightarrow{1} 1 	\implies 3 \xrightarrow{2} 6$, but since vertex $1$ was not in the \subgraph considered we missed this dependency. 
      \begin{figure}[t]
