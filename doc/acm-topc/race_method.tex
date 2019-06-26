@@ -633,9 +633,11 @@ problems and limited degree of parallelism as we are no longer restricted by the
 one thread per \levelGroup constraint.  Instead, we have the opportunity to form
 \levelGroups and assign appropriate thread counts to them such that the load per
 thread approaches the optimal value, \ie the total workload divided by the number of
-threads available. For convenience we assign the same number of threads to
-adjacent \levelGroups of different color, \ie $T_s(i)$ and $T_s(i+1)$ with
-$i=0,2,4,...$. We then apply recursion to the \levelGroups with more than one
+threads available. Pairs of adjacent level groups having different colors within a stage,
+\ie $T_s(i)$ and $T_s(i+1)$ with $i=0,2,4,...$,
+are typically handled by the same threads, so we assign an equal number of threads
+to them. 
+We then apply recursion to the \levelGroups with more than one
 thread assigned. Starting with the original graph as the base \levelGroup
 ($T_{-1}(0)$) to which all available threads
 $\acrshort{nthreads}(T_{-1}(0))=\acrshort{nthreads}$ and all vertices
@@ -644,7 +646,6 @@ the following steps to form \levelGroups $T_s(:)$ at stage $s \ge 0$ to which we
 assign $\acrshort{nthreads}(T_{s}(:))$ threads. To illustrate the procedure we
 use the $16 \times 16$ \stex and construct a coloring scheme for eight threads
 (see \Cref{fig:rec_2d-7pt_graph}).
-
 \begin{enumerate}
 \item Assign weights to all levels at stage ($s$) of the recursion. Assuming
   that $L_s(i) \subset T_{s-1}(j)$, its weight is defined by
@@ -666,47 +667,113 @@ the optimal load per thread,
 $\frac{\acrshort{nrows}(T_{s-1}(j))}{\acrshort{nthreads}(T_{s-1}(j))}$, in the
 specific level ($L_s(i)$).
 
-	Requesting $\acrshort{nthreads}(T_{-1}(0))=8$ threads for the $\acrshort{nrows}(T_{-1}(0)) = 256$ vertices of the \stex in \Cref{fig:rec_2d-7pt_graph} produces the following weights for the initial ($s=0$) levels:
+Requesting $\acrshort{nthreads}(T_{-1}(0))=8$ threads for the
+$\acrshort{nrows}(T_{-1}(0)) = 256$ vertices of the \stex in
+\Cref{fig:rec_2d-7pt_graph} produces the following weights for the initial
+($s=0$) levels:
 	\begin{align*}
 		\{w(L_0(0)), w(L_0(1)), w(L_0(2)), ...\} &= \Big{\{} \frac{1}{256} \times 8 , \frac{2}{256} \times 8 , \frac{3}{256} \times 8 , ...\Big{\}}.
 	\end{align*}
 	
-	\item The above definition implies that if the weight is close to a natural number $b$, the corresponding workload is near optimal for operation with $b$ threads. Thus, starting with $L_s(0)$ we aggregate successive levels until their combined weight forms a number $a$ close to a natural number $b$. Distance-k coloring is ensured by enforcing it to aggregate \atleast $2 \times k$ \levels, \ie for \DTWO coloring at least four levels (two for red and two for blue). Closeness of the number is measured by a parameter $\epsilon$ defined as
+\item The above definition implies that if the weight is close to a natural
+  number $b$, the corresponding workload is near optimal for operation with $b$
+  threads. Thus, starting with $L_s(0)$ we aggregate successive levels until
+  their combined weight forms a number $a$ close to a natural number
+  $b$. Distance-k coloring is ensured by enforcing it to aggregate \atleast $2
+  \times k$ \levels, \ie for \DTWO coloring at least four levels (two for red
+  and two for blue). Closeness to the natural number is quantified by a parameter
+  $\epsilon$ defined as
 	\begin{align*}
 		\epsilon =  1 - \abs(a-b), & \text{ where } b= \max(1,[a])\\
-				& \text{and } [a] \text{ is the nearest integer to a},
+				& \text{and } [a] \text{ is the nearest integer to $a$},
 	\end{align*}
 	and controlled by the criterion
 	\begin{align*}
-	\epsilon &> \epsilon_s, \text{where $\epsilon_s \in  [0.5,1)$ are user defined parameters.} 	
+	\epsilon &> \epsilon_s, \text{where the $\epsilon_s \in  [0.5,1)$ are user defined parameters.} 	
 	\end{align*}		   
-	The choice of this parameter may be different for every stage of recursion. 
-	 Once we find a collection of successive levels satisfying this criterion, the natural number $b$ is fixed. We try to further increase the number of levels to test if there exists a number $a'>a$ which is closer to $b$ leading to an $\epsilon$ value closer to one. We finally choose the set of levels with the best $\epsilon$ value and define them to form $T_s(0)$ and $T_s(1)$ which are to be executed by $\acrshort{nthreads}(T_s(0))=\acrshort{nthreads}(T_s(1))=b$ threads.	 
-	 In \Cref{fig:rec_2d-7pt_graph} we choose $\epsilon_s = 0.6$ which selects the first seven levels to form $T_0(0)$ and $T_0(1)$.  As their combined weight is $\frac{28}{32}=0.875$,  one thread will execute these two \levelGroups. 
+The choice of this parameter may be different for every stage of recursion.
+Once we find a collection of successive levels satisfying this criterion, the
+natural number $b$ is fixed. We try to further increase the number of levels to
+test if there exists a number $a'>a$ which is closer to $b$ leading to an
+$\epsilon$ value closer to one. We finally choose the set of levels with the
+best $\epsilon$ value and define them to form $T_s(0)$ and $T_s(1)$ which are to
+be executed by $\acrshort{nthreads}(T_s(0))=\acrshort{nthreads}(T_s(1))=b$
+threads.  In \Cref{fig:rec_2d-7pt_graph} we choose $\epsilon_s = 0.6$, which
+selects the first seven levels to form $T_0(0)$ and $T_0(1)$.  As their combined
+weight is $\frac{28}{32}=0.875$, one thread will execute these two \levelGroups.
 	  %$w(L_0(0)) + w(L_0(1)) + ... + w(L_0(5)) = 0.65625$ satisfies the criteria $\epsilon = 0.65625 > \epsilon_s$, and $b=1$. Therefore one thread ($b=1$) is to be assigned for $T_0(0)$ and  $T_0(1)$. Now fixing $b=1$ we check increasing levels and finally find $w(L_0(0)) + w(L_0(1)) + ... + w(L_0(6)) = 0.875$ gives the highest $\epsilon$ value. Thus for constructing weights of  first 7 levels are used.
 
-	\item We continue with subsequent pairs of \levelGroups ($T_s(i), T_s(i+1); i=2,4 ...$) by applying this procedure starting with the very next \level. Finally, once all the levels have been touched, a total of $\acrshort{nthreads}(T_{s-1}(j))$ threads have been assigned to the levels $L_s(i) \subset T_{s-1}(j)$. For $T_0(4)$ and $T_0(5)$  in \Cref{fig:rec_2d-7pt_graph} two threads satisfy the criterion as the total weight of the four levels included is $\frac{54}{32}=1.69$.
+\item We continue with subsequent pairs of \levelGroups ($T_s(i), T_s(i+1);
+  i=2,4 ...$) by applying this procedure starting with the very next
+  \level. Finally, once all the levels have been touched, a total of
+  $\acrshort{nthreads}(T_{s-1}(j))$ threads have been assigned to the levels
+  $L_s(i) \subset T_{s-1}(j)$. For example, for $T_0(4)$ and $T_0(5)$ in
+  \Cref{fig:rec_2d-7pt_graph} two threads satisfy the criterion as the total
+  weight of the four levels included is $\frac{54}{32}=1.69$.
 	
-	\item The distribution between adjacent red and blue \levelGroups which are assigned to the same thread(s) as well as the final global load balancing is performed basically using the scheme presented in \Cref{subsec:LB}. 
+\item The distribution between adjacent red and blue \levelGroups which are
+  assigned to the same thread(s) as well as the final global load balancing is
+  performed using a slight modification of the scheme presented in \Cref{subsec:LB}
+  (shown at the beginning of \Cref{alg:LB} in \cref{Sec:algo}):
 	%Here the calculation of mean and variance considers the weights of the levels and \levelGroups {\GW or better: considers the number of threads assigned to each \levelGroup ?}{\CA I wouldn't use levels here, I think the sentence in your comment (blue) is  better $\rightarrow$ }
-	Here the calculation of mean and variance considers the number of threads ($\acrshort{nthreads}(T_{s}(j))$) assigned to each \levelGroup . Ideally, after this step the load per thread in each \levelGroup should approach the optimal value given above.
+Now the calculation of mean and variance must consider the number of threads
+($\acrshort{nthreads}(T_{s}(j))$) assigned to each \levelGroup. 
 	% a \levelGroup with $b$ threads will ideally have $b$ times more load (vertices) than a \levelGroup with weight one. 
-	The same algorithm %\Cref{alg:LB} as 
-	as presented in \Cref{subsec:LB} can be used but with slight modifications. 
-	%\Cref{alg:LB} in \cref{Sec:algo} shows the modifications in the beginning.
-	The modifications have been shown in the beginning of \Cref{alg:LB} (see \cref{Sec:algo}). 
-	The worker array now has to be replaced by the number of threads assigned to each \levelGroup ($\acrshort{nthreads}(T_{s}(j))$). The algorithm then tries to minimize the variance of the number of vertices per thread in \levelGroups.
+%The same algorithm %\Cref{alg:LB} as
+%as presented in \Cref{subsec:LB} can be used but with slight modifications. 
+%\Cref{alg:LB} in \cref{Sec:algo} shows the modifications in the beginning.
+The worker array now has to be replaced by the number of
+threads assigned to each \levelGroup ($\acrshort{nthreads}(T_{s}(j))$). The
+algorithm then tries to minimize the variance of the number of vertices per
+thread in \levelGroups. Ideally, after
+this step the load per thread in each \levelGroup should approach the optimal
+value given above.
 \end{enumerate}
-Once the \levelGroup of stage $s$ has been formed, the recursion and the above procedure are separately applied to all new \levelGroups with more than one thread assigned. This continues until every \levelGroup is assigned to one thread. The depth of the recursion is determined by the parameter $\epsilon_s$ and depends on the matrix structure as well as degree of parallelism requested. 
+Once the \levelGroup of stage $s$ has been formed, the recursion and the above
+procedure are separately applied to all new \levelGroups with more than one
+thread assigned. This continues until every \levelGroup is assigned to one
+thread. The depth of the recursion is determined by the parameter $\epsilon_s$
+and depends on the matrix structure as well as degree of parallelism requested.
 %\sout{ or the maximum recursion level (defined by user) is reached.} {\GW Is that correct?}{\CA No, since if recursion stops prematurely, some \levelGroups will have more than one thread assigned, and hence if these are not splitted by next stage recursion it will cause threads to have load imbalance. Only possibility to control this is via $\epsilon_s$ which can be reduced if many stages are not wished.}
 
-For our \stex in  \Cref{fig:rec_2d-7pt_graph} the inner four \levelGroups of stage $s=0$ required one stage of recursion. This led to 16 \levelGroups at stage $s=1$, as we require four new \levelGroups per recursion to schedule two threads. 
-In terms of parallel computation, first the red vertices will be computed in parallel with the orange ones using four threads for both colors. Once the orange vertices are done, each pair of threads assigned to $T_0(4)$ and $T_0(6)$ synchronize locally (\ie within $T_0(4)$ and $T_0(6)$ separately). Then the pink vertices are computed followed by a global synchronization of all threads. The scheme continues with the blue vertices and the brown/cyan ones, which represent the two blue \levelGroups to which recursion has been applied (see table in \Cref{fig:rec_2d-7pt_graph}).  
+For our \stex in \Cref{fig:rec_2d-7pt_graph} the inner four \levelGroups of
+stage $s=0$ required one stage of recursion. This led to 16 \levelGroups at
+stage $s=1$, as we require four new \levelGroups per recursion to schedule two
+threads.  In terms of parallel computation, first the red vertices will be
+computed in parallel with the orange ones using four threads for both
+colors. Once the orange vertices are done, each pair of threads assigned to
+$T_0(4)$ and $T_0(6)$ synchronize locally (\ie within $T_0(4)$ and $T_0(6)$
+separately). Then the pink vertices are computed followed by a global
+synchronization of all threads. The scheme continues with the blue vertices and
+the brown/cyan ones, which represent the two blue \levelGroups to which
+recursion has been applied (see table in \Cref{fig:rec_2d-7pt_graph}).
 
-The recursive nature of our scheme can be best  described by a tree data structure, where every node represents one \levelGroup and  the maximum depth is equivalent to the maximum level (stage) of recursion. The data structure for the colored graph in \Cref{fig:rec_2d-7pt_graph} and its thread assignments are shown in \Cref{fig:rec_2d-7pt_tree}. The root node represents our baseline \levelGroup $T_{-1}(0)$ comprising all 256 vertices and all eight threads (having unique $id=0,\ldots,7$). The first level of child nodes gives the initial ($s=0$) distribution, with each node storing the information of a \levelGroup including its color. Threads are mapped consecutively to the \levelGroups. As can be seen the red $T_0(4)$ \levelGroup which consists of vertices $66,\ldots,90$ (omitting the superscript for level numbers) is executed by threads with $id=2,3$.  Applying recursion to $T_0(4)$ this node spawns four new child nodes at stage $s =1$, \ie \levelGroups $T_1(0,\ldots,3) \subset T_0(4)$, to be executed by the two threads. Synchronization only happens between threads having the same parent node after executing the same color. Note that actual computations are only performed on the leaf nodes of the final tree.
+The recursive nature of our scheme can be best described by a tree data
+structure, where every node represents one \levelGroup and the maximum depth is
+equivalent to the maximum level (stage) of recursion. The data structure for the
+colored graph in \Cref{fig:rec_2d-7pt_graph} and its thread assignments are
+shown in \Cref{fig:rec_2d-7pt_tree}. The root node represents our baseline
+\levelGroup $T_{-1}(0)$ comprising all 256 vertices and all eight threads
+(having unique $id=0,\ldots,7$). The first level of child nodes gives the
+initial ($s=0$) distribution, with each node storing the information of a
+\levelGroup including its color. Threads are mapped consecutively to the
+\levelGroups. The red $T_0(4)$ \levelGroup, which consists of
+vertices $66,\ldots,90$ (omitting the superscript for level numbers), is executed
+by threads with $id=2,3$.  Applying recursion to $T_0(4)$, this node spawns four
+new child nodes at stage $s =1$, \ie \levelGroups $T_1(0,\ldots,3) \subset
+T_0(4)$, to be executed by the two threads. Synchronization only happens between
+threads having the same parent node after executing the same color. Note that
+actual computations are only performed on the leaf nodes of the final tree.
 	 \begin{figure}[t]
 		 \includegraphics[width=\textwidth, height=0.2\textheight]{pics/recursion/2d-7pt_example/tree/tree}
-	 	\caption{The internal tree structure of \acrshort{RACE} representing the \stex for domain size $16 \times 16$ and eight threads. The range $[\ldots]$ specified in each leaf represents the vertices belonging to each \levelGroup and the id refers to the thread id assigned to each \levelGroup assuming compact pinning . The last entry $\langle\acrshort{nrowsEff}\rangle$ gives the effective row number introduced in  \Cref{Sec:param_study}. }
+	 	\caption{The internal tree structure of \acrshort{RACE}
+                  representing the \stex for domain size $16 \times 16$ and
+                  eight threads. The range $[\ldots]$ specified in each leaf
+                  represents the vertices belonging to each \levelGroup and the
+                  id refers to the thread id assigned to each \levelGroup
+                  assuming compact pinning . The last entry
+                  $\langle\acrshort{nrowsEff}\rangle$ gives the effective row
+                  count introduced in \Cref{Sec:param_study}. }
 	 	\label{fig:rec_2d-7pt_tree}
 	 \end{figure}
 

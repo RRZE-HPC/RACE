@@ -6,20 +6,49 @@
 %In this section we study the impact of parameter $\epsilon_s$ and hardware parallelism on the quality of  \acrshort{RACE} method. \Inorder to do this we first quantify the quality of the method and finally we  use this quantity to do a parameter study. The study gives insights into tuning of parameter $\epsilon_s$ based on the given matrix and required parallelism.
 
 
-The \acrshort{RACE} method introduced above has a set of input parameters $\{\epsilon_s; s=0,1,\ldots\}$ which controls the assignment of the number of threads to adjacent level groups. 
+The \acrshort{RACE} method has a set of input
+parameters $\{\epsilon_s; s=0,1,\ldots\}$ which control the
+assignment of threads to adjacent level groups.
 %For that reason a good choice is to have values close to $1$ for the initial stages and have a more relaxed constraint on the lower levels. 
-To determine useful settings, we briefly analyze the interaction between these input parameters, the number of threads used, and the parallel efficiency of the generated workload distribution. 
+To determine useful settings, we analyze the interaction
+between these input parameters, the number of threads used, and the
+parallel efficiency of the generated workload distribution.
 
-As the internal tree structure contains all information about the final workload distribution, we can use it to identify the critical path in terms of workload and correspondingly the parallel efficiency. To do so we introduce the \effRow for every node (or \levelGroup) $\acrshort{nrowsEff}(T_s(i))$  which is a measure for the absolute runtime to calculate the corresponding \levelGroup. For \levelGroups which are not further refined (leaf nodes) this value is their actual workload, \ie the number of rows assigned to them ($\acrshort{nrowsEff}(T_0(0)) = 15$ in \Cref{fig:rec_2d-7pt_tree}). For an inner node the \effRow  is the sum of the maximum workload (\ie max. \effRow value) across each of the two colors of its child nodes:
+As the internal tree structure contains all information about the
+final workload distribution, we can use it to identify the critical
+path in terms of workload and thus the parallel
+efficiency. To this end we introduce the \effRow for every node
+(or \levelGroup) $\acrshort{nrowsEff}(T_s(i))$, which is a measure for
+the absolute runtime to calculate the
+corresponding \levelGroup. For \levelGroups that are not further
+refined (leaf nodes) this value is their actual workload, \ie the
+number of rows assigned to them ($\acrshort{nrowsEff}(T_0(0)) = 15$
+in \Cref{fig:rec_2d-7pt_tree}). For an inner node, the \effRow is the
+sum of the maximum workload (\ie the maximum \effRow value) across each of
+the two colors of its child nodes:
 \begin{align*}
 \acrshort{nrowsEff}(T_s(i)) &= \max\left(\acrshort{nrowsEff}(T_{s+1}(j) \subseteq T_s(i))\right) + \max\left(\acrshort{nrowsEff}(T_{s+1}(j+1) \subseteq T_s(i))\right)\\
  & \text{for } j=0,2,\ldots
 \end{align*}
-Such a definition is based on the idea that nodes at a given stage $s$ have to synchronize with each other and have to wait for their siblings with the largest workload in each sweep (color). Propagating this information upwards on the tree until we reach the root node constructs the critical path in terms of longest runtime taking into account single thread workloads, dependencies, and synchronizations. Thus, the final value in the root node $\acrshort{nrowsEff}(T_{-1}(0))$ can be considered as the effective maximum workload of a single thread. Dividing the globally optimal workload per thread ($\frac{\acrshort{nrows}^\mathrm{total}}{\acrshort{nthreads}}$) by this number gives the parallel efficiency ($\eta$) of our workload distribution: 
+Such a definition is based on the idea that nodes at a given stage $s$
+have to synchronize with each other and have to wait for their
+siblings with the largest workload in each sweep (color). Propagating
+this information upwards on the tree until we reach the root node
+constructs the critical path in terms of longest runtime taking into
+account single thread workloads, dependencies, and
+synchronizations. Thus, the final value in the root node
+$\acrshort{nrowsEff}(T_{-1}(0))$ can be considered as the effective
+maximum workload of a single thread. Dividing the globally optimal
+workload per thread,
+${\acrshort{nrows}^\mathrm{total}}/{\acrshort{nthreads}}$, by
+this number gives the parallel efficiency ($\eta$) of our workload
+distribution:
 \begin{align*}
 	\eta &= \frac{ \acrshort{nrows}^\mathrm{total}} {\acrshort{nrowsEff}(T_{-1}(0)) \times \acrshort{nthreads}}. 
 \end{align*}
-For the tree presented in \Cref{fig:rec_2d-7pt_tree} the parallel efficiency is limited to $\eta=\frac{256}{44 \times 8 } = 0.73$ on eight threads, \ie the maximum parallel speedup is $5.8$.
+For the tree presented in \Cref{fig:rec_2d-7pt_tree}, the parallel
+efficiency is limited to $\eta=\frac{256}{44 \times 8 } = 0.73$ on
+eight threads, \ie the maximum parallel speedup is $5.8$.
 
 \subsection{Parameter analysis and selection}
 \label{subsec:param_analysis}
