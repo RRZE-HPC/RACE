@@ -46,12 +46,12 @@ The shortcomings in terms of performance and excessive data transfer for paralle
  	\centering
  	% 	\subfloat[\acrshort{SpMV}]{\label{fig:motivation_spmv}\includegraphics[width=0.26\textwidth, height=0.22\textheight]{pics/motivation/out/motivation_spmv}}
  	%	\hspace{1em}
- 	\subfloat[SymmSpMV]{\label{fig:motivation_symm_spmv_w_RACE}\includegraphics[width=0.248\textwidth, height=0.20\textheight]{pics/motivation/out/motivation_symm_spmv_w_RACE}}
+ 	\subfloat[SymmSpMV]{\label{fig:motivation_symm_spmv_w_RACE}\includegraphics[width=0.248\textwidth, height=0.20\textheight]{pics/motivation/out/motivation_symm_spmv_w_RACE.pdf}}
  %	\hspace{1em}
- 	\subfloat[Data traffic]{\label{fig:motivation_data_w_RACE}\includegraphics[width=0.248\textwidth, height=0.20\textheight]{pics/motivation/out/motivation_data_w_RACE}}
-  	\subfloat[SymmSpMV]{\label{fig:motivation_symm_spmv_w_RACE_skx}\includegraphics[width=0.248\textwidth, height=0.20\textheight]{pics/motivation/out_skx/motivation_symm_spmv_w_RACE}}
+ 	\subfloat[Data traffic]{\label{fig:motivation_data_w_RACE}\includegraphics[width=0.248\textwidth, height=0.20\textheight]{pics/motivation/out/motivation_data_w_RACE.pdf}}
+  	\subfloat[SymmSpMV]{\label{fig:motivation_symm_spmv_w_RACE_skx}\includegraphics[width=0.248\textwidth, height=0.20\textheight]{pics/motivation/out_skx/motivation_symm_spmv_w_RACE.pdf}}
   %	\hspace{1em}
-  	\subfloat[Data traffic]{\label{fig:motivation_data_w_RACE_skx}\includegraphics[width=0.248\textwidth, height=0.20\textheight]{pics/motivation/out_skx/motivation_data_w_RACE}}
+  	\subfloat[Data traffic]{\label{fig:motivation_data_w_RACE_skx}\includegraphics[width=0.248\textwidth, height=0.20\textheight]{pics/motivation/out_skx/motivation_data_w_RACE.pdf}}
  	\caption{Performance (\Cref{fig:motivation_symm_spmv_w_RACE}) and data traffic (\Cref{fig:motivation_data_w_RACE}) analysis for \acrshort{SymmSpMV} kernel with Spin-26 matrix using \acrshort{MC}, \acrshort{ABMC}, and \acrshort{RACE} on a single socket of \IVB. The corresponding measurements for a single socket of \SKX is shown in \Cref{fig:motivation_symm_spmv_w_RACE_skx,fig:motivation_data_w_RACE_skx}. The roofline performance model (using copy and load-only bandwidth) and the performance of the \acrshort{SpMV} kernel is plotted for reference in scaling plots \Cref{fig:motivation_symm_spmv_w_RACE,fig:motivation_symm_spmv_w_RACE_skx}. The average data traffic per nonzero entry ($\acrshort{NNZR}$) of the full matrix as measured with \LIKWID for all cache levels and main memory is shown together with the minimal value for main memory access (horizontal dashed line) in \Cref{fig:motivation_data_w_RACE,fig:motivation_data_w_RACE_skx}.}
  	\label{fig:motivation_w_RACE}
  \end{figure}
@@ -62,9 +62,9 @@ The figures clearly demonstrate the ability of \acrshort{RACE} to ensure high da
 We now extend our \acrshort{RACE}  performance investigation to the full set of test matrices presented in~\Cref{table:bench_matrices}. In \Cref{fig:spmv_vs_symm_spmv_ivy,fig:spmv_vs_symm_spmv_skx} the performance results for the full \IVB processor chip (10 cores) and the full \SKX processor chip (20 cores) are presented along with the upper roofline limits and the performance of the baseline \acrshort{SpMV} kernel using \acrshort{MKL}.  
  \begin{figure}[t]
 	\centering
-	\subfloat[\IVB]{\label{fig:spmv_vs_symm_spmv_ivy}\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV_w_MKL/perf}}
+	\subfloat[\IVB]{\label{fig:spmv_vs_symm_spmv_ivy}\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV_w_MKL/perf.pdf}}
 	\hspace{1em}
-	\subfloat[\SKX]{\label{fig:spmv_vs_symm_spmv_skx}\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV_w_MKL/perf}}
+	\subfloat[\SKX]{\label{fig:spmv_vs_symm_spmv_skx}\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_w_SpMV_w_MKL/perf.pdf}}
 	\caption{Performance of \acrshort{SymmSpMV} executed with \acrshort{RACE} compared to the performance model and \acrshort{MKL} implementations. \acrshort{SpMV} performance obtained using \acrshort{MKL} library is also shown for reference. The model prediction is derived for  bandwidths in the range of load and copy bandwidth, and using the measured $\alpha_{\acrshort{SpMV}}$ shown in \Cref{table:alpha_values}.}
 	\label{fig:SpMV_vs_SymmSpMV}
 \end{figure}
@@ -109,7 +109,7 @@ vital to explain some of the performance behaviors. For example the drop in
 %
  \begin{figure}[t]
  	\centering
- 	\subfloat[\SKX]{\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/skx/data_symm_spmv_single_core/plot_generator/perf_vs_mtx_RACE_vs_MKL/perf}}
+ 	\subfloat[\SKX]{\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/skx/data_symm_spmv_single_core/plot_generator/perf_vs_mtx_RACE_vs_MKL/perf.pdf}}
  	\caption{Single core performance of \acrshort{SymmSpMV} executed with \acrshort{RACE} compared to \acrshort{SpMV} performance using \acrshort{MKL}.}
  	\label{fig:SpMV_vs_SymmSpMV_single_core}
  \end{figure}
@@ -120,7 +120,7 @@ Starting with an approximately 25\% lower single core performance (0.75 GF/s ver
   \begin{figure}[t]
   	\centering
   	\begin{minipage}[c]{0.4\textwidth}
-  		\includegraphics[width=\textwidth]{pics/results/scaling_skx/plots/delaunay_n24}
+  		\includegraphics[width=\textwidth]{pics/results/scaling_skx/plots/delaunay_n24.pdf}
   	\end{minipage}\hfill
   	\begin{minipage}[c]{0.55\textwidth}
   		\caption{Parallel performance  of \acrshort{SymmSpMV} (with \acrshort{RACE})  and \acrshort{SpMV} (with \acrshort{MKL}) for the \texttt{delaunay\_n24} matrix on one socket of \SKX. To disable vectorization (SymmSpMV-Scalar) we set \texttt{VECWIDTH = 1} when compiling the \acrshort{SymmSpMV} kernel.}
@@ -138,9 +138,9 @@ Starting with an approximately 25\% lower single core performance (0.75 GF/s ver
 \subsubsection{Comparing \acrshort{RACE} with \acrshort{MC} and \acrshort{ABMC}}
 \begin{figure}[t]
 	\centering
-	\subfloat[\IVB]{\label{fig:symm_spmv_ivy}\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_vs_MC_ABMC/perf}}
+	\subfloat[\IVB]{\label{fig:symm_spmv_ivy}\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_vs_MC_ABMC/perf.pdf}}
 	\hspace{1em}
-	\subfloat[\SKX]{\label{fig:symm_spmv_skx}\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_vs_MC_ABMC/perf}}
+	\subfloat[\SKX]{\label{fig:symm_spmv_skx}\includegraphics[width=0.95\textwidth, height=0.3\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_vs_MC_ABMC/perf.pdf}}
 	\caption{Comparison of \acrshort{SymmSpMV} performance between \acrshort{RACE} and coloring variants \acrshort{MC} and \acrshort{ABMC}. Matrices are arranged in increasing number of rows (\acrshort{nrows}).}
 	\label{fig:symm_spmv}
 \end{figure}
@@ -158,9 +158,9 @@ In a final step we compare  in \Cref{fig:symm_spmv_mkl} our approach with the tw
 %
 \begin{figure}[tbp]
 	\centering
-	\subfloat[\IVB]{\label{fig:symm_spmv_ivy_mkl}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_vs_MKL/perf}}
+	\subfloat[\IVB]{\label{fig:symm_spmv_ivy_mkl}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_vs_MKL/perf.pdf}}
 	\hspace{1em}
-	\subfloat[\SKX]{\label{fig:symm_spmv_skx_mkl}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_vs_MKL/perf}}
+	\subfloat[\SKX]{\label{fig:symm_spmv_skx_mkl}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_RACE_vs_MKL/perf.pdf}}
 	\caption{Comparison of \acrshort{SymmSpMV} performance between \acrshort{RACE} and two \acrshort{MKL} implementations.}
 	\label{fig:symm_spmv_mkl}
 \end{figure}
@@ -227,18 +227,18 @@ For \acrshort{SymmKACZ} there are two use cases. In one it is used as a plain it
 
 \begin{figure}[thbp]
 	\centering
-	\subfloat[\acrshort{SymmSpMV} on 1 socket of \IVB]{\label{fig:symm_spmv_ivy_nlpkkt}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx/ivy_nlpkkt}}
+	\subfloat[\acrshort{SymmSpMV} on 1 socket of \IVB]{\label{fig:symm_spmv_ivy_nlpkkt}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx/ivy_nlpkkt.pdf}}
 	\hspace{1em}
-	\subfloat[\acrshort{SymmSpMV} on 1 socket of \SKX]{\label{fig:symm_spmv_skx_nlpkkt}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx/skx_nlpkkt}}
+	\subfloat[\acrshort{SymmSpMV} on 1 socket of \SKX]{\label{fig:symm_spmv_skx_nlpkkt}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx/skx_nlpkkt.pdf}}
 	\caption{\acrshort{SymmSpMV} performance for nlpkkt matrices}
 	\label{fig:symm_spmv_nlpkkt}
 \end{figure}
 
 \begin{figure}[thbp]
 	\centering
-	\subfloat[\acrshort{SymmSpMV} on 1 socket of \IVB]{\label{fig:symm_spmv_ivy_scamac}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx/ivy_scamac}}
+	\subfloat[\acrshort{SymmSpMV} on 1 socket of \IVB]{\label{fig:symm_spmv_ivy_scamac}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx/ivy_scamac.pdf}}
 	\hspace{1em}
-	\subfloat[\acrshort{SymmSpMV} on 1 socket of \SKX]{\label{fig:symm_spmv_skx_scamac}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx/skx_scamac}}
+	\subfloat[\acrshort{SymmSpMV} on 1 socket of \SKX]{\label{fig:symm_spmv_skx_scamac}\includegraphics[width=0.48\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx/skx_scamac.pdf}}
 	\caption{\acrshort{SymmSpMV} performance for SCAMAC matrices}
 	\label{fig:symm_spmv_scamac}
 \end{figure}
@@ -270,18 +270,18 @@ was used for multicoloring (\acrshort{MC}). \METIS \cite{METIS}  was used for gr
 
 \begin{figure}[thbp]
 	\centering
-	\subfloat[1 socket \IVB] {\label{fig:derived_perf_kacz_ivb}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/ivy/data_symm_kacz/plot_generator/derived_perf_vs_mtx/derived_perf}}
+	\subfloat[1 socket \IVB] {\label{fig:derived_perf_kacz_ivb}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/ivy/data_symm_kacz/plot_generator/derived_perf_vs_mtx/derived_perf.pdf}}
 	\hspace{1em}
-	\subfloat[1 socket \SKX] {\label{fig:derived_perf_kacz_skx}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_kacz/plot_generator/derived_perf_vs_mtx/derived_perf}}
+	\subfloat[1 socket \SKX] {\label{fig:derived_perf_kacz_skx}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_kacz/plot_generator/derived_perf_vs_mtx/derived_perf.pdf}}
 	\caption{\acrshort{SymmKACZ} inverse runtime (scaled)}
 	\label{fig:symmkacz_dp}
 \end{figure}
 
 \begin{figure}[thbp]
 	\centering
-	\subfloat[Plain performance] {\label{fig:perf_kacz_ivb}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_kacz/plot_generator/perf_vs_mtx/perf}}
+	\subfloat[Plain performance] {\label{fig:perf_kacz_ivb}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_kacz/plot_generator/perf_vs_mtx/perf.pdf}}
 	\hspace{1em}
-	\subfloat[Iterations compared to serial \acrshort{SymmKACZ} kernel, note that for Hubbard-12, FreeBosonChain-18, FreeFermionChain-26 and Hubbard-14 the iteration count (y-axis) has to be multiplied by a factor of 50] {\label{fig:iter_kacz_skx}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_kacz/plot_generator/iter_vs_mtx/iter}}
+	\subfloat[Iterations compared to serial \acrshort{SymmKACZ} kernel, note that for Hubbard-12, FreeBosonChain-18, FreeFermionChain-26 and Hubbard-14 the iteration count (y-axis) has to be multiplied by a factor of 50] {\label{fig:iter_kacz_skx}\includegraphics[width=0.85\textwidth, height=0.27\textheight]{pics/results/skx/data_symm_kacz/plot_generator/iter_vs_mtx/iter.pdf}}
 	\caption{\acrshort{SymmKACZ} convergence study on \SKX}
 	\label{fig:symmkacz_convergence}
 \end{figure}
@@ -300,9 +300,9 @@ Comparison of \acrshort{RACE} with \acrshort{RSB} data format. Note \acrshort{RS
 
 \begin{figure}[thbp]
 	\centering
-	\subfloat[Comparison of \acrshort{RACE} with \acrshort{RSB} on \IVB] {\label{fig:race_vs_rsb_ivy}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_w_RSB/perf}}
+	\subfloat[Comparison of \acrshort{RACE} with \acrshort{RSB} on \IVB] {\label{fig:race_vs_rsb_ivy}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/ivy/data_symm_spmv/plot_generator/perf_vs_mtx_w_RSB/perf.pdf}}
 	\hspace{1.2em}
-	\subfloat[Comparison of \acrshort{RACE} with \acrshort{RSB} on \SKX] {\label{fig:race_vs_rsb_skx}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_w_RSB/perf}}
+	\subfloat[Comparison of \acrshort{RACE} with \acrshort{RSB} on \SKX] {\label{fig:race_vs_rsb_skx}\includegraphics[width=0.45\textwidth, height=0.15\textheight]{pics/results/skx/data_symm_spmv/plot_generator/perf_vs_mtx_w_RSB/perf.pdf}}
 	\caption{Comparison with \acrshort{RSB} data format}
 	\label{fig:race_vs_rsb}
 \end{figure}
@@ -325,8 +325,8 @@ Comparison of \acrshort{RACE} with \acrshort{RSB} data format. Note \acrshort{RS
 	
 \begin{figure}[thbp]
 	\centering
-	\subfloat[\SYMMGS iterations required by different methods compared to exact MKL kernel] {\label{fig:iter_gs}\includegraphics[width=0.49\textwidth, height=0.11\textheight]{pics/results/skx/iter/gs/plot}}
-	\subfloat[\acrshort{SymmKACZ} iterations required by different methods compared to exact Serial kernel] {\label{fig:iter_kacz}\includegraphics[width=0.49\textwidth, height=0.11\textheight]{pics/results/skx/iter/kacz/plot}}
+	\subfloat[\SYMMGS iterations required by different methods compared to exact MKL kernel] {\label{fig:iter_gs}\includegraphics[width=0.49\textwidth, height=0.11\textheight]{pics/results/skx/iter/gs/plot.pdf}}
+	\subfloat[\acrshort{SymmKACZ} iterations required by different methods compared to exact Serial kernel] {\label{fig:iter_kacz}\includegraphics[width=0.49\textwidth, height=0.11\textheight]{pics/results/skx/iter/kacz/plot.pdf}}
 	\caption{Convergence behavior of \SYMMGS and \acrshort{SymmKACZ} at 20 threads}
 	\label{fig:conv_behavior}
 \end{figure}

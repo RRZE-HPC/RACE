@@ -62,8 +62,8 @@ All the measurements were made with \CPU clock speeds fixed at the indicated bas
 As the attainable main memory bandwidth is the input parameter to the \roofline model used later, we have carefully measured this value depending on the data set size for two access patterns (copy and load-only). The data presented in \Cref{fig:size_vs_bw} basically show the characteristic performance drop if the data set size is too large to fit into the \acrfull{LLC}, which is an L3 cache on both architectures (cf. \Cref{tab:test_bed} for the actual sizes). 
 \begin{figure}[t]
 	\centering
-	\subfloat[\emph{\IVB}]{\label{fig:ivy_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/ivy}}
-	\subfloat[\emph{\SKX}]{\label{fig:skx_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/skx}}
+	\subfloat[\emph{\IVB}]{\label{fig:ivy_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/ivy.pdf}}
+	\subfloat[\emph{\SKX}]{\label{fig:skx_size_vs_bw}\includegraphics[width=0.5\textwidth , height=0.16\textheight]{pics/results/likwid_bench_bw/skx.pdf}}
 	\caption{Attained bandwidth versus total data size for a range from 20 \MB to 2 \GB. The dotted lines show the asymptotic bandwidth given in \Cref{tab:test_bed} for the load-only and copy benchmark. The benchmarks were performed on the full socket using the \likwidBench tool. The gray vertical lines correspond to the positions of matrices that might show caching effects; see \Cref{subsec:bench_mat}. Note the logarithmic scales.}
 	\label{fig:size_vs_bw}
 \end{figure}

@@ -39,7 +39,7 @@ in \Cref{fig:2d-7pt-b,fig:2d-7pt-c} respectively.
 	\subfloat[\Stex]{\label{fig:2d-7pt-a}\includegraphics[width=0.17\textwidth , height=0.13\textheight]{pics/2d-7pt/stencil.pdf}}
 	\hspace{0.8em}
 	\subfloat[Sparsity
-	 pattern]{\label{fig:2d-7pt-b}\includegraphics[width=0.38\textwidth , height=0.19\textheight]{pics/2d-7pt/2d_7pt_bw.eps}}
+	 pattern]{\label{fig:2d-7pt-b}\includegraphics[width=0.38\textwidth , height=0.19\textheight]{pics/2d-7pt/2d_7pt_bw-eps-converted-to.pdf}}
 	\hspace{1em}
 	\subfloat[Graph]{\label{fig:2d-7pt-c}\includegraphics[width=0.3\textwidth , height=0.18\textheight]{pics/2d-7pt/stencil_2d_7pt.pdf}}
 	\caption{\sref{fig:2d-7pt-a} Structure of an artificially designed stencil,
@@ -121,19 +121,19 @@ search.''
 
 \begin{figure}[t]
 	\centering
-	\subfloat[Level construction]{\label{fig:2d_7pt_level_construction}\includegraphics[height=0.18\textheight,width=0.32\textwidth]{pics/level_construction/stencil_2d_7pt}
+	\subfloat[Level construction]{\label{fig:2d_7pt_level_construction}\includegraphics[height=0.18\textheight,width=0.32\textwidth]{pics/level_construction/stencil_2d_7pt.pdf}
 			\begin{picture}(0,0)
-			\put(-44,68){\fbox{\includegraphics[height=1.4cm]{pics/level_construction/FDM_2d_7pt_non_perm}}}
+			\put(-44,68){\fbox{\includegraphics[height=1.4cm]{pics/level_construction/FDM_2d_7pt_non_perm.png}}}
 			\end{picture}
 		}
 	\hspace{1em}
-	\subfloat[Permuted graph ($G'$)]{\label{fig:2d_7pt_perm}\includegraphics[height=0.18\textheight,width=0.32\textwidth]{pics/permutation/stencil_2d_7pt}
+	\subfloat[Permuted graph ($G'$)]{\label{fig:2d_7pt_perm}\includegraphics[height=0.18\textheight,width=0.32\textwidth]{pics/permutation/stencil_2d_7pt.pdf}
 			\begin{picture}(0,0)
-			\put(-43.5,68){\fbox{\includegraphics[height=1.4cm]{pics/permutation/FDM_2d_7pt_perm}}}
+			\put(-43.5,68){\fbox{\includegraphics[height=1.4cm]{pics/permutation/FDM_2d_7pt_perm.png}}}
 			\end{picture}
 		}
 	\hspace{1em}
-	\subfloat[]{\label{fig:2d_7pt_levelPtr}\includegraphics[height=0.18\textheight,width=0.07\textwidth]{pics/permutation/levelPtr}}
+	\subfloat[]{\label{fig:2d_7pt_levelPtr}\includegraphics[height=0.18\textheight,width=0.07\textwidth]{pics/permutation/levelPtr.pdf}}
 	\caption{\sref{fig:2d_7pt_level_construction} Levels of the original graph and \sref{fig:2d_7pt_perm} the permuted
           graph for the \stex. Insets show the corresponding sparsity patterns.
           \sref{fig:2d_7pt_levelPtr} Shows the entries of the \levelPtr array associated
@@ -220,9 +220,9 @@ if the gap consists of at least two \levels between any two
 \levels, and so on.
  \begin{figure}[t]
  	\centering
- 	\subfloat[Distance-1 independent \levelGroups]{\label{fig:2d_7pt_d1}\includegraphics[height=0.2\textheight,width=0.4\textwidth]{pics/dk_coloring/stencil_2d_7pt_d1}}
+ 	\subfloat[Distance-1 independent \levelGroups]{\label{fig:2d_7pt_d1}\includegraphics[height=0.2\textheight,width=0.4\textwidth]{pics/dk_coloring/stencil_2d_7pt_d1.pdf}}
  	\hspace{2.5em}
- 	\subfloat[Distance-2 independent \levelGroups]{\label{fig:2d_7pt_d2}\includegraphics[height=0.23\textheight,width=0.48\textwidth]{pics/dk_coloring/stencil_2d_7pt_d2_with_lg}}
+ 	\subfloat[Distance-2 independent \levelGroups]{\label{fig:2d_7pt_d2}\includegraphics[height=0.23\textheight,width=0.48\textwidth]{pics/dk_coloring/stencil_2d_7pt_d2_with_lg.pdf}}
  	\caption{Forming \DONE and \DTWO independent \levelGroups for the \stex.}
  	\label{fig:2d-7pt_d1_d2}
  \end{figure}
@@ -325,7 +325,7 @@ vertices, maintain two levels to preserve the \DTWO constraint.
   
    \begin{figure}[t]
    	\centering
-   	\includegraphics[width=\textwidth]{pics/load_balancing/lb_alg/lb_all}
+   	\includegraphics[width=\textwidth]{pics/load_balancing/lb_alg/lb_all.pdf}
    	\caption{All steps of the load balancing scheme, applied to an
           arbitrarily chosen initial distribution of 17 levels into six level
           groups for \DTWO coloring. Rebalancing steps are performed clockwise
@@ -337,9 +337,9 @@ vertices, maintain two levels to preserve the \DTWO constraint.
    
    \begin{figure}[t]
 	   	\centering
-	   	\subfloat[Five threads]{\label{fig:2d_7pt_lb}\includegraphics[width=0.48\textwidth, height=0.28\textheight]{pics/load_balancing/2d-7pt/stencil_2d_7pt}}
+	   	\subfloat[Five threads]{\label{fig:2d_7pt_lb}\includegraphics[width=0.48\textwidth, height=0.28\textheight]{pics/load_balancing/2d-7pt/stencil_2d_7pt.pdf}}
 	   	\hspace{0.2em}
-	   	\subfloat[Eight threads]{\label{fig:2d_7pt_lb_8_threads}\includegraphics[width=0.48\textwidth, height=0.28\textheight]{pics/load_balancing/2d-7pt/stencil_2d_7pt_8_threads}}
+	   	\subfloat[Eight threads]{\label{fig:2d_7pt_lb_8_threads}\includegraphics[width=0.48\textwidth, height=0.28\textheight]{pics/load_balancing/2d-7pt/stencil_2d_7pt_8_threads.pdf}}
 		 \caption{Domain size $16 \times 16$ for the \stex and \DTWO dependency, \sref{fig:2d_7pt_lb} after load balancing for five threads, 
 		 	%Note that \levelGroups at extreme end have more \levels due to fewer \acrshort{nrows} in each \level, while \levelGroups in the middle having bigger \levels maintain two levels to preserve \DTWO constraint. 
 		 \sref{fig:2d_7pt_lb_8_threads} after load balancing for eight threads.
@@ -426,11 +426,11 @@ that they are \DONE neighbors of $L_0(i-1)$, ignoring any vertex relations
 %We now apply our method recursively to the levels or \levelGroups to identify further paralleism within them.  	
      \begin{figure}[t]
      	\centering
-     	\subfloat[Example graph]{\label{fig:rec_d1_s1_a}\includegraphics[width=0.26\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s1/recursion_graph_1}}
+     	\subfloat[Example graph]{\label{fig:rec_d1_s1_a}\includegraphics[width=0.26\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s1/recursion_graph_1.pdf}}
      	\hspace{1.5em}
-     	\subfloat[Stage 0, levels in graph]{\label{fig:rec_d1_s1_b}\includegraphics[width=0.32\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s1/recursion_graph_2}}
+     	\subfloat[Stage 0, levels in graph]{\label{fig:rec_d1_s1_b}\includegraphics[width=0.32\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s1/recursion_graph_2.pdf}}
      	\hspace{1.5em}
-     	\subfloat[\DONE coloring]{\label{fig:rec_d1_s1_c}\includegraphics[width=0.32\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s1/recursion_graph_3}}
+     	\subfloat[\DONE coloring]{\label{fig:rec_d1_s1_c}\includegraphics[width=0.32\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s1/recursion_graph_3.pdf}}
         \caption{Exposing potential for more parallelism in a graph with \DONE coloring.
           $T_0(1),T_0(2),$ and
           $T_0(3)$ have internal unexposed parallelism.
@@ -449,15 +449,15 @@ steps explained previously (\Cref{subsec:LEVEL_CONST}--\Cref{subsec:LB}) on this
 %to exploit parallelism within this \subgraph.
      \begin{figure}[t]
      	\centering
-     	\subfloat[]{\label{fig:rec_d1_s2_a}\includegraphics[width=0.28\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_1}}
+     	\subfloat[]{\label{fig:rec_d1_s2_a}\includegraphics[width=0.28\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_1.pdf}}
      	\hspace{2.25em}
-     	\subfloat[]{\label{fig:rec_d1_s2_b}\includegraphics[width=0.07\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_2}}
+     	\subfloat[]{\label{fig:rec_d1_s2_b}\includegraphics[width=0.07\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_2.pdf}}
      	\hspace{1.75em}
-     	\subfloat[]{\label{fig:rec_d1_s2_c}\includegraphics[width=0.065\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_3}}
+     	\subfloat[]{\label{fig:rec_d1_s2_c}\includegraphics[width=0.065\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_3.pdf}}
      	\hspace{1.75em}
-     	\subfloat[]{\label{fig:rec_d1_s2_d}\includegraphics[width=0.065\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_4}}
+     	\subfloat[]{\label{fig:rec_d1_s2_d}\includegraphics[width=0.065\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_4.pdf}}
 	     \hspace{1.75em}
-	     \subfloat[]{\label{fig:rec_d1_s2_e}\includegraphics[width=0.065\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_5}}
+	     \subfloat[]{\label{fig:rec_d1_s2_e}\includegraphics[width=0.065\textwidth, height=0.14\textheight]{pics/recursion/d1/rec_graph_s2/recursion_graph_stage2_5.pdf}}
      	\caption{Applying recursion to the \subgraph induced by
           $T_0(2)$. \Cref{fig:rec_d1_s2_b} shows the isolated \subgraph,
           while \Cref{fig:rec_d1_s2_c} presents the level construction step on the
@@ -508,13 +508,13 @@ as its all distance-$p$ neighbors, where $p=1,2,\ldots,(k-1)$.
 %For \DK the same procedure as \DONE applies, except with a slight difference in selecting the \subgraph. In \DONE we considered \subgraphs induced by \levelGroups, but for \DK coloring this is not sufficient. As seen in \Cref{fig:rec_d2_wrong_a} for \DTWO coloring the selection of $T_0(1)$ as \subgraph and applying the three steps (see \Cref{fig:rec_d2_wrong_b}, \Cref{fig:rec_d2_wrong_c} and \Cref{fig:rec_d2_wrong_d}) did not guarantee \DTWO independence within \levelGroup $T_1$ of the \subgraph, for \eg $T_1(0)$ and $T_1(2)$ are not \DTWO independent (\cf \Cref{fig:rec_d2_wrong_d}). This is due to the fact that for $k>1$ dependencies two vertices $a,b$ within a \subgraph might be connected to a common vertex ($c$) outside the \subgraph leading to a \DK dependency between $a$ and $b$. In \Cref{fig:rec_d2_wrong} we see 	$3 \xrightarrow{1} 1 \text{ \& } 6 \xrightarrow{1} 1 	\implies 3 \xrightarrow{2} 6$, but since vertex $1$ was not in the \subgraph considered we missed this dependency. 
      \begin{figure}[t]
      	\centering
-     	\subfloat[]{\label{fig:rec_d2_wrong_a}\includegraphics[width=0.23\textwidth, height=0.13\textheight]{pics/recursion/d2/wrong/recursion_graph_wrong_1}}
+     	\subfloat[]{\label{fig:rec_d2_wrong_a}\includegraphics[width=0.23\textwidth, height=0.13\textheight]{pics/recursion/d2/wrong/recursion_graph_wrong_1.pdf}}
      	\hspace{0.6em}
-     	\subfloat[]{\label{fig:rec_d2_wrong_b}\includegraphics[width=0.23\textwidth, height=0.07\textheight]{pics/recursion/d2/wrong/recursion_graph_wrong_2}}
+     	\subfloat[]{\label{fig:rec_d2_wrong_b}\includegraphics[width=0.23\textwidth, height=0.07\textheight]{pics/recursion/d2/wrong/recursion_graph_wrong_2.pdf}}
      	\hspace{0.6em}
-     	\subfloat[]{\label{fig:rec_d2_wrong_c}\includegraphics[width=0.23\textwidth, height=0.07\textheight]{pics/recursion/d2/wrong/recursion_graph_wrong_3}}
+     	\subfloat[]{\label{fig:rec_d2_wrong_c}\includegraphics[width=0.23\textwidth, height=0.07\textheight]{pics/recursion/d2/wrong/recursion_graph_wrong_3.pdf}}
      	\hspace{0.6em}
-     	\subfloat[]{\label{fig:rec_d2_wrong_d}\includegraphics[width=0.23\textwidth, height=0.13\textheight]{pics/recursion/d2/wrong/recursion_graph_wrong_4}}
+     	\subfloat[]{\label{fig:rec_d2_wrong_d}\includegraphics[width=0.23\textwidth, height=0.13\textheight]{pics/recursion/d2/wrong/recursion_graph_wrong_4.pdf}}
      	\caption{Two \levelGroups generated by a \DTWO coloring
           (\Cref{fig:rec_d2_wrong_a}). \Cref{fig:rec_d2_wrong_b} shows the
           \subgraph induced by \levelGroup $T_0(1)$. Level construction on the
@@ -543,13 +543,13 @@ neighborhood.
 %For \DTWO this would mean we have to include $1^{st}$ interface level, the new selection is illustrated in \Cref{fig:rec_d2_correct} (note the region shaded in blue). If we then do all the three steps with the newly created \subgraph, the final result will preserve \DTWO coloring (see \Cref{fig:rec_d2_correct_c}). In the example it can be observed vertices $3$ and $6$ which previously had same color now get assigned to different colors (see \Cref{fig:rec_d2_correct_d}). Note that the interface levels have to be considered only in the first step namely level construction in the rest of the steps we just need to consider target \subgraphs induced by the \levelGroups \ie in \Cref{fig:rec_d2_correct} the \subgraph induced by $T_0(1)$.   
 \begin{figure}[t]
      	\centering
-     	\subfloat[]{\label{fig:rec_d2_correct_a}\includegraphics[width=0.22\textwidth, height=0.13\textheight]{pics/recursion/d2/correct/recursion_graph_correct_1}}
+     	\subfloat[]{\label{fig:rec_d2_correct_a}\includegraphics[width=0.22\textwidth, height=0.13\textheight]{pics/recursion/d2/correct/recursion_graph_correct_1.pdf}}
      	\hspace{0.6em}
-     	\subfloat[]{\label{fig:rec_d2_correct_b}\includegraphics[width=0.22\textwidth, height=0.105\textheight]{pics/recursion/d2/correct/recursion_graph_correct_2}}
+     	\subfloat[]{\label{fig:rec_d2_correct_b}\includegraphics[width=0.22\textwidth, height=0.105\textheight]{pics/recursion/d2/correct/recursion_graph_correct_2.pdf}}
      	\hspace{0.6em}
-     	\subfloat[]{\label{fig:rec_d2_correct_c}\includegraphics[width=0.22\textwidth, height=0.105\textheight]{pics/recursion/d2/correct/recursion_graph_correct_3}}
+     	\subfloat[]{\label{fig:rec_d2_correct_c}\includegraphics[width=0.22\textwidth, height=0.105\textheight]{pics/recursion/d2/correct/recursion_graph_correct_3.pdf}}
      	\hspace{0.6em}
-     	\subfloat[]{\label{fig:rec_d2_correct_d}\includegraphics[width=0.22\textwidth, height=0.105\textheight]{pics/recursion/d2/correct/recursion_graph_correct_4}}
+     	\subfloat[]{\label{fig:rec_d2_correct_d}\includegraphics[width=0.22\textwidth, height=0.105\textheight]{pics/recursion/d2/correct/recursion_graph_correct_4.pdf}}
      	\hspace{0.6em}
      	\caption{Correct procedure for \DTWO coloring of \levelGroup
           $T_0(1)$. The \subgraph as shown in \Cref{fig:rec_d2_correct_b}
@@ -575,7 +575,7 @@ as well to maintain data locality.
 %In \Cref{fig:rec_2d-7pt_graph} we demonstrate the impact of one recursive step applied to our \stex with \DTWO 
        \begin{figure}[t]
        	\begin{minipage}[c]{0.6\textwidth}
-       		\includegraphics[height=0.3\textheight,width=0.89\textwidth]{pics/recursion/2d-7pt_example/2d-7pt/stencil_2d_7pt}
+       		\includegraphics[height=0.3\textheight,width=0.89\textwidth]{pics/recursion/2d-7pt_example/2d-7pt/stencil_2d_7pt.pdf}
        	\end{minipage}\hfill
        	\begin{minipage}[c]{0.4\textwidth}
        	%	{\tt for parallel all \textcolor{red}{red}\\
@@ -765,7 +765,7 @@ T_0(4)$, to be executed by the two threads. Synchronization only happens between
 threads having the same parent node after executing the same color. Note that
 actual computations are only performed on the leaf nodes of the final tree.
 	 \begin{figure}[t]
-		 \includegraphics[width=\textwidth, height=0.2\textheight]{pics/recursion/2d-7pt_example/tree/tree}
+		 \includegraphics[width=\textwidth, height=0.2\textheight]{pics/recursion/2d-7pt_example/tree/tree.pdf}
 	 	\caption{The internal tree structure of \acrshort{RACE}
                   representing the \stex for domain size $16 \times 16$ and
                   eight threads. The range $[\ldots]$ specified in each leaf

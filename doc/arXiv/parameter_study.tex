@@ -79,13 +79,13 @@ compute nodes.
 %
 \begin{figure}[t]
 	\centering
-	\subfloat[$\eta$ versus \acrshort{nthreads} for \emph{inline\_1} matrix, $\epsilon_1 = 0.5$ ]{\label{fig:inline-a}\includegraphics[width=0.45\textwidth , height=0.2\textheight]{pics/param_study/threads_vs_eff}}
+	\subfloat[$\eta$ versus \acrshort{nthreads} for \emph{inline\_1} matrix, $\epsilon_1 = 0.5$ ]{\label{fig:inline-a}\includegraphics[width=0.45\textwidth , height=0.2\textheight]{pics/param_study/threads_vs_eff.pdf}}
 	\hspace{1.5em}
-	\subfloat[\acrshort{nthreads}=25]{\label{fig:inline-b}\includegraphics[width=0.45\textwidth , height=0.2\textheight]{pics/param_study/scaling_eps_1_25_threads}}
+	\subfloat[\acrshort{nthreads}=25]{\label{fig:inline-b}\includegraphics[width=0.45\textwidth , height=0.2\textheight]{pics/param_study/scaling_eps_1_25_threads.pdf}}
 	
-	\subfloat[\acrshort{nthreads}=45 ]{\label{fig:inline-c}\includegraphics[width=0.45\textwidth , height=0.2\textheight]{pics/param_study/scaling_eps_1_45_threads}}
+	\subfloat[\acrshort{nthreads}=45 ]{\label{fig:inline-c}\includegraphics[width=0.45\textwidth , height=0.2\textheight]{pics/param_study/scaling_eps_1_45_threads.pdf}}
 	\hspace{1.5em}
-	\subfloat[\acrshort{nthreads}=100 ]{\label{fig:inline-d}\includegraphics[width=0.45\textwidth , height=0.2\textheight]{pics/param_study/scaling_eps_1_100_threads}}
+	\subfloat[\acrshort{nthreads}=100 ]{\label{fig:inline-d}\includegraphics[width=0.45\textwidth , height=0.2\textheight]{pics/param_study/scaling_eps_1_100_threads.pdf}}
 	\caption{Parameter study on the \emph{inline\_1} matrix. In \Cref{fig:inline-b,fig:inline-c,fig:inline-d} each of the lines in the plot are iso-$\epsilon_1$ and impact of $\eta$ with respect to $\epsilon_0$ is shown. $\epsilon_s$ for $s>1$ is fixed to $0.5$.}
 	\label{fig:inline_param_study}
 \end{figure}
@@ -109,7 +109,7 @@ parallel efficiencies of 80\% or higher for a substantial fraction of the
 matrices up to intermediate thread counts.
    \begin{figure}[t]
    	\centering
-   	\includegraphics[width=0.9\textwidth]{pics/param_study/scatter_plot}
+   	\includegraphics[width=0.9\textwidth]{pics/param_study/scatter_plot.pdf}
    	\caption{Parallel efficiency $\eta$ versus \acrshort{nthreads} for all test matrices with $\epsilon_{0,1} = 0.8$ and $\epsilon_{s>1} = 0.5$.}
   	\label{fig:param_all_mtx_stat}
    \end{figure}
@@ -171,10 +171,10 @@ limited by the main memory bandwidth constraint and the roof{}line model limits 
 not apply.
 \begin{figure}[t]
 	\centering
-	\subfloat[\emph{crankseg\_1}]{\label{fig:crankseg_param}\includegraphics[width=0.24\textwidth]{pics/param_study/corner_cases/crankseg_1}}
-	\subfloat[\emph{inline\_1}]{\label{fig:inline_param}\includegraphics[width=0.24\textwidth]{pics/param_study/corner_cases/inline_1}}	
-	\subfloat[\emph{parabolic\_fem}]{\label{fig:parabolic_fem_param}\includegraphics[width=0.24\textwidth]{pics/param_study/corner_cases/parabolic_fem}}
-	\subfloat[\emph{Graphene-4096}]{\label{fig:Graphene-4096_param}\includegraphics[width=0.24\textwidth]{pics/param_study/corner_cases/Graphene-4096}}	
+	\subfloat[\emph{crankseg\_1}]{\label{fig:crankseg_param}\includegraphics[width=0.24\textwidth]{pics/param_study/corner_cases/crankseg_1.pdf}}
+	\subfloat[\emph{inline\_1}]{\label{fig:inline_param}\includegraphics[width=0.24\textwidth]{pics/param_study/corner_cases/inline_1.pdf}}	
+	\subfloat[\emph{parabolic\_fem}]{\label{fig:parabolic_fem_param}\includegraphics[width=0.24\textwidth]{pics/param_study/corner_cases/parabolic_fem.pdf}}
+	\subfloat[\emph{Graphene-4096}]{\label{fig:Graphene-4096_param}\includegraphics[width=0.24\textwidth]{pics/param_study/corner_cases/Graphene-4096.pdf}}	
 	\caption{\acrshort{threadEff} and $\eta$ versus \acrshort{nthreads} for
 	the four corner case matrices, with the same settings used in experiment
 	runs. \acrshort{threadEff} is defined as
@@ -183,10 +183,10 @@ not apply.
 \end{figure}
 \begin{figure}[t]
 	\centering
-	\subfloat[\emph{crankseg\_1}]{\label{fig:crankseg_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/crankseg_1_RCM}}
-	\subfloat[\emph{inline\_1}]{\label{fig:inline_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/inline_1_RCM}}	
-	\subfloat[\emph{parabolic\_fem}]{\label{fig:parabolic_fem_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/parabolic_fem_RCM}}
-	\subfloat[\emph{Graphene-4096}]{\label{fig:Graphene-4096_scaling} \includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/Graphene-4096_RCM}}	
+	\subfloat[\emph{crankseg\_1}]{\label{fig:crankseg_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/crankseg_1_RCM.pdf}}
+	\subfloat[\emph{inline\_1}]{\label{fig:inline_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/inline_1_RCM.pdf}}	
+	\subfloat[\emph{parabolic\_fem}]{\label{fig:parabolic_fem_scaling}\includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/parabolic_fem_RCM.pdf}}
+	\subfloat[\emph{Graphene-4096}]{\label{fig:Graphene-4096_scaling} \includegraphics[width=0.23\textwidth , height=0.18\textheight]{pics/results/skx/corner_cases_scaling/plots/RCM/Graphene-4096_RCM.pdf}}	
 	\caption{Parallel performance measurements of \acrshort{SymmSpMV}
 	with \acrshort{RACE} on one \SKX socket for the four
 	corner case matrices. The performance of the
