@@ -124,20 +124,21 @@ int main(const int argc, char * argv[])
 
     int power = param.iter;
     printf("power = %d\n", power);
-
+/*
 #ifdef LIKWID_PERFMON
 #pragma omp parallel
     {
         LIKWID_MARKER_START("pre_process");
     }
-#endif
-    mat->prepareForPower(power, param.nodes, 16*1024*1024);
-#ifdef LIKWID_PERFMON
+#endif*/
+    mat->doRCM();
+    mat->prepareForPower(power, param.nodes, 16*1024*1024, param.cores, param.smt, param.pin);
+/*#ifdef LIKWID_PERFMON
 #pragma omp parallel
     {
         LIKWID_MARKER_STOP("pre_process");
     }
-#endif
+#endif*/
 
     printf("Finished preparing\n\n");
 
@@ -156,7 +157,59 @@ int main(const int argc, char * argv[])
 
     printf("calculation started\n");
 
-    int iterations = 2000;
+    //determine iterations
+    INIT_TIMER(matPower_init);
+    START_TIMER(matPower_init);
+    for(int iter=0; iter<10; ++iter)
+    {
+        matPower(mat, power, xRACE);
+    }
+    STOP_TIMER(matPower_init);
+    double initTime = GET_TIMER(matPower_init);
+    int iterations = (int) (1.2*10/initTime);
+
+    printf("Num iterations =  %d\n", iterations);
+
+    double flops = 2.0*power*iterations*(double)mat->nnz*1e-9;
+
+    densemat* xTRAD = NULL;
+    if(param.validate)
+    {
+        xTRAD=new densemat(NROWS, power+1);
+        densemat* xTRAD_0 = xTRAD->view(0,0);
+
+        xTRAD_0->setVal(initVal);
+
+        INIT_TIMER(spmvPower);
+#ifdef LIKWID_PERFMON
+#pragma omp parallel
+        {
+            LIKWID_MARKER_START("SpMV_power");
+        }
+#endif
+        START_TIMER(spmvPower);
+        //now calculate xTRAD in traditional way
+        for(int iter=0; iter<iterations; ++iter)
+        {
+            xTRAD_0->setVal(initVal);
+            for(int pow=0; pow<power; ++pow)
+            {
+                densemat *x = xTRAD->view(pow,pow);
+                plain_spmv(mat, x);
+            }
+        }
+        STOP_TIMER(spmvPower);
+#ifdef LIKWID_PERFMON
+#pragma omp parallel
+        {
+            LIKWID_MARKER_STOP("SpMV_power");
+        }
+#endif
+        double spmvPowerTime = GET_TIMER(spmvPower);
+        printf("SpMV power perf. = %f, time = %f\n", flops/spmvPowerTime, spmvPowerTime);
+
+    }
+
 
     INIT_TIMER(matPower);
 #ifdef LIKWID_PERFMON
@@ -184,56 +237,16 @@ int main(const int argc, char * argv[])
     }
 #endif
     double RACEPowerTime = GET_TIMER(matPower);
-    double flops = 2.0*power*iterations*(double)mat->nnz*1e-9;
     printf("RACE power perf. = %f, time = %f\n", flops/RACEPowerTime, RACEPowerTime);
 
 
-    //    printfACE\n");
-//    xRACE->print();
     if(param.validate)
     {
-        densemat* xTRAD=new densemat(NROWS, power+1);
-        densemat* xTRAD_0 = xTRAD->view(0,0);
-
-        xTRAD_0->setVal(initVal);
-
-        INIT_TIMER(spmvPower);
-#ifdef LIKWID_PERFMON
-#pragma omp parallel
-        {
-            LIKWID_MARKER_START("SpMV_power");
-        }
-#endif
-        START_TIMER(spmvPower);
-        //now calculate xTRAD in traditional way
-        for(int iter=0; iter<iterations; ++iter)
-        {
-            for(int pow=0; pow<power; ++pow)
-            {
-                densemat *x = xTRAD->view(pow,pow);
-                plain_spmv(mat, x);
-            }
-        }
-        STOP_TIMER(spmvPower);
-#ifdef LIKWID_PERFMON
-#pragma omp parallel
-        {
-            LIKWID_MARKER_STOP("SpMV_power");
-        }
-#endif
-        double spmvPowerTime = GET_TIMER(spmvPower);
-        printf("SpMV power perf. = %f, time = %f\n", flops/spmvPowerTime, spmvPowerTime);
-
-        //        printf("xTRAD\n");
-        //        xTRAD->print();
-
         bool flag = checkEqual(xTRAD, xRACE, param.tol);
-
         if(!flag)
         {
             printf("Power calculation failed\n");
         }
-
         delete xTRAD;
     }
 

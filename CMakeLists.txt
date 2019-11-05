@@ -103,11 +103,8 @@ if (NOT HWLOC_INCLUDE_DIR)
         )
     set(BUILTIN_HWLOC 1)
     set(HWLOC_INCLUDE_DIR "${PROJECT_BINARY_DIR}/hwloc-inst/include")
-    if(EXISTS "${PROJECT_BINARY_DIR}/hwloc-inst/lib/libhwloc.so")
-	    set(LIBHWLOC "${PROJECT_BINARY_DIR}/hwloc-inst/lib/libhwloc.so")
-    else()
-	    set(LIBHWLOC "${PROJECT_BINARY_DIR}/hwloc-inst/lib64/libhwloc.so")
-    endif()
+    set(LIBHWLOC "${PROJECT_BINARY_DIR}/hwloc-inst/lib/libhwloc.so")
+    #set(LIBHWLOC "${PROJECT_BINARY_DIR}/hwloc-inst/lib64/libhwloc.so")
 endif()
 
 if (NOT LIBHWLOC)
@@ -117,7 +114,7 @@ endif()
 
 set(HWLOC_LIBRARIES ${LIBHWLOC})
 
-set(RACE_THREAD_METHOD PThread CACHE STRING "Which threading method should be used for the kernel: options are OpenMP or PThread")
+set(RACE_THREAD_METHOD OpenMP CACHE STRING "Which threading method should be used for the kernel: options are OpenMP or PThread")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -std=c99 -Wall -Wextra -Werror -pedantic")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -std=c++0x -Wall -Wextra -Werror -pedantic")
@@ -181,14 +178,14 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 add_library(RACE ${SOURCES})
 
 
-get_filename_component(HWLOC_LIB_PATH ${LIBHWLOC} DIRECTORY)
+#get_filename_component(HWLOC_LIB_PATH ${LIBHWLOC} DIRECTORY)
 set(RACE_LIB_PATH ${CMAKE_INSTALL_PREFIX}/lib/RACE)
 
-if (${BUILD_SHARED_LIBS})
-    file(WRITE ${PROJECT_BINARY_DIR}/RACE_LFlags.sh "#!/bin/bash\n echo \"-L ${RACE_LIB_PATH} -Wl,-rpath ${RACE_LIB_PATH} -L ${HWLOC_LIB_PATH} -Wl,-rpath ${HWLOC_LIB_PATH} -l hwloc -l RACE\"")
-else ()
-    file(WRITE ${PROJECT_BINARY_DIR}/RACE_LFlags.sh "#!/bin/bash\n echo \"${RACE_LIB_PATH}/libRACE.a -L ${HWLOC_LIB_PATH} -Wl,-rpath ${HWLOC_LIB_PATH} -l hwloc\"")
-endif()
+#if (${BUILD_SHARED_LIBS})
+#    file(WRITE ${PROJECT_BINARY_DIR}/RACE_LFlags.sh "#!/bin/bash\n echo \"-L ${RACE_LIB_PATH} -Wl,-rpath ${RACE_LIB_PATH} -L ${HWLOC_LIB_PATH} -Wl,-rpath ${HWLOC_LIB_PATH} -l hwloc -l RACE\"")
+#else ()
+#    file(WRITE ${PROJECT_BINARY_DIR}/RACE_LFlags.sh "#!/bin/bash\n echo \"${RACE_LIB_PATH}/libRACE.a -L ${HWLOC_LIB_PATH} -Wl,-rpath ${HWLOC_LIB_PATH} -l hwloc\"")
+#endif()
 
 if(BUILTIN_HWLOC)
     target_link_libraries(RACE "${LIBHWLOC}")
@@ -197,7 +194,7 @@ if(BUILTIN_HWLOC)
 endif()
 
 install(FILES ${HEADERS} DESTINATION include/RACE/)
-install(FILES ${PROJECT_BINARY_DIR}/RACE_LFlags.sh DESTINATION lib/RACE PERMISSIONS OWNER_READ OWNER_EXECUTE)
+#install(FILES ${PROJECT_BINARY_DIR}/RACE_LFlags.sh DESTINATION lib/RACE PERMISSIONS OWNER_READ OWNER_EXECUTE)
 install(FILES ${PROJECT_BINARY_DIR}/race-config.cmake DESTINATION lib/RACE)
 
 if (${BUILD_SHARED_LIBS})

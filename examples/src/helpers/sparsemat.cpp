@@ -4,8 +4,15 @@
 #include <omp.h>
 #include <vector>
 #include <sys/mman.h>
+#include "config_eg.h"
 
-sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL)
+#ifdef RACE_USE_SPMP
+    #include "SpMP/CSR.hpp"
+    #include "SpMP/reordering/BFSBipartite.hpp"
+#endif
+
+
+sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), rcmInvPerm(NULL), rcmPerm(NULL)
 {
 }
 
@@ -31,6 +38,12 @@ sparsemat::~sparsemat()
 
     if(ce)
         delete ce;
+
+    if(rcmPerm)
+        delete[] rcmPerm;
+
+    if(rcmInvPerm)
+        delete[] rcmInvPerm;
 
 }
 
@@ -374,9 +387,37 @@ bool sparsemat::computeSymmData()
     return true;
 }
 
-int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cacheSize)
+void sparsemat::doRCM()
 {
-    ce = new Interface(nrows, 10, RACE::POWER, rowPtr, col);
+#ifdef RACE_USE_SPMP
+    int orig_threads = 1;
+    printf("Doing RCM permutation\n");
+#pragma omp parallel
+    {
+        orig_threads = omp_get_num_threads();
+    }
+    omp_set_num_threads(1);
+
+    SpMP::CSR *csr = NULL;
+    csr = new SpMP::CSR(nrows, nrows, rowPtr, col, val);
+    rcmPerm = new int[nrows];
+    rcmInvPerm = new int[nrows];
+    if(csr->isSymmetric(false,false))
+    {
+        csr->getRCMPermutation(rcmInvPerm, rcmPerm);
+    }
+    else
+    {
+        printf("Matrix not symmetric RCM cannot be done\n");
+    }
+    omp_set_num_threads(orig_threads);
+    delete csr;
+#endif
+}
+
+int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cacheSize, int nthreads, int smt, PinMethod pinMethod)
+{
+    ce = new Interface(nrows, nthreads, RACE::POWER, rowPtr, col, smt, pinMethod, rcmPerm, rcmInvPerm);
     ce->RACEColor(highestPower, numSharedCache, cacheSize);
 
     int *perm, *invPerm, permLen;
@@ -389,7 +430,7 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
 
 int sparsemat::colorAndPermute(dist distance, int nthreads, int smt, PinMethod pinMethod)
 {
-    ce = new Interface(nrows, nthreads, distance, rowPtr, col, smt, pinMethod, NULL, NULL);
+    ce = new Interface(nrows, nthreads, distance, rowPtr, col, smt, pinMethod, rcmPerm, rcmInvPerm);
     RACE_error ret = ce->RACEColor();
 
     if(ret != RACE_SUCCESS)

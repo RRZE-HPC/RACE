@@ -24,11 +24,13 @@ struct sparsemat
     Interface* ce;
     int *rowPtr, *col;
     double *val;
+    int *rcmPerm, *rcmInvPerm;
 
     bool readFile(char* filename);
     bool writeFile(char* filename);
     void makeDiagFirst();
-    int prepareForPower(int highestPower, int numSharedCache, double cacheSize);
+    void doRCM();
+    int prepareForPower(int highestPower, int numSharedCache, double cacheSize, int nthreads, int smt=1, PinMethod pinMethod=FILL);
     int colorAndPermute(dist d, int nthreads, int smt=1, PinMethod pinMethod=FILL);
     double colorEff();
     int maxStageDepth();

@@ -66,7 +66,10 @@ void mtxPower::findPartition()
     //i.e. nnz for this matrix that cache can hold
     double bytePerNNZ = getBytePerNNZ();
     double cacheElem = cacheSize/bytePerNNZ;
-    printf("cacheElem = %f, nnzr = %f\n", cacheElem, nnzr);
+    printf("cacheElem = %f\n", cacheElem);
+    printf("nrows = %d\n", levelData->nrow);
+    printf("nnz = %d\n", levelData->nnz);
+    printf("nnzr = %f\n", nnzr);
 
     std::vector<int> cacheViolatedLevel;
     std::vector<int> cacheViolatedFactor;
@@ -194,6 +197,7 @@ void mtxPower::consolidatePartition()
     for(int i=0; i<totalLevel+1; ++i)
     {
         levelPtr[i] = newLevelPtr[i];
+        printf("levelPtr[%d] = %d\n", i, levelPtr[i]);
     }
 
     int* newLevelGroupPtr = new int[numSharedCache+1];

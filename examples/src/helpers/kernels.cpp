@@ -1,4 +1,5 @@
 #include "kernels.h"
+#include <mkl.h>
 
 inline void SPMV_KERNEL(int start, int end, void* args)
 {
@@ -216,12 +217,36 @@ inline void PLAIN_SPMV_KERNEL(int start, int end, int pow, void* args)
 void plain_spmv(sparsemat* mat, densemat* x)
 {
     ENCODE_TO_VOID(mat, NULL, x);
-//#pragma omp parallel
-    {
-        PLAIN_SPMV_KERNEL(0, mat->nrows, 1, voidArg);
-    }
+    PLAIN_SPMV_KERNEL(0, mat->nrows, 1, voidArg);
     DELETE_ARG();
 }
+
+
+inline void MKL_SPMV_KERNEL(int start, int end, int pow, void* args)
+{
+    DECODE_FROM_VOID(args);
+    double *x_ = x->val;
+    double *b_ = &(x->val[mat->nrows]);
+    int nrows= end-start;
+
+    int nthreads;
+#pragma omp parallel
+    {
+        nthreads = omp_get_num_threads();
+    }
+
+    mkl_set_num_threads(nthreads);
+    mkl_cspblas_dcsrgemv("N", &nrows, ((double*)mat->val), ((MKL_INT*)mat->rowPtr), ((MKL_INT*) mat->col), ((double*)x_), ((double*)b_));
+}
+
+//MKL spmv
+void mkl_spmv(sparsemat* mat, densemat* x)
+{
+    ENCODE_TO_VOID(mat, NULL, x);
+    MKL_SPMV_KERNEL(0, mat->nrows, 1, voidArg);
+    DELETE_ARG();
+}
+
 
 void matPower(sparsemat *A, int power, densemat *x)
 {

@@ -358,19 +358,19 @@ void powerInitRowPtrFunc(int start, int end, int pow, void* arg)
          printf("Something went wrong, I shouldnn' t be here\n");
      }
 
+     /*
      if( lock_memory( (char*)&(rowPtr[start]), (end-start)*sizeof(int) ) == -1 )
      {
          rowPtr[0] = 0*pow*nrow;
          ERROR_PRINT("Memory locking didn't work");
-     }
-/*
-//#pragma omp parallel for schedule(static)
+     }*/
+
+#pragma omp parallel for schedule(static)
     for(int row=start; row<end; ++row)
     {
         rowPtr[row] = 0*pow*nrow;
         rowPtr[row+1] = 0*pow*nrow;
     }
-    */
 }
 
 void RACE::Interface::numaInitRowPtr(int *rowPtr_)
@@ -391,7 +391,7 @@ void powerInitMtxVecFunc(int start, int end, int pow, void* arg)
 {
     DECODE_ARG(arg);
 
-
+/*
     if(pow == 0)
     {
         if( lock_memory( (char*)&(val[rowPtr[start]]), (rowPtr[end]-rowPtr[start])*sizeof(double) ) == -1)
@@ -411,8 +411,10 @@ void powerInitMtxVecFunc(int start, int end, int pow, void* arg)
             ERROR_PRINT("Memory locking didn't work");
         }
     }
-//#pragma omp parallel for schedule(static)
-/*    for(int row=start; row<end; ++row)
+    */
+
+#pragma omp parallel for schedule(static)
+    for(int row=start; row<end; ++row)
     {
         if(pow==0)
         {
@@ -428,7 +430,6 @@ void powerInitMtxVecFunc(int start, int end, int pow, void* arg)
             x[(pow+1)*nrow+row] = 0;
         }
     }
-    */
 }
 
 void RACE::Interface::numaInitMtxVec(int *rowPtr_, int *col_, double *val_, double *x_, int power_)
