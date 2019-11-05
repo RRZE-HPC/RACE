@@ -1,5 +1,6 @@
 #include "kernels.h"
 #include <mkl.h>
+#include "config_eg.h"
 
 inline void SPMV_KERNEL(int start, int end, void* args)
 {
@@ -203,7 +204,7 @@ inline void PLAIN_SPMV_KERNEL(int start, int end, int pow, void* args)
             double tmp = 0;
             const int offset = (pow-1)*mat->nrows;
 #pragma nounroll
-#pragma simd vectorlength(8) reduction(+:tmp)
+#pragma simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)
             for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
             {
                 tmp += mat->val[idx]*x->val[offset+mat->col[idx]];

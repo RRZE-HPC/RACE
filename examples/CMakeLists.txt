@@ -6,6 +6,22 @@ project(RACE_example CXX C)
 
 set(CMAKE_CXX_STANDARD 11)
 
+include(${PROJECT_SOURCE_DIR}/cmake/OptimizeForArchitecture.cmake)
+
+AutodetectHostArchitecture()
+OptimizeForArchitecture()
+
+if(USE_AVX512F)
+    set(VECTOR_LENGTH 8)
+elseif(USE_AVX OR USE_AVX2)
+    set(VECTOR_LENGTH 4)
+elseif(USE_SSE2 OR USE_SSE3 OR SSE4_1 OR SSE4_2 OR SSE_4a)
+    set(VECTOR_LENGTH 2)
+else()
+    set(VECTOR_LENGTH 1)
+endif()
+
+
 set(CMAKE_PREFIX_PATH ${RACE_DIR})
 # find RACE
 find_package(RACE REQUIRED CONFIG)
