@@ -1,0 +1,38 @@
+\documentclass{standalone}
+\usepackage{tikz}
+
+\begin{document}
+\def\rowperm{{0, 1, 2, 3, 4, 5, 6}}
+%\def\colperm{{0, 1, 2, 3, 4, 5, 6}}
+\def\colperm{{0, 3, 5, 1, 4, 6, 2}}
+
+\begin{minipage}{0.75\textwidth}
+	\centering
+	\scalebox{0.7}{\begin{tikzpicture}	
+		\foreach \x in {0,1,2}
+		\fill[blue] (\colperm[1+\x]-1,1) rectangle (\colperm[1+\x],2);  
+		\foreach \x in {0,1,2}
+		\fill[blue] (\colperm[4+\x]-1,0) rectangle (\colperm[4+\x],1);
+		\draw[step=1cm,gray,very thin] (-1,-0) grid (6,7);   
+	
+		\node[white] at (\colperm[1]-0.5,1.5) {\Large{1}}; 
+		\node[white] at (\colperm[2]-0.5,1.5) {\Large{1}}; 
+		\node[white] at (\colperm[3]-0.5,1.5) {\Large{1}}; 
+		\node[white] at (\colperm[4]-0.5,0.5) {\Large{2}}; 
+		\node[white] at (\colperm[5]-0.5,0.5) {\Large{2}}; 
+		\node[white] at (\colperm[6]-0.5,0.5) {\Large{2}}; 
+		\end{tikzpicture}}
+	\hspace{1cm}
+	\scalebox{0.7}{\begin{tikzpicture}
+		\foreach \x in {0,1,2,3,4,5}
+		\fill[blue] (8,\x) rectangle (9,\x+1);  
+		\draw[step=1cm,gray,very thin] (8,-0) grid (9,7);
+		\node[white] at (8.5,6.5-\colperm[1]) {\Large{1}}; 
+		\node[white] at (8.5,6.5-\colperm[2]) {\Large{1}}; 
+		\node[white] at (8.5,6.5-\colperm[3]) {\Large{1}}; 
+		\node[white] at (8.5,6.5-\colperm[4]) {\Large{2}}; 
+		\node[white] at (8.5,6.5-\colperm[5]) {\Large{2}}; 
+		\node[white] at (8.5,6.5-\colperm[6]) {\Large{2}}; 
+		\end{tikzpicture}}
+\end{minipage}
+\end{document}
