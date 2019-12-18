@@ -34,7 +34,22 @@ RACE_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *
             permRow = initPerm[row];
         }
         int permCol = 0;
-        if( (rowPtr[permRow+1] - rowPtr[permRow]) > 1) {
+        bool noDiag = false;
+        if((rowPtr[permRow+1] - rowPtr[permRow]) == 1)
+        {
+            int idx=rowPtr[permRow];
+            permCol = col[idx];
+            if(initInvPerm)
+            {
+                permCol = initInvPerm[col[idx]];
+            }
+
+            if(permRow != permCol)
+            {
+                noDiag = true;
+            }
+        }
+        if( (rowPtr[permRow+1] - rowPtr[permRow]) > 1 || noDiag) {
             for(int idx=rowPtr[permRow]; idx<rowPtr[permRow+1]; ++idx) {
                 permCol = col[idx];
                 if(initInvPerm)
@@ -50,6 +65,15 @@ RACE_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *
             }
             nodeWithChildren++;
         } else {
+            for(int idx=rowPtr[permRow]; idx<rowPtr[permRow+1]; ++idx) {
+                permCol = col[idx];
+                if(initInvPerm)
+                {
+                    permCol = initInvPerm[col[idx]];
+                }
+                printf("len = %d, niDiag = %d\n", rowPtr[permRow+1] - rowPtr[permRow], noDiag);
+                printf("check row %d, col %d\n", permRow, permCol);
+            }
 #pragma omp critical
             {
                 pureDiag.push_back(row);
@@ -132,7 +156,7 @@ void Graph::writePattern(char* name)
 
 void Graph::getStatistics()
 {
-    double maxDense = std::numeric_limits<double>::max();//default 8 times mean nnzr
+    double maxDense = std::numeric_limits<double>::max();
     char *maxDenseEnv = getenv("RACE_MAX_DENSE");
 
     if(maxDenseEnv != NULL)
@@ -156,8 +180,7 @@ void Graph::getStatistics()
     for(auto it=rowBucket.begin(); it!=rowBucket.end(); ++it)
     {
         printf("%d -> %d\n",it->first, it->second);
-    }
-*/
+    }*/
     //print black-listed rows
     if(!blackList.empty())
     {
