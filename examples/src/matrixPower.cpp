@@ -191,7 +191,6 @@ int main(const int argc, char * argv[])
         //now calculate xTRAD in traditional way
         for(int iter=0; iter<iterations; ++iter)
         {
-            xTRAD_0->setVal(initVal);
             for(int pow=0; pow<power; ++pow)
             {
                 densemat *x = xTRAD->view(pow,pow);

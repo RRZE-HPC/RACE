@@ -19,6 +19,8 @@ void gs(densemat* b, sparsemat* mat, densemat* x, int iter);
 void kacz(densemat* b, sparsemat* mat, densemat* x, int iter);
 void symm_spmv(densemat* b, sparsemat* mat, densemat* x, int iter);
 void plain_spmv(sparsemat* mat, densemat* x);
+
+void mkl_spmv(sparsemat* mat, densemat* x);
 void matPower(sparsemat* A, int power, densemat *x);
 
 //convenience macros
