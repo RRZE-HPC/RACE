@@ -46,9 +46,10 @@ class ZoneTree{
     public:
         RACE::dist dist;
         RACE::d2Method d2Type;
+        RACE::LBTarget lbTarget;
         tree_t *tree;
 
-        ZoneTree(RACE::dist dist, RACE::d2Method d2Type);
+        ZoneTree(RACE::dist dist, RACE::d2Method d2Type, RACE::LBTarget lbTarget);
         ~ZoneTree();
 
         ZoneLeaf& at(unsigned idx);

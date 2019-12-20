@@ -14,7 +14,7 @@ ZoneLeaf::ZoneLeaf(int rangeLo_, int rangeHi_, int parent_):valueZ(2),nthreadsZ(
     valueZ[1] = rangeHi_;
 }
 
-ZoneTree::ZoneTree(RACE::dist dist_, RACE::d2Method d2Type_):cachedTree(NULL),dist(dist_),d2Type(d2Type_),tree(NULL)
+ZoneTree::ZoneTree(RACE::dist dist_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):cachedTree(NULL),dist(dist_),d2Type(d2Type_),lbTarget(lbTarget_),tree(NULL)
 {
     tree = new tree_t;
     cachedTree = new tree_t;
@@ -223,7 +223,7 @@ bool ZoneTree::spawnChild(int parentIdx, int parentSubIdx, int requestNthreads, 
 //    int minEffRow = std::numeric_limits<int>::max();
     //TODO for three block
 //    int maxThreads = 1;
-    LB lb(requestNthreads, eff, levelData, dist, d2Type);
+    LB lb(requestNthreads, eff, levelData, dist, d2Type, lbTarget);
     lb.balance();
 
     int baseLen = tree->size();

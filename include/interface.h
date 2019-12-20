@@ -22,6 +22,7 @@ class RACE::Interface{
         int nrow;
         RACE::dist distance;
         RACE::d2Method d2Type;
+        RACE::LBTarget lbTarget;
         int requestedThreads;
         int availableThreads;
         int SMT;
@@ -45,7 +46,7 @@ class RACE::Interface{
         bool recursiveChecker(int parent);
         bool D2Checker();
     public:
-        Interface(int nrow_, int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_=1, RACE::PinMethod method_=RACE::SCATTER, int *initPerm_=NULL, int *initInvPerm_=NULL, RACE::d2Method d2Type_=RACE::TWO_BLOCK);
+        Interface(int nrow_, int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_=1, RACE::PinMethod method_=RACE::SCATTER, int *initPerm_=NULL, int *initInvPerm_=NULL, RACE::d2Method d2Type_=RACE::TWO_BLOCK, RACE::LBTarget lbTarget_=RACE::NNZ);
         ~Interface();
         RACE_error RACEColor(int highestPower, int numSharedCache, double cacheSize, double safetyFactor=2);
         //Pre-processing

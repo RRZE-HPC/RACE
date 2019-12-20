@@ -4,7 +4,7 @@
 #include <iostream>
 #include "utility.h"
 
-RACE::Interface::Interface(int nrow_,int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_, RACE::PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, RACE::d2Method d2Type_):graph(NULL),nrow(nrow_),distance(dist_),d2Type(d2Type_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL),powerCalculator(NULL)
+RACE::Interface::Interface(int nrow_,int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_, RACE::PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):graph(NULL),nrow(nrow_),distance(dist_),d2Type(d2Type_),lbTarget(lbTarget_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL),powerCalculator(NULL)
 {
     graph = new Graph(nrow, nrow, rowPtr, col, initPerm, initInvPerm);
 }
@@ -71,7 +71,7 @@ RACE_error RACE::Interface::RACEColor()
           graph = new Graph(nrow, nrow, rowPtr, col, initPerm, initInvPerm);
           }*/
         //2. Call level_recursion
-        LevelRecursion lr(graph, requestedThreads, distance, d2Type);
+        LevelRecursion lr(graph, requestedThreads, distance, d2Type, lbTarget);
         lr.levelBalancing();
         availableThreads = lr.getAvailableThreads();
         int len;

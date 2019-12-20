@@ -1,9 +1,9 @@
 #include "level_recursion.h"
 #include "utility.h"
 
-LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist dist_, RACE::d2Method d2Type_):graph(graph_), dist(dist_), d2Type(d2Type_), requestNThreads(requestNThreads_), perm(NULL), invPerm(NULL)
+LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist dist_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):graph(graph_), dist(dist_), d2Type(d2Type_), lbTarget(lbTarget_), requestNThreads(requestNThreads_), perm(NULL), invPerm(NULL)
 {
-    zoneTree = new ZoneTree(dist, d2Type);
+    zoneTree = new ZoneTree(dist, d2Type, lbTarget);
     int totalRows;
     graph->getInitialPerm(&perm, &totalRows);
     invPerm = new int[totalRows];
@@ -122,7 +122,19 @@ void LevelRecursion::calculateIdealNthreads(int parentIdx, int parentSubIdx, int
     if(lvlThreads(currLvl)==-1)
     {
         int parentThreads = zoneTree->at(parentIdx).idealNthreadsZ;
-        int parentRow = zoneTree->at(parentIdx).valueZ[parentSubIdx+1] - zoneTree->at(parentIdx).valueZ[parentSubIdx];
+        int startRow = zoneTree->at(parentIdx).valueZ[parentSubIdx];
+        int endRow = zoneTree->at(parentIdx).valueZ[parentSubIdx+1];
+        int parentRow = endRow - startRow;
+        int parentNnz = 0;
+        if(lbTarget == RACE::NNZ)
+        {
+
+            for(int row=startRow; row<endRow; ++row)
+            {
+                parentNnz += graph->at(row).children.size();
+            }
+        }
+
         double* remainder = new double[nThreads];
         int remainingThreads = parentThreads;
         //One could individually treat red and black, but this would lead to less locality
@@ -131,8 +143,22 @@ void LevelRecursion::calculateIdealNthreads(int parentIdx, int parentSubIdx, int
         {
             std::vector<int>* firstRange = &(zoneTree->at(children->at(2*parentSubIdx)+i*blockPerThread).valueZ);
             std::vector<int>* lastRange = &(zoneTree->at(children->at(2*parentSubIdx)+blockPerThread*(i+1)-1).valueZ);
-            int totalRow = lastRange->back()-firstRange->front();
+            int startSubRow = firstRange->front();
+            int endSubRow = lastRange->back();
+            int totalRow = endSubRow - startSubRow;
+
             double myWeight = totalRow/(static_cast<double>(parentRow));
+            if(lbTarget == RACE::NNZ)
+            {
+                int totalNnz = 0;
+                for(int row=startSubRow; row<endSubRow; ++row)
+                {
+                    totalNnz += (int)(graph->at(row).children.size());
+                }
+
+                myWeight = totalNnz/(static_cast<double>(parentNnz));
+            }
+
             double myThreads_d = myWeight*parentThreads;
             //atleast 1 thread, but not greater than remainingThreads
             int myThreads = static_cast<int>(myThreads_d);

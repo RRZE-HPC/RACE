@@ -42,7 +42,8 @@ RACE_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *
                     permCol = initInvPerm[col[idx]];
                 }
                 graphData[row].children.push_back(permCol);
-                if(permCol >= row)
+                //                if(permCol >= row)
+                if(permCol >= permRow)
                 {
                     ++graphData[row].upperNnz;
                 }
