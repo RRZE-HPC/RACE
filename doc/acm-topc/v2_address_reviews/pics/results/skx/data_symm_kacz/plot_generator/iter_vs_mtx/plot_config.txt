@@ -1,0 +1,15 @@
+COL_MTX_NAMES = 2
+COL_PERF_1 = 8 8 8 8 8
+PERF_FILES = ../../RACE/result.txt ../../ABMC/result.txt ../../MC/result.txt 
+COLORS =  orange cyan green
+LEGEND = RACE ABMC MC 
+TEMPLATE = template.tex
+GENERATED = iter.tex
+YLABEL = Iterations
+TYPE = LINE
+Y_SCALE = 0.001
+TITLE = 
+#Symm-KACZ comparison on 1 socket of Intel Skylake
+
+
+

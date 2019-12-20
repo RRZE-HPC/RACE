@@ -1,0 +1,19 @@
+\documentclass{standalone}
+\usepackage{tikz}
+
+\begin{document}
+	\tikzset{
+	font=\footnotesize,
+	minimum width=20
+		}
+
+	\begin{tikzpicture}
+		\fill[color=red,opacity=0.2,rounded corners=15pt] (13,-3.25) rectangle (14,1.5);
+		
+		\node[shape=circle,fill=gray, minimum size=18, inner sep=0.2pt] (i) at (13.5,-2.75) {\Large{6$^2$}};
+		\node[shape=circle,fill=gray, minimum size=18, inner sep=0.2pt] (j) at (13.5,-1.5) {\Large{5$^2$}};		
+		\node[shape=circle,fill=gray, minimum size=18, inner sep=0.2pt] (k) at (13.5, -0.25) {\Large{4$^2$}};
+		\node[shape=circle,fill=gray, minimum size=18, inner sep=0.2pt] (l) at (13.5, 1) {\Large{3$^2$}};
+		\draw (i) edge[<->] (j) (j) edge[<->] (k);
+	\end{tikzpicture}	
+\end{document}  

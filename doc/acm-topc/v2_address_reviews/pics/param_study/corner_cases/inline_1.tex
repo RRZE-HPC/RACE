@@ -1,0 +1,86 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{matrix}
+
+\pgfplotsset{width=10cm,height=12cm,compat=1.3}
+
+\usepackage{filecontents}
+
+\newcommand{\tikzcircle}[2][red,fill=red]{\tikz[baseline=-0.5ex]\draw[#1,radius=#2] (0,0) circle ;}%
+
+\usetikzlibrary{arrows.meta}
+\tikzset{>={Latex[width=1.5mm,length=1.5mm]}}
+
+\definecolor{color1}{RGB}{230,97,1}
+\definecolor{color2}{RGB}{253,184,99}
+\definecolor{color3}{RGB}{178,171,210}
+\definecolor{color4}{RGB}{94,60,153}
+
+\newcommand{\mat}{inline_1}
+\newcommand{\file}{data/\mat/eff_80_80/derived.txt}
+\begin{document}
+	\pgfplotsset{compat=1.5}
+	%\begin{figure}
+	
+	\centering
+	\begin{tikzpicture}
+	\def\xmin{0}
+	\def\xmax{10}
+	\def\ymin{0}
+	\def\ymax{30}
+
+	\begin{axis}[ xlabel={\Huge{$N_t$}}, ylabel={\Huge{$N_t^{eff}$}}, 
+axis y line*=left, tick label style={font=\Huge},
+ymode=linear, xlabel shift=0.1cm, ylabel shift=0.1cm,
+%xtick={1000, 2744, 5832, 10648, 17576, 27000, 39304, 54872, 74088},
+%xticklabels={$10^3$, %$14^3$
+%  , $18^3$, $22^3$, $26^3$, $30^3$, $34^3$, $38^3$, $42^3$},
+%scaled ticks=false,
+%xmode=log,
+xmin=0,xmax = 20,
+xtick={0,4,8,12,16,20},
+%	ymax=20,
+%	ymin=0, ymax=1,
+legend style={legend pos=south west, font=\huge}]
+	
+	%BEGIN_CODE%
+	
+	%MEASURE_START%
+	\addplot+[color=color1, line width=2, mark options={color1}, mark size=2pt] table[x =THREAD,y expr=\thisrow{Eff}*\thisrow{THREAD},col sep=space]  {\file}; \label{plot_one}
+	%MEASURE_STOP%
+	
+	
+	\end{axis}
+
+\begin{axis}[
+axis y line*=right,
+axis x line=none,
+ylabel={\Huge{$\eta$}}, ymode=linear, ylabel shift =0.1cm, tick label style={font=\Huge},
+ytick={0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1},
+%ytick={0.2,0.4,0.6,0.8,1},
+%xtick={1000, 2744, 5832, 10648, 17576, 27000, 39304, 54872, 74088},
+%xticklabels={$10^3$, %$14^3$
+%  , $18^3$, $22^3$, $26^3$, $30^3$, $34^3$, $38^3$, $42^3$},
+%scaled ticks=false,
+%xmode=log,
+xmin=0,xmax = 20,
+ymin=0, ymax=1.02,
+legend style={legend pos=south east, font=\huge}]
+
+\addlegendimage{/pgfplots/refstyle=plot_one}\addlegendentry{$N_t^{eff}$}
+
+%MEASURE_START%
+\addplot+[color=cyan, line width=2, dashed, mark=square*, mark options={cyan}, mark size=2pt] table[x =THREAD,y =Eff,col sep=space] {\file}; \label{plot_two}
+\addlegendentry{$\eta$}
+%MEASURE_STOP%
+
+
+%END_CODE%
+
+\end{axis}
+	
+	\end{tikzpicture}
+	
+	%\end{figure}
+\end{document}

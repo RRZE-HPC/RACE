@@ -1,0 +1,117 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{width=16cm,height=12cm,compat=1.3}
+\usepackage{filecontents}
+\usetikzlibrary{patterns}
+\usepackage{pgfplotstable}
+
+\def\matrixFile{../data/}
+\def\matrix{Spin-26}
+\def\matrixName{Spin-26 }
+\newcommand{\ideal}{11.25}
+
+\begin{document}
+	\pgfplotstableread[col sep=comma] {\matrixFile/MKL/\matrix/spmv.txt} \SPMV
+	\pgfplotstableread[col sep=comma] {\matrixFile/MC_RCM/\matrix/spmv.txt} \SPMVMC
+	\pgfplotstableread[col sep=comma] {\matrixFile/MC_RCM/\matrix/symm_spmv.txt} \SYMMSPMVMC
+	\pgfplotstableread[col sep=comma] {\matrixFile/ABMC_RCM/\matrix/spmv.txt} \SPMVABMC
+	\pgfplotstableread[col sep=comma] {\matrixFile/ABMC_RCM/\matrix/symm_spmv.txt} \SYMMSPMVABMC
+	\pgfplotstableread[col sep=comma] {\matrixFile/RACE/\matrix/symm_spmv.txt} \SYMMSPMVRACE
+	\pgfplotstableread[col sep=space] {\matrixFile/nnz} \NNZfile
+		
+	\pgfplotstablegetelem{0}{nnz}\of\NNZfile
+	\pgfmathsetmacro{\NNZ}{\pgfplotsretval}
+		
+	
+		\begin{tikzpicture}
+		\begin{axis}[
+		width  = 11cm,
+		height = 11cm,
+		major x tick style = transparent,
+		minor ytick={1, 5, 10, 15, 20, 25, 30 ,35,40},
+		grid = minor,
+		ybar=2*\pgflinewidth,
+		bar width=12pt,
+		ymajorgrids = true,
+		grid style={dashed, gray!40},
+		ylabel = {\huge{B/$N_{NZ}$}},
+		symbolic x coords={SpMV, SymmSpMV-MC, SymmSpMV-ABMC, SymmSpMV-RACE},
+		x tick label style={rotate=25,font={\LARGE}},
+		y tick label style={font={\huge}},
+		xtick = data,
+		scaled y ticks = false,
+		enlarge x limits=0.25,
+		ymin=0,% ymax=42,
+		legend cell align=left,
+		legend style={
+			%at={(1,1.05)},
+			%anchor=south east,
+			%column sep=1ex,
+			legend pos=north east,
+			font = \Large
+		},
+		]
+		
+
+		\pgfkeys{/pgf/fpu}
+
+		\pgfplotstablegetelem{9}{MEM (GB)}\of\SPMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)} %change to SpMV
+		\pgfplotstablegetelem{9}{MEM (GB)}\of\SPMVMC
+		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
+		\pgfplotstablegetelem{9}{MEM (GB)}\of\SPMVABMC
+		\pgfmathsetmacro{\memSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
+		\pgfplotstablegetelem{9}{MEM (GB)}\of\SYMMSPMVMC
+		\pgfmathsetmacro{\memSYMMSPMVMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
+		\pgfplotstablegetelem{9}{MEM (GB)}\of\SYMMSPMVABMC
+		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
+		\pgfplotstablegetelem{9}{MEM (GB)}\of\SYMMSPMVRACE
+		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
+		
+		\addplot[pattern=horizontal lines]%style={ppurple,fill=ppurple}]
+		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC) (SymmSpMV-RACE,\memSYMMSPMVRACE)};
+
+		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)} %change to SpMV
+		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMVMC
+		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
+		\pgfplotstablegetelem{9}{L3 (GB)}\of\SPMVABMC
+		\pgfmathsetmacro{\memSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
+		\pgfplotstablegetelem{9}{L3 (GB)}\of\SYMMSPMVMC
+		\pgfmathsetmacro{\memSYMMSPMVMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
+		\pgfplotstablegetelem{9}{L3 (GB)}\of\SYMMSPMVABMC
+		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
+		\pgfplotstablegetelem{9}{L3 (GB)}\of\SYMMSPMVRACE
+		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
+
+		\addplot[fill=gray!180]%style={ppurple,fill=ppurple}]
+		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC) (SymmSpMV-RACE,\memSYMMSPMVRACE)};
+
+		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMV
+		\pgfmathsetmacro{\memSPMV}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)} %change to SpMV
+		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMVMC
+		\pgfmathsetmacro{\memSPMVMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
+		\pgfplotstablegetelem{9}{L2 (GB)}\of\SPMVABMC
+		\pgfmathsetmacro{\memSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
+		\pgfplotstablegetelem{9}{L2 (GB)}\of\SYMMSPMVMC
+		\pgfmathsetmacro{\memSYMMSPMVMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
+		\pgfplotstablegetelem{9}{L2 (GB)}\of\SYMMSPMVABMC
+		\pgfmathsetmacro{\memSYMMSPMVABMC}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
+		\pgfplotstablegetelem{9}{L2 (GB)}\of\SYMMSPMVRACE
+		\pgfmathsetmacro{\memSYMMSPMVRACE}{\pgfplotsretval*1*1/(\NNZ*100*1e-9)}
+				
+		\addplot[pattern=vertical lines]%style={ppurple,fill=ppurple}]
+		coordinates {(SpMV,\memSPMV) (SymmSpMV-MC,\memSYMMSPMVMC) (SymmSpMV-ABMC,\memSYMMSPMVABMC) (SymmSpMV-RACE,\memSYMMSPMVRACE)};
+	
+		
+		\pgfkeys{/pgf/fpu=false}
+
+		\addplot[draw=red,smooth,dashed, line width=3pt] coordinates { (SymmSpMV-MC,\ideal) (SymmSpMV-ABMC,\ideal) (SymmSpMV-RACE,\ideal)};
+				
+		\legend{MEM, L3, L2, Ideal SymmSpMV}
+		\addplot[draw=red,smooth,dashed, line width=3pt, shorten >=-2em, shorten <=-2em] coordinates { (SymmSpMV-MC,\ideal) (SymmSpMV-RACE,\ideal)};
+		\end{axis}
+	%	\node at (6.5,10) {Data traffic Comparison using LIKWID};
+		\end{tikzpicture}
+\end{document}

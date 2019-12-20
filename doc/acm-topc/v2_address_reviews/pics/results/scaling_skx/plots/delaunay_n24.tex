@@ -1,0 +1,47 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,height=11cm,compat=1.3}
+\usetikzlibrary{patterns}
+\usepackage{pgfplotstable}
+
+%%%%%%%%%%%%%%%%%%%%%change matrix here%%%%%%%%%%%%%%%%%%%
+\newcommand{\MATRIX}{delaunay_n24} %folder name
+%\newcommand{\MNAME}{Anderson-16.5}  %name in title
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\definecolor{color_1}{RGB}{230, 25, 75}
+%\definecolor{color_2}{RGB}{145, 30, 180}
+%\definecolor{color_3}{RGB}{0, 180, 255}
+%\definecolor{color_4}{RGB}{245, 130, 48}
+
+\definecolor{color1}{RGB}{230,97,1}
+\definecolor{color2}{RGB}{253,184,99}
+\definecolor{color3}{RGB}{178,171,210}
+\definecolor{color4}{RGB}{94,60,153}
+
+	
+\begin{document}	
+	\pgfplotstableread[col sep=comma] {../scaling_db/MKL_RCM/\MATRIX_derived.txt} \PERFSpMV
+	\pgfplotstableread[col sep=comma] {../scaling_db/RACE_RCM_eff_80/\MATRIX_derived.txt} \PERFSymmSpMV
+	\pgfplotstableread[col sep=comma] {../scaling_db_scalar_code/RACE_RCM_eff_80/\MATRIX_derived.txt} \PERFSymmSpMVScalar
+	
+	\begin{tikzpicture}
+	  \begin{axis}[ xlabel={\LARGE{$N_t$}}, ylabel={\LARGE{Performance (GF/s)}}, ymode=linear, ylabel shift =-0.25cm, xlabel shift=0.1cm, ylabel shift =0.1cm, tick label style={font=\LARGE},
+	  scaled ticks=false,
+	  xmin=0,xmax = 20,
+	%  title={Scaling test on 1 Socket of Sky-Lake @2.4GHz, matrix-\MNAME},
+	  legend style={legend pos=south east, font=\LARGE}]
+
+	   \addplot+[color=color4,line width=2, mark=triangle*, mark options=color4] table[x=Threads,y=Perf,col sep=comma] {\PERFSpMV}; \label{plot_one}
+	   \addlegendentry{SpMV}
+	   
+	   \addplot+[color=color1,line width=2, mark=*, mark options=color1] table[x=Threads,y=Perf,col sep=comma] {\PERFSymmSpMV}; \label{plot_two}
+	   \addlegendentry{SymmSpMV}
+
+	   \addplot+[color=color2,line width=2, mark=square*, mark options=color2] table[x=Threads,y=Perf,col sep=comma] {\PERFSymmSpMVScalar}; \label{plot_three}
+	   \addlegendentry{SymmSpMV-Scalar}
+
+	 \end{axis}
+	\end{tikzpicture}
+\end{document}

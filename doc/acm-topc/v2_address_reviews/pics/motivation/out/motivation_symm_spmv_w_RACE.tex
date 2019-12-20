@@ -1,0 +1,83 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{width=9cm,height=12cm,compat=1.3}
+\usepackage{filecontents}
+\usetikzlibrary{patterns}
+\usepackage{pgfplotstable}
+\usepgfplotslibrary{fillbetween}
+
+\def\matrixFile{../data}
+\def\matrix{Spin-26}
+%\def\matrixFileNowait{../data/motivation_nowait/Spin-26}
+%\def\matrixFileMKL{../data/motivation_mkl/Spin-26}
+\def\matrixName{Spin-26 }
+
+\newcommand{\rlmCopy}{7.63}
+\newcommand{\rlmLoad}{8.96}
+
+\definecolor{color1}{RGB}{230,97,1}
+\definecolor{color2}{RGB}{253,184,99}
+\definecolor{color3}{RGB}{178,171,210}
+\definecolor{color4}{RGB}{94,60,153}
+
+		
+\begin{document}
+	\pgfplotstableread[col sep=comma] {\matrixFile/MKL/\matrix/spmv.txt} \SPMV
+	\pgfplotstableread[col sep=comma] {\matrixFile/MC_RCM/\matrix/symm_spmv.txt} \SYMMSPMVMC
+	\pgfplotstableread[col sep=comma] {\matrixFile/ABMC_RCM/\matrix/symm_spmv.txt} \SYMMSPMVABMC
+	\pgfplotstableread[col sep=comma] {\matrixFile/RACE/\matrix/symm_spmv.txt} \SYMMSPMVRACE
+	\pgfplotstableread[col sep=space] {\matrixFile/nnz} \NNZfile
+		
+	\pgfplotstablegetelem{0}{nnz}\of\NNZfile
+	\pgfmathsetmacro{\NNZ}{\pgfplotsretval}
+		
+	
+\centering
+\begin{tikzpicture}
+
+
+  \def\xmin{0}
+  \def\xmax{10}
+  \def\ymin{0}
+  \def\ymax{30}
+ 
+  \begin{axis}[ xlabel={\huge{$N_t$}}, ylabel={\huge{Performance (GF/s)}}, ymode=linear,
+  x tick label style={font={\huge}},
+  y tick label style={font={\huge}},
+  %xtick={1000, 2744, 5832, 10648, 17576, 27000, 39304, 54872, 74088},
+  %xticklabels={$10^3$, %$14^3$
+  %  , $18^3$, $22^3$, $26^3$, $30^3$, $34^3$, $38^3$, $42^3$},
+  scaled ticks=false,
+  %xmode=log,
+  xmin=0,xmax = 10,
+  ymin=0,ymax=10.25,
+  %ymin=0, ymax=14,
+  legend style={legend pos=north west, font=\large}]
+
+   \addplot+[line width=2, color=color2, mark options={color2}, mark=diamond*, mark size=2pt	] table[x =THREAD,y =PERF (GFlop/s),col sep=comma] {\SPMV}; \label{plot_one}
+   \addlegendentry{SpMV}
+
+   \addplot+[line width=2, color=color3, mark options={color3}, mark=square*, mark size=2pt] table[x =THREAD,y =PERF (GFlop/s),col sep=comma] {\SYMMSPMVMC}; \label{plot_two}
+  \addlegendentry{SymmSpMV MC}
+
+   \addplot+[line width=2, color=color4, mark options={color4}, mark=triangle*, mark size=2pt] table[x =THREAD,y =PERF (GFlop/s),col sep=comma] {\SYMMSPMVABMC}; \label{plot_three}
+   \addlegendentry{SymmSpMV ABMC}
+   
+   \addplot+[line width=2, color=color1, mark=*, mark options={color1}, mark size=2pt] table[x =THREAD,y =PERF (GFlop/s),col sep=comma] {\SYMMSPMVRACE}; \label{plot_four}
+  \addlegendentry{SymmSpMV RACE}
+  
+  \addplot+[name path=RLM-copy, mark=square*, mark options={gray}, draw=gray, mark size=2pt] coordinates {(1,\rlmCopy) (6, \rlmCopy) (8, \rlmCopy) (10, \rlmCopy)}; \label{plot_five}
+  \addlegendentry{RLM-copy}
+  
+  	   
+  \addplot+[name path=RLM-load,  mark=diamond*, mark options={gray}, draw=gray, mark size=2.5pt ] coordinates {(1,\rlmLoad) (6, \rlmLoad) (8, \rlmLoad) (10, \rlmLoad)}; \label{plot_six}
+  \addlegendentry{RLM-load}
+  	   
+  \addplot[fill=lightgray,opacity=0.5] fill between[of= RLM-copy and RLM-load];   
+   
+ \end{axis}
+
+\end{tikzpicture}
+
+\end{document}

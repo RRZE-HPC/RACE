@@ -1,0 +1,13 @@
+COL_MTX_NAMES = 2
+COL_PERF_1 = 5 5 6
+PERF_FILES = ../../RACE/result.txt ../../MKL/result.txt ../../MKL/result.txt 
+COLORS =  orange citrine bronze
+LEGEND = RACE MKL MKL-IE
+TEMPLATE = template.tex
+GENERATED = perf.tex
+YLABEL = Perf (GF/s)
+TYPE = LINE
+TITLE = 
+#SymmSpMV comparison on 1 socket of Intel Ivy Bridge
+
+
