@@ -24,7 +24,7 @@ including level construction and matrix reordering. We then use the
 information from the level construction step to form subsets of levels
 which allow for hardware efficient \DK coloring of the graph. Finally
 we present a concept to ensure load balancing between threads. These steps
-are applied recursively if required.
+are applied recursively \rDel{if} \rAdd{when} required.
 
 
 %The method is strongly coupled to the hardware underneath and exploits only the parallelism as required by the hardware. If at the end of all these four steps one does not achieve sufficient parallelism, all the steps are ursion iursively applied to selected sub-graphs of the matrix until sufficient parallelism is attained. Due to this recursive nature of our coloring method we cal it as ``\RACfullNoSpac'' (\RAC).
@@ -60,7 +60,7 @@ We need the following definitions from graph theory:
               we restrict ourselves to irreducible undirected graphs.
 	\item \textbf{Neighborhood:} $N(u)$ is the neighborhood of a vertex $u$ and is defined as
 	\begin{equation*}
-	  N(u) = \set{ v \in V(G) : (u,v) \in E(G)}\eos
+	  N(u) = \set{ v \in V(G) : \rDel{(u,v)}\rAdd{\{u,v\}} \in E(G)}\eos
 	 %N(u) = { v \in V(G) : (u,v) \in E(G)}
 	\end{equation*}
 	\item \textbf{$k$th Neighborhood:} $N^{k}(u)$ of a vertex $u$ is defined as
@@ -73,7 +73,7 @@ We need the following definitions from graph theory:
 	\item \textbf{Subgraph:} In this paper a subgraph $H$ of $G$ specifically
               refers to the subgraph induced by vertices $V' \subseteq V(G)$ and is defined as
 	\begin{equation*}
-		H = (V', \set{ (u,v) : (u,v) \in E(G) \text{ and } u,v \in V'})\eos
+		H = (V', \set{ \rDel{(u,v) : (u,v)} \rAdd{\{u,v\}} \in E(G) \text{ and } u,v \in V'})\eos
 	\end{equation*}
 \end{itemize}
 
@@ -104,7 +104,7 @@ L(i) =
 \end{equation}
 From \Cref{eq:level} one finds that the $i$th \level consists of all
 vertices that have a minimum distance $i$ from the root node.
-\Cref{alg:BFS} shows how to determine this distance and thus set up the
+\Cref{alg:BFS} \rAdd{(see Appendix)} shows how to determine this distance and thus set up the
 \levels $L(i)$\@. We refer to the total number of \levels obtained for a particular graph
 as \acrshort{totalLvl}. \Cref{fig:2d_7pt_level_construction} shows the
 \acrshort{totalLvl}=14 \levels of our artificial stencil
@@ -188,8 +188,9 @@ two vertices to be \DK independent if they are not \DK
 neighbors, and two \levels are said to be \DK independent 
 %if the vertices between them are \DK independent. 
 if their vertices are mutually \DK independent.
-Thus, \levels $L(i)$ and $L(i\pm(k+j))$ of the permuted
-graph $G'$ are \DK independent for all $j\geq1$, denoted as
+Thus, \levels $L(i)$ and $L(i\pm(k+j))$ \rAdd{$\forall j\geq1$} of 
+the permuted graph $G'$ are \DK independent \rDel{for all $j\geq1$}, 
+denoted as
 \begin{equation}\label{corollary_dk}
 	L(i) \not{\xrightarrow{k}} L(i\pm(k+j)) \forall j\geq1 \eos
 \end{equation} 
@@ -259,7 +260,7 @@ significantly longer than the average, parallelism may be very limited
 \rDel{ there is very limited parallelism as} 
 \rAdd{we have $\acrshort{totalLvl}=2$.}} 
 Note that in all cases, vertices within a single \levelGroup
- are computed in their original order, which allows for good
+ are computed in their \rDel{original} \rAdd{BFS/RCM permuted} order, which allows for good
 spatial access locality.
  
 Choosing the same number of \levels for each \levelGroup may,
@@ -535,8 +536,10 @@ as its all distance-$p$ neighbors, where $p=1,2,\ldots,(k-1)$.
 
 This ensures that there is no vertex outside the \subgraph which can mediate a
 \DK dependency between vertices in the embedded \levelGroup ($T_s(j)$). We can
-now construct the new levels on this \subgraph considering the neighborhood, but
-we only store the vertices in the new \levels $L_{s+1}(:)$ that are in the
+now construct the new levels \rAdd{($L_{s+1}(:)$)} on this \subgraph considering the neighborhood, 
+but \rAdd{in $L_{s+1}(:)$}
+we only store the vertices \rDel{in the new \levels $L_{s+1}(:)$}
+ that are in the
 embedded \levelGroup ($T_s(j)$). Next we apply \DK coloring by aggregation of
 the new levels, leading to a set of \levelGroups $T_{s+1}(:)$ within
 $T_s(j)$. \Cref{fig:rec_d2_correct} demonstrates this approach to resolve the conflict
@@ -640,7 +643,7 @@ thread approaches the optimal value, \ie the total workload divided by the numbe
 threads available. Pairs of adjacent level groups having different colors within a stage,
 \ie $T_s(i)$ and $T_s(i+1)$ with $i=0,2,4,...$,
 are typically handled by the same threads, so we assign an equal number of threads
-to them. 
+to \rDel{them} \rAdd{these \levelGroups}. 
 We then apply recursion to the \levelGroups with more than one
 thread assigned. Starting with the original graph as the base \levelGroup
 ($T_{-1}(0)$) to which all available threads
