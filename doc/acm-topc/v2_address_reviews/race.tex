@@ -294,12 +294,12 @@ Our method has been implemented and consolidated into a library named \acrshort{
 	\caption{Construction of levels}
 	\label{alg:BFS}
 	\begin{algorithmic}[1]
-		\STATE $integer::root = n$ {\textcolor{gray}{\hspace{1em} \% Choose starting node}}
-		\STATE $bool::marked\_all = false$ {\textcolor{gray}{\hspace{1em} \% Stopping criteria}}
+		\STATE $integer::root = n$ {\textcolor{gray}{\% Choose starting node}}
+		\STATE $bool::marked\_all = false$ {\textcolor{gray}{\% Stopping \rDel{criteria} \rAdd{criterion}}}
 		\STATE $integer::N = nrows(graph)$
 		\STATE $integer::distFromRoot[N] = \{-1\}$
-		\STATE $integer::curr\_children[] = \{\}$
-		\STATE $curr\_children.push\_back(root)$;
+		\STATE $integer::curr\_children[] = \{root\}$
+		%\STATE $curr\_children.push\_back(root)$;
 		\STATE $integer::currLvl = 0$
 		\WHILE{$!marked\_all$}
 		\STATE $marked\_all$ = true
@@ -320,20 +320,22 @@ Our method has been implemented and consolidated into a library named \acrshort{
 	\end{algorithmic}
 \end{algorithm}
 
+\clearpage
+
 %\subsection{Load Balancing}\label{alg:LB}
 \begin{algorithm}[htbp]
-	\caption{Load Balancing for two sweep, \DTWO, two colors} 
+	\caption{Load Balancing for \rDel{two sweep,} \DTWO, two colors} 
 	\label{alg:LB}
 	\begin{algorithmic}[1]
 		\IF{\cref{subsec:LB}}
 		\STATE{$integer::nthreads$ = \acrshort{nthreads}}
-		\STATE {$integer::len$ = $2*nthreads$ \textcolor{gray}{\hspace{1em} \% number of \levelGroups}}
+		\STATE {$integer::len$ = $2*nthreads$ \textcolor{gray}{\% number of \levelGroups}}
 		\STATE{$integer::worker[len] = {1}$}
-		\STATE{$integer::T\_ptr[len+1] = linspace(0, \acrshort{totalLvl}, len) $ \textcolor{gray}{\hspace{0em} \% \levelGroup pointer}}
+		\STATE{$integer::T\_ptr[len+1] = linspace(0, \acrshort{totalLvl}, len) $ \textcolor{gray}{\% \levelGroup pointer}}
 		\ELSE
 		\STATE{$integer::nthreads = n_t(T_{s-1}(i))$ \textcolor{gray}{\% $i$ is the index of \levelGroup in stage $s-1$}}
-		\STATE{\textcolor{gray}{\hspace{15em}\% where recursion is applied.}}
-		\STATE {$integer::len$ = $2*nthreads$ \textcolor{gray}{\hspace{1.5em} \% number of \levelGroups}}
+		\STATE{\textcolor{gray}{\hspace{13.25em}\% where recursion is applied.}}
+		\STATE {$integer::len$ = $2*nthreads$ \textcolor{gray}{\% number of \levelGroups}}
 		\STATE{$integer::worker[len] = [n_t(T_{s}(0)), ... ,n_t(T_{s}(len-1))] = b$}
 		\STATE{$integer::T\_ptr[len+1] = linspace(0, \acrshort{totalLvl}, len) $}
 		\ENDIF	
@@ -341,14 +343,14 @@ Our method has been implemented and consolidated into a library named \acrshort{
 		\STATE{$integer::T\_size[len], absRankIdx[len], rankIdx[len], currRank$}
 		\STATE{$double::mean\_r, mean\_b, diff[len], var, newVar$}
 		\WHILE{$!(exit)$} 
-		\STATE\label{lb_line5} {$T\_size[:]$ = update($T\_ptr[:]$) \textcolor{gray}{\hspace{0em} \% $T\_size$ contains nrows in each \levelGroup}}
-		\STATE {$integer::T\_size\_worker[:]$ = $T\_size[:]/worker[:]$} 
+		\STATE\label{lb_line5} {$T\_size[:]$ = update($T\_ptr[:]$) \textcolor{gray}{\% $T\_size$ contains nrows in each \levelGroup}}
+		\STATE {$integer::T\_size\_worker[:]$ = $T\_size[:] \mathbin{./} worker[:]$} 
 		\STATE {$mean\_r$ = sum($T\_size\_worker[0:2:len-1]$) / $nthreads$}
-		\textcolor{gray}{\%mean of red color}
+		\textcolor{gray}{\% mean of red color}
 		\STATE {$mean\_b$ = sum($T\_size\_worker[1:2:len-1]$) / $nthreads$}
-		\textcolor{gray}{\%mean of blue color}
-		\STATE {$diff[0:2:len-1]$ = $T\_size\_worker[0:2:len-1] .- mean\_r$}
-		\STATE {$diff[1:2:len-1]$ = $T\_size\_worker[1:2:len-1] .- mean\_b$}
+		\textcolor{gray}{\% mean of blue color}
+		\STATE {$diff[0:2:len-1]$ = $T\_size\_worker[0:2:len-1] \mathbin{.-} mean\_r$}
+		\STATE {$diff[1:2:len-1]$ = $T\_size\_worker[1:2:len-1] \mathbin{.-} mean\_b$}
 		\STATE\label{lb_line10} {$var$ = dot\_product($diff,diff$)/len} \textcolor{gray}{\% overall variance}
 		\STATE {$absRankIdx$ = argsort(-abs($diff$))  \textcolor{gray}{\% ranking according to absolute deviation}}
 		\STATE {$rankIdx$ = argsort($diff$)} \textcolor{gray}{\% ranking according to signed deviation}
@@ -360,7 +362,7 @@ Our method has been implemented and consolidated into a library named \acrshort{
 		\STATE {$bool::fail$=true}
 		\IF{ $diff[absRankIdx[currRank]] < 0$ }
 		\FOR{$el$ in $rankIdx[(len-1):-1:0]$}
-		\IF{$(T\_Ptr[el+1] - T\_ptr[el]) > 2$}
+		\IF{$(T\_Ptr[el+1] - T\_ptr[el]) > 2$}  \textcolor{gray}{\% Ensure \DTWO coloring}
 		\STATE {$acquireIdx$ = el}
 		\STATE {$fail$=false}
 		\STATE {$break$}
@@ -368,19 +370,20 @@ Our method has been implemented and consolidated into a library named \acrshort{
 		\ENDFOR
 		\STATE {shift($T\_ptr, acquireIdx, currRank$) \textcolor{gray}{\% shifts $T\_ptr$ by 1  from  $acquireIdx$}} 
 		\STATE {\textcolor{gray} {\hspace{6.5em} \% to $currRank$ if $currIdx < acquireIdx$ else shift by -1}}
-		\ELSIF{ $(T\_ptr[currRank+1]-T\_ptr[currRank]) > 2$ }
-		\STATE {$giveIdx = rankIdx[0]$}
-		\STATE {$fail$=false}
-		\STATE {shift($T\_ptr,currRank,giveIdx$)}
-		\ENDIF
 		\algstore{lbAlg}
 	\end{algorithmic}
 \end{algorithm} 
+Please note algorithm continues on next page.
 
 
 \begin{algorithm}
 	\begin{algorithmic}	
 		\algrestore{lbAlg}
+		\ELSIF{ $(T\_ptr[currRank+1]-T\_ptr[currRank]) > 2$ }
+		\STATE {$giveIdx = rankIdx[0]$}
+		\STATE {$fail$=false}
+		\STATE {shift($T\_ptr,currRank,giveIdx$)}
+		\ENDIF
 		\IF{!$fail$}
 		\STATE {$newVar$ = calculate\_variance($T\_ptr$) \textcolor{gray}{\% as seen in \textcolor{darkgray}{Line 17} to \textcolor{darkgray}{Line 23}}}
 		\ENDIF
@@ -389,7 +392,7 @@ Our method has been implemented and consolidated into a library named \acrshort{
 		\STATE {$exit$ = true}
 		\STATE {$break$}
 		\ENDIF
-		\STATE {$currRank += 1$}
+		\STATE {$currRank \mathrel{+}= 1$}
 		\ENDWHILE
 		\ENDWHILE
 	\end{algorithmic}

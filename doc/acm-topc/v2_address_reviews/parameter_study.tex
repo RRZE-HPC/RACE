@@ -16,12 +16,12 @@ parallel efficiency of the generated workload distribution.
 
 As the internal tree structure contains all information about the
 final workload distribution, we can use it to identify the critical
-path in terms of workload and thus the parallel
+path in terms of workload and thus \rAdd{identify} the parallel
 efficiency. To this end we introduce the \effRow for every node
 (or \levelGroup) $\acrshort{nrowsEff}(T_s(i))$, which is a measure for
 the absolute runtime to calculate the
 corresponding \levelGroup. For \levelGroups that are not further
-refined (leaf nodes) this value is their actual workload, \ie the
+refined (\rAdd{\ie the} leaf nodes) this value is their actual workload, \ie the
 number of rows assigned to them ($\acrshort{nrowsEff}(T_0(0)) = 15$
 in \Cref{fig:rec_2d-7pt_tree}). For an inner node, the \effRow is the
 sum of the maximum workload (\ie the maximum \effRow value) across each of
@@ -32,7 +32,7 @@ the two colors of its child nodes:
 \end{align*}
 Such a definition is based on the idea that nodes at a given stage $s$
 have to synchronize with each other and have to wait for their
-siblings with the largest workload in each sweep (color). Propagating
+siblings with the largest workload in each \rDel{sweep (color)} \rAdd{color}. Propagating
 this information upwards on the tree until we reach the root node
 constructs the critical path in terms of longest runtime taking into
 account single thread workloads, dependencies, and
@@ -72,7 +72,8 @@ its nearest integer, which is $0.5$. A range of [$0.5$,$0.9$] for the
 $\epsilon_s$ is therefore used in the following. For \rDel{a basic analysis}
 \rAdd{an initial discussion} we have
 selected the \emph{inline\_1} matrix (see \Cref{tab:test_mtx}) as it has a
-rather small amount of parallelism and allows us to cover basic
+rather small amount of parallelism and allows us to cover 
+\rDel{basic} \rAdd{typical}
 scenarios. In \Cref{fig:inline_param_study} we demonstrate the impact of
 different choices for $\epsilon_0$ and $\epsilon_1$ on the parallel efficiency
 for thread counts up to 100, which is a useful limit for modern CPU-based
@@ -95,11 +96,12 @@ For $s > 1$ we always set the minimum value of $\epsilon_s=0.5$. The limited
 parallelism can be clearly observed in \Cref{fig:inline-a}, with efficiency
 steadily decreasing with increasing thread count. At
 $\epsilon_1=0.5$ there is only a minor impact of the parameter
-$\epsilon_0$. In \Cref{fig:inline-b,fig:inline-c,fig:inline-d} the interplay
+$\epsilon_0$ \rAdd{for small thread counts ($\acrshort{nthreads}<30$)}. In \Cref{fig:inline-b,fig:inline-c,fig:inline-d} the interplay
 between these two parameters is analyzed at different thread counts in more
 detail. We find that up to intermediate parallelism ($\acrshort{nthreads}=50$)
-the exact choice has only a minor impact on the parallel efficiency (see $y$-axis
-scaling). For larger parallelism the interplay becomes more intricate,
+the exact choice has only a minor impact on the parallel efficiency 
+\rDel{(see $y$-axis scaling)}. %\rAdd{(the axis are scaled similarly)}.
+For larger parallelism the interplay becomes more intricate,
 where too large values of $\epsilon_{0,1}$ may lead to stronger imbalance. Based
 on this evaluation, we choose $\epsilon_{0,1}=0.8$ and $\epsilon_s=0.5$ for $s>1$
 for all subsequent performance measurements. The quality of this choice in terms of
@@ -121,7 +123,8 @@ almost perfect (very low) parallel efficiency at intermediate to high thread
 counts.
 
 Finally, we evaluate the scalability of RACE using these two corner cases and
-the \emph{inline\_1} matrix as well as the \emph{parabolic\_fem} matrix, which
+the \emph{inline\_1} matrix as well as the \emph{parabolic\_fem} matrix.
+\rDel{, which} \rAdd{The latter}
 is small enough to fit into the cache.  In \Cref{fig:corner_cases_param} we
 mimic scaling tests on one Skylake processor with up to 20 cores (\ie
 threads) and plot the parallel efficiency $\eta$ as well as the maximum number
@@ -130,10 +133,11 @@ $\acrshort{threadEff} = \eta\times\acrshort{nthreads}$).  The unfavorable struct
 of the \emph{crankseg\_1} matrix puts strict limits on parallelism even for low
 thread counts.  The combination of small matrix size with a rather dense
 population (see \Cref{table:bench_matrices}) leads to large inner levels when
-constructing the graph, triggering strong load imbalance if using more than six
-threads. A search for better $\epsilon_s$ slightly changes the characteristic
-scaling but not the maximum parallelism that can be extracted. For
-the \emph{inline\_1} matrix we find a weak but steady decrease of the parallel
+constructing the graph, triggering strong load imbalance \rDel{if} 
+\rAdd{when} using more than six threads.
+A search for better $\epsilon_s$ slightly changes the \rDel{characteristic}
+scaling \rAdd{characteristic} but not the maximum parallelism that can be extracted. 
+For the \emph{inline\_1} matrix we find a weak but steady decrease of the parallel
 efficiency, which is in good agreement with the discussion
 of \Cref{fig:inline_param_study}. The other two matrices scale very well in the
 range of thread counts considered.
@@ -157,10 +161,10 @@ matrices, performance
 scales almost linearly until the main memory bandwidth bottleneck is hit. The
 saturated performance is in good agreement with the \roofline limits.
 %although the experimental and theoretical results match for the initial phase it shows a different behavior towards the end. This happens since the kernel saturates the memory bandwidth available for this chip, which can be easily verified by observing the close agreement of the full socket performance and the performance model prediction given by \Cref{eq:SymmSpMV_intensity,eq:upper_performance}. 
-Note  that even though the \emph{inline\_1} matrix does not exhibit
+Note that even though the \emph{inline\_1} matrix does not exhibit
 perfect theoretical efficiency ($\eta$ $\approx 0.85$ at
 $\acrshort{nthreads}=20$), it still generates sufficient parallelism to achieve
-main memory saturation: The memory bottleneck can mitigate
+main memory saturation: \rDel{The} \rAdd{the} memory bottleneck can mitigate
 a limited load imbalance.
 
 %The only affect of the lower efficiency was a shift in saturation point to further right (at higher thread count) compared to \emph{Graphene-4096}. 

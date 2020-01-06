@@ -40,7 +40,7 @@ using, \eg OpenMP, is straightforward.
 		\FOR{$row=1:nrows$}
 			\STATE{$tmp=0$}
 			\FOR{$idx=rowPtr[row]:(rowPtr[row+1]-1)$}
-				\STATE{$tmp += A[idx]*x[col[idx]]$} 
+				\STATE{$tmp \mathrel{+}= A[idx]*x[col[idx]]$} 
 			\ENDFOR
 			\STATE{$b[row] = tmp$}
 		\ENDFOR
@@ -54,13 +54,14 @@ I_\mathrm{\acrshort{SpMV}} (\alpha)= \frac{2}{8+4+8\alpha+20/\acrshort{NNZR}} \f
 Here we assume that the matrix data ($A[], col[]$), the left-hand side
 (LHS) vector ($b[]$), and the row pointer information ($rowPtr[]$) are
 loaded only once from main memory, since these data structures are
-consecutively accessed. The intensity is calculated from the average
+consecutively accessed. \rAdd{Due to write-allocate
+	each store into the $b[]$ vector incurs a traffic of $16$ \BYTE.}
+The intensity is calculated from the average
 cost of performing all computations required for one nonzero element
 of the matrix. Thus, contributions which are independent of the inner
 (short) loop are rescaled by $\acrshort{NNZR}$, which is the average
 number of nonzeros per row (i.e., the average length of the inner
-loop). \rAdd{Note that due to write-allocate
-each store into the $b[]$ vector incurs a traffic of $16$ \BYTE.}
+loop). 
 
 The $8\alpha$ term quantifies the data traffic caused by accessing the
 RHS vector ($x[]$). The value of $\alpha$ depends on
@@ -92,8 +93,8 @@ values for different matrices.
 %processor chips are given in \Cref{table:alpha_values}.
 \begin{table}[t]
 	\centering
-	\caption{The optimal value of $\alpha_{\acrshort{SpMV}}$
-	is shown in column three. Following \Cref{eq:upper_performance} the
+	\caption{The optimal value of $\alpha_{\acrshort{SpMV}}$ is shown\rDel{ in column three}. 
+	Following \Cref{eq:upper_performance} the
 	maximum \acrshort{SpMV} performance can be calculated for each
 	architecture using the best intensity values
 	($I_{\acrshort{SpMV}}(\alpha_{SpMV})$ in
@@ -160,13 +161,13 @@ entries in the LHS vector ($b[]$) as shown in~\Cref{alg:SymmSpMV}.
 	\begin{algorithmic}[1]
 		\FOR{$row=1:nrows$}
 		\STATE{$diag\_idx=rowPtr[row]$}
-		\STATE{$b[row] += A[diag\_idx]*x[row]$}
+		\STATE{$b[row] \mathrel{+}= A[diag\_idx]*x[row]$}
 			\STATE{$tmp = 0$}
 			\FOR{$idx=(rowPtr[row]+1):(rowPtr[row+1]-1)$}
-				\STATE{$tmp += A[idx]*x[col[idx]]$}
-				\STATE{$b[col[idx]] += A[idx]*x[row]$} 
+				\STATE{$tmp \mathrel{+}= A[idx]*x[col[idx]]$}
+				\STATE{$b[col[idx]] \mathrel{+}= A[idx]*x[row]$} 
 			\ENDFOR
-			\STATE{$b[row] += tmp$}
+			\STATE{$b[row] \mathrel{+}= tmp$}
 		\ENDFOR
 	\end{algorithmic}
 \end{algorithm}
@@ -186,7 +187,8 @@ with \acrshort{SymmNNZR} (number of nonzeros per row in the upper
 triangular part of the matrix) is the row pointer. The most optimistic
 value of $\alpha$ ($\alpha_{\acrshort{SymmSpMV}}$) in this case is
 $1/{\acrshort{SymmNNZR}}$, which corresponds to a one time transfer of
-the LHS and RHS vectors.  Note that the $\alpha$ for \acrshort{SpMV}
+the LHS and RHS vectors.  
+\rDel{Note that the} \rAdd{The} $\alpha$ for \acrshort{SpMV}
 and \acrshort{SymmSpMV} may be different even for the same matrix and
 the same compute device, as in the latter case the two vectors are
 accessed irregularly and compete for cache. Thus we
@@ -197,7 +199,7 @@ for \acrshort{SymmSpMV}. \Cref{table:alpha_values} show the
 modeling. Since an upper bound for the performance is the
 product of computational intensity and main memory bandwidth
 (see \Cref{eq:upper_performance}), this approach provides an upper
-performance bound for \acrshort{SymmSpMV}.  However, note that the
+performance bound for \acrshort{SymmSpMV}.  However, \rDel{note that} the
 performance models derived for matrices having caching effects
 (see \Cref{table:alpha_values}) need not be strictly upper bound, as
 they heavily depends on the caching strategy of the underlying

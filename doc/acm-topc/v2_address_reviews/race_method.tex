@@ -22,7 +22,7 @@ Our advanced coloring algorithm is based on three steps:
 In the first step we apply a bandwidth reduction algorithm
 including level construction and matrix reordering. We then use the
 information from the level construction step to form subsets of levels
-which allow for hardware efficient \DK coloring of the graph. Finally
+which allow for hardware\rAdd{-}efficient \DK coloring of the graph. Finally
 we present a concept to ensure load balancing between threads. These steps
 are applied recursively \rDel{if} \rAdd{when} required.
 
@@ -104,7 +104,7 @@ L(i) =
 \end{equation}
 From \Cref{eq:level} one finds that the $i$th \level consists of all
 vertices that have a minimum distance $i$ from the root node.
-\Cref{alg:BFS} \rAdd{(see Appendix)} shows how to determine this distance and thus set up the
+\Cref{alg:BFS} \rAdd{(see \Cref{Sec:algo})} shows how to determine this distance and thus set up the
 \levels $L(i)$\@. We refer to the total number of \levels obtained for a particular graph
 as \acrshort{totalLvl}. \Cref{fig:2d_7pt_level_construction} shows the
 \acrshort{totalLvl}=14 \levels of our artificial stencil
@@ -259,7 +259,7 @@ significantly longer than the average, parallelism may be very limited
 (e.g., for link matrices like com-Orkut). For a completely dense row}
 \rDel{ there is very limited parallelism as} 
 \rAdd{we have $\acrshort{totalLvl}=2$.}} 
-Note that in all cases, vertices within a single \levelGroup
+\rDel{Note that in} \rAdd{In} all cases, vertices within a single \levelGroup
  are computed in their \rDel{original} \rAdd{BFS/RCM permuted} order, which allows for good
 spatial access locality.
  
@@ -321,7 +321,7 @@ an increase in overall
 variance. \Cref{fig:lb_alg} shows the load balancing procedure under a \DTWO
 constraint for some initial mapping of 17 levels to six \levelGroups. Applying
 the procedure to our \stex of size $16 \times 16$, requesting \DTWO coloring and
-ten level groups leads to the mapping shown in \Cref{fig:2d_7pt_lb}. Note that
+ten level groups leads to the mapping shown in \Cref{fig:2d_7pt_lb}. \rDel{Note that} \rAdd{The}
 \levelGroups at the extreme ends have more \levels due to fewer vertices
 (\acrshort{nrows}) in each \level, while \levelGroups in the middle, having more
 vertices, maintain two levels to preserve the \DTWO constraint.
@@ -479,7 +479,7 @@ steps explained previously (\Cref{subsec:LEVEL_CONST}--\Cref{subsec:LB}) on this
 At the end of the recursion (\cf
 \Cref{fig:rec_d1_s2_d,fig:rec_d1_s2_e}) on $T_0(2)$, we obtain parallelism for
 two more threads in this case.
-Note that the \subgraphs might have ``islands'' (groups of vertices
+\rDel{Note that the} \rAdd{The} \subgraphs might have ``islands'' (groups of vertices
 that are not connected to the rest of the graph); \eg vertex 3 and vertices
 4,5,6 form two islands in \Cref{fig:rec_d1_s2_b}. Since an island is 
 disconnected from the rest of the (sub)graph it can be executed independently
@@ -526,7 +526,7 @@ as its all distance-$p$ neighbors, where $p=1,2,\ldots,(k-1)$.
           selected \subgraph is shown in \Cref{fig:rec_d2_wrong_c}. Forming
           \DTWO independent \levelGroups on these levels does not guarantee a
           \DTWO independence between the newly generated \levelGroups of the
-          same sweep (color) as seen in \Cref{fig:rec_d2_wrong_d}.}
+          same \rDel{sweep (color)} \rAdd{color} as seen in \Cref{fig:rec_d2_wrong_d}.}
      	\label{fig:rec_d2_wrong}
      \end{figure}
 
@@ -658,8 +658,9 @@ use the $16 \times 16$ \stex and construct a coloring scheme for eight threads
   that $L_s(i) \subset T_{s-1}(j)$, its weight is defined by
 	\begin{align*}
 		w(L_s(i)) &=
-                \frac{\acrshort{nrows}(L_s(i))}{\frac{\acrshort{nrows}(T_{s-1}(j))}{\acrshort{nthreads}(T_{s-1}(j))}}
-                = \frac{\acrshort{nrows}(L_s(i))}{\acrshort{nrows}(T_{s-1}(j))}
+               %\rDel{\frac{\acrshort{nrows}(L_s(i))}{\frac{\acrshort{nrows}(T_{s-1}(j))}{\acrshort{nthreads}(T_{s-1}(j))}}
+              %  = 
+              \frac{\acrshort{nrows}(L_s(i))}{\acrshort{nrows}(T_{s-1}(j))}
                 \acrshort{nthreads}(T_{s-1}(j)).\\
 %		\acrshort{nthreads} &: \text{total number of threads to be used for computing $T_{s-1}(j)$}\\
 %		\nrowsMath^{total} &\acrshort{nrows}= n_r(T_{s-1}(j)) %\text{, i.e. number of vertices in graph}
@@ -679,7 +680,7 @@ $\acrshort{nrows}(T_{-1}(0)) = 256$ vertices of the \stex in
 \Cref{fig:rec_2d-7pt_graph} produces the following weights for the initial
 ($s=0$) levels:
 	\begin{align*}
-		\{w(L_0(0)), w(L_0(1)), w(L_0(2)), ...\} &= \Big{\{} \frac{1}{256} \times 8 , \frac{2}{256} \times 8 , \frac{3}{256} \times 8 , ...\Big{\}}.
+		\{w(L_0(0)), w(L_0(1)), w(L_0(2)), ...\} &= \Big{\{} \frac{1}{256} \cdot 8 , \frac{2}{256} \cdot 8 , \frac{3}{256} \cdot 8 , ...\Big{\}}.
 	\end{align*}
 	
 \item The above definition implies that if the weight is close to a natural
@@ -687,7 +688,7 @@ $\acrshort{nrows}(T_{-1}(0)) = 256$ vertices of the \stex in
   threads. Thus, starting with $L_s(0)$ we aggregate successive levels until
   their combined weight forms a number $a$ close to a natural number
   $b$. Distance-k coloring is ensured by enforcing it to aggregate \atleast $2
-  \times k$ \levels, \ie for \DTWO coloring at least four levels (two for red
+  \cdot k$ \levels, \ie for \DTWO coloring at least four levels (two for red
   and two for blue). Closeness to the natural number is quantified by a parameter
   $\epsilon$ defined as
 	\begin{align*}
@@ -721,9 +722,9 @@ weight is $\frac{28}{32}=0.875$, one thread will execute these two \levelGroups.
 \item The distribution between adjacent red and blue \levelGroups which are
   assigned to the same thread(s) as well as the final global load balancing is
   performed using a slight modification of the scheme presented in \Cref{subsec:LB}
-  (shown at the beginning of \Cref{alg:LB} in \cref{Sec:algo}):
+  (shown at the beginning of \Cref{alg:LB} in \Cref{Sec:algo}):
 	%Here the calculation of mean and variance considers the weights of the levels and \levelGroups {\GW or better: considers the number of threads assigned to each \levelGroup ?}{\CA I wouldn't use levels here, I think the sentence in your comment (blue) is  better $\rightarrow$ }
-Now the calculation of mean and variance must consider the number of threads
+\rDel{Now} \rAdd{now} the calculation of mean and variance must consider the number of threads
 ($\acrshort{nthreads}(T_{s}(j))$) assigned to each \levelGroup. 
 	% a \levelGroup with $b$ threads will ideally have $b$ times more load (vertices) than a \levelGroup with weight one. 
 %The same algorithm %\Cref{alg:LB} as
@@ -759,7 +760,7 @@ The recursive nature of our scheme can be best described by a tree data
 structure, where every node represents one \levelGroup and the maximum depth is
 equivalent to the maximum level (stage) of recursion. The data structure for the
 colored graph in \Cref{fig:rec_2d-7pt_graph} and its 
-\rAdd{static\footnote{\rAdd{Note that the thread assignment is 
+\rAdd{static\footnote{\rAdd{The thread assignment is 
 			done just once in a static manner,
 	which eliminates the overhead from dynamic work allocation during execution
 	 and helps preserve data locality.}}}
@@ -775,7 +776,8 @@ vertices $66,\ldots,90$ (omitting the superscript for level numbers), is execute
 by threads with $id=2,3$.  Applying recursion to $T_0(4)$, this node spawns four
 new child nodes at stage $s =1$, \ie \levelGroups $T_1(0,\ldots,3) \subset
 T_0(4)$, to be executed by the two threads. Synchronization only happens between
-threads having the same parent node after executing the same color. Note that
+threads having the same parent node after executing the same color. 
+\rDel{Note that} \rAdd{The}
 actual computations are only performed on the leaf nodes of the final tree.
 	 \begin{figure}[t]
 		 \includegraphics[width=\textwidth, height=0.2\textheight]{pics/recursion/2d-7pt_example/tree/tree}

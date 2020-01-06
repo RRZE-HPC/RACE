@@ -4,21 +4,21 @@
 % be included directly in the main document.
 
 
-This paper addresses the general problem of generating hardware efficient \DK coloring
+This paper addresses the general problem of generating hardware\rAdd{-}efficient \DK coloring
  of undirected graphs for modern multicore processors. As an application we 
  choose parallelization of the \acrshort{SymmSpMV} operation. We cover thread-level 
  parallelization and focus on a single multicore processor. The main contributions
   can be summarized as follows: 
 \begin{itemize}
 \item A new recursive algebraic coloring scheme (RACE) is proposed, 
-which generates hardware efficient \DK colorings of undirected graphs. 
+which generates hardware\rAdd{-}efficient \DK colorings of undirected graphs. 
 Special emphasis in the design of RACE is put on achieving data locality, 
 generating levels of parallelism matching the core count of the underlying 
-multicore processor and load balancing for shared memory parallelization.
-\item We propose shared memory parallelization of \acrshort{SymmSpMV}  
+multicore processor and load balancing for shared\rAdd{-}memory parallelization.
+\item We propose shared\rAdd{-}memory parallelization of \acrshort{SymmSpMV}  
 using a \DTWO coloring of the underlying undirected graph to avoid
  write conflicts and apply RACE for generating the colorings.
-\item A comprehensive performance study of shared memory parallel \acrshort{SymmSpMV} 
+\item A comprehensive performance study of shared\rAdd{-}memory parallel \acrshort{SymmSpMV} 
 using RACE demonstrates the benefit of our approach. Performance modeling
  is deployed to substantiate our performance measurements, and a comparison to
   existing coloring methods as well a vendor optimized library (Intel MKL) 
@@ -67,8 +67,8 @@ and their impact on the parallel efficiency is studied in \Cref{Sec:param_study}
 \Cref{Sec:expt} presents performance data for \acrshort{SymmSpMV}
 for a wide range of matrices on two different multicore systems,
 comparing \acrshort{RACE} with \acrshort{ABMC} and \acrshort{MC} as well as
-Intel MKL, and also shows the efficiency of \acrshort{RACE} as
-defined by the \roofline model yardstick.
+Intel MKL, and also shows the efficiency of \acrshort{RACE} 
+\rDel{as defined by} \rAdd{with respect to} the \roofline model\rDel{ yardstick}.
 \Cref{Sec:conclusion} concludes the paper and gives an outlook to
 future work. 
 

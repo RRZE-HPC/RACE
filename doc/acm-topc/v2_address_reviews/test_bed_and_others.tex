@@ -74,7 +74,7 @@ The \LIKWID \cite{LIKWID} tool suite in version 4.3.2 was used, specifically
 \likwidBench for bandwidth benchmarks (see \Cref{tab:test_bed}), and
 \likwidPerfctr for counting hardware events 
  and measuring derived metrics.
- \LIKWID validates the quality of it's performance metrics
+ \LIKWID validates the quality of \rDel{it's} \rAdd{its} performance metrics
   and validation data is publicly available.\footnote{\href{https://github.com/RRZE-HPC/likwid/wiki/TestAccuracy}{https://github.com/RRZE-HPC/likwid/wiki/TestAccuracy}} Overall the \LIKWID data traffic measurements can be considered as highly accurate. Only the L3 data traffic measurement on \SKX fails the quantitative validation but it still provides good qualitative results.\footnote{\href{https://github.com/RRZE-HPC/likwid/wiki/L2-L3-MEM-traffic-on-Intel-Skylake-SP-CascadeLake-SP}{https://github.com/RRZE-HPC/likwid/wiki/L2-L3-MEM-traffic-on-Intel-Skylake-SP-CascadeLake-SP}}
  
  For coloring we used the \COLPACK \cite{COLPACK} library
@@ -95,7 +95,7 @@ All code was compiled with the Intel compiler in version 19.0.2 and the followin
 
 \subsection{Benchmark Matrices}
 \label{subsec:bench_mat}
-Most test matrices were taken from the Suite\-Sparse Matrix Collection (formerly University of Florida Sparse Matrix Collection)~\cite{UOF} combining sets from two related papers \cite{RSB,park_ls}, which allows the reader to make a straightforward comparison of results.  We also added some matrices from the Scalable Matrix Collection (ScaMaC) library\cite{ScaMaC}, which allows for scalable generation of large matrices related to quantum physics applications. A brief description of the background of these matrices can be found in ScaMaC documentation.\footnote{\href{https://alvbit.bitbucket.io/scamac_docs/_matrices_page.html}{https://alvbit.bitbucket.io/scamac\_docs/\_matrices\_page.html}} All the matrices considered are real, although our underlying software would also support complex matrices. 
+Most test matrices were taken from the Suite\-Sparse Matrix Collection (formerly University of Florida Sparse Matrix Collection)~\cite{UOF} combining sets from two related papers \cite{RSB,park_ls}, which allows the reader to make a straightforward comparison of results.  We also added some matrices from the Scalable Matrix Collection (ScaMaC) library~\cite{ScaMaC}, which allows for scalable generation of large matrices related to quantum physics applications. A brief description of the background of these matrices can be found in ScaMaC documentation.\footnote{\href{https://alvbit.bitbucket.io/scamac_docs/_matrices_page.html}{https://alvbit.bitbucket.io/scamac\_docs/\_matrices\_page.html}} All the matrices considered are real, although our underlying software would also support complex matrices. 
 %The selection of the matrices from SuiteSparse Matrix Collection is  mainly done by  Matrices from \ESSEX project are some of the matrices that are of interest in the iterative FEAST eigen value solver that internally uses Kaczmarz solver.
 As mentioned before, we restrict ourselves to matrices representing fully connected undirected graphs. 
 \Cref{table:bench_matrices} gives an overview of the most important matrix properties like \acrfull{nrows}, \acrfull{nnz}, \acrfull{NNZR}, along with the bandwidth of the matrix without ($bw$) and with ($bw_{RCM}$) \acrshort{RCM} preprocessing. 

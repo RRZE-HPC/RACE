@@ -3,7 +3,7 @@
 % supplement. If no supplement is required, then this information can
 % be included directly in the main document.
 
-As pointed out previously, the parallelization of
+\rDel{As pointed out previously, the} \rAdd{The} parallelization of
 the \acrshort{SymmSpMV} kernel can be done
 via \DTWO coloring of the corresponding graph. The computational
 intensity, and hence the performance, depends on the data access
@@ -16,19 +16,23 @@ which serves as our performance yardstick. Note that any required
 preprocessing is excluded from the timings. In~\Cref{fig:motivation}
 we present performance and data transfer volumes for
 the \emph{Spin-26} matrix on a single socket of the \IVB
-and \SKX systems. For \acrshort{SpMV} we recover the well-known memory bandwidth
+and \SKX systems. 
+For \acrshort{SpMV} we recover the \rDel{well-known} memory bandwidth
 saturation pattern as we fill the chip (\Cref{fig:motivation_symm_spmv,fig:motivation_symm_spmv_skx}).
  Measuring the actual data volume from main memory using \LIKWID
 we find $16.24$ and $16.36$ \BYTE per nonzero matrix entry (\Cref{fig:motivation_data,fig:motivation_data_skx})
 on \IVB and \SKX architectures.
  This corresponds to the denominator of
 $I_\mathrm{\acrshort{SpMV}}$ in~\Cref{eq:SpMV_intensity}, so we can
-determine $\alpha_\mathrm{\acrshort{SpMV}}=0.351$ for \IVB and $0.367$ for \SKX, thus we can calculate an 
+determine $\alpha_\mathrm{\acrshort{SpMV}}=0.351$ for \IVB and $0.367$ for \SKX, \rDel{thus} \rAdd{and} we can calculate an 
 optimistic bound for the intensity of \acrshort{SymmSpMV} according to ~\Cref{eq:SymmSpMV_intensity}.
  Using the copy and the load-only bandwidth of \IVB (see~\Cref{tab:test_bed}) 
  in \Cref{eq:upper_performance} we find a maximum
 attainable {\acrshort{SymmSpMV}} performance range for this matrix of
-$P_\mathrm{\acrshort{SymmSpMV}}=7.63,\ldots,8.96\,\GF$, while for \SKX we expect  $P_\mathrm{\acrshort{SymmSpMV}}=19.49,\ldots,21.55\,\GF$ . This indicates a possible
+$P_\mathrm{\acrshort{SymmSpMV}}= \rAdd{7.63 \text{--} 8.96\,\GF}$, 
+while for \SKX we expect  
+$P_\mathrm{\acrshort{SymmSpMV}}=\rAdd{19.49 \text{--} 21.55\,\GF}$ . 
+This indicates a possible
 speedup of approximately 1.4$\times$ -- 1.6$\times$ compared to the \acrshort{SpMV}
 baseline ($5.5\,\GF$ and $13.41\,\GF$ on \IVB and \SKX), the \acrshort{SymmSpMV} implementation
 using \acrshort{MC} falls short of this expectation and is more than
@@ -92,7 +96,7 @@ red dotted line in \Cref{fig:motivation_data,fig:motivation_data_skx}). Of cours
 effect strongly depends on the matrix structure, the matrix size, and
 the cache size.
         
-\Acrshort{ABMC}\cite{ABMC} tries to preserve data locality by first partitioning
+\Acrshort{ABMC}~\cite{ABMC} tries to preserve data locality by first partitioning
 the entire matrix into blocks of specified size and then
 applying \acrshort{MC} to these blocks. Threads then work in parallel
 between blocks of the same color. Along the lines of \cite{Park_HPCG} 
@@ -104,9 +108,9 @@ excludes preprocessing and the parameter search. This method reduces the
 data traffic (see \Cref{fig:motivation_data,fig:motivation_data_skx}) as there is better data
 locality within a block. Consequently, the performance improves
 over plain \acrshort{MC} (see \Cref{fig:motivation_symm_spmv,fig:motivation_symm_spmv_skx}). However,
-we are far off the performance model prediction. In
+we are far \rDel{off} \rAdd{from} the performance model prediction. In
 addition to data locality, other factors like global synchronizations
-and false sharing also contribute to this failure. These
+and false sharing also contribute to this\rDel{ failure}. These
 effects strongly depend on the number of colors and in general
 increase with chromatic number. In the case of the Spin-26 matrix the overhead of
 synchronization is roughly 10\% for the \acrshort{MC} method.  For most of
