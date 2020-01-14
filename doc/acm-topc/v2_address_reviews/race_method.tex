@@ -256,7 +256,7 @@ requested.\footnote{This implies that as the number of levels increases,
 so does the parallelism. 
 On the other hand, if the matrix contains at least one row \rAdd{that is
 significantly longer than the average, parallelism may be very limited 
-(e.g., for link matrices like com-Orkut). For a completely dense row}
+(e.g., for link matrices like com-Orkut from the SuiteSparse Matrix Collection). For a completely dense row}
 \rDel{ there is very limited parallelism as} 
 \rAdd{we have $\acrshort{totalLvl}=2$.}} 
 \rDel{Note that in} \rAdd{In} all cases, vertices within a single \levelGroup
@@ -760,8 +760,7 @@ The recursive nature of our scheme can be best described by a tree data
 structure, where every node represents one \levelGroup and the maximum depth is
 equivalent to the maximum level (stage) of recursion. The data structure for the
 colored graph in \Cref{fig:rec_2d-7pt_graph} and its 
-\rAdd{static\footnote{\rAdd{The thread assignment is 
-			done just once in a static manner,
+\rAdd{static\footnote{\rAdd{The thread assignment is initially done in a static manner,
 	which eliminates the overhead from dynamic work allocation during execution
 	 and helps preserve data locality.}}}
 thread assignments are

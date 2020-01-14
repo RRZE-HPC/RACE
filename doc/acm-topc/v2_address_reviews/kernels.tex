@@ -25,7 +25,8 @@ cases.
 In the following we choose the \acrfull{CRS} format for the
 implementation of \acrshort{SpMV} as well as \acrshort{SymmSpMV} and
 assume symmetric matrices. \rAdd{ 
-We use 32-bit integers for the index arrays.} 
+We use double precision numbers for matrix and vector entries, and
+32-bit integers for the index arrays.} 
 
 \subsection{\acrshort{SpMV}}
 A baseline \acrshort{SpMV} kernel is presented in \Cref{alg:SpMV}. It
@@ -54,14 +55,16 @@ I_\mathrm{\acrshort{SpMV}} (\alpha)= \frac{2}{8+4+8\alpha+20/\acrshort{NNZR}} \f
 Here we assume that the matrix data ($A[], col[]$), the left-hand side
 (LHS) vector ($b[]$), and the row pointer information ($rowPtr[]$) are
 loaded only once from main memory, since these data structures are
-consecutively accessed. \rAdd{Due to write-allocate
-	each store into the $b[]$ vector incurs a traffic of $16$ \BYTE.}
+consecutively accessed. 
 The intensity is calculated from the average
 cost of performing all computations required for one nonzero element
 of the matrix. Thus, contributions which are independent of the inner
 (short) loop are rescaled by $\acrshort{NNZR}$, which is the average
 number of nonzeros per row (i.e., the average length of the inner
-loop). 
+loop). \rAdd{Due to the write-allocate transfer,
+each store into the $b[]$ vector gives rise to an additional
+read, leading to a traffic contribution of $16$ \BYTE/\acrshort{NNZR} in the
+denominator of (\ref{eq:SpMV_intensity}).}
 
 The $8\alpha$ term quantifies the data traffic caused by accessing the
 RHS vector ($x[]$). The value of $\alpha$ depends on
