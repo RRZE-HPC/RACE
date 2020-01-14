@@ -295,7 +295,7 @@ Our method has been implemented and consolidated into a library named \acrshort{
 	\label{alg:BFS}
 	\begin{algorithmic}[1]
 		\STATE $integer::root = n$ {\textcolor{gray}{\% Choose starting node}}
-		\STATE $bool::marked\_all = false$ {\textcolor{gray}{\% Stopping \rDel{criteria} \rAdd{criterion}}}
+		\STATE $bool::marked\_all = $ false {\textcolor{gray}{\% Stopping \rDel{criteria} \rAdd{criterion}}}
 		\STATE $integer::N = nrows(graph)$
 		\STATE $integer::distFromRoot[N] = \{-1\}$
 		\STATE $integer::curr\_children[] = \{root\}$
@@ -339,9 +339,9 @@ Our method has been implemented and consolidated into a library named \acrshort{
 		\STATE{$integer::worker[len] = [n_t(T_{s}(0)), ... ,n_t(T_{s}(len-1))] = b$}
 		\STATE{$integer::T\_ptr[len+1] = linspace(0, \acrshort{totalLvl}, len) $}
 		\ENDIF	
-		\STATE{$bool::exit = false$}
+		\STATE{$bool::exit = f\!alse$}
 		\STATE{$integer::T\_size[len], absRankIdx[len], rankIdx[len], currRank$}
-		\STATE{$double::mean\_r, mean\_b, diff[len], var, newVar$}
+		\STATE{$double::mean\_r, mean\_b, dif\!f[len], var, newVar$}
 		\WHILE{$!(exit)$} 
 		\STATE\label{lb_line5} {$T\_size[:]$ = update($T\_ptr[:]$) \textcolor{gray}{\% $T\_size$ contains nrows in each \levelGroup}}
 		\STATE {$integer::T\_size\_worker[:]$ = $T\_size[:] \mathbin{./} worker[:]$} 
@@ -349,22 +349,22 @@ Our method has been implemented and consolidated into a library named \acrshort{
 		\textcolor{gray}{\% mean of red color}
 		\STATE {$mean\_b$ = sum($T\_size\_worker[1:2:len-1]$) / $nthreads$}
 		\textcolor{gray}{\% mean of blue color}
-		\STATE {$diff[0:2:len-1]$ = $T\_size\_worker[0:2:len-1] \mathbin{.-} mean\_r$}
-		\STATE {$diff[1:2:len-1]$ = $T\_size\_worker[1:2:len-1] \mathbin{.-} mean\_b$}
-		\STATE\label{lb_line10} {$var$ = dot\_product($diff,diff$)/len} \textcolor{gray}{\% overall variance}
-		\STATE {$absRankIdx$ = argsort(-abs($diff$))  \textcolor{gray}{\% ranking according to absolute deviation}}
-		\STATE {$rankIdx$ = argsort($diff$)} \textcolor{gray}{\% ranking according to signed deviation}
+		\STATE {$dif\!f[0:2:len-1]$ = $T\_size\_worker[0:2:len-1] \mathbin{.-} mean\_r$}
+		\STATE {$dif\!f[1:2:len-1]$ = $T\_size\_worker[1:2:len-1] \mathbin{.-} mean\_b$}
+		\STATE\label{lb_line10} {$var$ = dot\_product($dif\!f,dif\!f$)/len} \textcolor{gray}{\% overall variance}
+		\STATE {$absRankIdx$ = argsort(-abs($dif\!f$))  \textcolor{gray}{\% ranking according to absolute deviation}}
+		\STATE {$rankIdx$ = argsort($dif\!f$)} \textcolor{gray}{\% ranking according to signed deviation}
 	%	\STATE { \textcolor{gray}{\% ,to find the order of \levelGroups from/to which levels have to be acquired/added}}
 		\STATE {$currRank = 0, newVar = var$}
 		\STATE {$integer::old\_T\_ptr[len+1]$ = $T\_ptr[:], acquireIdx, giveIdx$}
 		\WHILE{$newVar \geq var$}
 		\STATE {$T\_ptr$ = $old\_T\_ptr$}
-		\STATE {$bool::fail$=true}
-		\IF{ $diff[absRankIdx[currRank]] < 0$ }
+		\STATE {$bool::f\!ail$=true}
+		\IF{ $dif\!f[absRankIdx[currRank]] < 0$ }
 		\FOR{$el$ in $rankIdx[(len-1):-1:0]$}
 		\IF{$(T\_Ptr[el+1] - T\_ptr[el]) > 2$}  \textcolor{gray}{\% Ensure \DTWO coloring}
 		\STATE {$acquireIdx$ = el}
-		\STATE {$fail$=false}
+		\STATE {$f\!ail$=f\!alse}
 		\STATE {$break$}
 		\ENDIF
 		\ENDFOR
@@ -373,7 +373,7 @@ Our method has been implemented and consolidated into a library named \acrshort{
 		\algstore{lbAlg}
 	\end{algorithmic}
 \end{algorithm} 
-Please note algorithm continues on next page.
+Algorithm continues on next page.
 
 
 \begin{algorithm}
@@ -381,10 +381,10 @@ Please note algorithm continues on next page.
 		\algrestore{lbAlg}
 		\ELSIF{ $(T\_ptr[currRank+1]-T\_ptr[currRank]) > 2$ }
 		\STATE {$giveIdx = rankIdx[0]$}
-		\STATE {$fail$=false}
+		\STATE {$f\!ail$=false}
 		\STATE {shift($T\_ptr,currRank,giveIdx$)}
 		\ENDIF
-		\IF{!$fail$}
+		\IF{!$f\!ail$}
 		\STATE {$newVar$ = calculate\_variance($T\_ptr$) \textcolor{gray}{\% as seen in \textcolor{darkgray}{Line 17} to \textcolor{darkgray}{Line 23}}}
 		\ENDIF
 		\IF{$ (currRank == (len-1)) \text{  } \&\&  \text{  } (newVar \geq var) $}
