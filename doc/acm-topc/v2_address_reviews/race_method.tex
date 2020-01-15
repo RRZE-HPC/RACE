@@ -260,8 +260,10 @@ significantly longer than the average, parallelism may be very limited
 \rDel{ there is very limited parallelism as} 
 \rAdd{we have $\acrshort{totalLvl}=2$.}} 
 \rDel{Note that in} \rAdd{In} all cases, vertices within a single \levelGroup
- are computed in their \rDel{original} \rAdd{BFS/RCM permuted} order, which allows for good
-spatial access locality.
+are computed in their \rDel{original} \rAdd{BFS/RCM permuted} order,
+which allows for good spatial locality \rAdd{if the level groups are sufficiently
+  large. Note that keeping level groups large is one of the major
+advantages of RACE}\@. 
  
 Choosing the same number of \levels for each \levelGroup may,
 however, cause severe load imbalance depending on the matrix structure. In

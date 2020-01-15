@@ -86,10 +86,11 @@ parts of the matrix, potentially destroying data locality.  Assuming
 that the \acrshort{LLC} can hold a maximum of six elements, we find
 that the RHS vector must be loaded every time for each
 new color \rAdd{increasing the data traffic from main memory.}
-\rDel{This is the reason why} \rAdd{For the \emph{Spin-26}
- due to this data locality degradation} we observe 3$\times$ more bytes
+\rDel{This is the reason why} \rAdd{This degradation of data
+locality is the reason why we observe 3$\times$ more bytes
 per nonzero for \acrshort{SymmSpMV} with \acrshort{MC} compared
-to \acrshort{SpMV}, as seen in~\Cref{fig:motivation_data,fig:motivation_data_skx}.  However,
+to \acrshort{SpMV} for the \emph{Spin-26} matrix},
+as seen in~\Cref{fig:motivation_data,fig:motivation_data_skx}.  However,
 our performance model indicates that \acrshort{SymmSpMV} should
 exhibit only 0.7$\times$ the data traffic of \acrshort{SpMV} (see
 red dotted line in \Cref{fig:motivation_data,fig:motivation_data_skx}). Of course this

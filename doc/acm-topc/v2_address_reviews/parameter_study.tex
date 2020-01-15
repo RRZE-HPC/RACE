@@ -71,10 +71,9 @@ possible value of $\epsilon_s$ is the maximum deviation of a real number from
 its nearest integer, which is $0.5$. A range of [$0.5$,$0.9$] for the
 $\epsilon_s$ is therefore used in the following. For \rDel{a basic analysis}
 \rAdd{an initial discussion} we have
-selected the \emph{inline\_1} matrix (see \Cref{tab:test_mtx}) as it has a
-rather small amount of parallelism and allows us to cover 
-\rDel{basic} \rAdd{typical}
-scenarios. In \Cref{fig:inline_param_study} we demonstrate the impact of
+selected the \emph{inline\_1} matrix (see \Cref{tab:test_mtx}), \rAdd{which has a
+rather small amount of parallelism and thus represents an important
+corner case}. In \Cref{fig:inline_param_study} we demonstrate the impact of
 different choices for $\epsilon_0$ and $\epsilon_1$ on the parallel efficiency
 for thread counts up to 100, which is a useful limit for modern CPU-based
 compute nodes.
