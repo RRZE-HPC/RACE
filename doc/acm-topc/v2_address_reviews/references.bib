@@ -60,7 +60,7 @@ booktitle = {Parallel Computing}
 }
 
 @Article{RBGS,
- author = {Evans, D. J.},
+ author = {Evans, David J.},
  title = {{Parallel S.O.R. Iterative Methods}},
  journal = {Parallel Comput.},
  issue_date = {August, 1984},
@@ -114,7 +114,7 @@ url="https://doi.org/10.1007/BF01396365"
 } 
 
 @ARTICLE{equitable_color, 
-author={H. {Lu} and M. {Halappanavar} and D. {Chavarría-Miranda} and A. H. {Gebremedhin} and A. {Panyala} and A. {Kalyanaraman}}, 
+author={Hao {Lu} and Mahantesh {Halappanavar} and Daniel {Chavarr{\'i}a-Miranda} and Assefaw H. {Gebremedhin} and Ajay {Panyala} and Ananth {Kalyanaraman}}, 
 journal={IEEE Transactions on Parallel and Distributed Systems}, 
 title={Algorithms for Balanced Graph Colorings with Applications in Parallel Computing}, 
 year={2017}, 
@@ -145,14 +145,13 @@ month={May},
 } 
 
 @book{saad,
-author = {Saad, Y.},
+author = {Saad, Yousef},
 title = {Iterative Methods for Sparse Linear Systems},
 publisher = {Society for Industrial and Applied Mathematics},
 year = {2003},
 doi = {10.1137/1.9780898718003},
 address = {},
-edition   = {Second},
-eprint = {https://epubs.siam.org/doi/pdf/10.1137/1.9780898718003}
+edition   = {Second}
 }
 
 @InProceedings{cm-rcm,
@@ -250,7 +249,7 @@ doi = {10.1137/040609458},
 } 
 
 @INPROCEEDINGS{thread_private_symm_spmv,
-author={T. Gkountouvas and V. Karakasis and K. Kourtis and G. Goumas and N. Koziris},
+author={Theodoros Gkountouvas and Vasileios Karakasis and Kornilios Kourtis and Georgios Goumas and Nectarios Koziris},
 booktitle={2013 IEEE 27th International Symposium on Parallel and Distributed Processing},
 title={Improving the Performance of the Symmetric Sparse Matrix-Vector Multiplication in Multicore},
 year={2013},
@@ -353,12 +352,13 @@ doi = {10.1137/130930352},
  address = {New York, NY, USA},
 } 
 
-@article{LIKWID,
-author = {Treibig, J. and Hager, G. and Wellein, G.},
+@inproceedings{LIKWID,
+author = {Treibig, Jan and Hager, Georg and Wellein, Gerhard},
 booktitle = {{Proceedings of PSTI2010, the First International Workshop on Parallel Software Tools and Tool Infrastructures}},
 title = {LIKWID: A lightweight performance-oriented tool suite for x86 multicore environments},
 year = {2010},
 address = {San Diego CA},
+doi = {10.1109/ICPPW.2010.38}
 }
 
 
@@ -459,7 +459,7 @@ doi = {10.1137/S00361445003820},
 } 
 
 @INPROCEEDINGS{Park_HPCG,
-author={J. Park and M. Smelyanskiy and K. Vaidyanathan and A. Heinecke and D. D. Kalamkar and X. Liu and M. M. A. Patwary and Y. Lu and P. Dubey},
+author={Jongsoo Park and Mikhail Smelyanskiy and Karthikeyan Vaidyanathan and Alexander Heinecke and Dhiraj D. Kalamkar and Xing Liu and Md. Mosotofa A. Patwary and Yutong Lu and Pradeep Dubey},
 booktitle={SC14: International Conference for High Performance Computing, Networking, Storage and Analysis},
 title={Efficient Shared-Memory Implementation of High-Performance Conjugate Gradient Benchmark and its Application to Unstructured Matrices},
 year={2014},
@@ -709,15 +709,14 @@ pages = {135-158},
 year = {2004},
 doi = {10.1177/1094342004041296},
 URL = {https://doi.org/10.1177/1094342004041296},
-eprint = {https://doi.org/10.1177/1094342004041296},
 abstract = { Sparse matrix–vector multiplication is an important computational kernel that performs poorly on most modern processors due to a low compute-to-memory ratio and irregular memory access patterns. Optimization is difficult because of the complexity of cache-based memory systems and because performance is highly dependent on the non-zero structure of the matrix. The SPARSITY system is designed to address these problems by allowing users to automatically build sparse matrix kernels that are tuned to their matrices and machines. SPARSITY combines traditional techniques such as loop transformations with data structure transformations and optimization heuristics that are specific to sparse matrices. It provides a novel framework for selecting optimization parameters, such as block size, using a combination of performance models and search.In this paper we discuss the optimization of two operations: a sparse matrix times a dense vector and a sparse matrix times a set of dense vectors. Our experience indicates that register level optimizations are effective for matrices arising in certain scientific simulations, in particular finite-element problems. Cache level optimizations are important when the vector used in multiplication is larger than the cache size, especially for matrices in which the non-zero structure is random. For applications involving multiple vectors, reorganizing the computation to perform the entire set of multiplications as a single operation produces significant speedups. We describe the different optimizations and parameter selection techniques and evaluate them on several machines using over 40 matrices taken from a broad set of application domains. Our results demonstrate speedups of up to 4× for the single vector case and up to 10× for the multiple vector case. }
 }
 
 @article{Catalyurek:1999,
-author={U.V.~Catalyurek and C.~Aykanat},
+author={{\"U}mit V. Catalyurek and Cevdet Aykanat},
 journal={IEEE Trans. Parallel Distrib. Systems},
 title={Hypergraph-partitioning-based decomposition for parallel sparse-matrix vector multiplication},
-year={1999)},
+year={1999},
 volume={10},
 number={7},
 pages={673-693},
@@ -727,16 +726,17 @@ abstract = {In this work, we show that the standard graph-partitioning-based dec
 
 @phdthesis{Yzelman-thesis-2011,
     title = "Fast sparse matrix-vector multiplication by partitioning and reordering",
-    author = "Yzelman, A. N.",
+    author = "Yzelman, Albert-Jan N.",
     school = "Utrecht University",
     address =" Utrecht",
-    year = "2011"
+    year = "2011",
+    url = "https://dspace.library.uu.nl/handle/1874/210147"
 }
 
 
 
 @article{doi:10.1137/080733243,
-author = {Yzelman, A. N.  and Bisseling, R. H.},
+author = {Yzelman, Albert-Jan N.  and Bisseling, Rob H.},
 title = {Cache-Oblivious Sparse Matrix-Vector Multiplication by Using Sparse Matrix Partitioning Methods},
 journal = {SIAM Journal on Scientific Computing},
 volume = {31},
@@ -750,7 +750,7 @@ abstract = {In this article, we introduce a cache-oblivious method for sparse ma
 }
 
 @article{Toledo:1997:IMP:279511.279532,
- author = {Toledo, S.},
+ author = {Toledo, Sivan},
 title = {Improving the Memory-System Performance of Sparse Matrix-Vector Multiplication}, 
  journal = {IBM J. Res. Dev.},
  issue_date = {Nov. 1997},
@@ -792,7 +792,7 @@ title = {Improving the Memory-System Performance of Sparse Matrix-Vector Multipl
 
   	
 @article{1742-6596-16-1-071,
-  author={Richard Vuduc and James W Demmel and Katherine A Yelick},
+  author={Richard Vuduc and James W. Demmel and Katherine A. Yelick},
   title={OSKI: A library of automatically tuned sparse matrix kernels},
   journal={Journal of Physics: Conference Series},
   volume={16},
@@ -817,13 +817,14 @@ abstract = {Graph algorithms are challenging to parallelize on manycore architec
 
 @article{gebremedhin2000scalable,
   title={Scalable parallel graph coloring algorithms},
-  author={Gebremedhin, Assefaw Hadish and Manne, Fredrik},
+  author={Gebremedhin, Assefaw H. and Manne, Fredrik},
   journal={Concurrency: Practice and Experience},
   volume={12},
   number={12},
   pages={1131--1146},
   year={2000},
-  publisher={Wiley Online Library}
+  publisher={Wiley Online Library},
+  doi = {10.1002/1096-9128(200010)12:12<1131::AID-CPE528>3.0.CO;2-2}
 }
 
 
@@ -868,7 +869,7 @@ keywords = "Graph coloring, Parallel algorithms, Distributed-memory computers, S
 }
 
 @article{doi:10.1137/080732158,
-author = {Bozda{\u g}, D. and {\c C}ataly{\"u}rek, {\"U}. and Gebremedhin, A. and Manne, F. and Boman, E. and {\"O}zg{\"u}ner, F.},
+author = {Bozda{\u g}, Doruk and {\c C}ataly{\"u}rek, {\"U}mit and Gebremedhin, Assefaw H. and Manne, Fredrik and Boman, Erik G. and {\"O}zg{\"u}ner, F{\"u}sun},
 title = {Distributed-Memory Parallel Algorithms for Distance-2 Coloring and Related Problems in Derivative Computation},
 journal = {SIAM Journal on Scientific Computing},
 volume = {32},
@@ -877,7 +878,6 @@ pages = {2418-2446},
 year = {2010},
 doi = {10.1137/080732158},
 URL = {https://doi.org/10.1137/080732158},
-eprint = {https://doi.org/10.1137/080732158}
 }
 
 @article{CGMN_gordon,
@@ -1026,7 +1026,7 @@ doi = {10.1109/PROC.1967.6011}
 }
 
 @article{Krotkiewski:2010:PSS:1752612.1752682,
- author = {Krotkiewski, M. and Dabrowski, M.},
+ author = {Krotkiewski, Marcin and Dabrowski, Marcin},
  title = {Parallel Symmetric Sparse Matrix-vector Product on Scalar Multi-core CPUs},
  journal = {Parallel Comput.},
  issue_date = {April, 2010},
@@ -1046,7 +1046,7 @@ doi = {10.1109/PROC.1967.6011}
 } 
 
 @INPROCEEDINGS{Gropp:1999,
-author       = {Gropp, W. D. and Kaushik, D. K. and Keyes, D. E. and Smith, B. F.},
+author       = {Gropp, Willam D. and Kaushik, Dinesh K. and Keyes, David E. and Smith, Barry F.},
 title        = {Towards Realistic Performance Bounds for Implicit {CFD} Codes},
 booktitle    = {Parallel Computational Fluid Dynamics 1999},
 doi          = {10.1016/B978-044482851-4.50030-X},
@@ -1059,7 +1059,7 @@ url          = {http://www.cs.odu.edu/~keyes/papers/pcfd99_gkks.pdf}
 }
 
 @article{Mironowicz:2015,
-author = {P. Mironowicz and A. Dziekonski and M. Mrozowski},
+author = {Piotr Mironowicz and Adam Dziekonski and Micha{\l} Mrozowski},
 title = {A Task-Scheduling Approach for Efficient Sparse Symmetric
 Matrix-Vector Multiplication on a {GPU}},
 journal = {SIAM Journal on Scientific Computing},
@@ -1089,6 +1089,7 @@ year="2018",
 publisher="Springer International Publishing",
 address="Cham",
 pages="329--349",
+doi = "10.1007/978-3-319-92040-5_17",
 abstract="Chebyshev filter diagonalization is well established in quantum chemistry and quantum physics to compute bulks of eigenvalues of large sparse matrices. Choosing a block vector implementation, we investigate optimization opportunities on the new class of high-performance compute devices featuring both high-bandwidth and low-bandwidth memory. We focus on the transparent access to the full address space supported by both architectures under consideration: Intel Xeon Phi ``Knights Landing'' and Nvidia ``Pascal''/``Volta.'' After a thorough performance analysis of the single-device implementations using the roofline model we propose two optimizations: (1) Subspace blocking is applied for improved performance and data access efficiency. We also show that it allows transparently handling problems much larger than the high-bandwidth memory without significant performance penalties. (2) Pipelining of communication and computation phases of successive subspaces is implemented to hide communication costs without extra memory traffic. As an application scenario we perform filter diagonalization studies for topological quantum matter. Performance numbers on upÂ to 2048 nodes of the Oakforest-PACS and Piz Daint supercomputers are presented, achieving beyond 500Â Tflop/s for computing {\$}{\$}10^2{\$}{\$}102inner eigenvalues of sparse matrices of dimension {\$}{\$}4{\backslash}cdot 10^9{\$}{\$}4{\textperiodcentered}109.",
 isbn="978-3-319-92040-5"
 }
@@ -1110,7 +1111,7 @@ isbn="978-3-319-92040-5"
 }
 
 @inproceedings{Yzelman_SIMD,
- author = {Yzelman, A. N.},
+ author = {Yzelman, Albert-Jan N.},
  title = {Generalised Vectorisation for Sparse Matrix-Vector Multiplication},
  booktitle = {Proceedings of the 5th Workshop on Irregular Applications: Architectures and Algorithms},
  series = {IA3 '15},
