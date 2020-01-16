@@ -79,9 +79,13 @@ its nearest integer, which is $0.5$.}
  A range of [$0.5$,$0.9$] for the
 $\epsilon_s$ is therefore used in the following \rAdd{analysis}. 
 \rAdd{To ensure termination the default $\epsilon_s$ value is 
-	chosen to be 0.5, which allows the algorithm to 
-	terminate at a higher recursive stage even if a high $\epsilon_s$ 
-	value is specified at lower stages.}
+	chosen to be 0.5. Due to this even if sufficient parallelism cannot
+	be found at a user specified $\epsilon_s$ value for lower 
+	recursive stages the algorithm can move to higher stages
+	(with default $\epsilon_s = 0.5$) and terminate.}	
+%	 which allows the algorithm to 
+%	terminate at a higher recursive stage even if a high $\epsilon_s$ 
+%	value is specified at lower stages.}
 
 For \rDel{a basic analysis}
 \rAdd{an initial discussion} we have
