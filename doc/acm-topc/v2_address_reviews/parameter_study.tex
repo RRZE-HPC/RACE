@@ -62,14 +62,28 @@ as \acrshort{SymmSpMV} on actual hardware will add further hardware and software
 constraints such as attainable memory bandwidth or cost of synchronization.
 
 As a first step we can limit the parameter space by simple corner case
-analysis. Setting all parameters close to one requests high-quality load
-balancing but may prevent our balancing scheme from terminating. In the extreme
+analysis. 
+\rAdd{The lowest possible value of $\epsilon_s$ is the 
+	maximum deviation of a real number from
+	its nearest integer, which is $0.5$. On the other
+hand the highest possible value is one.}
+Setting all parameters ($\epsilon_s$) close to one requests high-quality load
+balancing but may prevent our balancing scheme from terminating. 
+In the extreme
 case of $\{\epsilon_s=1; s=0,1,\ldots\}$ the scheme may generate only
 two \levelGroups (one of each color) in each recursion, assign all threads to
-them, and may further attempt to refine them in the same way.  The lowest
-possible value of $\epsilon_s$ is the maximum deviation of a real number from
-its nearest integer, which is $0.5$. A range of [$0.5$,$0.9$] for the
-$\epsilon_s$ is therefore used in the following. For \rDel{a basic analysis}
+them, and may further attempt to refine them in the same way.  
+\rDel{The lowest possible value of $\epsilon_s$ is the 
+	maximum deviation of a real number from
+its nearest integer, which is $0.5$.}
+ A range of [$0.5$,$0.9$] for the
+$\epsilon_s$ is therefore used in the following \rAdd{analysis}. 
+\rAdd{To ensure termination the default $\epsilon_s$ value is 
+	chosen to be 0.5, which allows the algorithm to 
+	terminate at a higher recursive stage even if a high $\epsilon_s$ 
+	value is specified at lower stages.}
+
+For \rDel{a basic analysis}
 \rAdd{an initial discussion} we have
 selected the \emph{inline\_1} matrix (see \Cref{tab:test_mtx}), \rAdd{which has a
 rather small amount of parallelism and thus represents an important
@@ -91,7 +105,7 @@ compute nodes.
 	\label{fig:inline_param_study}
 \end{figure}
 %
-For $s > 1$ we always set the minimum value of $\epsilon_s=0.5$. The limited
+For $s > 1$ we always set the \rDel{minimum} \rAdd{default} value of $\epsilon_s=0.5$. The limited
 parallelism can be clearly observed in \Cref{fig:inline-a}, with efficiency
 steadily decreasing with increasing thread count. At
 $\epsilon_1=0.5$ there is only a minor impact of the parameter

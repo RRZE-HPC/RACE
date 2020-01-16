@@ -27,6 +27,10 @@
 %\documentclass[prodmode,screen=true,acmtopc]{acmsmall} % Aptara syntax
 \documentclass[acmsmall]{acmart}
 \input{preamble.tex}
+%\newcommand{\rAdd}[1]{\textcolor{black}{{#1}}}
+%\newcommand{\rDel}[1]{}
+\newcommand{\rAdd}[1]{\textcolor{blue}{{#1}}}
+\newcommand{\rDel}[1]{\textcolor{red}{\xout{#1}}}
 
 %%
 %% \BibTeX command to typeset BibTeX logo in the docs
