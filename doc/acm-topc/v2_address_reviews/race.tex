@@ -331,13 +331,13 @@ Our method has been implemented and consolidated into a library named \acrshort{
 		\STATE{$integer::nthreads$ = \acrshort{nthreads}}
 		\STATE {$integer::len$ = $2*nthreads$ \textcolor{gray}{\% number of \levelGroups}}
 		\STATE{$integer::worker[len] = {1}$}
-		\STATE{$integer::T\_ptr[len+1] = linspace(0, \acrshort{totalLvl}, len) $ \textcolor{gray}{\% \levelGroup pointer}}
+		\STATE{$integer::T\_ptr[len+1]$ = linspace($0, \acrshort{totalLvl}, len$)  \textcolor{gray}{\% \levelGroup pointer}}
 		\ELSE
 		\STATE{$integer::nthreads = n_t(T_{s-1}(i))$ \textcolor{gray}{\% $i$ is the index of \levelGroup in stage $s-1$}}
 		\STATE{\textcolor{gray}{\hspace{13.25em}\% where recursion is applied.}}
 		\STATE {$integer::len$ = $2*nthreads$ \textcolor{gray}{\% number of \levelGroups}}
 		\STATE{$integer::worker[len] = [n_t(T_{s}(0)), ... ,n_t(T_{s}(len-1))] = b$}
-		\STATE{$integer::T\_ptr[len+1] = linspace(0, \acrshort{totalLvl}, len) $}
+		\STATE{$integer::T\_ptr[len+1]$ = linspace($0, \acrshort{totalLvl}, len$) }
 		\ENDIF	
 		\STATE{$bool::exit = f\!alse$}
 		\STATE{$integer::T\_size[len], absRankIdx[len], rankIdx[len], currRank$}
@@ -351,7 +351,7 @@ Our method has been implemented and consolidated into a library named \acrshort{
 		\textcolor{gray}{\% mean of blue color}
 		\STATE {$dif\!f[0:2:len-1]$ = $T\_size\_worker[0:2:len-1] \mathbin{.-} mean\_r$}
 		\STATE {$dif\!f[1:2:len-1]$ = $T\_size\_worker[1:2:len-1] \mathbin{.-} mean\_b$}
-		\STATE\label{lb_line10} {$var$ = dot\_product($dif\!f,dif\!f$)/len} \textcolor{gray}{\% overall variance}
+		\STATE\label{lb_line10}{$var$ = dot\_product($dif\!f,dif\!f$)/len} \textcolor{gray}{\% overall variance}
 		\STATE {$absRankIdx$ = argsort(-abs($dif\!f$))  \textcolor{gray}{\% ranking according to absolute deviation}}
 		\STATE {$rankIdx$ = argsort($dif\!f$)} \textcolor{gray}{\% ranking according to signed deviation}
 	%	\STATE { \textcolor{gray}{\% ,to find the order of \levelGroups from/to which levels have to be acquired/added}}
@@ -359,12 +359,12 @@ Our method has been implemented and consolidated into a library named \acrshort{
 		\STATE {$integer::old\_T\_ptr[len+1]$ = $T\_ptr[:], acquireIdx, giveIdx$}
 		\WHILE{$newVar \geq var$}
 		\STATE {$T\_ptr$ = $old\_T\_ptr$}
-		\STATE {$bool::f\!ail$=true}
+		\STATE {$bool::f\!ail$ = true}
 		\IF{ $dif\!f[absRankIdx[currRank]] < 0$ }
 		\FOR{$el$ in $rankIdx[(len-1):-1:0]$}
 		\IF{$(T\_Ptr[el+1] - T\_ptr[el]) > 2$}  \textcolor{gray}{\% Ensure \DTWO coloring}
-		\STATE {$acquireIdx$ = el}
-		\STATE {$f\!ail$=f\!alse}
+		\STATE {$acquireIdx = el$}
+		\STATE {$f\!ail$ = false}
 		\STATE {$break$}
 		\ENDIF
 		\ENDFOR
