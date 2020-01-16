@@ -63,10 +63,10 @@ constraints such as attainable memory bandwidth or cost of synchronization.
 
 As a first step we can limit the parameter space by simple corner case
 analysis. 
-\rAdd{The lowest possible value of $\epsilon_s$ is the 
+\rAdd{The smallest possible value of $\epsilon_s$ is the 
 	maximum deviation of a real number from
 	its nearest integer, which is $0.5$. On the other
-hand the highest possible value is one.}
+hand, the largest possible value is one.}
 Setting all parameters ($\epsilon_s$) close to one requests high-quality load
 balancing but may prevent our balancing scheme from terminating. 
 In the extreme
@@ -78,11 +78,11 @@ them, and may further attempt to refine them in the same way.
 its nearest integer, which is $0.5$.}
  A range of [$0.5$,$0.9$] for the
 $\epsilon_s$ is therefore used in the following \rAdd{analysis}. 
-\rAdd{To ensure termination the default $\epsilon_s$ value is 
-	chosen to be 0.5. Due to this even if sufficient parallelism cannot
-	be found at a user specified $\epsilon_s$ value for lower 
-	recursive stages the algorithm can move to higher stages
-	(with default $\epsilon_s = 0.5$) and terminate.}	
+\rAdd{To ensure termination, the default $\epsilon_s$ value is 
+	chosen to be 0.5\@. Thus, even if sufficient parallelism cannot
+	be found at a user-specified $\epsilon_s$ value for the initial 
+	stages of recursion, the algorithm will choose 
+	the default $\epsilon_s = 0.5$ in later stages and eventually terminate.}
 %	 which allows the algorithm to 
 %	terminate at a higher recursive stage even if a high $\epsilon_s$ 
 %	value is specified at lower stages.}
