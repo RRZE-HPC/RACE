@@ -43,10 +43,10 @@ RACE provides examples to illustrate the usage and easiness of using the RACE li
 If you are using RACE please use the following reference:
 
 * C. L. Alappat, G. Hager, O. Schenk, J. Thies, A. Basermann, A. R. Bishop, H. Fehske, and G. Wellein: 
-  A Recursive Algebraic Coloring Technique for Hardware-Efficient Symmetric Sparse Matrix-Vector Multiplication. Submitted. Preprint: [arXiv:1907.06487](https://arxiv.org/abs/1907.06487)
+  A Recursive Algebraic Coloring Technique for Hardware-Efficient Symmetric Sparse Matrix-Vector Multiplication. Submitted to ACM TOPC. Preprint: [arXiv:1907.06487](https://arxiv.org/abs/1907.06487)
   
 ### Further Reading ###
 
 * A poster on RACE was presented at SC'18. The poster and abstract can be found [here](https://sc18.supercomputing.org/proceedings/src_poster/src_poster_pages/spost109.html).
-* A short paper on RACE showing how it can be used to parallelise an eigen value solver can be found [here](https://src.acm.org/binaries/content/assets/src/2019/christie-louis-alappat.pdf)
+* A short paper on RACE showing how it can be used to parallelise an eigen value solver can be found [here](https://src.acm.org/binaries/content/assets/src/2019/christie-louis-alappat.pdf).
   The paper won the second place in [ACM SRC](https://src.acm.org) 2019.
