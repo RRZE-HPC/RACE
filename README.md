@@ -21,7 +21,7 @@ dependencies.RACE uses a recursive level based method for coloring.
 * make
 * make install
 * Library Dependencies : hwloc (will be cloned and installed if not found)
-* Use $(RACE\_LIB)/RACE\_LFLAGS.sh or use CMAKE find\_package to get the proper linking flags for the library
+* Use CMAKE find\_package to get the proper linking flags for the library
 
 ### Want to try RACE? ###
 RACE provides examples to illustrate the usage and easiness of using the RACE library. To try it out:
