@@ -14,7 +14,7 @@ dependencies.RACE uses a recursive level based method for coloring.
 
 ### How to build RACE? ###
 
-* git clone christiealappatt@bitbucket.org:christiealappatt/race.git
+* git clone git@bitbucket.org:essex/race.git
 * cd race && mkdir build && cd build
 * CC=$(C\_COMPILER) CXX=$(CXX\_COMPILER) cmake ..
 * Configure the library using ccmake . (if needed)
