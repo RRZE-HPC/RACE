@@ -24,14 +24,8 @@ dependencies.RACE uses a recursive level based method for coloring.
 * Use CMAKE find\_package to get the proper linking flags for the library
 
 ### Want to try RACE? ###
-RACE provides examples to illustrate the usage and easiness of using the RACE library. To try it out:
-
-* cd race/example
-* mkdir build && cd build
-* CC=$(C\_COMPILER) CXX=$(CXX\_COMPILER) cmake .. -DRACE\_DIR=$(RACE\_LIB)
-* make
-* To run: ./race -m [matrix file] -c [nthreads]
-* To get other options use: ./race -h
+RACE provides examples to illustrate the usage and easiness of using the RACE library. 
+Please see the [example folder](https://bitbucket.org/essex/race/src/master/examples/).
 
 ### RACE working ###
 ![Screenshot](animations/domain_anim.gif)
