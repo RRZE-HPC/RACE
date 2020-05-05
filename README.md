@@ -14,13 +14,13 @@ dependencies.RACE uses a recursive level based method for coloring.
 
 ### How to build RACE? ###
 
-* git clone git@bitbucket.org:essex/race.git
-* cd race && mkdir build && cd build
-* CC=$(C\_COMPILER) CXX=$(CXX\_COMPILER) cmake ..
-* Configure the library using ccmake . (if needed)
-* make
-* make install
-* Library Dependencies : hwloc (will be cloned and installed if not found)
+* `git clone git@bitbucket.org:essex/race.git`
+* `cd race && mkdir build && cd build`
+* `CC=$(C\_COMPILER) CXX=$(CXX\_COMPILER) cmake ..`
+* Configure the library using `ccmake .` (if needed)
+* `make`
+* `make install`
+* Library Dependencies : [hwloc](https://www.open-mpi.org/projects/hwloc/) will be cloned and installed if not found.
 * Use CMAKE find\_package to get the proper linking flags for the library
 
 ### Want to try RACE? ###
@@ -37,7 +37,7 @@ Please see the [example folder](https://bitbucket.org/essex/race/src/master/exam
 If you are using RACE please use the following reference:
 
 * C. L. Alappat, G. Hager, O. Schenk, J. Thies, A. Basermann, A. R. Bishop, H. Fehske, and G. Wellein: 
-  A Recursive Algebraic Coloring Technique for Hardware-Efficient Symmetric Sparse Matrix-Vector Multiplication. Submitted to ACM TOPC. Preprint: [arXiv:1907.06487](https://arxiv.org/abs/1907.06487)
+  A Recursive Algebraic Coloring Technique for Hardware-Efficient Symmetric Sparse Matrix-Vector Multiplication. Accepted for publication in ACM TOPC. Preprint: [arXiv:1907.06487](https://arxiv.org/abs/1907.06487)
   
 ### Further Reading ###
 
