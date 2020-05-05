@@ -1,4 +1,4 @@
-### How to run RACE examples ###
+### How to run RACE examples? ###
 RACE provides examples to illustrate the usage and easiness of using the RACE library. To try it out:
 
 * `cd race/example`
