@@ -317,16 +317,17 @@ void team<arg_t>::sleep()
 {
     for(int tid=1; tid<num_threads; ++tid)
     {
-        if(__sync_fetch_and_add(&(taskForce[tid]->signal->mode),0)!=idle)
+        //added with spin, since spin value is 0
+        if(__sync_fetch_and_add(&((taskForce[tid]->signal->mode)),spin)!=idle)
         {
             //wait till it starts spinning;
             //i.e its job is finished
-            while(__sync_fetch_and_add(&(taskForce[tid]->signal->mode),0)==released)
+            while(__sync_fetch_and_add(&(taskForce[tid]->signal->mode),spin)==released)
             {
             }
             sleepSignal(taskForce[tid]->signal);
             //wait  till thread is idle
-            while(__sync_fetch_and_add(&(taskForce[tid]->signal->mode),0)!=idle)
+            while(__sync_fetch_and_add(&(taskForce[tid]->signal->mode),spin)!=idle)
             {
             }
         }

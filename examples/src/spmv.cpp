@@ -23,6 +23,23 @@ void capitalize(char* beg)
     }
 }
 
+#define PERF_RUN(kernel, flopPerNnz)\
+{\
+    int iter = param.iter;\
+    double time = 0;\
+    double nnz_update = ((double)mat->nnz)*iter*1e-9;\
+    sleep(1);\
+    INIT_TIMER(kernel);\
+    START_TIMER(kernel);\
+    kernel(b, mat, x, iter);\
+    STOP_TIMER(kernel);\
+    time = GET_TIMER(kernel);\
+    char* capsKernel;\
+    asprintf(&capsKernel, "%s", #kernel);\
+    capitalize(capsKernel);\
+    printf("%10s : %8.4f GFlop/s ; Time = %8.5f s\n", capsKernel, flopPerNnz*nnz_update/(time), time);\
+    free(capsKernel);\
+}\
 
 int main(const int argc, char * argv[])
 {
@@ -42,27 +59,19 @@ int main(const int argc, char * argv[])
     }
 
     mat->numaInit();
-
     int NROWS = mat->nrows;
-    int iterations = param.iter;
 
-    densemat *x;
-    x=new densemat(NROWS,2);
+    densemat *x, *b;
+    x=new densemat(NROWS);
+    b=new densemat(NROWS);
 
     x->setRand();
+    b->setRand();
 
-    INIT_TIMER(spmv);
-    START_TIMER(spmv);
-    for(int iter=0; iter<iterations; ++iter)
-    {
-        plain_spmv(mat,x);
-    }
-    STOP_TIMER(spmv);
-    double spmvPowerTime = GET_TIMER(spmv);
-    double flops = 2.0*iterations*(double)mat->nnz*1e-9;
+    //This macro times and reports performance
+    PERF_RUN(plain_spmv,2);
 
-    printf("SpMV perf. = %f, time = %f\n", flops/spmvPowerTime, spmvPowerTime);
-
-    delete mat;
     delete x;
+    delete b;
+    delete mat;
 }
