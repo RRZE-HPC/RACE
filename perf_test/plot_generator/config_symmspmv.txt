@@ -1,0 +1,10 @@
+COL_MTX_NAMES = 1
+COL_PERF_1 = @spmv_col@ @rest_cols@
+PERF_FILES = @spmv_file@ @commit_files@
+COLORS =  brown orange cyan green citrine
+LEGEND = SpMV @rest_legends@
+TEMPLATE = template_RACE.tex
+GENERATED = symmspmv.tex
+TITLE = SymmSpMV comparison on 1 socket of Sky-Lake
+YLABEL = Perf (GFlop/s)
+TYPE = LINE

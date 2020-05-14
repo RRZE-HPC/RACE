@@ -13,7 +13,7 @@
 #include "timer.h"
 #include <iostream>
 
-void capitalize(char* beg)
+inline void capitalize(char* beg)
 {
     int i = 0;
     while(beg[i])
@@ -41,7 +41,7 @@ void capitalize(char* beg)
     free(capsKernel);\
 }\
 
-int findMetricId(int group_id, std::string toFind)
+inline int findMetricId(int group_id, std::string toFind)
 {
 #ifdef LIKWID_PERFMON
     int numMetrics = perfmon_getNumberOfMetrics(group_id);
@@ -58,10 +58,14 @@ int findMetricId(int group_id, std::string toFind)
     }
 
     return dataVol_metric_id;
+#else
+    (void)(group_id);
+    (void)(toFind);
+    return -1;
 #endif
 }
 
-void init_likwid()
+inline void init_likwid()
 {
 #ifdef LIKWID_PERFMON
     int nthreads;
@@ -91,7 +95,7 @@ void init_likwid()
 #endif
 }
 
-void finalize_likwid()
+inline void finalize_likwid()
 {
 #ifdef LIKWID_PERFMON
     //LIKWID_MARKER_CLOSE;
@@ -107,7 +111,6 @@ int main(const int argc, char * argv[])
 #ifdef LIKWID_PERFMON
     LIKWID_MARKER_INIT;
 #endif
-    int err;
     parser param;
     if(!param.parse_arg(argc, argv))
     {
@@ -143,8 +146,6 @@ int main(const int argc, char * argv[])
     printf("Finished preparing\n\n");
 
     int NROWS = mat->nrows;
-
-    densemat *x, *xExact;
 
     double initVal = 1/(double)NROWS;
     //x stores value in the form
@@ -193,8 +194,8 @@ int main(const int argc, char * argv[])
         {
             for(int pow=0; pow<power; ++pow)
             {
-                densemat *x = xTRAD->view(pow,pow);
-                plain_spmv(mat, x);
+                densemat *x_trad = xTRAD->view(pow,pow);
+                plain_spmv_pow(mat, x_trad);
             }
         }
         STOP_TIMER(spmvPower);
@@ -205,7 +206,7 @@ int main(const int argc, char * argv[])
         }
 #endif
         double spmvPowerTime = GET_TIMER(spmvPower);
-        printf("SpMV power perf. = %f, time = %f\n", flops/spmvPowerTime, spmvPowerTime);
+        printf("SpMV power perf. = %f GFlop/s, time = %f\n", flops/spmvPowerTime, spmvPowerTime);
 
     }
 
@@ -226,7 +227,7 @@ int main(const int argc, char * argv[])
       {
       densemat *b = xRACE->view(pow+1,pow+1);
         densemat *x = xRACE->view(pow,pow);
-        plain_spmv(b, mat, x, 1);
+        plain_spmv_pow(b, mat, x, 1);
     }*/
     STOP_TIMER(matPower);
 #ifdef LIKWID_PERFMON
@@ -236,7 +237,7 @@ int main(const int argc, char * argv[])
     }
 #endif
     double RACEPowerTime = GET_TIMER(matPower);
-    printf("RACE power perf. = %f, time = %f\n", flops/RACEPowerTime, RACEPowerTime);
+    printf("RACE power perf. = %f GFlop/s, time = %f\n", flops/RACEPowerTime, RACEPowerTime);
 
 
     if(param.validate)

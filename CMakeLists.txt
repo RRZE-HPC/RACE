@@ -202,3 +202,89 @@ if (${BUILD_SHARED_LIBS})
 else ()
     install(TARGETS RACE EXPORT RACE-targets ARCHIVE DESTINATION lib/RACE)
 endif()
+
+
+## BUILD perf_tests ##
+
+AutodetectHostArchitecture()
+OptimizeForArchitecture()
+
+#Set Vector length
+if(USE_AVX512F)
+    set(VECTOR_LENGTH 8)
+elseif(USE_AVX OR USE_AVX2)
+    set(VECTOR_LENGTH 4)
+elseif(USE_SSE2 OR USE_SSE3 OR SSE4_1 OR SSE4_2 OR SSE_4a)
+    set(VECTOR_LENGTH 2)
+else()
+    set(VECTOR_LENGTH 1)
+endif()
+
+set(PERF_TEST_USE_SPMP 1 CACHE BOOL "Use RCM by SpMP for matrix preprocessing")
+if (PERF_TEST_USE_SPMP)
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+        set(RACE_HAVE_SPMP 1)
+        set(SPMP_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+        set_property(DIRECTORY PROPERTY EP_STEP_TARGETS build)
+        if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+            ExternalProject_Add(SpMP
+                PREFIX ${PROJECT_BINARY_DIR}/SpMP
+                URL https://github.com/IntelLabs/SpMP/archive/master.zip
+                CONFIGURE_COMMAND ""
+                BUILD_COMMAND make 
+                BUILD_IN_SOURCE 1
+                INSTALL_COMMAND ""
+                )
+        else() # GNU or Clang: Set CUSTOM_CXX variable in SpMP make
+            ExternalProject_Add(SpMP
+                PREFIX ${PROJECT_BINARY_DIR}/SpMP
+                URL https://github.com/IntelLabs/SpMP/archive/master.zip
+                CONFIGURE_COMMAND ""
+                BUILD_COMMAND make CUSTOM_CXX=${CMAKE_CXX_COMPILER} 
+                BUILD_IN_SOURCE 1
+                INSTALL_COMMAND ""
+                )
+        endif()
+    else()
+        message(FATAL_ERROR "SpMP will not build with a compiler which is not Clang/GNU/Intel. Please disable SpMP or use a different compiler!")
+    endif()
+endif()
+
+
+configure_file (
+    "${PROJECT_SOURCE_DIR}/perf_test/include/config_eg.h.in"
+    "${PROJECT_BINARY_DIR}/perf_test/include/config_eg.h"
+    )
+
+include_directories(${PROJECT_SOURCE_DIR}/perf_test/include)
+include_directories(${PROJECT_BINARY_DIR}/perf_test/include)
+
+file(GLOB PERF_SOURCES ${PROJECT_SOURCE_DIR}/perf_test/src/helpers/*.cpp)
+
+add_executable(race ${PERF_SOURCES}  ${PROJECT_SOURCE_DIR}/perf_test/src/race.cpp)
+add_executable(mtxPower ${PERF_SOURCES}  ${PROJECT_SOURCE_DIR}/perf_test/src/matrixPower.cpp)
+
+set_target_properties(race PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/perf_test")
+set_target_properties(mtxPower PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/perf_test")
+
+if(PERF_TEST_USE_SPMP)
+    set(EXT_LIBRARIES "${PROJECT_BINARY_DIR}/SpMP/src/SpMP/libspmp.a")
+endif()
+
+target_link_libraries(race "${EXT_LIBRARIES}" RACE hwloc)
+target_link_libraries(mtxPower "${EXT_LIBRARIES}" RACE hwloc)
+
+add_dependencies(race RACE)
+add_dependencies(mtxPower RACE)
+if(PERF_TEST_USE_SPMP)
+    include_directories(SYSTEM ${PROJECT_BINARY_DIR}/SpMP/src)
+    add_dependencies(race SpMP)
+    add_dependencies(mtxPower SpMP)
+endif()
+
+file(COPY ${PROJECT_SOURCE_DIR}/perf_test/perf_script.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/perf_test/.)
+file(COPY ${PROJECT_SOURCE_DIR}/perf_test/check-state.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/perf_test/.)
+file(COPY ${PROJECT_SOURCE_DIR}/perf_test/machine-state.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/perf_test/.)
+file(COPY ${PROJECT_SOURCE_DIR}/perf_test/config.txt DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/perf_test/.)
+file(COPY ${PROJECT_SOURCE_DIR}/perf_test/config.txt DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/perf_test/.)
+file(COPY ${PROJECT_SOURCE_DIR}/perf_test/plot_generator DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/perf_test/.)

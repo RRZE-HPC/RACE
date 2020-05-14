@@ -1,5 +1,4 @@
 #include "kernels.h"
-#include <mkl.h>
 #include "config_eg.h"
 
 inline void SPMV_KERNEL(int start, int end, void* args)
@@ -61,7 +60,7 @@ inline void SPMTV_KERNEL(int start, int end, void* args)
     for(int row=start; row<end; ++row)
     {
         double x_row = x->val[row];
-#pragma simd
+#pragma omp simd simdlen(VECTOR_LENGTH)
         for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
         {
             b->val[mat->col[idx]] += mat->val[idx]*x_row;
@@ -94,9 +93,8 @@ inline void GS_KERNEL(int start, int end, void* args)
     for(int row=start; row<end; ++row)
     {
         x->val[row] = b->val[row];
-        double x_row = x->val[row];
         int diag_idx = mat->rowPtr[row];
-#pragma simd
+#pragma omp simd simdlen(VECTOR_LENGTH)
         for(int idx=mat->rowPtr[row]+1; idx<mat->rowPtr[row+1]; ++idx)
         {
             x->val[row] -= mat->val[idx]*x->val[mat->col[idx]];
@@ -140,7 +138,7 @@ inline void KACZ_KERNEL(int start, int end, void* args)
         }
         scale /= rowNorm; //omega considered 1
 
-#pragma simd
+#pragma omp simd simdlen(VECTOR_LENGTH)
         for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
         {
             x->val[mat->col[idx]] = x->val[mat->col[idx]] - scale*mat->val[idx];
@@ -174,7 +172,7 @@ inline void SYMM_SPMV_KERNEL(int start, int end, void* args)
         double x_row = x->val[row];
         b->val[row] += mat->val_symm[mat->rowPtr_symm[row]]*x_row;
         double temp = 0;
-#pragma simd reduction(+:temp)
+#pragma omp simd simdlen(VECTOR_LENGTH) reduction(+:temp)
         for(int idx=mat->rowPtr_symm[row]+1; idx<mat->rowPtr_symm[row+1]; ++idx)
         {
             double mval = mat->val_symm[idx];
@@ -203,11 +201,11 @@ void symm_spmv(densemat* b, sparsemat* mat, densemat* x, int iterations)
     DELETE_ARG();
 }
 
-inline void PLAIN_SPMV_KERNEL(int start, int end, int pow, void* args)
+inline void PLAIN_SPMV_POW_KERNEL(int start, int end, int pow, void* args)
 {
     DECODE_FROM_VOID(args);
-
-    int parentId = omp_get_thread_num();
+    UNUSED(b);
+    //int parentId = omp_get_thread_num();
 //#pragma omp parallel
 //    {
         //int ctr = 0;
@@ -224,7 +222,7 @@ inline void PLAIN_SPMV_KERNEL(int start, int end, int pow, void* args)
             double tmp = 0;
             const int offset = (pow-1)*mat->nrows;
 #pragma nounroll
-#pragma simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)
+#pragma omp simd simdlen(VECTOR_LENGTH) reduction(+:tmp)
             for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
             {
                 tmp += mat->val[idx]*x->val[offset+mat->col[idx]];
@@ -235,45 +233,20 @@ inline void PLAIN_SPMV_KERNEL(int start, int end, int pow, void* args)
 }
 
 //plain spmv
-void plain_spmv(sparsemat* mat, densemat* x)
+void plain_spmv_pow(sparsemat* mat, densemat* x)
 {
     ENCODE_TO_VOID(mat, NULL, x);
-    PLAIN_SPMV_KERNEL(0, mat->nrows, 1, voidArg);
+    PLAIN_SPMV_POW_KERNEL(0, mat->nrows, 1, voidArg);
     DELETE_ARG();
 }
 
-
-inline void MKL_SPMV_KERNEL(int start, int end, int pow, void* args)
-{
-    DECODE_FROM_VOID(args);
-    double *x_ = x->val;
-    double *b_ = &(x->val[mat->nrows]);
-    int nrows= end-start;
-
-    int nthreads;
-#pragma omp parallel
-    {
-        nthreads = omp_get_num_threads();
-    }
-
-    mkl_set_num_threads(nthreads);
-    mkl_cspblas_dcsrgemv("N", &nrows, ((double*)mat->val), ((MKL_INT*)mat->rowPtr), ((MKL_INT*) mat->col), ((double*)x_), ((double*)b_));
-}
-
-//MKL spmv
-void mkl_spmv(sparsemat* mat, densemat* x)
-{
-    ENCODE_TO_VOID(mat, NULL, x);
-    MKL_SPMV_KERNEL(0, mat->nrows, 1, voidArg);
-    DELETE_ARG();
-}
 
 
 void matPower(sparsemat *A, int power, densemat *x)
 {
     RACE::Interface *ce = A->ce;
     ENCODE_TO_VOID(A, NULL, x);
-    int race_power_id = ce->registerFunction(&PLAIN_SPMV_KERNEL, voidArg, power);
+    int race_power_id = ce->registerFunction(&PLAIN_SPMV_POW_KERNEL, voidArg, power);
 //#pragma omp parallel
     {
         ce->executeFunction(race_power_id);

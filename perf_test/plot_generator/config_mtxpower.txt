@@ -1,0 +1,10 @@
+COL_MTX_NAMES = 1
+COL_PERF_1 = @cols@
+PERF_FILES = @commit_files@
+COLORS =  orange cyan green citrine brown
+LEGEND = @legends@
+TEMPLATE = template_power.tex
+GENERATED = powerPlots/@matrix@.tex
+TITLE = @matrix@ matrix
+YLABEL = Perf (GFlop/s)
+TYPE = LINE
