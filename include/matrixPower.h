@@ -13,6 +13,9 @@ class mtxPower
     Graph* graph;
     int* levelPtr;
     int* levelGroupPtr;
+    int* unlockRow;//for p2p sync
+    int* dangerRow;// for p2p sync
+    int* unlockCtr;
     int *cacheLevelGroup;
     LevelData* levelData;
     Traverse* traverser;
@@ -29,6 +32,7 @@ class mtxPower
     void splitSharedCacheDomain();
     void findMacroLevelPtr(int* zones, int* macroLevelPtr);
     void consolidatePartition();
+    void findUnlockCtr();
     void createLevelPtr();
     double getBytePerNNZ();
     void powerRun(int power, int *rowPtr, int *col, double *A, double *x);
@@ -39,6 +43,9 @@ class mtxPower
     int getTotalLevelGroup();
     int* getLevelPtrRef();
     int* getLevelGroupPtrRef();
+    int* getUnlockRowRef();
+    int* getDangerRowRef();
+    int* getUnlockCtrRef();
 };
 
 #endif

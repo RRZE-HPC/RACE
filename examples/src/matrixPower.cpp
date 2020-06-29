@@ -158,7 +158,7 @@ int main(const int argc, char * argv[])
     printf("calculation started\n");
 
     //determine iterations
-    INIT_TIMER(matPower_init);
+   INIT_TIMER(matPower_init);
     START_TIMER(matPower_init);
     for(int iter=0; iter<10; ++iter)
     {
@@ -167,7 +167,7 @@ int main(const int argc, char * argv[])
     STOP_TIMER(matPower_init);
     double initTime = GET_TIMER(matPower_init);
     int iterations = (int) (1.2*10/initTime);
-
+    //int iterations = 1; //for correctness checking
     printf("Num iterations =  %d\n", iterations);
 
     double flops = 2.0*power*iterations*(double)mat->nnz*1e-9;

@@ -28,6 +28,12 @@ class FuncManager
         LevelPool* pool;
         mtxPower* matPower;
         std::vector<int> serialPart;
+        volatile int* lockCtr;
+        volatile bool* lockTable;
+        volatile int* lockTableCtr;
+        int* unlockRow;
+        int* dangerRow;
+        int* unlockCtr;
         friend void recursiveCall(FuncManager* funMan, int parent);
         std::function<void(int)> recursiveFun;
         //double *a, *b, *c, *d;
@@ -38,6 +44,7 @@ class FuncManager
         FuncManager(const FuncManager &obj);
         ~FuncManager();
         void SerialPartRun();
+        void initPowerRun();
         void powerRun();
         void Run(bool rev_=false);
         //void RunOMP();

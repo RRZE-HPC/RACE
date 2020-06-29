@@ -3,8 +3,9 @@
 #include <cmath>
 #include "macros.h"
 #include "lb.h"
+#include "omp.h"
 
-mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_):graph(graph_),levelPtr(NULL),levelGroupPtr(NULL),cacheLevelGroup(NULL),levelData(NULL), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_)
+mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_):graph(graph_), levelPtr(NULL),levelGroupPtr(NULL), unlockRow(NULL), dangerRow(NULL), unlockCtr(NULL), cacheLevelGroup(NULL),levelData(NULL), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_)
 {
     traverser = new Traverse(graph, RACE::ONE);
 }
@@ -18,6 +19,18 @@ mtxPower::~mtxPower()
     if(levelGroupPtr)
     {
         delete[] levelGroupPtr;
+    }
+    if(unlockRow)
+    {
+        delete[] unlockRow;
+    }
+    if(dangerRow)
+    {
+        delete[] dangerRow;
+    }
+    if(unlockCtr)
+    {
+        delete[] unlockCtr;
     }
     if(cacheLevelGroup)
     {
@@ -117,6 +130,7 @@ void mtxPower::findPartition()
 #endif
     splitSharedCacheDomain();
     consolidatePartition();
+    findUnlockCtr();
 }
 
 //split into 'n' equal parts, where 'n' is number of shared caches available
@@ -170,8 +184,13 @@ void mtxPower::findMacroLevelPtr(int* zones, int* macroLevelPtr)
 
 void mtxPower::consolidatePartition()
 {
+    unlockRow = new int[totalLevel];
+    dangerRow = new int[totalLevel];
+
     std::vector<int> newLevelPtr;
     newLevelPtr.push_back(0);
+    int consolidated_ctr = 0;
+    unlockRow[0] = levelPtr[1];
     for(int levelGroup=0; levelGroup<numSharedCache; ++levelGroup)
     {
         double sumElem = 0;
@@ -185,10 +204,25 @@ void mtxPower::consolidatePartition()
             {
                 sumElem = currElem;
                 newLevelPtr.push_back(levelPtr[level]);
+
+                dangerRow[consolidated_ctr] = levelPtr[level-1];
+                if((level+1) <= totalLevel)
+                {
+                    unlockRow[consolidated_ctr + 1] = levelPtr[level+1];
+                }
+                consolidated_ctr += 1;
             }
         }
         int lastLevel = levelGroupPtr[levelGroup+1];
         newLevelPtr.push_back(levelPtr[lastLevel]);
+
+        dangerRow[consolidated_ctr] = levelPtr[lastLevel-1];
+        if((lastLevel+1) <= totalLevel)
+        {
+            unlockRow[consolidated_ctr + 1] = levelPtr[lastLevel+1];
+        }
+
+        consolidated_ctr += 1;
     }
 
     //rewrite levelPtr with newLevelPtr
@@ -210,6 +244,49 @@ void mtxPower::consolidatePartition()
     }
 
     delete[] newLevelGroupPtr;
+}
+
+
+void mtxPower::findUnlockCtr()
+{
+
+    if(!unlockCtr)
+    {
+        unlockCtr = (int*)malloc(sizeof(int)*totalLevel);
+
+        for(int l=0; l<totalLevel; ++l)
+        {
+            unlockCtr[l] = 0;
+        }
+
+
+#pragma omp parallel
+        {
+
+            int totalLevelGroup = getTotalLevelGroup();
+            int threadPerLevelGroup = omp_get_num_threads()/totalLevelGroup;
+            int tid = omp_get_thread_num();
+            //int levelGroup = tid / threadPerLevelGroup;
+            int localTid = tid % threadPerLevelGroup;
+
+            //initialize lockTableCtr
+            for(int l=0; l<totalLevel; ++l)
+            {
+                SPLIT_LEVEL_PER_THREAD_P2P(l);
+                if(currUnlockRow > startRow_tid)
+                {
+#pragma omp atomic
+                    ++unlockCtr[l];
+                }
+                if(0)
+                {
+                    ERROR_PRINT("Should never be here");
+                    //Suppress unused warning
+                    printf("%d, %d\n", endRow_tid, dangerRowStart);
+                }
+            }
+        }
+    }
 }
 
 void mtxPower::getPerm(int **perm_, int *len)
@@ -246,3 +323,20 @@ int* mtxPower::getLevelGroupPtrRef()
 {
     return levelGroupPtr;
 }
+
+int* mtxPower::getUnlockRowRef()
+{
+    return unlockRow;
+}
+
+int* mtxPower::getDangerRowRef()
+{
+    return dangerRow;
+}
+
+int* mtxPower::getUnlockCtrRef()
+{
+    return unlockCtr;
+}
+
+
