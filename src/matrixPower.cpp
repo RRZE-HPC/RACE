@@ -5,7 +5,7 @@
 #include "lb.h"
 #include "omp.h"
 
-#define LB_REMINDER
+//#define LB_REMINDER
 
 mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_):graph(graph_), levelPtr(NULL),levelGroupPtr(NULL), unlockRow(NULL), dangerRow(NULL), unlockCtr(NULL), cacheLevelGroup(NULL),levelData(NULL), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_)
 {
@@ -223,7 +223,7 @@ void mtxPower::consolidatePartition()
         double sumNNZ = 0;
         int curLevelCtr = 0;
         int consolidated_curLevelCtr = 0;
-        int totalLevelInGroup = levelGroupPtr[levelGroup+1]-levelGroupPtr[levelGroup];
+        //int totalLevelInGroup = levelGroupPtr[levelGroup+1]-levelGroupPtr[levelGroup];
 
 
         //newLevelPtr.push_back(levelPtr[levelGroupPtr[levelGroup]]);
@@ -243,7 +243,7 @@ void mtxPower::consolidatePartition()
             //as this is processed without caching
             if(curLevelCtr > 0)
             {
-                if(sumElem >= cacheElem || ( (numSharedCache > 1) && ( (consolidated_curLevelCtr < (highestPower)) || (curLevelCtr > (totalLevelInGroup-highestPower)) ) ) )
+                if(sumElem >= cacheElem)// || ( (numSharedCache > 1) && ( (consolidated_curLevelCtr < (highestPower)) || (curLevelCtr > (totalLevelInGroup-highestPower)) ) ) )
                 {
                     bool updateFlag = true;
 
