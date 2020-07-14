@@ -40,28 +40,60 @@ int main(const int argc, char * argv[])
         printf("Error in reading sparse matrix file\n");
     }
 
+    int NROWS = mat->nrows;
+    int power = param.iter;
+    printf("power = %d\n", power);
+
+
+   // mat->doRCMPermute(); //Permute();
+    //mat->writeFile("after_RCM.mtx");
+    //mat->prepareForPower(power, param.nodes, param.cache_size*1024*1024, param.cores, param.smt, param.pin);
     mat->numaInit();
 
-    int NROWS = mat->nrows;
-    int iterations = param.iter;
 
-    densemat *x;
-    x=new densemat(NROWS,2);
+    densemat *xTRAD;
+    xTRAD=new densemat(NROWS,power+1);
+    densemat* xTRAD_0 = xTRAD->view(0,0);
 
-    x->setRand();
+    double initVal = 1/(double)NROWS;
+    xTRAD_0->setVal(initVal);
+
+    //determine iterations
+    INIT_TIMER(matPower_init);
+    START_TIMER(matPower_init);
+    for(int iter=0; iter<10; ++iter)
+    {
+        for(int pow=0; pow<power; ++pow)
+        {
+            plain_spmv(mat, xTRAD);
+        }
+    }
+    STOP_TIMER(matPower_init);
+    double initTime = GET_TIMER(matPower_init);
+    int iterations = (int) (1.2*10/initTime);
+    //int iterations = 1; //for correctness checking
+    printf("Num iterations =  %d\n", iterations);
+
+
+    xTRAD_0->setVal(initVal);
+    //xTRAD->setRand();
 
     INIT_TIMER(spmv);
     START_TIMER(spmv);
     for(int iter=0; iter<iterations; ++iter)
     {
-        plain_spmv(mat,x);
+        for(int pow=0; pow<power; ++pow)
+        {
+            densemat *x = xTRAD->view(pow,pow);
+            plain_spmv(mat,x);
+        }
     }
     STOP_TIMER(spmv);
     double spmvPowerTime = GET_TIMER(spmv);
-    double flops = 2.0*iterations*(double)mat->nnz*1e-9;
+    double flops = 2.0*iterations*power*(double)mat->nnz*1e-9;
 
     printf("SpMV perf. = %f, time = %f\n", flops/spmvPowerTime, spmvPowerTime);
 
     delete mat;
-    delete x;
+    delete xTRAD;
 }
