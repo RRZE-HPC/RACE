@@ -45,6 +45,7 @@ class FuncManager
         ~FuncManager();
         void SerialPartRun();
         void initPowerRun();
+        void NUMAInitPower();
         void powerRun();
         void Run(bool rev_=false);
         //void RunOMP();

@@ -338,6 +338,31 @@ void FuncManager::initPowerRun()
 #endif
 }
 
+void FuncManager::NUMAInitPower()
+{
+    int* levelGroupPtr = matPower->getLevelGroupPtrRef();
+    int* levelPtr = matPower->getLevelPtrRef();
+    int totalLevelGroup = matPower->getTotalLevelGroup();
+#pragma omp parallel
+    {
+        int threadPerLevelGroup = omp_get_num_threads()/totalLevelGroup;
+        int tid = omp_get_thread_num();
+        int levelGroup = tid / threadPerLevelGroup;
+        //only first thread in each levelGroup works
+        if(tid == levelGroup*threadPerLevelGroup)
+        {
+            powerFunc(levelPtr[levelGroupPtr[levelGroup]], levelPtr[levelGroupPtr[levelGroup+1]], 1, args);
+            /*for(int row=levelGroupPtr[levelGroup]; row<levelGroupPtr[levelGroup+1]; ++row)
+            {
+                for(int idx=rowPtr_[row]; idx<rowPtr_[row+1]; ++idx)
+                {
+                    val[idx] = 0;
+                    col[idx] = 0;
+                }
+            }*/
+        }
+    }
+}
 
 //check with volatile too
 #ifdef POWER_WITH_FLUSH_LOCK
