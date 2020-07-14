@@ -22,6 +22,7 @@ void plain_spmv(sparsemat* mat, densemat* x);
 
 void mkl_spmv(sparsemat* mat, densemat* x);
 void matPower(sparsemat* A, int power, densemat *x);
+void matPowerBCSR(sparsemat* A, int power, densemat *x);
 
 //convenience macros
 #define ENCODE_TO_VOID(mat_en, b_en, x_en)\

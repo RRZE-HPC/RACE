@@ -5,14 +5,14 @@
 #include <vector>
 #include <sys/mman.h>
 #include "config_eg.h"
-
+#include <mkl.h>
 #ifdef RACE_USE_SPMP
     #include "SpMP/CSR.hpp"
     #include "SpMP/reordering/BFSBipartite.hpp"
 #endif
 
 
-sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), rcmInvPerm(NULL), rcmPerm(NULL)
+sparsemat::sparsemat(int NUMAnodes_):nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), NUMAnodes(NUMAnodes_)
 {
 }
 
@@ -45,6 +45,14 @@ sparsemat::~sparsemat()
     if(rcmInvPerm)
         delete[] rcmInvPerm;
 
+/*    if(rowPtr_bcsr)
+        delete[] rowPtr_bcsr;
+
+    if(col_bcsr)
+        delete[] col_bcsr;
+
+    if(val_bcsr)
+        delete[] val_bcsr;*/
 }
 
 bool sparsemat::readFile(char* filename)
@@ -213,6 +221,131 @@ bool sparsemat::readFile(char* filename)
 
     //writeFile("beforePerm.mtx");
     return true;
+}
+
+bool sparsemat::convertToBCSR(int b_r)
+{
+    if(rcmPerm)
+    {
+        permute(rcmPerm, rcmInvPerm);
+    }
+    bool success_flag = true;
+    sparse_matrix_t A_CSR, A_BSR;
+    sparse_status_t status;
+    //Using MKL to convert to BSR
+    status = mkl_sparse_d_create_csr (&A_CSR, SPARSE_INDEX_BASE_ZERO, nrows, nrows, &(rowPtr[0]), &(rowPtr[1]), col, val);
+    if(status != SPARSE_STATUS_SUCCESS)
+    {
+        printf("Error in MKL CRS creation\n");
+        success_flag = false;
+    }
+
+    status = mkl_sparse_convert_bsr (A_CSR, b_r, SPARSE_LAYOUT_ROW_MAJOR, SPARSE_OPERATION_NON_TRANSPOSE, &A_BSR);
+    if(status != SPARSE_STATUS_SUCCESS)
+    {
+        printf("Error in conversion from CSR to BCSR\n");
+        if(status == SPARSE_STATUS_NOT_INITIALIZED)
+        {
+            printf("Not initialized\n");
+        }
+        else if(status == SPARSE_STATUS_ALLOC_FAILED)
+        {
+            printf("Alloc failed\n");
+        }
+        else if(status == SPARSE_STATUS_INVALID_VALUE)
+        {
+            printf("invalid value\n");
+        }
+        else if(status == SPARSE_STATUS_EXECUTION_FAILED)
+        {
+            printf("execution failed\n");
+        }
+        else if(status == SPARSE_STATUS_INTERNAL_ERROR)
+        {
+            printf("Internal error\n");
+        }
+        else if(status == SPARSE_STATUS_NOT_SUPPORTED)
+        {
+            printf("Not supported\n");
+        }
+
+        success_flag = false;
+    }
+
+    status = mkl_sparse_destroy(A_CSR);
+
+    sparse_index_base_t indexing;
+    sparse_layout_t block_layout;
+    int *rowPtr_start_bcsr_mkl;
+    int *rowPtr_end_bcsr_mkl;
+    int *col_bcsr_mkl;
+    double *val_bcsr_mkl;
+    int nrows_bcsr;
+    int ncols_bcsr;
+    status = mkl_sparse_d_export_bsr (A_BSR, &indexing, &block_layout, &nrows_bcsr, &ncols_bcsr, &block_size, &rowPtr_start_bcsr_mkl, &rowPtr_end_bcsr_mkl, &col_bcsr_mkl, &val_bcsr_mkl);
+
+    if(status != SPARSE_STATUS_SUCCESS)
+    {
+        printf("Error in exporting to BCSR\n");
+        success_flag = false;
+    }
+    //printf("check rowPtr start = %p, end = %p\n", rowPtr_start_bcsr, rowPtr_end_bcsr);
+
+    if(block_size != b_r)
+    {
+        printf("Seems like there was an error in CSR to BCSR conversion, requested block size = %d, got %d\n", b_r, block_size);
+        success_flag = false;
+    }
+
+    if(success_flag)
+    {
+        nrows = nrows_bcsr;
+        int old_nnz = nnz;
+        nnz = rowPtr_start_bcsr_mkl[nrows_bcsr];
+        printf("Extra nnz for BCSR = %d, i.e. %f\%\n", b_r*b_r*nnz-old_nnz, (b_r*b_r*nnz-old_nnz)*100/(double)old_nnz);
+
+        if(rowPtr != NULL)
+        {
+            delete[] rowPtr;
+        }
+        rowPtr = new int[nrows+1];
+
+        for(int i=0; i<nrows+1; ++i)
+        {
+            rowPtr[i] = rowPtr_start_bcsr_mkl[i];
+        }
+
+        if(col != NULL)
+        {
+            delete[] col;
+        }
+        if(val != NULL)
+        {
+            delete[] val;
+        }
+        col = new int[nnz];
+        val = new double[b_r*b_r*nnz];
+        for(int i=0; i<nnz; ++i)
+        {
+            col[i] = col_bcsr_mkl[i];
+        }
+        for(int i=0; i<b_r*b_r*nnz; ++i)
+        {
+            val[i] = val_bcsr_mkl[i];
+        }
+    }
+
+    mkl_sparse_destroy(A_BSR);
+
+    if(success_flag && rcmPerm)
+    {
+        delete[] rcmPerm;
+        delete[] rcmInvPerm;
+        rcmPerm = NULL;
+        rcmInvPerm = NULL;
+        //doRCM();
+    }
+    return success_flag;
 }
 
 //necessary for GS like kernels
@@ -402,10 +535,12 @@ void sparsemat::doRCM()
 
     SpMP::CSR *csr = NULL;
     csr = new SpMP::CSR(nrows, nrows, rowPtr, col, val);
-    rcmPerm = new int[nrows];
-    rcmInvPerm = new int[nrows];
+ //   rcmPerm = new int[nrows];
+ //    rcmInvPerm = new int[nrows];
     if(csr->isSymmetric(false,false))
     {
+        rcmPerm = new int[nrows];
+        rcmInvPerm = new int[nrows];
         csr->getRCMPermutation(rcmInvPerm, rcmPerm);
     }
     else
@@ -417,18 +552,35 @@ void sparsemat::doRCM()
 #endif
 }
 
+void sparsemat::doRCMPermute()
+{
+    doRCM();
+    permute(rcmPerm, rcmInvPerm);
+    rcmPerm = NULL;
+    rcmInvPerm = NULL;
+}
+
 int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cacheSize, int nthreads, int smt, PinMethod pinMethod)
 {
+    //permute(rcmInvPerm, rcmPerm);
+    //rcmPerm = NULL;
+    //rcmInvPerm = NULL;
     ce = new Interface(nrows, nthreads, RACE::POWER, rowPtr, col, smt, pinMethod, rcmPerm, rcmInvPerm);
     ce->RACEColor(highestPower, numSharedCache, cacheSize);
 
     int *perm, *invPerm, permLen;
     ce->getPerm(&perm, &permLen);
     ce->getInvPerm(&invPerm, &permLen);
-    permute(perm, invPerm , true);
+    permute(perm, invPerm, true);
 
+    //no idea why need it second time w/o perm. 
+    //NUMA init work nicely only if this is done; (only for pwtk, others perf
+    //degradation))
+    numaInit(true);
+    //writeFile("after_RCM.mtx");
     return 1;
 }
+
 
 int sparsemat::colorAndPermute(dist distance, int nthreads, int smt, PinMethod pinMethod)
 {
@@ -473,11 +625,9 @@ void sparsemat::numaInit(bool RACEalloc)
 }
 
 //symmetrically permute
-void sparsemat::permute(int *perm, int*  invPerm, bool RACEalloc)
+void sparsemat::permute(int *_perm_, int*  _invPerm_, bool RACEalloc)
 {
-    printf("NUMA allocing\n");
-
-    double* newVal = new double[nnz];
+    double* newVal = new double[block_size*block_size*nnz];
     int* newCol = new int[nnz];
     int* newRowPtr = new int[nrows+1];
 
@@ -492,7 +642,7 @@ void sparsemat::permute(int *perm, int*  invPerm, bool RACEalloc)
     if(!RACEalloc)
     {
         //NUMA init
-#pragma omp parallel for schedule(static)
+//#pragma omp parallel for schedule(static)
         for(int row=0; row<nrows; ++row)
         {
             newRowPtr[row+1] = 0;
@@ -503,20 +653,20 @@ void sparsemat::permute(int *perm, int*  invPerm, bool RACEalloc)
         ce->numaInitRowPtr(newRowPtr);
     }
 
-    if(perm != NULL)
+    if(_perm_ != NULL)
     {
         //first find newRowPtr; therefore we can do proper NUMA init
-        int permIdx=0;
+        int _perm_Idx=0;
         printf("nrows = %d\n", nrows);
         for(int row=0; row<nrows; ++row)
         {
-            //row permutation
-            int permRow = perm[row];
-            for(int idx=rowPtr[permRow]; idx<rowPtr[permRow+1]; ++idx)
+            //row _perm_utation
+            int _perm_Row = _perm_[row];
+            for(int idx=rowPtr[_perm_Row]; idx<rowPtr[_perm_Row+1]; ++idx)
             {
-                ++permIdx;
+                ++_perm_Idx;
             }
-            newRowPtr[row+1] = permIdx;
+            newRowPtr[row+1] = _perm_Idx;
         }
     }
     else
@@ -533,37 +683,45 @@ void sparsemat::permute(int *perm, int*  invPerm, bool RACEalloc)
         ce->numaInitMtxVec(newRowPtr, newCol, newVal, NULL);
     }
 
-    if(perm != NULL)
+    if(_perm_ != NULL)
     {
         //with NUMA init
-#pragma omp parallel for schedule(static)
+//#pragma omp parallel for schedule(static)
         for(int row=0; row<nrows; ++row)
         {
-            //row permutation
-            int permRow = perm[row];
-            for(int permIdx=newRowPtr[row],idx=rowPtr[permRow]; permIdx<newRowPtr[row+1]; ++idx,++permIdx)
+            //row _perm_utation
+            int _perm_Row = _perm_[row];
+            for(int _perm_Idx=newRowPtr[row],idx=rowPtr[_perm_Row]; _perm_Idx<newRowPtr[row+1]; ++idx,++_perm_Idx)
             {
-                //permute column-wise also
-                newVal[permIdx] = val[idx];
-                newCol[permIdx] = invPerm[col[idx]];
+                //_perm_ute column-wise also
+                //newVal[_perm_Idx] = val[idx];
+                newCol[_perm_Idx] = _invPerm_[col[idx]];
+                for(int b=0; b<block_size*block_size; ++b)
+                {
+                    newVal[_perm_Idx+b] = val[idx+b];
+                }
             }
         }
     }
     else
     {
-#pragma omp parallel for schedule(static)
+//#pragma omp parallel for schedule(static)
         for(int row=0; row<nrows; ++row)
         {
             for(int idx=newRowPtr[row]; idx<newRowPtr[row+1]; ++idx)
             {
-                newVal[idx] = val[idx];
+                //newVal[idx] = val[idx];
                 newCol[idx] = col[idx];
+                for(int b=0; b<block_size*block_size; ++b)
+                {
+                    newVal[idx+b] = val[idx+b];
+                }
             }
         }
     }
 
 
-    //free old permutations
+    //free old _perm_utations
     delete[] val;
     delete[] rowPtr;
     delete[] col;

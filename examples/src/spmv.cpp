@@ -58,7 +58,8 @@ int main(const int argc, char * argv[])
         printf("Error in reading sparse matrix file\n");
     }
 
-    mat->numaInit();
+    mat->doRCMPermute();
+    //mat->numaInit();
     int NROWS = mat->nrows;
 
     densemat *x, *b;

@@ -24,12 +24,20 @@ struct sparsemat
     Interface* ce;
     int *rowPtr, *col;
     double *val;
+
+/*    int nrows_bcsr, nnz_bcsr;
+    int *rowPtr_bcsr, *col_bcsr;
+    double *val_bcsr;*/
+    int block_size;
+
     int *rcmPerm, *rcmInvPerm;
 
     bool readFile(char* filename);
+    bool convertToBCSR(int b_r);
     bool writeFile(char* filename);
     void makeDiagFirst();
     void doRCM();
+    void doRCMPermute();
     int prepareForPower(int highestPower, int numSharedCache, double cacheSize, int nthreads, int smt=1, PinMethod pinMethod=FILL);
     int colorAndPermute(dist d, int nthreads, int smt=1, PinMethod pinMethod=FILL);
     double colorEff();

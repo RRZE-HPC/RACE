@@ -268,15 +268,92 @@ void mkl_spmv(sparsemat* mat, densemat* x)
     DELETE_ARG();
 }
 
+inline void MAT_SPMV_KERNEL(int start, int end, int pow, void* args)
+{
+    DECODE_FROM_VOID(args);
+
+    int parentId = omp_get_thread_num();
+//#pragma omp parallel
+//    {
+        //int ctr = 0;
+        for(int row=start; row<end; ++row)
+        {
+            /*
+            if(((sched_getcpu())/10) != parentId)
+            //if(ctr<100)
+            {
+                printf("here inside is cpu: %d thread: %d parent: %d\n", sched_getcpu(), omp_get_thread_num(), parentId);
+                //++ctr;
+            }*/
+            double tmp = 0;
+            const int offset = (pow-1)*mat->nrows;
+#pragma nounroll
+#pragma simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)
+            for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
+            {
+                tmp += mat->val[idx]*x->val[offset+mat->col[idx]];
+            }
+            x->val[(pow)*mat->nrows+row] = tmp;
+        }
+  //  }
+}
 
 void matPower(sparsemat *A, int power, densemat *x)
 {
     RACE::Interface *ce = A->ce;
     ENCODE_TO_VOID(A, NULL, x);
-    int race_power_id = ce->registerFunction(&PLAIN_SPMV_KERNEL, voidArg, power);
-//#pragma omp parallel
+    int race_power_id = ce->registerFunction(&MAT_SPMV_KERNEL, voidArg, power);
     {
         ce->executeFunction(race_power_id);
     }
     DELETE_ARG();
 }
+
+inline void MAT_SPMV_KERNEL_BCSR_2x2(int start, int end, int pow, void* args)
+{
+    DECODE_FROM_VOID(args);
+
+    int parentId = omp_get_thread_num();
+    //int ctr = 0;
+    for(int row=start; row<end; ++row)
+    {
+        /*
+           if(((sched_getcpu())/10) != parentId)
+        //if(ctr<100)
+        {
+        printf("here inside is cpu: %d thread: %d parent: %d\n", sched_getcpu(), omp_get_thread_num(), parentId);
+        //++ctr;
+        }*/
+        double tmp[2];
+        tmp[0] = 0;
+        tmp[1] = 0;
+        const int offset = (pow-1)*mat->nrows*2;
+//#pragma nounroll
+#pragma simd vectorlength(VECTOR_LENGTH)
+        for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
+        {
+#pragma unroll_and_jam(4)
+            for(int b_x=0; b_x<2; ++b_x)
+            {
+                for(int b_y=0; b_y<2; ++b_y)
+                {
+                    tmp[b_x] += mat->val[4*idx+b_x*2+b_y]*x->val[offset+2*mat->col[idx]+b_y];
+                }
+            }
+        }
+        x->val[(pow)*mat->nrows*2+2*row] = tmp[0];
+        x->val[(pow)*mat->nrows*2+2*row+1] = tmp[1];
+    }
+}
+
+void matPowerBCSR(sparsemat *A, int power, densemat *x)
+{
+    RACE::Interface *ce = A->ce;
+    ENCODE_TO_VOID(A, NULL, x);
+    int race_power_id = ce->registerFunction(&MAT_SPMV_KERNEL_BCSR_2x2, voidArg, power);
+    {
+        ce->executeFunction(race_power_id);
+    }
+    DELETE_ARG();
+}
+
