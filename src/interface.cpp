@@ -365,12 +365,16 @@ void powerInitRowPtrFunc(int start, int end, int pow, void* arg)
          ERROR_PRINT("Memory locking didn't work");
      }*/
 
-#pragma omp parallel for schedule(static)
-    for(int row=start; row<end; ++row)
-    {
-        rowPtr[row] = 0*pow*nrow;
-        rowPtr[row+1] = 0*pow*nrow;
-    }
+//#pragma omp parallel for schedule(static)
+
+     if(pow == 1)
+     {
+         for(int row=start; row<end; ++row)
+         {
+             rowPtr[row] = 0*pow*nrow;
+             rowPtr[row+1] = 0*pow*nrow;
+         }
+     }
 }
 
 void RACE::Interface::numaInitRowPtr(int *rowPtr_)
@@ -413,10 +417,10 @@ void powerInitMtxVecFunc(int start, int end, int pow, void* arg)
     }
     */
 
-#pragma omp parallel for schedule(static)
+//#pragma omp parallel for schedule(static)
     for(int row=start; row<end; ++row)
     {
-        if(pow==0)
+        if(pow==1)
         {
             for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
             {
@@ -427,7 +431,7 @@ void powerInitMtxVecFunc(int start, int end, int pow, void* arg)
         if(x!=NULL)
         {
             x[(pow)*nrow+row] = 0;
-            x[(pow+1)*nrow+row] = 0;
+            x[(pow-1)*nrow+row] = 0;
         }
     }
 }
@@ -437,8 +441,10 @@ void RACE::Interface::numaInitMtxVec(int *rowPtr_, int *col_, double *val_, doub
     if(distance == RACE::POWER)
     {
         ENCODE_ARG(nrow, rowPtr_, col_, val_, x_);
-        int fn_id = registerFunction(powerInitMtxVecFunc, voidArg, power_);
+        int fn_id = registerFunction(powerInitMtxVecFunc, voidArg, 1);
         executeFunction(fn_id);
+        //funMan[fn_id]->NUMAInitPower();
+
     }
     else
     {
