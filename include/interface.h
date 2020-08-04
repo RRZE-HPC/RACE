@@ -113,7 +113,7 @@ class RACE::Interface{
 
         //Execution
         int registerFunction(void (*f) (int,int,void *), void* args);
-        int registerFunction(void (*f) (int,int,int,void *), void* args, int power=1);
+        int registerFunction(void (*f) (int,int,int,int,void *), void* args, int power=1, int numaSplit=false);
         void executeFunction(int funcId, bool rev=false);
         //RACE_error powerRun(int power, int *rowPtr, int *col, double *A, double *x);
 
@@ -131,12 +131,23 @@ class RACE::Interface{
         //function to pin threads similar to RACE
         //from external applications like OpenMP
         void pinThread(int threadId);
+
+        //normal NUMA init
         void numaInitRowPtr(int *rowPtr);
         void numaInitMtxVec(int *rowPtr, int *col, double *val, double *x, int power=1);
+
+        void numaInitRowPtr(int **rowPtr);
+        void numaInitMtxVec(int **rowPtr, int **col, double **val, int power=1);
+
+
+        //NUMA with actual splitting
+        void getNumaSplitting(int **split, int *splitLen);
 };
 
-void powerInitRowPtrFunc(int start, int end, int pow, void* arg);
-void powerInitMtxVecFunc(int start, int end, int pow, void* arg);
+void powerInitRowPtrFunc(int start, int end, int pow, int numa_domain, void* arg);
+void powerInitMtxVecFunc(int start, int end, int pow, int numa_domain, void* arg);
+void powerInitRowPtrNumaLocalFunc(int start, int end, int pow, int numa_domain, void* arg);
+void powerInitMtxVecNumaLocalFunc(int start, int end, int pow, int numa_domain, void* arg);
 
 struct matValArg
 {
@@ -163,6 +174,34 @@ struct matValArg
     int* col = nonVoidArg_->col;\
     double* val = nonVoidArg_->val;\
     double* x = nonVoidArg_->x;\
+
+struct matValNumaLocalArg
+{
+    int nrow;
+    int **rowPtr;
+    int **col;
+    double **val;
+    double *x;
+};
+
+
+#define ENCODE_NUMA_LOCAL_ARG(_nrow_, _rowPtr_, _col_, _val_, _x_)\
+    matValNumaLocalArg *newArg_ = new matValNumaLocalArg;\
+    newArg_->nrow = _nrow_;\
+    newArg_->rowPtr = _rowPtr_;\
+    newArg_->col = _col_;\
+    newArg_->val = _val_;\
+    newArg_->x = _x_;\
+    void *voidArg = (void*) newArg_;
+
+#define DECODE_NUMA_LOCAL_ARG(_voidArg_)\
+    matValNumaLocalArg *nonVoidArg_ = (matValNumaLocalArg*) _voidArg_;\
+    int nrow = nonVoidArg_->nrow;\
+    int** rowPtr = nonVoidArg_->rowPtr;\
+    int** col = nonVoidArg_->col;\
+    double** val = nonVoidArg_->val;\
+    double* x = nonVoidArg_->x;\
+
 
 
 #endif

@@ -12,7 +12,7 @@
 #endif
 
 
-sparsemat::sparsemat(int NUMAnodes_):nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), NUMAnodes(NUMAnodes_)
+sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL)
 {
 }
 
@@ -576,7 +576,7 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
     //no idea why need it second time w/o perm. 
     //NUMA init work nicely only if this is done; (only for pwtk, others perf
     //degradation))
-    numaInit(true);
+    //numaInit(true);
     //writeFile("after_RCM.mtx");
     return 1;
 }
@@ -627,9 +627,12 @@ void sparsemat::numaInit(bool RACEalloc)
 //symmetrically permute
 void sparsemat::permute(int *_perm_, int*  _invPerm_, bool RACEalloc)
 {
-    double* newVal = new double[block_size*block_size*nnz];
-    int* newCol = new int[nnz];
-    int* newRowPtr = new int[nrows+1];
+    double* newVal = (double*)malloc(sizeof(double)*block_size*block_size*nnz);
+        //new double[block_size*block_size*nnz];
+    int* newCol = (int*)malloc(sizeof(int)*nnz);
+        //new int[nnz];
+    int* newRowPtr = (int*)malloc(sizeof(int)*(nrows+1));
+        //new int[nrows+1];
 
 /*
     double *newVal = (double*) malloc(sizeof(double)*nnz);
@@ -642,7 +645,7 @@ void sparsemat::permute(int *_perm_, int*  _invPerm_, bool RACEalloc)
     if(!RACEalloc)
     {
         //NUMA init
-//#pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(static)
         for(int row=0; row<nrows; ++row)
         {
             newRowPtr[row+1] = 0;
@@ -686,7 +689,7 @@ void sparsemat::permute(int *_perm_, int*  _invPerm_, bool RACEalloc)
     if(_perm_ != NULL)
     {
         //with NUMA init
-//#pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(static)
         for(int row=0; row<nrows; ++row)
         {
             //row _perm_utation
@@ -705,7 +708,7 @@ void sparsemat::permute(int *_perm_, int*  _invPerm_, bool RACEalloc)
     }
     else
     {
-//#pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(static)
         for(int row=0; row<nrows; ++row)
         {
             for(int idx=newRowPtr[row]; idx<newRowPtr[row+1]; ++idx)
@@ -746,4 +749,141 @@ void sparsemat::pinOMP(int nthreads)
     }
 }
 
+
+NUMAmat::NUMAmat(sparsemat *mat_, bool manual, std::vector<int> splitRows_):mat(mat_)
+{
+    if(manual)
+    {
+        splitRows = splitRows_;
+    }
+    else
+    {
+        splitRows = getRACEPowerSplit();
+    }
+    NUMAdomains  = splitRows.size()-1;
+
+    nrows = new int[NUMAdomains];
+    nnz = new int[NUMAdomains];
+    rowPtr = new int*[NUMAdomains];
+    col = new int*[NUMAdomains];
+    val = new double*[NUMAdomains];
+    for(int domain = 0; domain<NUMAdomains; ++domain)
+    {
+        int startRow = splitRows[domain];
+        int endRow = splitRows[domain+1];
+        int currNrows = endRow - startRow;
+        rowPtr[domain] = new int[currNrows+1];
+    }
+    mat->ce->numaInitRowPtr(rowPtr);
+
+    for(int domain = 0; domain<NUMAdomains; ++domain)
+    {
+        int startRow = splitRows[domain];
+        int endRow = splitRows[domain+1];
+        int currNrows = endRow - startRow;
+        //BCSR not yet for NUMAmat
+        nrows[domain] = currNrows;
+        //rowPtr[domain] = new int[currNrows+1];
+        rowPtr[domain][0] = 0;
+        int cur_nnz = 0;
+        for(int row=0; row<currNrows; ++row)
+        {
+            //rowPtr[domain][row+1] = mat->rowPtr[row+1+startRow];
+
+            for(int idx=mat->rowPtr[row+startRow]; idx<mat->rowPtr[row+1+startRow]; ++idx)
+            {
+                ++cur_nnz;
+            }
+            rowPtr[domain][row+1] = cur_nnz;
+        }
+        nnz[domain] = cur_nnz;
+    }
+    for(int domain = 0; domain<NUMAdomains; ++domain)
+    {
+        int cur_nnz = nnz[domain];
+        col[domain] = new int[cur_nnz];
+        val[domain] = new double[cur_nnz];
+    }
+
+    mat->ce->numaInitMtxVec(rowPtr, col, val, 1);
+    for(int domain = 0; domain<NUMAdomains; ++domain)
+    {
+        int startRow = splitRows[domain];
+        int endRow = splitRows[domain+1];
+        int currNrows = endRow - startRow;
+
+        for(int row=0; row<currNrows; ++row)
+        {
+            for(int idx=mat->rowPtr[row+startRow], local_idx=rowPtr[domain][row]; idx<mat->rowPtr[row+1+startRow]; ++idx,++local_idx)
+            {
+                col[domain][local_idx] = mat->col[idx];
+                val[domain][local_idx] = mat->val[idx];
+            }
+        }
+    }
+/*
+    printf("Mat = \n");
+    for(int row=0; row<mat->nrows; ++row)
+    {
+        printf("row = %d \t", row);
+        for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
+        {
+            printf("(%d,%f) ", mat->col[idx], mat->val[idx]);
+        }
+        printf("\n");
+    }
+
+    printf("Sub mat = \n");
+    for(int domain=0; domain<NUMAdomains; ++domain)
+    {
+        printf("domain = %d\n", domain);
+        for(int row=0; row<nrows[domain]; ++row)
+        {
+            printf("row = %d \t", row);
+            for(int idx=rowPtr[domain][row]; idx<rowPtr[domain][row+1]; ++idx)
+            {
+                printf("(%d,%f) ", col[domain][idx], val[domain][idx]);
+            }
+            printf("\n");
+        }
+    }
+*/
+}
+
+std::vector<int> NUMAmat::getRACEPowerSplit()
+{
+    int *split, splitLen;
+    mat->ce->getNumaSplitting(&split, &splitLen);
+    std::vector<int> split_vec;
+    for(int i=0; i<splitLen; ++i)
+    {
+        split_vec.push_back(split[i]);
+    }
+
+    return split_vec;
+}
+
+NUMAmat::~NUMAmat()
+{
+    for(int domain = 0; domain<NUMAdomains; ++domain)
+    {
+        if(rowPtr[domain])
+        {
+            delete[] rowPtr[domain];
+        }
+
+        if(col[domain])
+        {
+            delete[] col[domain];
+        }
+
+        if(val[domain])
+        {
+            delete[] val[domain];
+        }
+    }
+    delete[] rowPtr;
+    delete[] col;
+    delete[] val;
+}
 

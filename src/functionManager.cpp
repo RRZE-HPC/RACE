@@ -8,7 +8,8 @@
 #define POWER_WITH_FLUSH_LOCK
 //#define RACE_DEBUG
 
-FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),power_fn(false),func(f_),args(args_),zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_), lockCtr(NULL), unlockRow(NULL), dangerRow(NULL), unlockCtr(NULL)
+//coloring
+FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),power_fn(false), numaSplit(false), func(f_),args(args_),zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_), lockCtr(NULL), unlockRow(NULL), dangerRow(NULL), unlockCtr(NULL)
 {
     //    func = std::bind(f_,*this,std::placeholders::_1,std::placeholders::_2,args);
     /*len = 72*72*72;
@@ -17,11 +18,12 @@ FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zone
       c = new double[len];
       d = new double[len];
       */
-    //  barrierTime = 0;   
+    //  barrierTime = 0;
     recursiveFun = std::bind(recursiveCall, this, std::placeholders::_1);
 }
 
-FuncManager::FuncManager(void (*f_) (int,int,int,void*), void *args_, int power_, mtxPower *matPower_):power_fn(true), powerFunc(f_), args(args_), power(power_), matPower(matPower_), lockCtr(NULL), lockTableCtr(NULL), unlockRow(NULL), dangerRow(NULL), unlockCtr(NULL)
+//power = true, NUMA = false
+FuncManager::FuncManager(void (*f_) (int,int,int,int,void*), void *args_, int power_, mtxPower *matPower_, bool numaSplit_):power_fn(true), numaSplit(numaSplit_), powerFunc(f_), args(args_), power(power_), matPower(matPower_), lockCtr(NULL), lockTableCtr(NULL), unlockRow(NULL), dangerRow(NULL), unlockCtr(NULL)
 {
 #ifdef POWER_WITH_FLUSH_LOCK
     initPowerRun();
@@ -29,7 +31,6 @@ FuncManager::FuncManager(void (*f_) (int,int,int,void*), void *args_, int power_
     dangerRow = matPower->getDangerRowRef();
     unlockCtr = matPower->getUnlockCtrRef();
 #endif
-
 }
 
 FuncManager::FuncManager(const FuncManager &obj)
@@ -48,6 +49,7 @@ FuncManager::FuncManager(const FuncManager &obj)
     unlockRow = obj.unlockRow;
     dangerRow = obj.dangerRow;
     unlockCtr = obj.unlockCtr;
+    numaSplit = obj.numaSplit;
 }
 
 FuncManager::~FuncManager()
@@ -348,10 +350,11 @@ void FuncManager::NUMAInitPower()
         int threadPerLevelGroup = omp_get_num_threads()/totalLevelGroup;
         int tid = omp_get_thread_num();
         int levelGroup = tid / threadPerLevelGroup;
+        int numaLocalArg = (numaSplit)?levelGroup:0;
         //only first thread in each levelGroup works
         if(tid == levelGroup*threadPerLevelGroup)
         {
-            powerFunc(levelPtr[levelGroupPtr[levelGroup]], levelPtr[levelGroupPtr[levelGroup+1]], 1, args);
+            powerFunc(levelPtr[levelGroupPtr[levelGroup]], levelPtr[levelGroupPtr[levelGroup+1]], 1, numaLocalArg, args);
             /*for(int row=levelGroupPtr[levelGroup]; row<levelGroupPtr[levelGroup+1]; ++row)
             {
                 for(int idx=rowPtr_[row]; idx<rowPtr_[row+1]; ++idx)
@@ -407,6 +410,9 @@ void FuncManager::powerRun()
         int tid = omp_get_thread_num();
         int levelGroup = tid / threadPerLevelGroup;
         int localTid = tid % threadPerLevelGroup;
+        int numaLocalArg = (numaSplit)?levelGroup:0;
+        int offset = levelPtr[levelGroupPtr[numaLocalArg]];
+       // printf("Offset = %d\n", offset);
         //body
         {
             //printf("here is %d\n", sched_getcpu());
@@ -456,7 +462,7 @@ void FuncManager::powerRun()
                                 {
                                     //check lock
                                     WAIT(powLevel, pow);
-                                    powerFunc(startRow_tid, endRow_tid, pow+1, args);
+                                    powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);
 #ifdef RACE_DEBUG
                                     printf("5. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), startRow_tid, endRow_tid, pow, powLevel);
 #endif
@@ -475,7 +481,7 @@ void FuncManager::powerRun()
                                     if(startRow_tid < currUnlockRow)
                                     {
                                         till_row = std::min(currUnlockRow, endRow_tid);
-                                        powerFunc(startRow_tid, till_row, pow+1, args);
+                                        powerFunc(startRow_tid, till_row, pow+1, numaLocalArg, args);
 #ifdef RACE_DEBUG
                                         printf("1. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), startRow_tid, currUnlockRow, pow, powLevel);
 #endif
@@ -494,14 +500,14 @@ void FuncManager::powerRun()
                                     }*/
                                     if(dangerRowStart > endRow_tid)
                                     {
-                                        powerFunc(till_row, endRow_tid, pow+1, args);
+                                        powerFunc(till_row, endRow_tid, pow+1, numaLocalArg, args);
 #ifdef RACE_DEBUG
                                         printf("2. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), till_row, endRow_tid, pow, powLevel);
 #endif
                                     }
                                     else
                                     {
-                                        powerFunc(till_row, dangerRowStart, pow+1, args);
+                                        powerFunc(till_row, dangerRowStart, pow+1, numaLocalArg, args);
 #ifdef RACE_DEBUG
                                         printf("3. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), till_row, dangerRowStart, pow, powLevel);
 #endif
@@ -509,7 +515,7 @@ void FuncManager::powerRun()
                                         //check lock
                                         WAIT(powLevel, pow);
 
-                                        powerFunc(dangerRowStart, endRow_tid, pow+1, args);
+                                        powerFunc(dangerRowStart, endRow_tid, pow+1, numaLocalArg, args);
 #ifdef RACE_DEBUG
                                         printf("4. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), dangerRowStart, endRow_tid, pow, powLevel);
 #endif
@@ -591,7 +597,7 @@ void FuncManager::powerRun()
                 {
                     SPLIT_LEVEL_PER_THREAD(level);
                     //can be a function ptr
-                    powerFunc(startRow_tid, endRow_tid, pow+1, args);
+                    powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);
                 }
             }
             //reminder-tail
@@ -602,7 +608,7 @@ void FuncManager::powerRun()
                 {
                     SPLIT_LEVEL_PER_THREAD(level);
                     //can be a function ptr
-                    powerFunc(startRow_tid, endRow_tid, pow+1, args);
+                    powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);
                 }
 
             }
@@ -775,3 +781,7 @@ void FuncManager::Run(bool rev_)
     //test_omp(a,b,c,d,0,len,1);
 }*/
 
+bool FuncManager::isNumaSplit()
+{
+    return numaSplit;
+}

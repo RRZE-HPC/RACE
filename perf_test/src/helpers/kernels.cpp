@@ -201,10 +201,11 @@ void symm_spmv(densemat* b, sparsemat* mat, densemat* x, int iterations)
     DELETE_ARG();
 }
 
-inline void PLAIN_SPMV_POW_KERNEL(int start, int end, int pow, void* args)
+inline void PLAIN_SPMV_POW_KERNEL(int start, int end, int pow, int numa_domain, void* args)
 {
     DECODE_FROM_VOID(args);
     UNUSED(b);
+    UNUSED(numa_domain);
     //int parentId = omp_get_thread_num();
 //#pragma omp parallel
 //    {
@@ -236,7 +237,7 @@ inline void PLAIN_SPMV_POW_KERNEL(int start, int end, int pow, void* args)
 void plain_spmv_pow(sparsemat* mat, densemat* x)
 {
     ENCODE_TO_VOID(mat, NULL, x);
-    PLAIN_SPMV_POW_KERNEL(0, mat->nrows, 1, voidArg);
+    PLAIN_SPMV_POW_KERNEL(0, mat->nrows, 1, 0, voidArg);
     DELETE_ARG();
 }
 

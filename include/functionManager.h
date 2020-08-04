@@ -18,8 +18,9 @@ class FuncManager
     private:
         bool rev;
         typedef std::function< void(int,int,void *) > funcType;
-        typedef std::function< void(int,int,int,void *) > powerFuncType;
+        typedef std::function< void(int,int,int,int,void *) > powerFuncType;
         bool power_fn;
+        bool numaSplit;
         funcType func;
         powerFuncType powerFunc;
         void* args;
@@ -40,7 +41,7 @@ class FuncManager
         //int len;
     public:
         FuncManager(void (*f_) (int,int,void *), void* args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart);
-        FuncManager(void (*f_) (int,int,int,void *), void* args_, int power, mtxPower *matPower);
+        FuncManager(void (*f_) (int,int,int,int,void *), void* args_, int power, mtxPower *matPower, bool numaSplit_);
         FuncManager(const FuncManager &obj);
         ~FuncManager();
         void SerialPartRun();
@@ -48,6 +49,7 @@ class FuncManager
         void NUMAInitPower();
         void powerRun();
         void Run(bool rev_=false);
+        bool isNumaSplit();
         //void RunOMP();
         //	double barrierTime;
 };

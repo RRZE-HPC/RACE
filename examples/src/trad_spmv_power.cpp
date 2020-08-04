@@ -45,10 +45,10 @@ int main(const int argc, char * argv[])
     printf("power = %d\n", power);
 
 
-   // mat->doRCMPermute(); //Permute();
+    mat->doRCMPermute(); //Permute();
     //mat->writeFile("after_RCM.mtx");
     //mat->prepareForPower(power, param.nodes, param.cache_size*1024*1024, param.cores, param.smt, param.pin);
-    mat->numaInit();
+    //mat->numaInit();
 
 
     densemat *xTRAD;

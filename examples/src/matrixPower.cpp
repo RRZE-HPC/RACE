@@ -140,7 +140,10 @@ int main(const int argc, char * argv[])
     }
 #endif*/
 
-    mat->writeFile("matrixAfterProcessing.mtx");
+    //mat->writeFile("matrixAfterProcessing.mtx");
+
+    //construct NUMA local mats
+    NUMAmat *mat_numa_local = new NUMAmat(mat);
     printf("Finished preparing\n\n");
 
     int NROWS = mat->nrows;
@@ -159,11 +162,12 @@ int main(const int argc, char * argv[])
     printf("calculation started\n");
 
     //determine iterations
-   INIT_TIMER(matPower_init);
+    INIT_TIMER(matPower_init);
     START_TIMER(matPower_init);
     for(int iter=0; iter<10; ++iter)
     {
-        matPower(mat, power, xRACE);
+        matPowerNuma(mat_numa_local, power, xRACE);
+        //matPower(mat, power, xRACE);
     }
     STOP_TIMER(matPower_init);
     double initTime = GET_TIMER(matPower_init);
@@ -221,7 +225,8 @@ int main(const int argc, char * argv[])
     START_TIMER(matPower);
     for(int iter=0; iter<iterations; ++iter)
     {
-        matPower(mat, power, xRACE);
+        matPowerNuma(mat_numa_local, power, xRACE);
+        //matPower(mat, power, xRACE);
     }
     /*for(int pow=0; pow<power; ++pow)
       {
@@ -255,6 +260,7 @@ int main(const int argc, char * argv[])
     }
 
     delete mat;
+    delete mat_numa_local;
     delete xRACE;
 #ifdef LIKWID_PERFMON
     LIKWID_MARKER_CLOSE;

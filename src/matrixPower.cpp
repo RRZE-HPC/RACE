@@ -357,7 +357,7 @@ void mtxPower::findUnlockCtr()
             int localTid = tid % threadPerLevelGroup;
             int startLevel = levelGroupPtr[levelGroup];
             int endLevel = levelGroupPtr[levelGroup+1];
-
+            int offset = 0; //doesn't matter what is offset
             //initialize lockTableCtr
             for(int l=startLevel; l<endLevel; ++l)
             {

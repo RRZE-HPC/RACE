@@ -57,4 +57,21 @@ struct sparsemat
 
 };
 
+//Used for NUMA aware allocation, sometimes just
+//using first touch policy doesn't give the best performance
+struct NUMAmat
+{
+    sparsemat *mat;
+    int *nrows, *nnz, **rowPtr, **col;
+    double **val;
+    int NUMAdomains;
+    std::vector<int> splitRows;
+
+    NUMAmat(sparsemat *mat_, bool manual=false, std::vector<int> splitRows_={-2});
+    ~NUMAmat();
+
+    private:
+    std::vector<int> getRACEPowerSplit();
+};
+
 #endif

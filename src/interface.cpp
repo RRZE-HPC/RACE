@@ -191,12 +191,12 @@ int RACE::Interface::registerFunction(void (*f) (int,int,void *), void *args)
     }
     else
     {
-        ERROR_PRINT("To calcaulte power call back function prototype is void (*f) (int,int,int,void *)\n");
+        ERROR_PRINT("To calcaulte power call back function prototype is void (*f) (int,int,int,int,void *)\n");
         return RACE_ERR_INVALID_ARG;
     }
 }
 
-int RACE::Interface::registerFunction(void (*f) (int,int,int,void *), void *args, int power)
+int RACE::Interface::registerFunction(void (*f) (int,int,int,int,void *), void *args, int power, int numaSplit)
 {
     if(distance != RACE::POWER)
     {
@@ -205,7 +205,7 @@ int RACE::Interface::registerFunction(void (*f) (int,int,int,void *), void *args
     }
     else
     {
-        FuncManager* currFun = new FuncManager(f, args, power, powerCalculator);
+        FuncManager* currFun = new FuncManager(f, args, power, powerCalculator, numaSplit);
         funMan.push_back(currFun);
         return (funMan.size()-1);
     }
@@ -350,7 +350,7 @@ void RACE::Interface::pinThread(int threadId)
     pool->pin.pinThread(threadId);
 }
 
-void powerInitRowPtrFunc(int start, int end, int pow, void* arg)
+void powerInitRowPtrFunc(int start, int end, int pow, int numa_domain, void* arg)
 {
      DECODE_ARG(arg);
      if((col != NULL && val != NULL) && x != NULL)
@@ -375,6 +375,7 @@ void powerInitRowPtrFunc(int start, int end, int pow, void* arg)
              rowPtr[row+1] = 0*pow*nrow;
          }
      }
+     UNUSED(numa_domain);
 }
 
 void RACE::Interface::numaInitRowPtr(int *rowPtr_)
@@ -391,7 +392,51 @@ void RACE::Interface::numaInitRowPtr(int *rowPtr_)
     }
 }
 
-void powerInitMtxVecFunc(int start, int end, int pow, void* arg)
+
+void powerInitRowPtrNumaLocalFunc(int start, int end, int pow, int numa_domain, void* arg)
+{
+     DECODE_NUMA_LOCAL_ARG(arg);
+     if((col != NULL && val != NULL) && x != NULL)
+     {
+         printf("Something went wrong, I shouldnn' t be here\n");
+     }
+
+     /*
+     if( lock_memory( (char*)&(rowPtr[start]), (end-start)*sizeof(int) ) == -1 )
+     {
+         rowPtr[0] = 0*pow*nrow;
+         ERROR_PRINT("Memory locking didn't work");
+     }*/
+
+//#pragma omp parallel for schedule(static)
+
+     if(pow == 1)
+     {
+         for(int row=start; row<end; ++row)
+         {
+             rowPtr[numa_domain][row] = 0*pow*nrow;
+             //rowPtr[numa_domain][row+1] = 0*pow*nrow;
+         }
+     }
+}
+
+
+void RACE::Interface::numaInitRowPtr(int **rowPtr_)
+{
+    if(distance == RACE::POWER)
+    {
+        ENCODE_NUMA_LOCAL_ARG(nrow, rowPtr_, NULL, NULL, NULL);
+        int fn_id = registerFunction(powerInitRowPtrNumaLocalFunc, voidArg, 1, true);
+        executeFunction(fn_id);
+    }
+    else
+    {
+        ERROR_PRINT("NUMA not implemented for coloring")
+    }
+}
+
+//without NUMA split to local parts
+void powerInitMtxVecFunc(int start, int end, int pow, int numa_domain, void* arg)
 {
     DECODE_ARG(arg);
 
@@ -434,6 +479,8 @@ void powerInitMtxVecFunc(int start, int end, int pow, void* arg)
             x[(pow-1)*nrow+row] = 0;
         }
     }
+
+    UNUSED(numa_domain);
 }
 
 void RACE::Interface::numaInitMtxVec(int *rowPtr_, int *col_, double *val_, double *x_, int power_)
@@ -450,5 +497,60 @@ void RACE::Interface::numaInitMtxVec(int *rowPtr_, int *col_, double *val_, doub
     {
         ERROR_PRINT("NUMA not implemented for coloring")
     }
+    UNUSED(power_);
 }
 
+
+//NUMA local sparse matrix
+void powerInitMtxVecNumaLocalFunc(int start, int end, int pow, int numa_domain, void* arg)
+{
+    DECODE_NUMA_LOCAL_ARG(arg);
+
+//#pragma omp parallel for schedule(static)
+    for(int row=start; row<end; ++row)
+    {
+        if(pow==1)
+        {
+            for(int idx=rowPtr[numa_domain][row]; idx<rowPtr[numa_domain][row+1]; ++idx)
+            {
+                val[numa_domain][idx] = 0;
+                col[numa_domain][idx] = 0;
+            }
+        }
+    }
+    UNUSED(nrow);
+    UNUSED(x);
+}
+
+
+void RACE::Interface::numaInitMtxVec(int **rowPtr_, int **col_, double **val_, int power_)
+{
+    if(distance == RACE::POWER)
+    {
+        ENCODE_NUMA_LOCAL_ARG(nrow, rowPtr_, col_, val_, NULL);
+        int fn_id = registerFunction(powerInitMtxVecNumaLocalFunc, voidArg, 1, true);
+        executeFunction(fn_id);
+        //funMan[fn_id]->NUMAInitPower();
+
+    }
+    else
+    {
+        ERROR_PRINT("NUMA not implemented for coloring")
+    }
+}
+
+
+
+void RACE::Interface::getNumaSplitting(int **split, int *splitLen)
+{
+
+    int NUMAdomains = powerCalculator->getTotalLevelGroup();
+    (*split) = (int*) malloc(sizeof(int)*(NUMAdomains+1));
+    for(int i=0; i<=NUMAdomains; ++i)
+    {
+        int *levelPtr = powerCalculator->getLevelPtrRef();
+        int *levelGroupPtr = powerCalculator->getLevelGroupPtrRef();
+        (*split)[i] = levelPtr[levelGroupPtr[i]];
+    }
+    (*splitLen) = NUMAdomains+1;
+}
