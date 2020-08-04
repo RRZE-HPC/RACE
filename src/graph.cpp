@@ -34,7 +34,20 @@ RACE_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *
             permRow = initPerm[row];
         }
         int permCol = 0;
-        if( (rowPtr[permRow+1] - rowPtr[permRow]) > 1) {
+        permCol = col[rowPtr[permRow]];
+        if(initInvPerm)
+        {
+            permCol = initInvPerm[permCol];
+        }
+
+        if(((rowPtr[permRow+1] - rowPtr[permRow]) == 1) && permCol == row)
+        {
+#pragma omp critical
+            {
+                pureDiag.push_back(row);
+            }
+        }
+        //if( (rowPtr[permRow+1] - rowPtr[permRow]) > 1) {
             for(int idx=rowPtr[permRow]; idx<rowPtr[permRow+1]; ++idx) {
                 permCol = col[idx];
                 if(initInvPerm)
@@ -50,12 +63,14 @@ RACE_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *
                 ++nnz;
             }
             nodeWithChildren++;
-        } else {
+       /* }
+        else
+        {
 #pragma omp critical
             {
                 pureDiag.push_back(row);
             }
-        }
+        }*/
     }
 
     NNZ = nnz;
