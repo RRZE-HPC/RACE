@@ -219,6 +219,7 @@ bool sparsemat::readFile(char* filename)
 
     delete[] row;
 
+    numaInit(false);
     //writeFile("beforePerm.mtx");
     return true;
 }

@@ -131,7 +131,10 @@ int main(const int argc, char * argv[])
         LIKWID_MARKER_START("pre_process");
     }
 #endif*/
-    mat->doRCM();
+    if(param.RCM_flag)
+    {
+        mat->doRCM();
+    }
     mat->prepareForPower(power, param.nodes, param.cache_size*1024*1024, param.cores, param.smt, param.pin);
 /*#ifdef LIKWID_PERFMON
 #pragma omp parallel
@@ -242,7 +245,7 @@ int main(const int argc, char * argv[])
     }
 #endif
     double RACEPowerTime = GET_TIMER(matPower);
-    printf("RACE power perf. = %f, time = %f\n", flops/RACEPowerTime, RACEPowerTime);
+    printf("RACE power perf. = %f GFlop/s, time = %f s\n", flops/RACEPowerTime, RACEPowerTime);
 
 
     if(param.validate)

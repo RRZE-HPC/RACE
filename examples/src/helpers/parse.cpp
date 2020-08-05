@@ -13,7 +13,7 @@ my_option::my_option()
 {
 }
 
-parser::parser():mat_file(NULL), iter(100), cores(1), smt(1), nodes(1), cache_size(2), pin(FILL), validate(false), tol(1e-4), prgname("a.out"), numOptions(10)
+parser::parser():mat_file(NULL), iter(100), cores(1), smt(1), nodes(1), cache_size(2), pin(FILL), validate(false), tol(1e-4), RCM_flag(false), prgname("a.out"), numOptions(11)
 {
     long_options = new my_option[numOptions+1];
 
@@ -26,8 +26,9 @@ parser::parser():mat_file(NULL), iter(100), cores(1), smt(1), nodes(1), cache_si
     long_options[6] = {"pin",     required_argument, 0,  'p', "Pinning strategy to be used; availablle options FILL or SCATTER" };
     long_options[7] = {"validate",no_argument,       0,  'v', "Validate coloring" };
     long_options[8] = {"tol",     required_argument, 0,  'T', "Tolerance for validation" };
-    long_options[9] = {"help",    no_argument,       0,  'h', "Prints this help informations" };
-    long_options[10] = {0,         0,                 0,   0,  0 };
+    long_options[9] = {"RCM",     no_argument, 0,  'R', "Do RCM pre-permutation" };
+    long_options[10] = {"help",    no_argument,       0,  'h', "Prints this help informations" };
+    long_options[11] = {0,         0,                 0,   0,  0 };
 
     gnuOptions = new option[numOptions+1];
 
@@ -48,7 +49,7 @@ bool parser::parse_arg(int argc, char **argv)
     prgname = argv[0];
     while (1) {
         int option_index = 0, c;
-        c = getopt_long(argc, argv, "0:m:i:c:t:n:s:p:T:vh",
+        c = getopt_long(argc, argv, "0:m:i:c:t:n:s:p:T:vRh",
                 gnuOptions, &option_index);
 
         if (c == -1)
@@ -119,6 +120,11 @@ bool parser::parse_arg(int argc, char **argv)
             case 'T':
                 {
                     tol = atof(optarg);
+                    break;
+                }
+            case 'R':
+                {
+                    RCM_flag = true;
                     break;
                 }
             case 'h':

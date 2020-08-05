@@ -201,3 +201,9 @@ if(RACE_USE_SPMP)
     add_dependencies(spmv SpMP)
     add_dependencies(tradPower SpMP)
 endif()
+
+
+file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/perf_script.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
+file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/check-state.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
+file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/config.txt DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
+file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/machine-state.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)

@@ -26,6 +26,7 @@ struct parser
         PinMethod pin;
         bool validate;
         double tol;
+        bool RCM_flag;
         char *prgname;
         int numOptions;
         my_option *long_options;

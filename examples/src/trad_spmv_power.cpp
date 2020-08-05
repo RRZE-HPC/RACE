@@ -45,7 +45,10 @@ int main(const int argc, char * argv[])
     printf("power = %d\n", power);
 
 
-    mat->doRCMPermute(); //Permute();
+    if(param.RCM_flag)
+    {
+        mat->doRCMPermute(); //Permute();
+    }
     //mat->writeFile("after_RCM.mtx");
     //mat->prepareForPower(power, param.nodes, param.cache_size*1024*1024, param.cores, param.smt, param.pin);
     //mat->numaInit();
@@ -92,7 +95,7 @@ int main(const int argc, char * argv[])
     double spmvPowerTime = GET_TIMER(spmv);
     double flops = 2.0*iterations*power*(double)mat->nnz*1e-9;
 
-    printf("SpMV perf. = %f, time = %f\n", flops/spmvPowerTime, spmvPowerTime);
+    printf("SpMV perf. = %f GFlop/s, time = %f s\n", flops/spmvPowerTime, spmvPowerTime);
 
     delete mat;
     delete xTRAD;
