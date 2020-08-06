@@ -1,0 +1,217 @@
+cores = 20
+Reading matrix file
+Creating a general matrix out of a symmetric one
+[1;34m[pthread wrapper] 
+[0m[1;34m[pthread wrapper] MAIN -> 0
+[0m[1;34m[pthread wrapper] PIN_MASK: [0m[1;34m0->1  [0m[1;34m1->2  [0m[1;34m2->3  [0m[1;34m3->4  [0m[1;34m4->5  [0m[1;34m5->6  [0m[1;34m6->7  [0m[1;34m7->8  [0m[1;34m8->9  [0m[1;34m9->10  [0m[1;34m10->11  [0m[1;34m11->12  [0m[1;34m12->13  [0m[1;34m13->14  [0m[1;34m14->15  [0m[1;34m15->16  [0m[1;34m16->17  [0m[1;34m17->18  [0m[1;34m18->19  [0m[1;34m
+[pthread wrapper] SKIP MASK: 0x0
+[0m[1;34m	threadid 23176604727168 -> core 1 - OK[0m[1;34m
+[0m[1;34m	threadid 23176600524800 -> core 2 - OK[0m[1;34m
+[0m[1;34m	threadid 23176596322432 -> core 3 - OK[0m[1;34m
+[0m[1;34m	threadid 23176592120064 -> core 4 - OK[0m[1;34m
+[0m[1;34m	threadid 23176587917696 -> core 5 - OK[0m[1;34m
+[0m[1;34m	threadid 23176583715328 -> core 6 - OK[0m[1;34m
+[0m[1;34m	threadid 23176579512960 -> core 7 - OK[0m[1;34m
+[0m[1;34m	threadid 23176575310592 -> core 8 - OK[0m[1;34m
+[0m[1;34m	threadid 23176571108224 -> core 9 - OK[0m[1;34m
+[0m[1;34m	threadid 23176566905856 -> core 10 - OK[0m[1;34m
+[0m[1;34m	threadid 23176562703488 -> core 11 - OK[0m[1;34m
+[0m[1;34m	threadid 23176558501120 -> core 12 - OK[0m[1;34m
+[0m[1;34m	threadid 23176554298752 -> core 13 - OK[0m[1;34m
+[0m[1;34m	threadid 23176550096384 -> core 14 - OK[0m[1;34m
+[0m[1;34m	threadid 23176545894016 -> core 15 - OK[0m[1;34m
+[0m[1;34m	threadid 23176541691648 -> core 16 - OK[0m[1;34m
+[0m[1;34m	threadid 23176537489280 -> core 17 - OK[0m[1;34m
+[0m[1;34m	threadid 23176533286912 -> core 18 - OK[0m[1;34m
+[0m[1;34m	threadid 23176529084544 -> core 19 - OK[0m[1;34m
+[0mpower = 1
+Doing RCM permutation
+nrows = 343791
+Num iterations =  257
+SpMV perf. = 11.779530 GFlop/s, time = 1.171038 s
+cores = 20
+Reading matrix file
+Creating a general matrix out of a symmetric one
+[1;34m[pthread wrapper] 
+[0m[1;34m[pthread wrapper] MAIN -> 0
+[0m[1;34m[pthread wrapper] PIN_MASK: [0m[1;34m0->1  [0m[1;34m1->2  [0m[1;34m2->3  [0m[1;34m3->4  [0m[1;34m4->5  [0m[1;34m5->6  [0m[1;34m6->7  [0m[1;34m7->8  [0m[1;34m8->9  [0m[1;34m9->10  [0m[1;34m10->11  [0m[1;34m11->12  [0m[1;34m12->13  [0m[1;34m13->14  [0m[1;34m14->15  [0m[1;34m15->16  [0m[1;34m16->17  [0m[1;34m17->18  [0m[1;34m18->19  [0m[1;34m
+[pthread wrapper] SKIP MASK: 0x0
+[0m[1;34m	threadid 22770159110016 -> core 1 - OK[0m[1;34m
+[0m[1;34m	threadid 22770154907648 -> core 2 - OK[0m[1;34m
+[0m[1;34m	threadid 22770150705280 -> core 3 - OK[0m[1;34m
+[0m[1;34m	threadid 22770146502912 -> core 4 - OK[0m[1;34m
+[0m[1;34m	threadid 22770142300544 -> core 5 - OK[0m[1;34m
+[0m[1;34m	threadid 22770138098176 -> core 6 - OK[0m[1;34m
+[0m[1;34m	threadid 22770133895808 -> core 7 - OK[0m[1;34m
+[0m[1;34m	threadid 22770129693440 -> core 8 - OK[0m[1;34m
+[0m[1;34m	threadid 22770125491072 -> core 9 - OK[0m[1;34m
+[0m[1;34m	threadid 22770121288704 -> core 10 - OK[0m[1;34m
+[0m[1;34m	threadid 22770117086336 -> core 11 - OK[0m[1;34m
+[0m[1;34m	threadid 22770112883968 -> core 12 - OK[0m[1;34m
+[0m[1;34m	threadid 22770108681600 -> core 13 - OK[0m[1;34m
+[0m[1;34m	threadid 22770104479232 -> core 14 - OK[0m[1;34m
+[0m[1;34m	threadid 22770100276864 -> core 15 - OK[0m[1;34m
+[0m[1;34m	threadid 22770096074496 -> core 16 - OK[0m[1;34m
+[0m[1;34m	threadid 22770091872128 -> core 17 - OK[0m[1;34m
+[0m[1;34m	threadid 22770087669760 -> core 18 - OK[0m[1;34m
+[0m[1;34m	threadid 22770083467392 -> core 19 - OK[0m[1;34m
+[0mpower = 2
+Doing RCM permutation
+nrows = 343791
+Num iterations =  133
+SpMV perf. = 11.911337 GFlop/s, time = 1.198635 s
+cores = 20
+Reading matrix file
+Creating a general matrix out of a symmetric one
+[1;34m[pthread wrapper] 
+[0m[1;34m[pthread wrapper] MAIN -> 0
+[0m[1;34m[pthread wrapper] PIN_MASK: [0m[1;34m0->1  [0m[1;34m1->2  [0m[1;34m2->3  [0m[1;34m3->4  [0m[1;34m4->5  [0m[1;34m5->6  [0m[1;34m6->7  [0m[1;34m7->8  [0m[1;34m8->9  [0m[1;34m9->10  [0m[1;34m10->11  [0m[1;34m11->12  [0m[1;34m12->13  [0m[1;34m13->14  [0m[1;34m14->15  [0m[1;34m15->16  [0m[1;34m16->17  [0m[1;34m17->18  [0m[1;34m18->19  [0m[1;34m
+[pthread wrapper] SKIP MASK: 0x0
+[0m[1;34m	threadid 23170067511168 -> core 1 - OK[0m[1;34m
+[0m[1;34m	threadid 23170063308800 -> core 2 - OK[0m[1;34m
+[0m[1;34m	threadid 23170059106432 -> core 3 - OK[0m[1;34m
+[0m[1;34m	threadid 23170054904064 -> core 4 - OK[0m[1;34m
+[0m[1;34m	threadid 23170050701696 -> core 5 - OK[0m[1;34m
+[0m[1;34m	threadid 23170046499328 -> core 6 - OK[0m[1;34m
+[0m[1;34m	threadid 23170042296960 -> core 7 - OK[0m[1;34m
+[0m[1;34m	threadid 23170038094592 -> core 8 - OK[0m[1;34m
+[0m[1;34m	threadid 23170033892224 -> core 9 - OK[0m[1;34m
+[0m[1;34m	threadid 23170029689856 -> core 10 - OK[0m[1;34m
+[0m[1;34m	threadid 23170025487488 -> core 11 - OK[0m[1;34m
+[0m[1;34m	threadid 23170021285120 -> core 12 - OK[0m[1;34m
+[0m[1;34m	threadid 23170017082752 -> core 13 - OK[0m[1;34m
+[0m[1;34m	threadid 23170012880384 -> core 14 - OK[0m[1;34m
+[0m[1;34m	threadid 23170008678016 -> core 15 - OK[0m[1;34m
+[0m[1;34m	threadid 23170004475648 -> core 16 - OK[0m[1;34m
+[0m[1;34m	threadid 23170000273280 -> core 17 - OK[0m[1;34m
+[0m[1;34m	threadid 23169996070912 -> core 18 - OK[0m[1;34m
+[0m[1;34m	threadid 23169991868544 -> core 19 - OK[0m[1;34m
+[0mpower = 3
+Doing RCM permutation
+nrows = 343791
+Num iterations =  88
+SpMV perf. = 11.996089 GFlop/s, time = 1.181218 s
+cores = 20
+Reading matrix file
+Creating a general matrix out of a symmetric one
+[1;34m[pthread wrapper] 
+[0m[1;34m[pthread wrapper] MAIN -> 0
+[0m[1;34m[pthread wrapper] PIN_MASK: [0m[1;34m0->1  [0m[1;34m1->2  [0m[1;34m2->3  [0m[1;34m3->4  [0m[1;34m4->5  [0m[1;34m5->6  [0m[1;34m6->7  [0m[1;34m7->8  [0m[1;34m8->9  [0m[1;34m9->10  [0m[1;34m10->11  [0m[1;34m11->12  [0m[1;34m12->13  [0m[1;34m13->14  [0m[1;34m14->15  [0m[1;34m15->16  [0m[1;34m16->17  [0m[1;34m17->18  [0m[1;34m18->19  [0m[1;34m
+[pthread wrapper] SKIP MASK: 0x0
+[0m[1;34m	threadid 23184839284608 -> core 1 - OK[0m[1;34m
+[0m[1;34m	threadid 23184835082240 -> core 2 - OK[0m[1;34m
+[0m[1;34m	threadid 23184830879872 -> core 3 - OK[0m[1;34m
+[0m[1;34m	threadid 23184826677504 -> core 4 - OK[0m[1;34m
+[0m[1;34m	threadid 23184822475136 -> core 5 - OK[0m[1;34m
+[0m[1;34m	threadid 23184818272768 -> core 6 - OK[0m[1;34m
+[0m[1;34m	threadid 23184814070400 -> core 7 - OK[0m[1;34m
+[0m[1;34m	threadid 23184809868032 -> core 8 - OK[0m[1;34m
+[0m[1;34m	threadid 23184805665664 -> core 9 - OK[0m[1;34m
+[0m[1;34m	threadid 23184801463296 -> core 10 - OK[0m[1;34m
+[0m[1;34m	threadid 23184797260928 -> core 11 - OK[0m[1;34m
+[0m[1;34m	threadid 23184793058560 -> core 12 - OK[0m[1;34m
+[0m[1;34m	threadid 23184788856192 -> core 13 - OK[0m[1;34m
+[0m[1;34m	threadid 23184784653824 -> core 14 - OK[0m[1;34m
+[0m[1;34m	threadid 23184780451456 -> core 15 - OK[0m[1;34m
+[0m[1;34m	threadid 23184776249088 -> core 16 - OK[0m[1;34m
+[0m[1;34m	threadid 23184772046720 -> core 17 - OK[0m[1;34m
+[0m[1;34m	threadid 23184767844352 -> core 18 - OK[0m[1;34m
+[0m[1;34m	threadid 23184763641984 -> core 19 - OK[0m[1;34m
+[0mpower = 4
+Doing RCM permutation
+nrows = 343791
+Num iterations =  64
+SpMV perf. = 11.639627 GFlop/s, time = 1.180502 s
+cores = 20
+Reading matrix file
+Creating a general matrix out of a symmetric one
+[1;34m[pthread wrapper] 
+[0m[1;34m[pthread wrapper] MAIN -> 0
+[0m[1;34m[pthread wrapper] PIN_MASK: [0m[1;34m0->1  [0m[1;34m1->2  [0m[1;34m2->3  [0m[1;34m3->4  [0m[1;34m4->5  [0m[1;34m5->6  [0m[1;34m6->7  [0m[1;34m7->8  [0m[1;34m8->9  [0m[1;34m9->10  [0m[1;34m10->11  [0m[1;34m11->12  [0m[1;34m12->13  [0m[1;34m13->14  [0m[1;34m14->15  [0m[1;34m15->16  [0m[1;34m16->17  [0m[1;34m17->18  [0m[1;34m18->19  [0m[1;34m
+[pthread wrapper] SKIP MASK: 0x0
+[0m[1;34m	threadid 22676892698496 -> core 1 - OK[0m[1;34m
+[0m[1;34m	threadid 22676888496128 -> core 2 - OK[0m[1;34m
+[0m[1;34m	threadid 22676884293760 -> core 3 - OK[0m[1;34m
+[0m[1;34m	threadid 22676880091392 -> core 4 - OK[0m[1;34m
+[0m[1;34m	threadid 22676875889024 -> core 5 - OK[0m[1;34m
+[0m[1;34m	threadid 22676871686656 -> core 6 - OK[0m[1;34m
+[0m[1;34m	threadid 22676867484288 -> core 7 - OK[0m[1;34m
+[0m[1;34m	threadid 22676863281920 -> core 8 - OK[0m[1;34m
+[0m[1;34m	threadid 22676859079552 -> core 9 - OK[0m[1;34m
+[0m[1;34m	threadid 22676854877184 -> core 10 - OK[0m[1;34m
+[0m[1;34m	threadid 22676850674816 -> core 11 - OK[0m[1;34m
+[0m[1;34m	threadid 22676846472448 -> core 12 - OK[0m[1;34m
+[0m[1;34m	threadid 22676842270080 -> core 13 - OK[0m[1;34m
+[0m[1;34m	threadid 22676838067712 -> core 14 - OK[0m[1;34m
+[0m[1;34m	threadid 22676833865344 -> core 15 - OK[0m[1;34m
+[0m[1;34m	threadid 22676829662976 -> core 16 - OK[0m[1;34m
+[0m[1;34m	threadid 22676825460608 -> core 17 - OK[0m[1;34m
+[0m[1;34m	threadid 22676821258240 -> core 18 - OK[0m[1;34m
+[0m[1;34m	threadid 22676817055872 -> core 19 - OK[0m[1;34m
+[0mpower = 6
+Doing RCM permutation
+nrows = 343791
+Num iterations =  43
+SpMV perf. = 11.828223 GFlop/s, time = 1.170755 s
+cores = 20
+Reading matrix file
+Creating a general matrix out of a symmetric one
+[1;34m[pthread wrapper] 
+[0m[1;34m[pthread wrapper] MAIN -> 0
+[0m[1;34m[pthread wrapper] PIN_MASK: [0m[1;34m0->1  [0m[1;34m1->2  [0m[1;34m2->3  [0m[1;34m3->4  [0m[1;34m4->5  [0m[1;34m5->6  [0m[1;34m6->7  [0m[1;34m7->8  [0m[1;34m8->9  [0m[1;34m9->10  [0m[1;34m10->11  [0m[1;34m11->12  [0m[1;34m12->13  [0m[1;34m13->14  [0m[1;34m14->15  [0m[1;34m15->16  [0m[1;34m16->17  [0m[1;34m17->18  [0m[1;34m18->19  [0m[1;34m
+[pthread wrapper] SKIP MASK: 0x0
+[0m[1;34m	threadid 22806229673856 -> core 1 - OK[0m[1;34m
+[0m[1;34m	threadid 22806225471488 -> core 2 - OK[0m[1;34m
+[0m[1;34m	threadid 22806221269120 -> core 3 - OK[0m[1;34m
+[0m[1;34m	threadid 22806217066752 -> core 4 - OK[0m[1;34m
+[0m[1;34m	threadid 22806212864384 -> core 5 - OK[0m[1;34m
+[0m[1;34m	threadid 22806208662016 -> core 6 - OK[0m[1;34m
+[0m[1;34m	threadid 22806204459648 -> core 7 - OK[0m[1;34m
+[0m[1;34m	threadid 22806200257280 -> core 8 - OK[0m[1;34m
+[0m[1;34m	threadid 22806196054912 -> core 9 - OK[0m[1;34m
+[0m[1;34m	threadid 22806191852544 -> core 10 - OK[0m[1;34m
+[0m[1;34m	threadid 22806187650176 -> core 11 - OK[0m[1;34m
+[0m[1;34m	threadid 22806183447808 -> core 12 - OK[0m[1;34m
+[0m[1;34m	threadid 22806179245440 -> core 13 - OK[0m[1;34m
+[0m[1;34m	threadid 22806175043072 -> core 14 - OK[0m[1;34m
+[0m[1;34m	threadid 22806170840704 -> core 15 - OK[0m[1;34m
+[0m[1;34m	threadid 22806166638336 -> core 16 - OK[0m[1;34m
+[0m[1;34m	threadid 22806162435968 -> core 17 - OK[0m[1;34m
+[0m[1;34m	threadid 22806158233600 -> core 18 - OK[0m[1;34m
+[0m[1;34m	threadid 22806154031232 -> core 19 - OK[0m[1;34m
+[0mpower = 8
+Doing RCM permutation
+nrows = 343791
+Num iterations =  32
+SpMV perf. = 11.848453 GFlop/s, time = 1.159696 s
+cores = 20
+Reading matrix file
+Creating a general matrix out of a symmetric one
+[1;34m[pthread wrapper] 
+[0m[1;34m[pthread wrapper] MAIN -> 0
+[0m[1;34m[pthread wrapper] PIN_MASK: [0m[1;34m0->1  [0m[1;34m1->2  [0m[1;34m2->3  [0m[1;34m3->4  [0m[1;34m4->5  [0m[1;34m5->6  [0m[1;34m6->7  [0m[1;34m7->8  [0m[1;34m8->9  [0m[1;34m9->10  [0m[1;34m10->11  [0m[1;34m11->12  [0m[1;34m12->13  [0m[1;34m13->14  [0m[1;34m14->15  [0m[1;34m15->16  [0m[1;34m16->17  [0m[1;34m17->18  [0m[1;34m18->19  [0m[1;34m
+[pthread wrapper] SKIP MASK: 0x0
+[0m[1;34m	threadid 23362975410048 -> core 1 - OK[0m[1;34m
+[0m[1;34m	threadid 23362971207680 -> core 2 - OK[0m[1;34m
+[0m[1;34m	threadid 23362967005312 -> core 3 - OK[0m[1;34m
+[0m[1;34m	threadid 23362962802944 -> core 4 - OK[0m[1;34m
+[0m[1;34m	threadid 23362958600576 -> core 5 - OK[0m[1;34m
+[0m[1;34m	threadid 23362954398208 -> core 6 - OK[0m[1;34m
+[0m[1;34m	threadid 23362950195840 -> core 7 - OK[0m[1;34m
+[0m[1;34m	threadid 23362945993472 -> core 8 - OK[0m[1;34m
+[0m[1;34m	threadid 23362941791104 -> core 9 - OK[0m[1;34m
+[0m[1;34m	threadid 23362937588736 -> core 10 - OK[0m[1;34m
+[0m[1;34m	threadid 23362933386368 -> core 11 - OK[0m[1;34m
+[0m[1;34m	threadid 23362929184000 -> core 12 - OK[0m[1;34m
+[0m[1;34m	threadid 23362924981632 -> core 13 - OK[0m[1;34m
+[0m[1;34m	threadid 23362920779264 -> core 14 - OK[0m[1;34m
+[0m[1;34m	threadid 23362916576896 -> core 15 - OK[0m[1;34m
+[0m[1;34m	threadid 23362912374528 -> core 16 - OK[0m[1;34m
+[0m[1;34m	threadid 23362908172160 -> core 17 - OK[0m[1;34m
+[0m[1;34m	threadid 23362903969792 -> core 18 - OK[0m[1;34m
+[0m[1;34m	threadid 23362899767424 -> core 19 - OK[0m[1;34m
+[0mpower = 10
+Doing RCM permutation
+nrows = 343791
+Num iterations =  26
+SpMV perf. = 11.836736 GFlop/s, time = 1.178982 s
