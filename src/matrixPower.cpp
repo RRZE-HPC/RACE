@@ -72,6 +72,83 @@ double mtxPower::getBytePerNNZ()
     return (double)(((1+highestPower/nnzr)*sizeof(double)+(1+1/nnzr)*sizeof(int)));
 }
 
+std::vector<int> identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
+{
+    if(cacheViolatedLevel.size() > 1)
+    {
+        cacheViolatedLevel.push_back(cacheViolatedLevel.back()+2); //a dummy so last element will be pushed, the dummy is made 2 apart from last so it doesn't compress
+    }
+    std::vector<int> hopelessRegion;
+    std::vector<int> hopelessRegion_flag(cacheViolatedLevel.size(), 0);
+    int prevHopelessLevel = -2;
+    int hopelessCtr = 0;
+    int hopelessBlockCtr = 1;
+    for(int i=0; i<(int)cacheViolatedLevel.size(); ++i)
+    {
+        int currHopelessLevel = cacheViolatedLevel[i];
+        //printf("currHopeless = %d\n", currHopelessLevel);
+        if(currHopelessLevel == (prevHopelessLevel+1))
+        {
+            //if consequtive
+            hopelessRegion_flag[i-1] = hopelessBlockCtr;
+            hopelessRegion_flag[i] = hopelessBlockCtr;
+            hopelessCtr++;
+        }
+        else
+        {
+            hopelessBlockCtr++;
+        }
+
+        prevHopelessLevel = currHopelessLevel;
+    }
+
+   /* for(int i=0; i<(int)cacheViolatedLevel.size(); ++i)
+    {
+        printf("hopelessRegion_flag[%d] = %d\n", i, hopelessRegion_flag[i]);
+    }*/
+    printf("Compressing %d hopeless levels\n", hopelessCtr);
+    int prevFlag = 0;
+    //now compress parts that have the same flag set
+    for(int i=0; i<(int)hopelessRegion_flag.size(); ++i)
+    {
+        int currFlag = hopelessRegion_flag[i];
+        if(currFlag != prevFlag)
+        {
+            if((currFlag > 0) && (prevFlag == 0))
+            {
+                //this is start of a hopeless region
+                hopelessRegion.push_back(cacheViolatedLevel[i]);
+            }
+            else if((currFlag > 0) && (prevFlag > 0))
+            {
+                hopelessRegion.push_back(cacheViolatedLevel[i-1]);
+                hopelessRegion.push_back(cacheViolatedLevel[i]);
+            }
+            else if(currFlag == 0)
+            {
+                //this is end of a hopeless region
+                hopelessRegion.push_back(cacheViolatedLevel[i-1]);
+            }
+
+            //printf("@@@@ check hopelessRegion[%d] = %d\n", (int)hopelessRegion.size()-1, hopelessRegion.back());
+        }
+        prevFlag = currFlag;
+    }
+    return hopelessRegion;
+}
+
+int mtxPower::get_cache_violation_cutoff(int stage)
+{
+    if(stage < (int)cache_violation_cutoff.size())
+    {
+        return cache_violation_cutoff[stage];
+    }
+    else
+    {
+        return cache_violation_cutoff[0];
+    }
+}
+
 void mtxPower::findPartition()
 {
     traverser->calculateDistance();
@@ -92,6 +169,11 @@ void mtxPower::findPartition()
     std::vector<int> cacheViolatedFactor;
     //check if there is a level where nnz violates cache
     //so the one where it violates first is detected first
+
+    int default_cutoff = 10; //make 10 factor so not much cut-off happens
+    cache_violation_cutoff.push_back(default_cutoff); //default
+    getEnv("RACE_CACHE_VIOLATION_CUTOFF", cache_violation_cutoff);
+    printf("RACE_CACHE_VIOLATION_CUTOFF = %d\n", get_cache_violation_cutoff(1));
     for(int level=0; level<totalLevel; ++level)
     {
         printf("rowStart = %d, NROW[%d] = %d, NNZ[%d] = %d\n", levelPtr[level], level, levelData->levelRow[level], level, levelData->levelNnz[level]);
@@ -106,9 +188,16 @@ void mtxPower::findPartition()
         //if violated mark the levels
         if(currElem > cacheElem)
         {
-            cacheViolatedLevel.push_back(level);
             int factor = static_cast<int>(ceil(getElemUpperLimit(level)/cacheElem));
-            cacheViolatedFactor.push_back(factor);
+
+            //for merging, merge nearby levels that have violation greater than
+            //cacheViolationTolerance, because they are not going to bring
+            //anything, then why spending expensive barrier cost
+            if(factor > get_cache_violation_cutoff(1))
+            {
+                cacheViolatedLevel.push_back(level);
+                cacheViolatedFactor.push_back(factor);
+            }
             printf("Cache Violated at %d level, elem = %f, factor = %d\n", level, currElem, factor);
         }
     }
@@ -133,7 +222,8 @@ void mtxPower::findPartition()
     }
 #endif
     splitSharedCacheDomain();
-    consolidatePartition();
+    std::vector<int> hopelessRegion = identifyHopelessRegions(cacheViolatedLevel);
+    consolidatePartition(hopelessRegion);
     findUnlockCtr();
 }
 
@@ -188,7 +278,18 @@ void mtxPower::findMacroLevelPtr(int* zones, int* macroLevelPtr)
     }
 }
 
-void mtxPower::consolidatePartition()
+void getHopelessStartEnd(std::vector<int> hopelessRegion, int count, int *start, int *end)
+{
+    (*start) = -1;
+    (*end) = -1;
+    if(2*count <  (int)hopelessRegion.size()-1)
+    {
+        (*start) = hopelessRegion[2*count];
+        (*end) = hopelessRegion[2*count+1];
+    }
+}
+
+void mtxPower::consolidatePartition(std::vector<int> hopelessRegion)
 {
     unlockRow = new int[totalLevel];
     dangerRow = new int[totalLevel];
@@ -217,6 +318,10 @@ void mtxPower::consolidatePartition()
     }
 #endif
 
+    int hopelessRegionCount = 0;
+    int currHopelessStart, currHopelessEnd;
+    getHopelessStartEnd(hopelessRegion, hopelessRegionCount, &currHopelessStart, &currHopelessEnd);
+
     for(int levelGroup=0; levelGroup<numSharedCache; ++levelGroup)
     {
         double sumElem = 0;
@@ -236,14 +341,36 @@ void mtxPower::consolidatePartition()
 
             double curNNZ = levelData->levelNnz[level];
             sumNNZ += curNNZ;
+
+            bool hopeless = false;
+            //deal with hopeless region
+            if((level >= currHopelessStart) && (level < currHopelessEnd))
+            {
+                //this level belongs to hopeless region
+                hopeless = true;
+            }
+            else if(level == currHopelessEnd)
+            {
+                //don't set hopeless because now we have to end
+                //and consolidate
+                hopelessRegionCount++;
+                getHopelessStartEnd(hopelessRegion, hopelessRegionCount, &currHopelessStart, &currHopelessEnd);
+            }
+
+            //printf("##### hopeless = %d, hopeless = [%d,%d]\n", hopeless, currHopelessStart, currHopelessEnd);
 #ifdef LB_REMINDER
             int startPow = 0;
 #endif
-            //second condition to avoid bulk level group at boundary,
-            //as this is processed without caching
-            if(curLevelCtr > 0)
+            if(curLevelCtr > 0 && !hopeless)
             {
-                if(sumElem >= cacheElem)// || ( (numSharedCache > 1) && ( (consolidated_curLevelCtr < (highestPower)) || (curLevelCtr > (totalLevelInGroup-highestPower)) ) ) )
+                //second condition to avoid bulk level group at boundary,
+                //as this is processed without caching
+
+#ifdef LB_REMINDER
+                if( (sumElem >= cacheElem) || ( (numSharedCache > 1) && ( (consolidated_curLevelCtr < (highestPower)) || (curLevelCtr > (totalLevelInGroup-highestPower)) ) ) )
+#else
+                if(sumElem >= cacheElem)
+#endif
                 {
                     bool updateFlag = true;
 

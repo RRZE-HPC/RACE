@@ -24,6 +24,8 @@ class mtxPower
     int numSharedCache;
     double cacheSize;
     double safetyFactor;
+    std::vector<int> cache_violation_cutoff;
+    int get_cache_violation_cutoff(int stage);
     public:
     mtxPower(Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_);
     ~mtxPower();
@@ -31,7 +33,7 @@ class mtxPower
     void findPartition();
     void splitSharedCacheDomain();
     void findMacroLevelPtr(int* zones, int* macroLevelPtr);
-    void consolidatePartition();
+    void consolidatePartition(std::vector<int> hopelessRegion);
     void getStatNUMA();
     void findUnlockCtr();
     void createLevelPtr();
@@ -48,5 +50,8 @@ class mtxPower
     int* getDangerRowRef();
     int* getUnlockCtrRef();
 };
+
+std::vector<int> identifyHopelessRegions(std::vector<int> cacheViolatedLevel);
+void getHopelessStartEnd(std::vector<int> hopelessRegion, int count, int *start, int *end);
 
 #endif
