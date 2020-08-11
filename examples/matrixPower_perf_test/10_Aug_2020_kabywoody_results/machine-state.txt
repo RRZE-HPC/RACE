@@ -1,0 +1,351 @@
+
+################################################################################
+# Hostname
+################################################################################
+w1555.rrze.uni-erlangen.de
+
+################################################################################
+# Operating System
+################################################################################
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=18.04
+DISTRIB_CODENAME=bionic
+DISTRIB_DESCRIPTION="Ubuntu 18.04.4 LTS"
+NAME="Ubuntu"
+VERSION="18.04.4 LTS (Bionic Beaver)"
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME="Ubuntu 18.04.4 LTS"
+VERSION_ID="18.04"
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+VERSION_CODENAME=bionic
+UBUNTU_CODENAME=bionic
+
+################################################################################
+# Operating System (LSB)
+################################################################################
+No LSB modules are available.
+
+################################################################################
+# Operating System Kernel
+################################################################################
+Linux w1555 4.15.0-91-generic #92-Ubuntu SMP Fri Feb 28 11:09:48 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
+
+################################################################################
+# Logged in users
+################################################################################
+ 10:55:42 up 144 days,  2:14,  0 users,  load average: 0.27, 0.32, 0.14
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+
+################################################################################
+# CPUset
+################################################################################
+Domain N:
+	0,1,2,3
+
+Domain S0:
+	0,1,2,3
+
+Domain C0:
+	0,1,2,3
+
+Domain M0:
+	0,1,2,3
+
+
+################################################################################
+# CGroups
+################################################################################
+Allowed CPUs: 0-3
+Allowed Memory controllers: 0
+
+################################################################################
+# Topology
+################################################################################
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) CPU E3-1240 v6 @ 3.70GHz
+CPU type:	Intel Coffeelake processor
+CPU stepping:	9
+********************************************************************************
+Hardware Thread Topology
+********************************************************************************
+Sockets:		1
+Cores per socket:	4
+Threads per core:	1
+--------------------------------------------------------------------------------
+HWThread	Thread		Core		Socket		Available
+0		0		0		0		*
+1		0		1		0		*
+2		0		2		0		*
+3		0		3		0		*
+--------------------------------------------------------------------------------
+Socket 0:		( 0 1 2 3 )
+--------------------------------------------------------------------------------
+********************************************************************************
+Cache Topology
+********************************************************************************
+Level:			1
+Size:			32 kB
+Cache groups:		( 0 ) ( 1 ) ( 2 ) ( 3 )
+--------------------------------------------------------------------------------
+Level:			2
+Size:			256 kB
+Cache groups:		( 0 ) ( 1 ) ( 2 ) ( 3 )
+--------------------------------------------------------------------------------
+Level:			3
+Size:			8 MB
+Cache groups:		( 0 1 2 3 )
+--------------------------------------------------------------------------------
+********************************************************************************
+NUMA Topology
+********************************************************************************
+NUMA domains:		1
+--------------------------------------------------------------------------------
+Domain:			0
+Processors:		( 0 1 2 3 )
+Distances:		10
+Free memory:		31516 MB
+Total memory:		31993 MB
+--------------------------------------------------------------------------------
+
+################################################################################
+# NUMA Topology
+################################################################################
+available: 1 nodes (0)
+node 0 cpus: 0 1 2 3
+node 0 size: 31992 MB
+node 0 free: 31527 MB
+node distances:
+node   0 
+  0:  10 
+
+################################################################################
+# Frequencies
+################################################################################
+
+################################################################################
+# Prefetchers
+################################################################################
+
+################################################################################
+# Load
+################################################################################
+0.27 0.32 0.14 1/165 22111
+
+################################################################################
+# Performance energy bias
+################################################################################
+Performance energy bias: 6 (0=highest performance, 15 = lowest energy)
+
+################################################################################
+# NUMA balancing
+################################################################################
+Enabled: 0
+
+################################################################################
+# General memory info
+################################################################################
+MemTotal:       32760820 kB
+MemFree:        32281156 kB
+MemAvailable:   32100956 kB
+Buffers:            8716 kB
+Cached:           176796 kB
+SwapCached:         2624 kB
+Active:            43384 kB
+Inactive:         126900 kB
+Active(anon):       9652 kB
+Inactive(anon):    13432 kB
+Active(file):      33732 kB
+Inactive(file):   113468 kB
+Unevictable:      142536 kB
+Mlocked:          142536 kB
+SwapTotal:       7999484 kB
+SwapFree:        7968764 kB
+Dirty:               208 kB
+Writeback:             0 kB
+AnonPages:        126628 kB
+Mapped:           127280 kB
+Shmem:               152 kB
+Slab:              67496 kB
+SReclaimable:      30332 kB
+SUnreclaim:        37164 kB
+KernelStack:        2736 kB
+PageTables:         3448 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:    39122260 kB
+Committed_AS:     269988 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:           0 kB
+VmallocChunk:          0 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:         0 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+CmaTotal:              0 kB
+CmaFree:               0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:      135400 kB
+DirectMap2M:    19605504 kB
+DirectMap1G:    13631488 kB
+
+################################################################################
+# Transparent huge pages
+################################################################################
+Enabled: always [madvise] never
+Use zero page: 1
+
+################################################################################
+# Hardware power limits
+################################################################################
+RAPL domain package-0
+- Limit0 long_term MaxPower 72000000uW Limit 72000000uW TimeWindow 7995392us
+- Limit1 short_term MaxPower 0uW Limit 90000000uW TimeWindow 2440us
+RAPL domain core
+- Limit0 long_term MaxPower NAuW Limit 0uW TimeWindow 976us
+RAPL domain dram
+- Limit0 long_term MaxPower NAuW Limit 0uW TimeWindow 976us
+
+################################################################################
+# Compiler
+################################################################################
+icc (ICC) 19.0.2.187 20190117
+Copyright (C) 1985-2019 Intel Corporation.  All rights reserved.
+
+
+################################################################################
+# MPI
+################################################################################
+Intel(R) MPI Library for Linux* OS, Version 2019 Update 2 Build 20190123 (id: e2d820d49)
+Copyright 2003-2019, Intel Corporation.
+
+################################################################################
+# dmidecode
+################################################################################
+dmidecode not executable, so ask your administrator to put the
+dmidecode output to a file (configured /etc/dmidecode.txt)
+
+################################################################################
+# environment variables
+################################################################################
+PBS_ENVIRONMENT=PBS_BATCH
+LD_LIBRARY_PATH=/apps/likwid/5.0.1/lib:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/compiler/lib/intel64:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/compiler/lib/intel64_lin:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/ipp/lib/intel64:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/tbb/lib/intel64/gcc4.7:/apps/intel/ComposerXE2019/debugger_2019/libipt/intel64/lib:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/daal/lib/intel64_lin:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/tbb/lib/intel64_lin/gcc4.4:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64/libfabric/lib:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64/lib/release:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64/lib
+PBS_O_LANG=en_US.UTF-8
+PBS_SERVER=wadm1
+MKL_INC=-I/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/include
+INCLUDE=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/include
+MKL_SHLIB=-L/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread -lm
+LANG=C.UTF-8
+LIKWID_LIBDIR=/apps/likwid/5.0.1/lib
+I_MPI_JOB_RESPECT_PROCESS_PLACEMENT=off
+HOSTNAME=w1555.rrze.uni-erlangen.de
+IPPROOT=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/ipp
+OLDPWD=/home/hpc/unrz/unrz002h
+PBS_O_HOME=/home/hpc/unrz/unrz002h
+MPICHHOME=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64
+RRZECLUSTER=WOODY
+PBS_JOBID=7074321.wadm1.rrze.uni-erlangen.de
+ENVIRONMENT=BATCH
+PATH_modshare=/apps/cmake/3.11.1/bin:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64/libfabric/bin:1:/apps/torque/current/bin:3:/bin:1:/usr/bin:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/bin/intel64:1:/apps/likwid/5.0.1/bin:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/rrze-bin-intel:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64/bin:1
+MPIHOME=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64
+HPCVAULT=/home/vault/unrz/unrz002h
+LOADEDMODULES_modshare=intel64/19.0up02:1:likwid/5.0.1:1:intelmpi/2019up02-intel:1:cmake/3.11.1:1:mkl/2019up02:1:torque/current:3
+PBS_NUM_PPN=4
+PBS_JOBNAME=MatrixPower
+FPATH=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/include
+FPATH_modshare=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/include:1
+INTEL_F_HOME=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/compiler
+CPATH_modshare=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/ipp/include:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/daal/include:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/pstl/include:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/tbb/include:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/include:1
+WOODYHOME=/home/woody/unrz/unrz002h
+PBS_O_PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/apps/torque/current/bin:/home/hpc/unrz/unrz002h/installkit/iaca_2.3/iaca-lin64/bin:/home/hpc/unrz/unrz002h/installkit/bin
+LIKWID_FORCE=1
+FI_PROVIDER_PATH=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64/libfabric/lib/prov
+S_COLORS=auto
+INTEL_PYTHONHOME=/apps/intel/ComposerXE2019/debugger_2019/python/intel64/
+MKL_INCDIR=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/include
+LD_LIBRARY_PATH_modshare=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/tbb/lib/intel64/gcc4.7:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64/lib:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64/lib/release:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/ipp/lib/intel64:1:/apps/likwid/5.0.1/lib:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64/libfabric/lib:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/compiler/lib/intel64:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/daal/lib/intel64_lin:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/compiler/lib/intel64_lin:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin:1:/apps/intel/ComposerXE2019/debugger_2019/libipt/intel64/lib:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/tbb/lib/intel64_lin/gcc4.4:1
+CLASSPATH=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/daal/lib/daal.jar:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64/lib/mpi.jar
+LIBRARY_PATH_modshare=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/ipp/lib/intel64:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/compiler/lib/intel64_lin:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/tbb/lib/intel64/gcc4.7:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/daal/lib/intel64_lin:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/tbb/lib/intel64_lin/gcc4.4:1
+PBS_O_WORKDIR=/home/hpc/unrz/unrz002h/MatrixPower/examples/build_kaby_woody/matrixPower_perf_test
+USER=unrz002h
+MPIINCDIR=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64/include
+I_MPI_HARD_FINALIZE=1
+NLSPATH_modshare=/apps/intel/ComposerXE2019/debugger_2019/gdb/intel64/share/locale/%l_%t/%N:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/locale/%l_%t/%N:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/compiler/lib/intel64/locale/%l_%t/%N:1
+PBS_NODEFILE=/var/spool/torque/aux//7074321.wadm1.rrze.uni-erlangen.de
+PBS_TASKNUM=1
+GROUP=unrz
+PWD=/home/hpc/unrz/unrz002h/MatrixPower/examples/build_kaby_woody/matrixPower_perf_test
+HOME=/home/hpc/unrz/unrz002h
+LIKWID_LIB=-L/apps/likwid/5.0.1/lib
+LC_CTYPE=C
+PBS_O_SUBMIT_FILTER=/usr/local/sbin/torque_submitfilter
+PBS_MICFILE=/var/spool/torque/aux//7074321.wadm1.rrze.uni-erlangen.demic
+PBS_NP=4
+SEP=-------------------------------------------------------------
+CLASSPATH_modshare=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/daal/lib/daal.jar:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64/lib/mpi.jar:1
+CPATH=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/ipp/include:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/pstl/include:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/tbb/include:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/daal/include:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/include
+PBS_MOMPORT=15003
+LIKWID_INCDIR=/apps/likwid/5.0.1/include
+WORK=/home/woody/unrz/unrz002h
+_LMFILES__modshare=/apps/modules/modulefiles/tools/cmake/3.11.1:1:/apps/modules/modulefiles/libraries/mkl/2019up02:2:/apps/modules/modulefiles/development/intelmpi/2019up02-intel:1:/apps/modules/modulefiles/general/torque/current:3:/apps/modules/modulefiles/tools/likwid/5.0.1:1
+NLSPATH=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/compiler/lib/intel64/locale/%l_%t/%N:/apps/intel/ComposerXE2019/debugger_2019/gdb/intel64/share/locale/%l_%t/%N:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/locale/%l_%t/%N
+PBS_JOBCOOKIE=BECFD791F42E6E8AD9D45DBD7CE8CA72
+MKL_LIBDIR=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin
+PBS_O_SHELL=/bin/bash
+MPIINC=-I/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64/include
+MKL_LIB_THREADED=-Wl,--start-group  /apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/libmkl_intel_lp64.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/libmkl_intel_thread.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/libmkl_core.a -Wl,--end-group -lpthread -lm -qopenmp
+TMPDIR=/tmp/7074321.wadm1.rrze.uni-erlangen.de
+LIBRARY_PATH=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/ipp/lib/intel64:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/compiler/lib/intel64_lin:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/tbb/lib/intel64/gcc4.7:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/daal/lib/intel64_lin:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/tbb/lib/intel64_lin/gcc4.4:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin
+LIKWID_INC=-I/apps/likwid/5.0.1/include
+LOADEDMODULES=torque/current:intelmpi/2019up02-intel:mkl/2019up02:intel64/19.0up02:likwid/5.0.1:cmake/3.11.1
+DAALROOT=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/daal
+MPILIB=-L/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64/lib
+INTEL_LICENSE_FILE=1713@license4
+I_MPI_FABRICS=shm
+PBS_GPUFILE=/var/spool/torque/aux//7074321.wadm1.rrze.uni-erlangen.degpu
+PBS_O_QUEUE=route
+MKL_CDFT=-Wl,--start-group  /apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/libmkl_cdft_core.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/libmkl_intel_lp64.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/libmkl_intel_thread.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/libmkl_core.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/libmkl_blacs_intelmpi_lp64.a -Wl,--end-group -lpthread -lm -qopenmp
+PBS_VERSION=TORQUE-6.0.2
+SHELL=/bin/bash
+MKL_BASE=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl
+PBS_NUM_NODES=1
+MANPATH_modshare=:4:/apps/intel/ComposerXE2019/documentation_2019/en/debugger/gdb-ia/man/:1:/apps/intel/ComposerXE2019/man/common:2:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/man:2:/apps/torque/current/share/man:3:/apps/likwid/5.0.1/man:1:/apps/intel/mpi/man:1:/apps/cmake/3.11.1/man:1
+PBS_VNODENUM=0
+MKL_SLIB_THREADED=-Wl,--start-group -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -Wl,--end-group -lpthread -lm -qopenmp
+MKLPATH=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin
+SHLVL=4
+PBS_O_HOST=woody3.rrze.uni-erlangen.de
+INTEL_C_HOME=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/compiler
+MANPATH=/apps/cmake/3.11.1/man:/apps/likwid/5.0.1/man:/apps/intel/ComposerXE2019/documentation_2019/en/debugger/gdb-ia/man/:/apps/intel/ComposerXE2019/man/common:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/man:/apps/intel/mpi/man:/apps/torque/current/share/man:
+MKL_LIB=-Wl,--start-group /apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/libmkl_intel_lp64.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/libmkl_sequential.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/libmkl_core.a -Wl,--end-group -lpthread -lm
+PBS_WALLTIME=86400
+PBS_O_LOGNAME=unrz002h
+PBS_NODENUM=0
+MODULEPATH=/apps/modules/modulefiles/general:/apps/modules/modulefiles/applications:/apps/modules/modulefiles/development:/apps/modules/modulefiles/libraries:/apps/modules/modulefiles/tools:/apps/modules/modulefiles/deprecated:/apps/modules/modulefiles/testing
+MPIROOTDIR=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64
+LOGNAME=unrz002h
+PBS_O_SERVER=wadm1
+MKLROOT=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl
+MODULEPATH_modshare=/apps/modules/modulefiles/testing:3:/apps/modules/modulefiles/general:3:/apps/modules/modulefiles/development:3:/apps/modules/modulefiles/applications:3:/apps/modules/modulefiles/deprecated:3:/apps/modules/modulefiles/tools:3:/apps/modules/modulefiles/libraries:3
+FASTTMP=/SORRY/wsfs/no/longer/exists/please/update/your/scripts
+PSTLROOT=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/pstl
+PATH=/apps/cmake/3.11.1/bin:/apps/likwid/5.0.1/bin:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/bin/intel64:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/rrze-bin-intel:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64/bin:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi/intel64/libfabric/bin:/bin:/usr/bin:/apps/torque/current/bin
+TBBROOT=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/tbb
+_LMFILES_=/apps/modules/modulefiles/general/torque/current:/apps/modules/modulefiles/development/intelmpi/2019up02-intel:/apps/modules/modulefiles/libraries/mkl/2019up02:/apps/modules/modulefiles/tools/likwid/5.0.1:/apps/modules/modulefiles/tools/cmake/3.11.1
+PBS_QUEUE=work
+MODULESHOME=/apps/modules
+INFOPATH_modshare=/apps/intel/ComposerXE2019/documentation_2019/en/debugger/gdb-ia/info/:1
+INFOPATH=/apps/intel/ComposerXE2019/documentation_2019/en/debugger/gdb-ia/info/
+I_MPI_ROOT=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mpi
+INTEL_LICENSE_FILE_modshare=1713@license4:1
+MKL_SCALAPACK=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/libmkl_scalapack_lp64.a -Wl,--start-group  /apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/libmkl_intel_lp64.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/libmkl_intel_thread.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/libmkl_core.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.2.187/linux/mkl/lib/intel64_lin/libmkl_blacs_intelmpi_lp64.a -Wl,--end-group -lpthread -lm -qopenmp
+PBS_O_MAIL=/var/mail/unrz002h
+_=/usr/bin/env
