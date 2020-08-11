@@ -149,7 +149,12 @@ int mtxPower::get_cache_violation_cutoff(int stage)
     }
 }
 
-void mtxPower::findPartition()
+//TODO: Write a wrapper function that calls findPartition
+//based on levelTree info
+
+//return levelTree
+//TODO : add 2 args to findPartition: start and end
+std::vector<int> mtxPower::findPartition()
 {
     traverser->calculateDistance();
     levelData = traverser->getLevelData();
@@ -224,7 +229,11 @@ void mtxPower::findPartition()
     splitSharedCacheDomain();
     std::vector<int> hopelessRegion = identifyHopelessRegions(cacheViolatedLevel);
     consolidatePartition(hopelessRegion);
+    //TODO: add the partitions to level tree
     findUnlockCtr();
+
+    //TODO: return levelTree not hoplessRegion
+    return hopelessRegion;
 }
 
 //split into 'n' equal parts, where 'n' is number of shared caches available

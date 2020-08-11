@@ -30,7 +30,7 @@ class mtxPower
     mtxPower(Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_);
     ~mtxPower();
     double getElemUpperLimit(int level);
-    void findPartition();
+    std::vector<int> findPartition();
     void splitSharedCacheDomain();
     void findMacroLevelPtr(int* zones, int* macroLevelPtr);
     void consolidatePartition(std::vector<int> hopelessRegion);
