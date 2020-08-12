@@ -23,7 +23,7 @@ FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zone
 }
 
 //power = true, NUMA = false
-FuncManager::FuncManager(void (*f_) (int,int,int,int,void*), void *args_, int power_, mtxPower *matPower_, bool numaSplit_):power_fn(true), numaSplit(numaSplit_), powerFunc(f_), args(args_), power(power_), matPower(matPower_), lockCtr(NULL), lockTableCtr(NULL), unlockRow(NULL), dangerRow(NULL), unlockCtr(NULL)
+FuncManager::FuncManager(void (*f_) (int,int,int,int,void*), void *args_, int power_, mtxPowerRecursive *matPower_, bool numaSplit_):power_fn(true), numaSplit(numaSplit_), powerFunc(f_), args(args_), power(power_), matPower(matPower_), lockCtr(NULL), lockTableCtr(NULL), unlockRow(NULL), dangerRow(NULL), unlockCtr(NULL)
 {
 #ifdef POWER_WITH_FLUSH_LOCK
     initPowerRun();
@@ -216,11 +216,11 @@ void recursiveCall(FuncManager* funMan, int parentIdx)
 void FuncManager::powerRun()
 {
     //int totalLevel = matPower->getTotalLevel();
-    int totalLevelGroup = matPower->getTotalLevelGroup();
+    int totalNodes = matPower->getTotalNodes();
     int* levelPtr = matPower->getLevelPtrRef();
-    int* levelGroupPtr = matPower->getLevelGroupPtrRef();
+    int* nodePtr = matPower->getNodePtrRef();
 
-#pragma omp parallel num_threads(totalLevelGroup)
+#pragma omp parallel num_threads(totalNodes)
     {
         int levelGroup = omp_get_thread_num();
         //body
@@ -228,8 +228,8 @@ void FuncManager::powerRun()
             //if(levelGroup == 3)
             {
             //printf("here is %d\n", sched_getcpu());
-            int startLevel = levelGroupPtr[levelGroup];
-            int endLevel = levelGroupPtr[levelGroup+1];
+            int startLevel = nodePtr[levelGroup];
+            int endLevel = nodePtr[levelGroup+1];
             for(int level=startLevel; level<(endLevel); ++level)
             {
                 for(int pow=0; pow<power; ++pow)
@@ -263,8 +263,8 @@ void FuncManager::powerRun()
         {
             //reminder-head
             {
-                int startLevel = levelGroupPtr[levelGroup];
-                int endLevel = std::min(startLevel+pow, levelGroupPtr[levelGroup+1]);
+                int startLevel = nodePtr[levelGroup];
+                int endLevel = std::min(startLevel+pow, nodePtr[levelGroup+1]);
                 for(int level=startLevel; level<endLevel; ++level)
                 {
                     //can be a function ptr
@@ -273,8 +273,8 @@ void FuncManager::powerRun()
             }
             //reminder-tail
             {
-                int endLevel = levelGroupPtr[levelGroup+1];
-                int startLevel = std::max(levelGroupPtr[levelGroup], endLevel-pow);
+                int endLevel = nodePtr[levelGroup+1];
+                int startLevel = std::max(nodePtr[levelGroup], endLevel-pow);
                 for(int level=startLevel; level<endLevel; ++level)
                 {
                     //can be a function ptr
@@ -293,8 +293,8 @@ void FuncManager::initPowerRun()
 {
 //need to move this routine to matrixPower.cpp
 #ifdef POWER_WITH_FLUSH_LOCK
-    int* levelGroupPtr = matPower->getLevelGroupPtrRef();
-    int totalLevelGroup = matPower->getTotalLevelGroup();
+    int* nodePtr = matPower->getNodePtrRef();
+    int totalNodes = matPower->getTotalNodes();
     int totalLevels = matPower->getTotalLevel();
 
     //allocate only if needed
@@ -304,13 +304,13 @@ void FuncManager::initPowerRun()
     }
 #pragma omp parallel
     {
-        int threadPerLevelGroup = omp_get_num_threads()/totalLevelGroup;
+        int threadPerNode = omp_get_num_threads()/totalNodes;
         int tid = omp_get_thread_num();
-        int levelGroup = tid / threadPerLevelGroup;
-        int localTid = tid % threadPerLevelGroup;
+        int levelGroup = tid / threadPerNode;
+        int localTid = tid % threadPerNode;
         //printf("here is %d\n", sched_getcpu());
-        int startLevel = levelGroupPtr[levelGroup];
-        int endLevel = levelGroupPtr[levelGroup+1];
+        int startLevel = nodePtr[levelGroup];
+        int endLevel = nodePtr[levelGroup+1];
 
         //only 1 thread per group, maintain NUMA
         if(localTid == 0)
@@ -342,20 +342,20 @@ void FuncManager::initPowerRun()
 
 void FuncManager::NUMAInitPower()
 {
-    int* levelGroupPtr = matPower->getLevelGroupPtrRef();
+    int* nodePtr = matPower->getNodePtrRef();
     int* levelPtr = matPower->getLevelPtrRef();
-    int totalLevelGroup = matPower->getTotalLevelGroup();
+    int totalNodes = matPower->getTotalNodes();
 #pragma omp parallel
     {
-        int threadPerLevelGroup = omp_get_num_threads()/totalLevelGroup;
+        int threadPerNode = omp_get_num_threads()/totalNodes;
         int tid = omp_get_thread_num();
-        int levelGroup = tid / threadPerLevelGroup;
+        int levelGroup = tid / threadPerNode;
         int numaLocalArg = (numaSplit)?levelGroup:0;
         //only first thread in each levelGroup works
-        if(tid == levelGroup*threadPerLevelGroup)
+        if(tid == levelGroup*threadPerNode)
         {
-            powerFunc(levelPtr[levelGroupPtr[levelGroup]], levelPtr[levelGroupPtr[levelGroup+1]], 1, numaLocalArg, args);
-            /*for(int row=levelGroupPtr[levelGroup]; row<levelGroupPtr[levelGroup+1]; ++row)
+            powerFunc(levelPtr[nodePtr[levelGroup]], levelPtr[nodePtr[levelGroup+1]], 1, numaLocalArg, args);
+            /*for(int row=nodePtr[levelGroup]; row<nodePtr[levelGroup+1]; ++row)
             {
                 for(int idx=rowPtr_[row]; idx<rowPtr_[row+1]; ++idx)
                 {
@@ -396,32 +396,32 @@ void FuncManager::powerRun()
 {
 
     initPowerRun();
-    //*levelGroupPtr - for NUMA
+    //*nodePtr - for NUMA
     //**levelPtr - for power
     //int totalLevel = matPower->getTotalLevel();
-    int totalLevelGroup = matPower->getTotalLevelGroup();
+    int totalNodes = matPower->getTotalNodes();
     int* levelPtr = matPower->getLevelPtrRef();
-    int* levelGroupPtr = matPower->getLevelGroupPtrRef();
+    int* nodePtr = matPower->getNodePtrRef();
 
 
 #pragma omp parallel
     {
-        int threadPerLevelGroup = omp_get_num_threads()/totalLevelGroup;
+        int threadPerNode = omp_get_num_threads()/totalNodes;
         int tid = omp_get_thread_num();
-        int levelGroup = tid / threadPerLevelGroup;
-        int localTid = tid % threadPerLevelGroup;
+        int levelGroup = tid / threadPerNode;
+        int localTid = tid % threadPerNode;
         int numaLocalArg = (numaSplit)?levelGroup:0;
-        int offset = levelPtr[levelGroupPtr[numaLocalArg]];
+        int offset = levelPtr[nodePtr[numaLocalArg]];
        // printf("Offset = %d\n", offset);
         //body
         {
             //printf("here is %d\n", sched_getcpu());
-            int startLevel = levelGroupPtr[levelGroup];
-            int endLevel = levelGroupPtr[levelGroup+1];
+            int startLevel = nodePtr[levelGroup];
+            int endLevel = nodePtr[levelGroup+1];
             int maxLevelCount = 0;
-            for(int i=0; i<totalLevelGroup; ++i)
+            for(int i=0; i<totalNodes; ++i)
             {
-                maxLevelCount = std::max(maxLevelCount, (levelGroupPtr[i+1]-levelGroupPtr[i]));
+                maxLevelCount = std::max(maxLevelCount, (nodePtr[i+1]-nodePtr[i]));
             }
             int maxEndLevel = startLevel + maxLevelCount; //needed so that everyone calls barrier
             for(int level=startLevel; level<(maxEndLevel); ++level)
@@ -441,7 +441,7 @@ void FuncManager::powerRun()
                             {
 
                                 //wait till powLevel is free; use ctr[powLevel] == threads*(pow)
-                                while(lockCtr[powLevel] < threadPerLevelGroup*pow)
+                                while(lockCtr[powLevel] < threadPerNode*pow)
                                 {
                                     _mm_pause();
 #ifdef RACE_DEBUG
@@ -591,8 +591,8 @@ void FuncManager::powerRun()
 #pragma omp barrier
             //reminder-head
             {
-                int startLevel = levelGroupPtr[levelGroup];
-                int endLevel = std::min(startLevel+pow, levelGroupPtr[levelGroup+1]);
+                int startLevel = nodePtr[levelGroup];
+                int endLevel = std::min(startLevel+pow, nodePtr[levelGroup+1]);
                 for(int level=startLevel; level<endLevel; ++level)
                 {
                     SPLIT_LEVEL_PER_THREAD(level);
@@ -602,8 +602,8 @@ void FuncManager::powerRun()
             }
             //reminder-tail
             {
-                int endLevel = levelGroupPtr[levelGroup+1];
-                int startLevel = std::max(levelGroupPtr[levelGroup], endLevel-pow);
+                int endLevel = nodePtr[levelGroup+1];
+                int startLevel = std::max(nodePtr[levelGroup], endLevel-pow);
                 for(int level=startLevel; level<endLevel; ++level)
                 {
                     SPLIT_LEVEL_PER_THREAD(level);
@@ -621,25 +621,25 @@ void FuncManager::powerRun()
 void FuncManager::powerRun()
 {
     //int totalLevel = matPower->getTotalLevel();
-    int totalLevelGroup = matPower->getTotalLevelGroup();
+    int totalNodes = matPower->getTotalNodes();
     int* levelPtr = matPower->getLevelPtrRef();
-    int* levelGroupPtr = matPower->getLevelGroupPtrRef();
+    int* nodePtr = matPower->getNodePtrRef();
 
 #pragma omp parallel
     {
-        int threadPerLevelGroup = omp_get_num_threads()/totalLevelGroup;
+        int threadPerNode = omp_get_num_threads()/totalNodes;
         int tid = omp_get_thread_num();
-        int levelGroup = tid / threadPerLevelGroup;
-        int localTid = tid % threadPerLevelGroup;
+        int levelGroup = tid / threadPerNode;
+        int localTid = tid % threadPerNode;
         //body
         {
             //printf("here is %d\n", sched_getcpu());
-            int startLevel = levelGroupPtr[levelGroup];
-            int endLevel = levelGroupPtr[levelGroup+1];
+            int startLevel = nodePtr[levelGroup];
+            int endLevel = nodePtr[levelGroup+1];
             int maxLevelCount = 0;
-            for(int i=0; i<totalLevelGroup; ++i)
+            for(int i=0; i<totalNodes; ++i)
             {
-                maxLevelCount = std::max(maxLevelCount, (levelGroupPtr[i+1]-levelGroupPtr[i]));
+                maxLevelCount = std::max(maxLevelCount, (nodePtr[i+1]-nodePtr[i]));
             }
             int maxEndLevel = startLevel + maxLevelCount; //needed so that everyone calls barrier
             for(int level=startLevel; level<(maxEndLevel); ++level)
@@ -685,8 +685,8 @@ void FuncManager::powerRun()
         {
             //reminder-head
             {
-                int startLevel = levelGroupPtr[levelGroup];
-                int endLevel = std::min(startLevel+pow, levelGroupPtr[levelGroup+1]);
+                int startLevel = nodePtr[levelGroup];
+                int endLevel = std::min(startLevel+pow, nodePtr[levelGroup+1]);
                 for(int level=startLevel; level<endLevel; ++level)
                 {
                     SPLIT_LEVEL_PER_THREAD(level);
@@ -696,8 +696,8 @@ void FuncManager::powerRun()
             }
             //reminder-tail
             {
-                int endLevel = levelGroupPtr[levelGroup+1];
-                int startLevel = std::max(levelGroupPtr[levelGroup], endLevel-pow);
+                int endLevel = nodePtr[levelGroup+1];
+                int startLevel = std::max(nodePtr[levelGroup], endLevel-pow);
                 for(int level=startLevel; level<endLevel; ++level)
                 {
                     SPLIT_LEVEL_PER_THREAD(level);

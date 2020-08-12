@@ -7,7 +7,7 @@
 #include "omp.h"
 #include "level_pool.h"
 #include "timing.h"
-#include "matrixPower.h"
+#include "matrixPowerRecursive.h"
 
 class FuncManager;
 
@@ -27,7 +27,7 @@ class FuncManager
         int power;
         ZoneTree* zoneTree;
         LevelPool* pool;
-        mtxPower* matPower;
+        mtxPowerRecursive* matPower;
         std::vector<int> serialPart;
         volatile int* lockCtr;
         volatile bool* lockTable;
@@ -41,7 +41,7 @@ class FuncManager
         //int len;
     public:
         FuncManager(void (*f_) (int,int,void *), void* args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart);
-        FuncManager(void (*f_) (int,int,int,int,void *), void* args_, int power, mtxPower *matPower, bool numaSplit_);
+        FuncManager(void (*f_) (int,int,int,int,void *), void* args_, int power, mtxPowerRecursive *matPower, bool numaSplit_);
         FuncManager(const FuncManager &obj);
         ~FuncManager();
         void SerialPartRun();

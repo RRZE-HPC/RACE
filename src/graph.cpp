@@ -272,6 +272,8 @@ Node& Graph::at(unsigned Idx)
     return graphData[Idx];
 }
 
+//this is permutation by removing serial part, does not
+//include the initPerm passed to graph
 void Graph::getInitialPerm(int **perm_, int *len_)
 {
     (*perm_) = new int[NROW+NROW_serial];

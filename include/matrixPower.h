@@ -8,15 +8,17 @@
 #include "traverse.h"
 #include "levelData.h"
 
+//this is per stage
 class mtxPower
 {
     Graph* graph;
-    int* levelPtr;
-    int* levelGroupPtr;
-    int* unlockRow;//for p2p sync
-    int* dangerRow;// for p2p sync
-    int* unlockCtr;
-    int *cacheLevelGroup;
+    std::vector<int> levelPtr;
+    std::vector<int> nodePtr;
+    std::vector<int> unlockRow;//for p2p sync
+    std::vector<int> dangerRow;// for p2p sync
+    std::vector<int> unlockCtr;
+    int* cacheLevelGroup;
+    std::vector<int> hopelessRegions;
     LevelData* levelData;
     Traverse* traverser;
     int totalLevel;
@@ -24,16 +26,21 @@ class mtxPower
     int numSharedCache;
     double cacheSize;
     double safetyFactor;
-    std::vector<int> cache_violation_cutoff;
-    int get_cache_violation_cutoff(int stage);
-    public:
-    mtxPower(Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_);
-    ~mtxPower();
+    int cache_violation_cutoff;
+    int startRow;
+    int endRow;
+
+    void identifyHopelessRegions(std::vector<int> cacheViolatedLevel);
+    void getHopelessStartEnd(int count, int *start, int *end);
     double getElemUpperLimit(int level);
-    std::vector<int> findPartition();
+
+    public:
+    mtxPower(Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_);
+    ~mtxPower();
+    void findPartition();
     void splitSharedCacheDomain();
-    void findMacroLevelPtr(int* zones, int* macroLevelPtr);
-    void consolidatePartition(std::vector<int> hopelessRegion);
+    std::vector<int> findMacroLevelPtr(int* zones);
+    void consolidatePartition();
     void getStatNUMA();
     void findUnlockCtr();
     void createLevelPtr();
@@ -43,15 +50,14 @@ class mtxPower
     void getInvPerm(int **invPerm, int *len);
     LevelData* getLevelDataRef();
     int getTotalLevel();
-    int getTotalLevelGroup();
-    int* getLevelPtrRef();
-    int* getLevelGroupPtrRef();
-    int* getUnlockRowRef();
-    int* getDangerRowRef();
-    int* getUnlockCtrRef();
+    int getTotalNodes();
+    std::vector<int> getLevelPtr();
+    std::vector<int> getNodePtr();
+    std::vector<int> getUnlockRow();
+    std::vector<int> getDangerRow();
+    std::vector<int> getUnlockCtr();
+    std::vector<int> getHopelessRegions();
 };
 
-std::vector<int> identifyHopelessRegions(std::vector<int> cacheViolatedLevel);
-void getHopelessStartEnd(std::vector<int> hopelessRegion, int count, int *start, int *end);
 
 #endif

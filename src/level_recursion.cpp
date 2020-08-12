@@ -5,7 +5,7 @@ LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist d
 {
     zoneTree = new ZoneTree(dist, d2Type, lbTarget);
     int totalRows;
-    graph->getInitialPerm(&perm, &totalRows);
+    graph->getInitialPerm(&perm, &totalRows); //This is for serial part, and does not include initPerm
     invPerm = new int[totalRows];
 
     for(int i=0; i<totalRows; ++i)

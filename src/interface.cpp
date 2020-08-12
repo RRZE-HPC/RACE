@@ -43,7 +43,7 @@ RACE_error RACE::Interface::RACEColor(int highestPower, int numSharedCache, doub
     }
     else
     {
-        powerCalculator = new mtxPower(graph, highestPower, numSharedCache, cacheSize, safetyFactor);
+        powerCalculator = new mtxPowerRecursive(graph, highestPower, numSharedCache, cacheSize, safetyFactor);
         powerCalculator->findPartition();
         int len;
         powerCalculator->getPerm(&perm, &len);
@@ -544,12 +544,12 @@ void RACE::Interface::numaInitMtxVec(int **rowPtr_, int **col_, double **val_, i
 void RACE::Interface::getNumaSplitting(int **split, int *splitLen)
 {
 
-    int NUMAdomains = powerCalculator->getTotalLevelGroup();
+    int NUMAdomains = powerCalculator->getTotalNodes();
     (*split) = (int*) malloc(sizeof(int)*(NUMAdomains+1));
     for(int i=0; i<=NUMAdomains; ++i)
     {
         int *levelPtr = powerCalculator->getLevelPtrRef();
-        int *levelGroupPtr = powerCalculator->getLevelGroupPtrRef();
+        int *levelGroupPtr = powerCalculator->getNodePtrRef();
         (*split)[i] = levelPtr[levelGroupPtr[i]];
     }
     (*splitLen) = NUMAdomains+1;

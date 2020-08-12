@@ -65,7 +65,7 @@ template <typename T> inline void getEnv(std::string envName, std::vector<T>& va
     }
 }
 
-//updates first prmutation array based on the current permutation
+//updates first peermutation array based on the current permutation
 inline void updatePerm(int **mainPerm, int *currPerm, int len, int fullLen)
 {
     int *totPerm = new int [fullLen];

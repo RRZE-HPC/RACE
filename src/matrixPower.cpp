@@ -7,33 +7,13 @@
 
 //#define LB_REMINDER
 
-mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_):graph(graph_), levelPtr(NULL),levelGroupPtr(NULL), unlockRow(NULL), dangerRow(NULL), unlockCtr(NULL), cacheLevelGroup(NULL),levelData(NULL), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_)
+mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_):graph(graph_), cacheLevelGroup(NULL),levelData(NULL), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), cache_violation_cutoff(cache_violation_cutoff_), startRow(startRow_), endRow(endRow_)
 {
-    traverser = new Traverse(graph, RACE::ONE);
+    traverser = new Traverse(graph, RACE::ONE, startRow, endRow);
 }
 
 mtxPower::~mtxPower()
 {
-    if(levelPtr)
-    {
-        delete[] levelPtr;
-    }
-    if(levelGroupPtr)
-    {
-        delete[] levelGroupPtr;
-    }
-    if(unlockRow)
-    {
-        delete[] unlockRow;
-    }
-    if(dangerRow)
-    {
-        delete[] dangerRow;
-    }
-    if(unlockCtr)
-    {
-        delete[] unlockCtr;
-    }
     if(cacheLevelGroup)
     {
         delete[] cacheLevelGroup;
@@ -54,7 +34,7 @@ double mtxPower::getElemUpperLimit(int level)
 
 void mtxPower::createLevelPtr()
 {
-    levelPtr = new int[totalLevel+1];
+    levelPtr =  std::vector<int>(totalLevel+1);
 
     levelPtr[0] = 0;
 
@@ -72,13 +52,12 @@ double mtxPower::getBytePerNNZ()
     return (double)(((1+highestPower/nnzr)*sizeof(double)+(1+1/nnzr)*sizeof(int)));
 }
 
-std::vector<int> identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
+void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
 {
     if(cacheViolatedLevel.size() > 1)
     {
         cacheViolatedLevel.push_back(cacheViolatedLevel.back()+2); //a dummy so last element will be pushed, the dummy is made 2 apart from last so it doesn't compress
     }
-    std::vector<int> hopelessRegion;
     std::vector<int> hopelessRegion_flag(cacheViolatedLevel.size(), 0);
     int prevHopelessLevel = -2;
     int hopelessCtr = 0;
@@ -117,35 +96,22 @@ std::vector<int> identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
             if((currFlag > 0) && (prevFlag == 0))
             {
                 //this is start of a hopeless region
-                hopelessRegion.push_back(cacheViolatedLevel[i]);
+                hopelessRegions.push_back(cacheViolatedLevel[i]);
             }
             else if((currFlag > 0) && (prevFlag > 0))
             {
-                hopelessRegion.push_back(cacheViolatedLevel[i-1]);
-                hopelessRegion.push_back(cacheViolatedLevel[i]);
+                hopelessRegions.push_back(cacheViolatedLevel[i-1]);
+                hopelessRegions.push_back(cacheViolatedLevel[i]);
             }
             else if(currFlag == 0)
             {
                 //this is end of a hopeless region
-                hopelessRegion.push_back(cacheViolatedLevel[i-1]);
+                hopelessRegions.push_back(cacheViolatedLevel[i-1]);
             }
 
-            //printf("@@@@ check hopelessRegion[%d] = %d\n", (int)hopelessRegion.size()-1, hopelessRegion.back());
+            //printf("@@@@ check hopelessRegions[%d] = %d\n", (int)hopelessRegions.size()-1, hopelessRegions.back());
         }
         prevFlag = currFlag;
-    }
-    return hopelessRegion;
-}
-
-int mtxPower::get_cache_violation_cutoff(int stage)
-{
-    if(stage < (int)cache_violation_cutoff.size())
-    {
-        return cache_violation_cutoff[stage];
-    }
-    else
-    {
-        return cache_violation_cutoff[0];
     }
 }
 
@@ -154,7 +120,7 @@ int mtxPower::get_cache_violation_cutoff(int stage)
 
 //return levelTree
 //TODO : add 2 args to findPartition: start and end
-std::vector<int> mtxPower::findPartition()
+void mtxPower::findPartition()
 {
     traverser->calculateDistance();
     levelData = traverser->getLevelData();
@@ -174,11 +140,6 @@ std::vector<int> mtxPower::findPartition()
     std::vector<int> cacheViolatedFactor;
     //check if there is a level where nnz violates cache
     //so the one where it violates first is detected first
-
-    int default_cutoff = 10; //make 10 factor so not much cut-off happens
-    cache_violation_cutoff.push_back(default_cutoff); //default
-    getEnv("RACE_CACHE_VIOLATION_CUTOFF", cache_violation_cutoff);
-    printf("RACE_CACHE_VIOLATION_CUTOFF = %d\n", get_cache_violation_cutoff(1));
     for(int level=0; level<totalLevel; ++level)
     {
         printf("rowStart = %d, NROW[%d] = %d, NNZ[%d] = %d\n", levelPtr[level], level, levelData->levelRow[level], level, levelData->levelNnz[level]);
@@ -198,7 +159,7 @@ std::vector<int> mtxPower::findPartition()
             //for merging, merge nearby levels that have violation greater than
             //cacheViolationTolerance, because they are not going to bring
             //anything, then why spending expensive barrier cost
-            if(factor > get_cache_violation_cutoff(1))
+            if(factor > cache_violation_cutoff)
             {
                 cacheViolatedLevel.push_back(level);
                 cacheViolatedFactor.push_back(factor);
@@ -227,13 +188,11 @@ std::vector<int> mtxPower::findPartition()
     }
 #endif
     splitSharedCacheDomain();
-    std::vector<int> hopelessRegion = identifyHopelessRegions(cacheViolatedLevel);
-    consolidatePartition(hopelessRegion);
+    identifyHopelessRegions(cacheViolatedLevel);
+    consolidatePartition();
     //TODO: add the partitions to level tree
     findUnlockCtr();
 
-    //TODO: return levelTree not hoplessRegion
-    return hopelessRegion;
 }
 
 //split into 'n' equal parts, where 'n' is number of shared caches available
@@ -263,45 +222,51 @@ void mtxPower::splitSharedCacheDomain()
         printf("lg[%d] = %d, lg[%d] = %d, row = %d\n", i, cacheLevelGroup[i], i+1, cacheLevelGroup[i+1], cacheLevelGroup[i+1]-cacheLevelGroup[i]);
     }*/
 
-    levelGroupPtr = new int[len];
-    findMacroLevelPtr(cacheLevelGroup, levelGroupPtr);
+    nodePtr = std::vector<int>(len);
+    nodePtr = findMacroLevelPtr(cacheLevelGroup);
+    if(nodePtr.size() != numSharedCache+1)
+    {
+        ERROR_PRINT("nodePtr dimensions do not match");
+    }
 
     for(int i=0; i<len; ++i)
     {
-        printf("lg = %d\n", levelGroupPtr[i]);
+        printf("nodePtr = %d\n", nodePtr[i]);
     }
 
     getStatNUMA();
 }
 
-void mtxPower::findMacroLevelPtr(int* zones, int* macroLevelPtr)
+std::vector<int> mtxPower::findMacroLevelPtr(int* zones)
 {
-    int ctr=0;
+    std::vector<int> macroLevelPtr;
+    int ctr = 0;
     for(int i=0; i<(totalLevel+1); ++i)
     {
         if(levelPtr[i] == zones[ctr])
         {
-            macroLevelPtr[ctr] = i;
+            macroLevelPtr.push_back(i);
             ++ctr;
         }
     }
+    return macroLevelPtr;
 }
 
-void getHopelessStartEnd(std::vector<int> hopelessRegion, int count, int *start, int *end)
+void mtxPower::getHopelessStartEnd(int count, int *start, int *end)
 {
     (*start) = -1;
     (*end) = -1;
-    if(2*count <  (int)hopelessRegion.size()-1)
+    if(2*count <  (int)hopelessRegions.size()-1)
     {
-        (*start) = hopelessRegion[2*count];
-        (*end) = hopelessRegion[2*count+1];
+        (*start) = hopelessRegions[2*count];
+        (*end) = hopelessRegions[2*count+1];
     }
 }
 
-void mtxPower::consolidatePartition(std::vector<int> hopelessRegion)
+void mtxPower::consolidatePartition()
 {
-    unlockRow = new int[totalLevel];
-    dangerRow = new int[totalLevel];
+    unlockRow = std::vector<int>(totalLevel);
+    dangerRow = std::vector<int>(totalLevel);
 
     std::vector<int> newLevelPtr;
     newLevelPtr.push_back(0); //done in loop
@@ -314,10 +279,10 @@ void mtxPower::consolidatePartition(std::vector<int> hopelessRegion)
 
     for(int pow=0; pow<highestPower-1; ++pow)
     {
-        for(int levelGroup=0; levelGroup<numSharedCache; ++levelGroup)
+        for(int node=0; node<numSharedCache; ++node)
         {
-            int startBoundary = levelGroupPtr[levelGroup]+pow;
-            int endBoundary = levelGroupPtr[levelGroup+1]-1-pow;
+            int startBoundary = nodePtr[node]+pow;
+            int endBoundary = nodePtr[node+1]-1-pow;
             int startNNZ = levelData->levelNnz[startBoundary];
             int endNNZ =  levelData->levelNnz[endBoundary];
 
@@ -329,19 +294,19 @@ void mtxPower::consolidatePartition(std::vector<int> hopelessRegion)
 
     int hopelessRegionCount = 0;
     int currHopelessStart, currHopelessEnd;
-    getHopelessStartEnd(hopelessRegion, hopelessRegionCount, &currHopelessStart, &currHopelessEnd);
+    getHopelessStartEnd(hopelessRegionCount, &currHopelessStart, &currHopelessEnd);
 
-    for(int levelGroup=0; levelGroup<numSharedCache; ++levelGroup)
+    for(int node=0; node<numSharedCache; ++node)
     {
         double sumElem = 0;
         double sumNNZ = 0;
         int curLevelCtr = 0;
         int consolidated_curLevelCtr = 0;
-        //int totalLevelInGroup = levelGroupPtr[levelGroup+1]-levelGroupPtr[levelGroup];
+        //int totalLevelInGroup = nodePtr[node+1]-nodePtr[node];
 
 
-        //newLevelPtr.push_back(levelPtr[levelGroupPtr[levelGroup]]);
-        for(int level=levelGroupPtr[levelGroup]; level<levelGroupPtr[levelGroup+1]; ++level)
+        //newLevelPtr.push_back(levelPtr[nodePtr[node]]);
+        for(int level=nodePtr[node]; level<nodePtr[node+1]; ++level)
         {
             double currElem = getElemUpperLimit(level);
             double bytePerNNZ = getBytePerNNZ();
@@ -363,7 +328,7 @@ void mtxPower::consolidatePartition(std::vector<int> hopelessRegion)
                 //don't set hopeless because now we have to end
                 //and consolidate
                 hopelessRegionCount++;
-                getHopelessStartEnd(hopelessRegion, hopelessRegionCount, &currHopelessStart, &currHopelessEnd);
+                getHopelessStartEnd(hopelessRegionCount, &currHopelessStart, &currHopelessEnd);
             }
 
             //printf("##### hopeless = %d, hopeless = [%d,%d]\n", hopeless, currHopelessStart, currHopelessEnd);
@@ -372,7 +337,7 @@ void mtxPower::consolidatePartition(std::vector<int> hopelessRegion)
 #endif
             if(curLevelCtr > 0 && !hopeless)
             {
-                //second condition to avoid bulk level group at boundary,
+                //second condition to avoid bulk levels at boundary,
                 //as this is processed without caching
 
 #ifdef LB_REMINDER
@@ -384,7 +349,7 @@ void mtxPower::consolidatePartition(std::vector<int> hopelessRegion)
                     bool updateFlag = true;
 
 #ifdef LB_REMINDER
-                    int endBoundary = levelGroupPtr[levelGroup+1]-(startPow)-1;
+                    int endBoundary = nodePtr[node+1]-(startPow)-1;
                     int endNNZ = levelData->levelNnz[endBoundary];
 
                     //for start boundary check if it has satisfied sum condition,
@@ -421,7 +386,7 @@ void mtxPower::consolidatePartition(std::vector<int> hopelessRegion)
             }
             curLevelCtr++;
         }
-        int lastLevel = levelGroupPtr[levelGroup+1];
+        int lastLevel = nodePtr[node+1];
         newLevelPtr.push_back(levelPtr[lastLevel]);
 
         dangerRow[consolidated_ctr] = levelPtr[lastLevel-1];
@@ -435,6 +400,7 @@ void mtxPower::consolidatePartition(std::vector<int> hopelessRegion)
 
     //rewrite levelPtr with newLevelPtr
     totalLevel = (int)(newLevelPtr.size()-1);
+    levelPtr.resize(totalLevel+1);
     printf("consolidated levels = %d\n", totalLevel);
     for(int i=0; i<totalLevel+1; ++i)
     {
@@ -442,16 +408,19 @@ void mtxPower::consolidatePartition(std::vector<int> hopelessRegion)
         printf("levelPtr[%d] = %d\n", i, levelPtr[i]);
     }
 
-    int* newLevelGroupPtr = new int[numSharedCache+1];
-    findMacroLevelPtr(cacheLevelGroup, newLevelGroupPtr);
+    std::vector<int> newNodePtr = findMacroLevelPtr(cacheLevelGroup);
+    if(nodePtr.size() != numSharedCache+1)
+    {
+        ERROR_PRINT("nodePtr dimensions do not match");
+    }
+
 
     for(int i=0; i<(numSharedCache+1); ++i)
     {
-        levelGroupPtr[i] = newLevelGroupPtr[i];
-        printf("lg_consolidated[%d] = %d, row = %d\n", i, levelGroupPtr[i], levelPtr[levelGroupPtr[i]]);
+        nodePtr[i] = newNodePtr[i];
+        printf("nodePtr_consolidated[%d] = %d, row = %d\n", i, nodePtr[i], levelPtr[nodePtr[i]]);
     }
 
-    delete[] newLevelGroupPtr;
 }
 
 void mtxPower::getStatNUMA()
@@ -461,38 +430,32 @@ void mtxPower::getStatNUMA()
     {
         int NUMAnnz = 0;
         int NUMAnrow = 0;
-        for(int level=levelGroupPtr[i]; level<levelGroupPtr[i+1]; ++level)
+        for(int level=nodePtr[i]; level<nodePtr[i+1]; ++level)
         {
             NUMAnnz += levelData->levelNnz[level];
             NUMAnrow += levelData->levelRow[level];
         }
-        printf("levelGroup: %d, Level = [%d, %d], Nrow = %d, Nnz = %d\n", i, levelGroupPtr[i], levelGroupPtr[i+1], NUMAnrow, NUMAnnz);
+        printf("node: %d, Level = [%d, %d], Nrow = %d, Nnz = %d\n", i, nodePtr[i], nodePtr[i+1], NUMAnrow, NUMAnnz);
     }
 }
 
 void mtxPower::findUnlockCtr()
 {
 
-    if(!unlockCtr)
+    if(unlockCtr.empty())
     {
-        unlockCtr = (int*)malloc(sizeof(int)*totalLevel);
-
-        for(int l=0; l<totalLevel; ++l)
-        {
-            unlockCtr[l] = 0;
-        }
-
+        unlockCtr = std::vector<int>(totalLevel, 0);
 
 #pragma omp parallel
         {
 
-            int totalLevelGroup = getTotalLevelGroup();
-            int threadPerLevelGroup = omp_get_num_threads()/totalLevelGroup;
+            int totalNodes = getTotalNodes();
+            int threadPerNode = omp_get_num_threads()/totalNodes;
             int tid = omp_get_thread_num();
-            int levelGroup = tid / threadPerLevelGroup;
-            int localTid = tid % threadPerLevelGroup;
-            int startLevel = levelGroupPtr[levelGroup];
-            int endLevel = levelGroupPtr[levelGroup+1];
+            int node = tid / threadPerNode;
+            int localTid = tid % threadPerNode;
+            int startLevel = nodePtr[node];
+            int endLevel = nodePtr[node+1];
             int offset = 0; //doesn't matter what is offset
             //initialize lockTableCtr
             for(int l=startLevel; l<endLevel; ++l)
@@ -511,6 +474,7 @@ void mtxPower::findUnlockCtr()
                 }
             }
         }
+
     }
 }
 
@@ -534,34 +498,38 @@ LevelData* mtxPower::getLevelDataRef()
     return levelData;
 }
 
-int* mtxPower::getLevelPtrRef()
+std::vector<int> mtxPower::getLevelPtr()
 {
     return levelPtr;
 }
 
-int mtxPower::getTotalLevelGroup()
+int mtxPower::getTotalNodes()
 {
     return numSharedCache;
 }
 
-int* mtxPower::getLevelGroupPtrRef()
+std::vector<int> mtxPower::getNodePtr()
 {
-    return levelGroupPtr;
+    return nodePtr;
 }
 
-int* mtxPower::getUnlockRowRef()
+std::vector<int> mtxPower::getUnlockRow()
 {
     return unlockRow;
 }
 
-int* mtxPower::getDangerRowRef()
+std::vector<int> mtxPower::getDangerRow()
 {
     return dangerRow;
 }
 
-int* mtxPower::getUnlockCtrRef()
+std::vector<int> mtxPower::getUnlockCtr()
 {
     return unlockCtr;
 }
 
+std::vector<int> mtxPower::getHopelessRegions()
+{
+    return hopelessRegions;
+}
 

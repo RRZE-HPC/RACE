@@ -38,6 +38,7 @@ set (SOURCES
     #src/simdify.cpp
     src/sell_c_sigmize.cpp
     src/matrixPower.cpp
+    src/matrixPowerRecursive.cpp
     )
 
 set (HEADERS
@@ -69,6 +70,7 @@ set (HEADERS
     include/simdify.h
     include/sell_c_sigmize.h
     include/matrixPower.h
+    include/matrixPowerRecursive.h
     )
 
 
