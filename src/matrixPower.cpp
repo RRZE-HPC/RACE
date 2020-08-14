@@ -113,6 +113,194 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
         }
         prevFlag = currFlag;
     }
+
+    //combine hopeless region that do not have a distance of atleast
+    //(highestPower-1) between them
+    int n_hopeless =  (int)(hopelessRegions.size()/2.0);
+    std::vector<int> new_hopelessRegions;
+    int i=0;
+
+    int curStart, curEnd;
+    getHopelessStartEnd(0, &curStart, &curEnd);
+    getHopelessStartEnd(1, &nxtStart, &nxtEnd);
+
+    for(int i=0; i<(n_hopeless-1); ++i)
+    {
+        if(curStart != -1)
+        {
+            while(((nxtStart-curEnd) < (highestPower-1)) && (nxtStart!=-1))
+            {
+                //distance is less, merging
+                curEnd = nxtEnd;
+                getHopelessStartEnd(i+2, &nxtStart, &nxtEnd);
+                i++;
+            }
+            new_hopelessRegions.push_back(curStart);
+            new_hopelessRegions.push_back(curEnd);
+            getHopelessStartEnd(i+1, &curStart, &curEnd);
+            getHopelessStartEnd(i+2, &nxtStart, &nxtEnd);
+        }
+    }
+
+    hopelessRegions = new_hopelessRegions;
+
+    new_hopelessRegions.resize(0);
+
+    hopelessNodePtr.resize(numSharedCache+1);
+    hopelessNodePtr[0] = 0;
+
+    //make sure hopelessRegions doesn't start from nodeBoundaries,
+    //and split if spawning across boundaries
+    for(int node=0; node<numSharedCache; ++node)
+    {
+        int levelStart = nodePtr[node];
+        int levelEnd = nodePtr[node+1];
+
+        //first split the ones accross nodeBoundaries
+        for(int i=0; i<n_hopeless; ++i)
+        {
+            getHopelessStartEnd(i, &curStart, &curEnd);
+            if(curStart >= levelStart)
+            {
+                //tail crossing boundary
+                if( curEnd > levelEnd )
+                {
+                    //spwaning multiple nodeBoundaries
+                    new_hopelessRegions.push_back(curStart);
+                    new_hopelessRegions.push_back(levelEnd-1);
+                }
+                else
+                {
+                    new_hopelessRegions.push_back(curStart);
+                    new_hopelessRegions.push_back(curEnd);
+                }
+            }
+            else
+            {
+                if(curEnd > levelEnd)
+                {
+                    WARNING_PRINT("One complete node is hopeless\n");
+                    new_hopelessRegions.push_back(levelStart);
+                    new_hopelessRegions.push_back(levelEnd-1);
+                }
+                else
+                {
+                    //head crossing boundary
+                    new_hopelessRegions.push_back(levelStart);
+                    new_hopelessRegions.push_back(curEnd);
+                }
+            }
+        }
+
+        int startHopelessNodeId = hopelessNodePtr[node];
+        //check if boundary within (highestPower-1), if not adjust
+        getHopelessStartEnd(startHopelessNodeId, &curStart, &curEnd);
+        //check start boundary
+        if((curStart-levelStart) < (highestPower-1))
+        {
+            int newCurStart = levelStart+(highestPower-1);
+            if(curEnd < newCurStart)
+            {
+                //drop this hopelessRegion
+                new_hopelessRegions.erase(new_hopelessRegions.begin()+2*startHopelessNodeId, new_hopelessRegions.begin()+2*startHopelessNodeId+1);
+            }
+            else
+            {
+                new_hopelessRegions[2*startHopelessNodeId] = newCurStart;
+            }
+        }
+        int endHopelessNodeId = new_hopelessRegions.size()/2.0;
+        getHopelessStartEnd(startHopelessNodeId, &curStart, &curEnd);
+        //check end boundary
+        if((levelEnd-curEnd) < (highestPower-1))
+        {
+            int newCurEnd = levelEnd-(highestPower-1);
+            if(curStart > newCurEnd)
+            {
+                //drop this hopelessRegion
+                new_hopelessRegions.erase(new_hopelessRegions.begin()+2*endHopelessNodeId, new_hopelessRegions.begin()+2*endHopelessNodeId+1);
+            }
+            else
+            {
+                new_hopelessRegions[2*endHopelessNodeId+1] = newCurEnd;
+            }
+        }
+
+        //now find out hopelessNodePtr
+        hopelessNodePtr[node+1] = new_hopelessRegions.size()/2.0;
+    }
+    hopelessRegions = new_hopelessRegions;
+
+
+    //save the boundaries of hopeless regions
+    //there are 2 kinds of boundaries
+    //1) total boundary and 2) working boundary
+    //1 -   total boundary includes all (highestPower-1) boundaries of the
+    //      hopelessRegion where computations till highestPower is not yet reached
+    //2 -   working boundary includes only the boundary region which has to be
+    //      calculated with hopelessRegions. Its length is ceil(highestPower/2)-1.
+    //The (total boundary - working boundary)regions are done after
+    //hopelessRegion is finished
+    //Here we save the entire totalBoundary and use the parts as required.
+    hopelessRegionPositiveBoundary.resize(n_hopeless);
+    hopelessRegionNegativeBoundary.resize(n_hopeless);
+
+    for(int i=0; i<n_hopeless; ++i)
+    {
+        std::vector<int> curPositiveBoundary;
+        std::vector<int> curNegativeBoundary;
+        int curHopelessStartLevel, curHopelessEndLevel;
+        getHopelessStartEnd(i, &curHopelessStartLevel, &curHopelessEndLevel);
+        printf("Hopeless = [%d, %d]\n", curHopelessStartLevel, curHopelessEndLevel);
+        for(int p=1; p<highestPower; ++p)
+        {
+            int curNegativeLevel = curHopelessStartLevel-p;
+            int curPositiveLevel = curHopelessEndLevel+p;
+
+            if(curNegativeLevel < 0)
+            {
+                ERROR_PRINT("This shouldn't happen, hopelessRegions shouldn't be this close to boundary");
+                curNegativeBoundary.push_back(-1);
+            }
+            else
+            {
+                curNegativeBoundary.push_back(levelPtr[curNegativeLevel]);
+            }
+            if(curPositiveLevel > (totalLevel-1))
+            {
+                ERROR_PRINT("This shouldn't happen, hopelessRegions shouldn't be this close to boundary");
+                curPositiveBoundary.push_back(-1);
+            }
+            else
+            {
+                curPositiveBoundary.push_back(levelPtr[curPositiveLevel]);
+            }
+
+        }
+
+        hopelessRegionNegativeBoundary[i] = curNegativeBoundary;
+        hopelessRegionPositiveBoundary[i] = curPositiveBoundary;
+    }
+
+    //printing
+    printf("Hopeless: Negative Boundary\n");
+    for(int i=0; i<n_hopeless; ++i)
+    {
+        for(int p=0; p<highestPower-1; ++p)
+        {
+            printf("%d, ", hopelessRegionNegativeBoundary[i][p]);
+        }
+        printf("\n");
+    }
+    printf("Hopeless: Positive Boundary\n");
+    for(int i=0; i<n_hopeless; ++i)
+    {
+        for(int p=0; p<highestPower-1; ++p)
+        {
+            printf("%d, ", hopelessRegionPositiveBoundary[i][p]);
+        }
+        printf("\n");
+    }
 }
 
 //TODO: Write a wrapper function that calls findPartition
@@ -295,7 +483,12 @@ void mtxPower::consolidatePartition()
     int hopelessRegionCount = 0;
     int currHopelessStart, currHopelessEnd;
     getHopelessStartEnd(hopelessRegionCount, &currHopelessStart, &currHopelessEnd);
-
+    printf("Hopeless = [%d, %d]\n", currHopelessStart, currHopelessEnd);
+   //TODO:
+   //1) a distance of (highestPower-1) levels between hopelessRegions, else combine them
+   //2) only one level at boundary (no consolidation) of hopeless Regions
+   //3) hopelessRegion only at body, not at head and tail, so careful with
+   //nodePtr
     for(int node=0; node<numSharedCache; ++node)
     {
         double sumElem = 0;
@@ -317,8 +510,23 @@ void mtxPower::consolidatePartition()
             sumNNZ += curNNZ;
 
             bool hopeless = false;
+            bool forceUpdate = false;
+
+            int workingBoundaryLength = ceil(highestPower/2)-1;
+
+            //check if level in working boundary of hopelessRegions; 
+            //start boundary
+            if( (level >= (curHopelessStart-workingBoundaryLength)) && (level < curHopelessStart) )
+            {
+                forceUpdate = true;
+            }
+            //end boundary
+            else if((level > curHopelessEnd) && (level <= (curHopelessEnd+workingBoundaryLength)) )
+            {
+                forceUpdate = true;
+            }
             //deal with hopeless region
-            if((level >= currHopelessStart) && (level < currHopelessEnd))
+            else if((level >= currHopelessStart) && (level < currHopelessEnd))
             {
                 //this level belongs to hopeless region
                 hopeless = true;
@@ -343,7 +551,7 @@ void mtxPower::consolidatePartition()
 #ifdef LB_REMINDER
                 if( (sumElem >= cacheElem) || ( (numSharedCache > 1) && ( (consolidated_curLevelCtr < (highestPower)) || (curLevelCtr > (totalLevelInGroup-highestPower)) ) ) )
 #else
-                if(sumElem >= cacheElem)
+                if((sumElem >= cacheElem) || forceUpdate)
 #endif
                 {
                     bool updateFlag = true;

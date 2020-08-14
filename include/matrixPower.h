@@ -18,7 +18,10 @@ class mtxPower
     std::vector<int> dangerRow;// for p2p sync
     std::vector<int> unlockCtr;
     int* cacheLevelGroup;
-    std::vector<int> hopelessRegions;
+    std::vector<int> hopelessRegions; //stores level index at hopeless boundary
+    std::vector<int> hopelessNodePtr;
+    std::vector<std::vector<int>> hopelessRegionPositiveBoundary; //stores rows in boundary
+    std::vector<std::vector<int>> hopelessRegionNegativeBoundary; //stores rows in boundary
     LevelData* levelData;
     Traverse* traverser;
     int totalLevel;
