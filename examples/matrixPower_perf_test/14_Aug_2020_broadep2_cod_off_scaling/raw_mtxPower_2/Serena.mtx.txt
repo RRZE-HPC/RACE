@@ -1,0 +1,1138 @@
+cores = 1
+Reading matrix file
+Creating a general matrix out of a symmetric one
+Preparing matrix for power calculation
+power = 1
+Doing RCM permutation
+cacheElem = 2993798.264001
+nrows = 1391349
+nnz = 64531701
+nnzr = 46.380672
+RACE_CACHE_VIOLATION_CUTOFF = 10
+rowStart = 0, NROW[0] = 1, NNZ[0] = 21
+rowStart = 1, NROW[1] = 20, NNZ[1] = 672
+rowStart = 21, NROW[2] = 66, NNZ[2] = 2493
+rowStart = 87, NROW[3] = 126, NNZ[3] = 4968
+rowStart = 213, NROW[4] = 189, NNZ[4] = 7875
+rowStart = 402, NROW[5] = 288, NNZ[5] = 12483
+rowStart = 690, NROW[6] = 423, NNZ[6] = 18639
+rowStart = 1113, NROW[7] = 711, NNZ[7] = 31788
+rowStart = 1824, NROW[8] = 1164, NNZ[8] = 52641
+rowStart = 2988, NROW[9] = 1890, NNZ[9] = 84051
+rowStart = 4878, NROW[10] = 3033, NNZ[10] = 134235
+rowStart = 7911, NROW[11] = 4479, NNZ[11] = 191709
+rowStart = 12390, NROW[12] = 5298, NNZ[12] = 224235
+rowStart = 17688, NROW[13] = 4884, NNZ[13] = 208413
+rowStart = 22572, NROW[14] = 4407, NNZ[14] = 194904
+rowStart = 26979, NROW[15] = 5772, NNZ[15] = 251253
+rowStart = 32751, NROW[16] = 6990, NNZ[16] = 300555
+rowStart = 39741, NROW[17] = 6930, NNZ[17] = 298962
+rowStart = 46671, NROW[18] = 7356, NNZ[18] = 322308
+rowStart = 54027, NROW[19] = 9225, NNZ[19] = 394245
+rowStart = 63252, NROW[20] = 9420, NNZ[20] = 414261
+rowStart = 72672, NROW[21] = 9849, NNZ[21] = 447786
+rowStart = 82521, NROW[22] = 14253, NNZ[22] = 637677
+rowStart = 96774, NROW[23] = 20088, NNZ[23] = 918063
+Cache Violated at 23 level, elem = 3672252.000000, factor = 2
+rowStart = 116862, NROW[24] = 30870, NNZ[24] = 1402551
+Cache Violated at 24 level, elem = 5610204.000000, factor = 2
+rowStart = 147732, NROW[25] = 46596, NNZ[25] = 2115495
+Cache Violated at 25 level, elem = 8461980.000000, factor = 3
+rowStart = 194328, NROW[26] = 62460, NNZ[26] = 2819412
+Cache Violated at 26 level, elem = 11277648.000000, factor = 4
+rowStart = 256788, NROW[27] = 69936, NNZ[27] = 3180015
+Cache Violated at 27 level, elem = 12720060.000000, factor = 5
+rowStart = 326724, NROW[28] = 69492, NNZ[28] = 3231693
+Cache Violated at 28 level, elem = 12926772.000000, factor = 5
+rowStart = 396216, NROW[29] = 71856, NNZ[29] = 3356298
+Cache Violated at 29 level, elem = 13425192.000000, factor = 5
+rowStart = 468072, NROW[30] = 77466, NNZ[30] = 3595122
+Cache Violated at 30 level, elem = 14380488.000000, factor = 5
+rowStart = 545538, NROW[31] = 80874, NNZ[31] = 3738708
+Cache Violated at 31 level, elem = 14954832.000000, factor = 5
+rowStart = 626412, NROW[32] = 77112, NNZ[32] = 3595842
+Cache Violated at 32 level, elem = 14383368.000000, factor = 5
+rowStart = 703524, NROW[33] = 73665, NNZ[33] = 3437019
+Cache Violated at 33 level, elem = 13748076.000000, factor = 5
+rowStart = 777189, NROW[34] = 73818, NNZ[34] = 3425175
+Cache Violated at 34 level, elem = 13700700.000000, factor = 5
+rowStart = 851007, NROW[35] = 69585, NNZ[35] = 3252771
+Cache Violated at 35 level, elem = 13011084.000000, factor = 5
+rowStart = 920592, NROW[36] = 63792, NNZ[36] = 2993706
+Cache Violated at 36 level, elem = 11974824.000000, factor = 4
+rowStart = 984384, NROW[37] = 58227, NNZ[37] = 2740464
+Cache Violated at 37 level, elem = 10961856.000000, factor = 4
+rowStart = 1042611, NROW[38] = 52638, NNZ[38] = 2486682
+Cache Violated at 38 level, elem = 9946728.000000, factor = 4
+rowStart = 1095249, NROW[39] = 48456, NNZ[39] = 2294325
+Cache Violated at 39 level, elem = 9177300.000000, factor = 4
+rowStart = 1143705, NROW[40] = 43824, NNZ[40] = 2072421
+Cache Violated at 40 level, elem = 8289684.000000, factor = 3
+rowStart = 1187529, NROW[41] = 38742, NNZ[41] = 1833498
+Cache Violated at 41 level, elem = 7333992.000000, factor = 3
+rowStart = 1226271, NROW[42] = 33198, NNZ[42] = 1579023
+Cache Violated at 42 level, elem = 6316092.000000, factor = 3
+rowStart = 1259469, NROW[43] = 28428, NNZ[43] = 1354689
+Cache Violated at 43 level, elem = 5418756.000000, factor = 2
+rowStart = 1287897, NROW[44] = 24177, NNZ[44] = 1150371
+Cache Violated at 44 level, elem = 4601484.000000, factor = 2
+rowStart = 1312074, NROW[45] = 19869, NNZ[45] = 950841
+Cache Violated at 45 level, elem = 3803364.000000, factor = 2
+rowStart = 1331943, NROW[46] = 16467, NNZ[46] = 777816
+Cache Violated at 46 level, elem = 3111264.000000, factor = 2
+rowStart = 1348410, NROW[47] = 12447, NNZ[47] = 596313
+rowStart = 1360857, NROW[48] = 9432, NNZ[48] = 447084
+rowStart = 1370289, NROW[49] = 6942, NNZ[49] = 327555
+rowStart = 1377231, NROW[50] = 4239, NNZ[50] = 195093
+rowStart = 1381470, NROW[51] = 2508, NNZ[51] = 111852
+rowStart = 1383978, NROW[52] = 2226, NNZ[52] = 99513
+rowStart = 1386204, NROW[53] = 2157, NNZ[53] = 93690
+rowStart = 1388361, NROW[54] = 1728, NNZ[54] = 72369
+rowStart = 1390089, NROW[55] = 1026, NNZ[55] = 41805
+rowStart = 1391115, NROW[56] = 219, NNZ[56] = 7749
+rowStart = 1391334, NROW[57] = 15, NNZ[57] = 504
+rowStart = 1391349, NROW[58] = 0, NNZ[58] = 0
+lg = 0
+lg = 58
+NUMA statistics
+levelGroup: 0, Level = [0, 58], Nrow = 1391349, Nnz = 64531701
+Compressing 0 hopeless levels
+consolidated levels = 36
+levelPtr[0] = 0
+levelPtr[1] = 12390
+levelPtr[2] = 26979
+levelPtr[3] = 39741
+levelPtr[4] = 54027
+levelPtr[5] = 63252
+levelPtr[6] = 72672
+levelPtr[7] = 82521
+levelPtr[8] = 96774
+levelPtr[9] = 116862
+levelPtr[10] = 147732
+levelPtr[11] = 194328
+levelPtr[12] = 256788
+levelPtr[13] = 326724
+levelPtr[14] = 396216
+levelPtr[15] = 468072
+levelPtr[16] = 545538
+levelPtr[17] = 626412
+levelPtr[18] = 703524
+levelPtr[19] = 777189
+levelPtr[20] = 851007
+levelPtr[21] = 920592
+levelPtr[22] = 984384
+levelPtr[23] = 1042611
+levelPtr[24] = 1095249
+levelPtr[25] = 1143705
+levelPtr[26] = 1187529
+levelPtr[27] = 1226271
+levelPtr[28] = 1259469
+levelPtr[29] = 1287897
+levelPtr[30] = 1312074
+levelPtr[31] = 1331943
+levelPtr[32] = 1348410
+levelPtr[33] = 1360857
+levelPtr[34] = 1370289
+levelPtr[35] = 1386204
+levelPtr[36] = 1391349
+lg_consolidated[0] = 0, row = 0
+lg_consolidated[1] = 36, row = 1391349
+nrows = 1391349
+Finished preparing
+
+calculation started
+Num iterations =  12
+SpMV power perf. = 1.427998, time = 1.084568
+RACE power perf. = 1.396289 GFlop/s, time = 1.109198 s
+Power calculation success
+[1;34m[likwid-pin] Main PID -> core 0 - OK[0m
+cores = 1
+Reading matrix file
+Creating a general matrix out of a symmetric one
+Preparing matrix for power calculation
+power = 1
+Doing RCM permutation
+cacheElem = 3849169.196573
+nrows = 1391349
+nnz = 64531701
+nnzr = 46.380672
+RACE_CACHE_VIOLATION_CUTOFF = 10
+rowStart = 0, NROW[0] = 1, NNZ[0] = 21
+rowStart = 1, NROW[1] = 20, NNZ[1] = 672
+rowStart = 21, NROW[2] = 66, NNZ[2] = 2493
+rowStart = 87, NROW[3] = 126, NNZ[3] = 4968
+rowStart = 213, NROW[4] = 189, NNZ[4] = 7875
+rowStart = 402, NROW[5] = 288, NNZ[5] = 12483
+rowStart = 690, NROW[6] = 423, NNZ[6] = 18639
+rowStart = 1113, NROW[7] = 711, NNZ[7] = 31788
+rowStart = 1824, NROW[8] = 1164, NNZ[8] = 52641
+rowStart = 2988, NROW[9] = 1890, NNZ[9] = 84051
+rowStart = 4878, NROW[10] = 3033, NNZ[10] = 134235
+rowStart = 7911, NROW[11] = 4479, NNZ[11] = 191709
+rowStart = 12390, NROW[12] = 5298, NNZ[12] = 224235
+rowStart = 17688, NROW[13] = 4884, NNZ[13] = 208413
+rowStart = 22572, NROW[14] = 4407, NNZ[14] = 194904
+rowStart = 26979, NROW[15] = 5772, NNZ[15] = 251253
+rowStart = 32751, NROW[16] = 6990, NNZ[16] = 300555
+rowStart = 39741, NROW[17] = 6930, NNZ[17] = 298962
+rowStart = 46671, NROW[18] = 7356, NNZ[18] = 322308
+rowStart = 54027, NROW[19] = 9225, NNZ[19] = 394245
+rowStart = 63252, NROW[20] = 9420, NNZ[20] = 414261
+rowStart = 72672, NROW[21] = 9849, NNZ[21] = 447786
+rowStart = 82521, NROW[22] = 14253, NNZ[22] = 637677
+rowStart = 96774, NROW[23] = 20088, NNZ[23] = 918063
+rowStart = 116862, NROW[24] = 30870, NNZ[24] = 1402551
+Cache Violated at 24 level, elem = 5610204.000000, factor = 2
+rowStart = 147732, NROW[25] = 46596, NNZ[25] = 2115495
+Cache Violated at 25 level, elem = 8461980.000000, factor = 3
+rowStart = 194328, NROW[26] = 62460, NNZ[26] = 2819412
+Cache Violated at 26 level, elem = 11277648.000000, factor = 3
+rowStart = 256788, NROW[27] = 69936, NNZ[27] = 3180015
+Cache Violated at 27 level, elem = 12720060.000000, factor = 4
+rowStart = 326724, NROW[28] = 69492, NNZ[28] = 3231693
+Cache Violated at 28 level, elem = 12926772.000000, factor = 4
+rowStart = 396216, NROW[29] = 71856, NNZ[29] = 3356298
+Cache Violated at 29 level, elem = 13425192.000000, factor = 4
+rowStart = 468072, NROW[30] = 77466, NNZ[30] = 3595122
+Cache Violated at 30 level, elem = 14380488.000000, factor = 4
+rowStart = 545538, NROW[31] = 80874, NNZ[31] = 3738708
+Cache Violated at 31 level, elem = 14954832.000000, factor = 4
+rowStart = 626412, NROW[32] = 77112, NNZ[32] = 3595842
+Cache Violated at 32 level, elem = 14383368.000000, factor = 4
+rowStart = 703524, NROW[33] = 73665, NNZ[33] = 3437019
+Cache Violated at 33 level, elem = 13748076.000000, factor = 4
+rowStart = 777189, NROW[34] = 73818, NNZ[34] = 3425175
+Cache Violated at 34 level, elem = 13700700.000000, factor = 4
+rowStart = 851007, NROW[35] = 69585, NNZ[35] = 3252771
+Cache Violated at 35 level, elem = 13011084.000000, factor = 4
+rowStart = 920592, NROW[36] = 63792, NNZ[36] = 2993706
+Cache Violated at 36 level, elem = 11974824.000000, factor = 4
+rowStart = 984384, NROW[37] = 58227, NNZ[37] = 2740464
+Cache Violated at 37 level, elem = 10961856.000000, factor = 3
+rowStart = 1042611, NROW[38] = 52638, NNZ[38] = 2486682
+Cache Violated at 38 level, elem = 9946728.000000, factor = 3
+rowStart = 1095249, NROW[39] = 48456, NNZ[39] = 2294325
+Cache Violated at 39 level, elem = 9177300.000000, factor = 3
+rowStart = 1143705, NROW[40] = 43824, NNZ[40] = 2072421
+Cache Violated at 40 level, elem = 8289684.000000, factor = 3
+rowStart = 1187529, NROW[41] = 38742, NNZ[41] = 1833498
+Cache Violated at 41 level, elem = 7333992.000000, factor = 2
+rowStart = 1226271, NROW[42] = 33198, NNZ[42] = 1579023
+Cache Violated at 42 level, elem = 6316092.000000, factor = 2
+rowStart = 1259469, NROW[43] = 28428, NNZ[43] = 1354689
+Cache Violated at 43 level, elem = 5418756.000000, factor = 2
+rowStart = 1287897, NROW[44] = 24177, NNZ[44] = 1150371
+Cache Violated at 44 level, elem = 4601484.000000, factor = 2
+rowStart = 1312074, NROW[45] = 19869, NNZ[45] = 950841
+rowStart = 1331943, NROW[46] = 16467, NNZ[46] = 777816
+rowStart = 1348410, NROW[47] = 12447, NNZ[47] = 596313
+rowStart = 1360857, NROW[48] = 9432, NNZ[48] = 447084
+rowStart = 1370289, NROW[49] = 6942, NNZ[49] = 327555
+rowStart = 1377231, NROW[50] = 4239, NNZ[50] = 195093
+rowStart = 1381470, NROW[51] = 2508, NNZ[51] = 111852
+rowStart = 1383978, NROW[52] = 2226, NNZ[52] = 99513
+rowStart = 1386204, NROW[53] = 2157, NNZ[53] = 93690
+rowStart = 1388361, NROW[54] = 1728, NNZ[54] = 72369
+rowStart = 1390089, NROW[55] = 1026, NNZ[55] = 41805
+rowStart = 1391115, NROW[56] = 219, NNZ[56] = 7749
+rowStart = 1391334, NROW[57] = 15, NNZ[57] = 504
+rowStart = 1391349, NROW[58] = 0, NNZ[58] = 0
+lg = 0
+lg = 58
+NUMA statistics
+levelGroup: 0, Level = [0, 58], Nrow = 1391349, Nnz = 64531701
+Compressing 0 hopeless levels
+consolidated levels = 33
+levelPtr[0] = 0
+levelPtr[1] = 17688
+levelPtr[2] = 39741
+levelPtr[3] = 54027
+levelPtr[4] = 72672
+levelPtr[5] = 82521
+levelPtr[6] = 96774
+levelPtr[7] = 116862
+levelPtr[8] = 147732
+levelPtr[9] = 194328
+levelPtr[10] = 256788
+levelPtr[11] = 326724
+levelPtr[12] = 396216
+levelPtr[13] = 468072
+levelPtr[14] = 545538
+levelPtr[15] = 626412
+levelPtr[16] = 703524
+levelPtr[17] = 777189
+levelPtr[18] = 851007
+levelPtr[19] = 920592
+levelPtr[20] = 984384
+levelPtr[21] = 1042611
+levelPtr[22] = 1095249
+levelPtr[23] = 1143705
+levelPtr[24] = 1187529
+levelPtr[25] = 1226271
+levelPtr[26] = 1259469
+levelPtr[27] = 1287897
+levelPtr[28] = 1312074
+levelPtr[29] = 1331943
+levelPtr[30] = 1348410
+levelPtr[31] = 1360857
+levelPtr[32] = 1377231
+levelPtr[33] = 1391349
+lg_consolidated[0] = 0, row = 0
+lg_consolidated[1] = 33, row = 1391349
+nrows = 1391349
+Finished preparing
+
+calculation started
+Num iterations =  12
+SpMV power perf. = 1.426659, time = 1.085586
+RACE power perf. = 1.396278 GFlop/s, time = 1.109207 s
+Power calculation success
+[1;34m[likwid-pin] Main PID -> core 0 - OK[0m
+cores = 1
+Reading matrix file
+Creating a general matrix out of a symmetric one
+Preparing matrix for power calculation
+power = 1
+Doing RCM permutation
+cacheElem = 4704540.129145
+nrows = 1391349
+nnz = 64531701
+nnzr = 46.380672
+RACE_CACHE_VIOLATION_CUTOFF = 10
+rowStart = 0, NROW[0] = 1, NNZ[0] = 21
+rowStart = 1, NROW[1] = 20, NNZ[1] = 672
+rowStart = 21, NROW[2] = 66, NNZ[2] = 2493
+rowStart = 87, NROW[3] = 126, NNZ[3] = 4968
+rowStart = 213, NROW[4] = 189, NNZ[4] = 7875
+rowStart = 402, NROW[5] = 288, NNZ[5] = 12483
+rowStart = 690, NROW[6] = 423, NNZ[6] = 18639
+rowStart = 1113, NROW[7] = 711, NNZ[7] = 31788
+rowStart = 1824, NROW[8] = 1164, NNZ[8] = 52641
+rowStart = 2988, NROW[9] = 1890, NNZ[9] = 84051
+rowStart = 4878, NROW[10] = 3033, NNZ[10] = 134235
+rowStart = 7911, NROW[11] = 4479, NNZ[11] = 191709
+rowStart = 12390, NROW[12] = 5298, NNZ[12] = 224235
+rowStart = 17688, NROW[13] = 4884, NNZ[13] = 208413
+rowStart = 22572, NROW[14] = 4407, NNZ[14] = 194904
+rowStart = 26979, NROW[15] = 5772, NNZ[15] = 251253
+rowStart = 32751, NROW[16] = 6990, NNZ[16] = 300555
+rowStart = 39741, NROW[17] = 6930, NNZ[17] = 298962
+rowStart = 46671, NROW[18] = 7356, NNZ[18] = 322308
+rowStart = 54027, NROW[19] = 9225, NNZ[19] = 394245
+rowStart = 63252, NROW[20] = 9420, NNZ[20] = 414261
+rowStart = 72672, NROW[21] = 9849, NNZ[21] = 447786
+rowStart = 82521, NROW[22] = 14253, NNZ[22] = 637677
+rowStart = 96774, NROW[23] = 20088, NNZ[23] = 918063
+rowStart = 116862, NROW[24] = 30870, NNZ[24] = 1402551
+Cache Violated at 24 level, elem = 5610204.000000, factor = 2
+rowStart = 147732, NROW[25] = 46596, NNZ[25] = 2115495
+Cache Violated at 25 level, elem = 8461980.000000, factor = 2
+rowStart = 194328, NROW[26] = 62460, NNZ[26] = 2819412
+Cache Violated at 26 level, elem = 11277648.000000, factor = 3
+rowStart = 256788, NROW[27] = 69936, NNZ[27] = 3180015
+Cache Violated at 27 level, elem = 12720060.000000, factor = 3
+rowStart = 326724, NROW[28] = 69492, NNZ[28] = 3231693
+Cache Violated at 28 level, elem = 12926772.000000, factor = 3
+rowStart = 396216, NROW[29] = 71856, NNZ[29] = 3356298
+Cache Violated at 29 level, elem = 13425192.000000, factor = 3
+rowStart = 468072, NROW[30] = 77466, NNZ[30] = 3595122
+Cache Violated at 30 level, elem = 14380488.000000, factor = 4
+rowStart = 545538, NROW[31] = 80874, NNZ[31] = 3738708
+Cache Violated at 31 level, elem = 14954832.000000, factor = 4
+rowStart = 626412, NROW[32] = 77112, NNZ[32] = 3595842
+Cache Violated at 32 level, elem = 14383368.000000, factor = 4
+rowStart = 703524, NROW[33] = 73665, NNZ[33] = 3437019
+Cache Violated at 33 level, elem = 13748076.000000, factor = 3
+rowStart = 777189, NROW[34] = 73818, NNZ[34] = 3425175
+Cache Violated at 34 level, elem = 13700700.000000, factor = 3
+rowStart = 851007, NROW[35] = 69585, NNZ[35] = 3252771
+Cache Violated at 35 level, elem = 13011084.000000, factor = 3
+rowStart = 920592, NROW[36] = 63792, NNZ[36] = 2993706
+Cache Violated at 36 level, elem = 11974824.000000, factor = 3
+rowStart = 984384, NROW[37] = 58227, NNZ[37] = 2740464
+Cache Violated at 37 level, elem = 10961856.000000, factor = 3
+rowStart = 1042611, NROW[38] = 52638, NNZ[38] = 2486682
+Cache Violated at 38 level, elem = 9946728.000000, factor = 3
+rowStart = 1095249, NROW[39] = 48456, NNZ[39] = 2294325
+Cache Violated at 39 level, elem = 9177300.000000, factor = 2
+rowStart = 1143705, NROW[40] = 43824, NNZ[40] = 2072421
+Cache Violated at 40 level, elem = 8289684.000000, factor = 2
+rowStart = 1187529, NROW[41] = 38742, NNZ[41] = 1833498
+Cache Violated at 41 level, elem = 7333992.000000, factor = 2
+rowStart = 1226271, NROW[42] = 33198, NNZ[42] = 1579023
+Cache Violated at 42 level, elem = 6316092.000000, factor = 2
+rowStart = 1259469, NROW[43] = 28428, NNZ[43] = 1354689
+Cache Violated at 43 level, elem = 5418756.000000, factor = 2
+rowStart = 1287897, NROW[44] = 24177, NNZ[44] = 1150371
+rowStart = 1312074, NROW[45] = 19869, NNZ[45] = 950841
+rowStart = 1331943, NROW[46] = 16467, NNZ[46] = 777816
+rowStart = 1348410, NROW[47] = 12447, NNZ[47] = 596313
+rowStart = 1360857, NROW[48] = 9432, NNZ[48] = 447084
+rowStart = 1370289, NROW[49] = 6942, NNZ[49] = 327555
+rowStart = 1377231, NROW[50] = 4239, NNZ[50] = 195093
+rowStart = 1381470, NROW[51] = 2508, NNZ[51] = 111852
+rowStart = 1383978, NROW[52] = 2226, NNZ[52] = 99513
+rowStart = 1386204, NROW[53] = 2157, NNZ[53] = 93690
+rowStart = 1388361, NROW[54] = 1728, NNZ[54] = 72369
+rowStart = 1390089, NROW[55] = 1026, NNZ[55] = 41805
+rowStart = 1391115, NROW[56] = 219, NNZ[56] = 7749
+rowStart = 1391334, NROW[57] = 15, NNZ[57] = 504
+rowStart = 1391349, NROW[58] = 0, NNZ[58] = 0
+lg = 0
+lg = 58
+NUMA statistics
+levelGroup: 0, Level = [0, 58], Nrow = 1391349, Nnz = 64531701
+Compressing 0 hopeless levels
+consolidated levels = 30
+levelPtr[0] = 0
+levelPtr[1] = 26979
+levelPtr[2] = 54027
+levelPtr[3] = 72672
+levelPtr[4] = 96774
+levelPtr[5] = 116862
+levelPtr[6] = 147732
+levelPtr[7] = 194328
+levelPtr[8] = 256788
+levelPtr[9] = 326724
+levelPtr[10] = 396216
+levelPtr[11] = 468072
+levelPtr[12] = 545538
+levelPtr[13] = 626412
+levelPtr[14] = 703524
+levelPtr[15] = 777189
+levelPtr[16] = 851007
+levelPtr[17] = 920592
+levelPtr[18] = 984384
+levelPtr[19] = 1042611
+levelPtr[20] = 1095249
+levelPtr[21] = 1143705
+levelPtr[22] = 1187529
+levelPtr[23] = 1226271
+levelPtr[24] = 1259469
+levelPtr[25] = 1287897
+levelPtr[26] = 1312074
+levelPtr[27] = 1331943
+levelPtr[28] = 1348410
+levelPtr[29] = 1370289
+levelPtr[30] = 1391349
+lg_consolidated[0] = 0, row = 0
+lg_consolidated[1] = 30, row = 1391349
+nrows = 1391349
+Finished preparing
+
+calculation started
+Num iterations =  12
+SpMV power perf. = 1.428107, time = 1.084485
+RACE power perf. = 1.396630 GFlop/s, time = 1.108927 s
+Power calculation success
+[1;34m[likwid-pin] Main PID -> core 0 - OK[0m
+cores = 1
+Reading matrix file
+Creating a general matrix out of a symmetric one
+Preparing matrix for power calculation
+power = 1
+Doing RCM permutation
+cacheElem = 5559911.061717
+nrows = 1391349
+nnz = 64531701
+nnzr = 46.380672
+RACE_CACHE_VIOLATION_CUTOFF = 10
+rowStart = 0, NROW[0] = 1, NNZ[0] = 21
+rowStart = 1, NROW[1] = 20, NNZ[1] = 672
+rowStart = 21, NROW[2] = 66, NNZ[2] = 2493
+rowStart = 87, NROW[3] = 126, NNZ[3] = 4968
+rowStart = 213, NROW[4] = 189, NNZ[4] = 7875
+rowStart = 402, NROW[5] = 288, NNZ[5] = 12483
+rowStart = 690, NROW[6] = 423, NNZ[6] = 18639
+rowStart = 1113, NROW[7] = 711, NNZ[7] = 31788
+rowStart = 1824, NROW[8] = 1164, NNZ[8] = 52641
+rowStart = 2988, NROW[9] = 1890, NNZ[9] = 84051
+rowStart = 4878, NROW[10] = 3033, NNZ[10] = 134235
+rowStart = 7911, NROW[11] = 4479, NNZ[11] = 191709
+rowStart = 12390, NROW[12] = 5298, NNZ[12] = 224235
+rowStart = 17688, NROW[13] = 4884, NNZ[13] = 208413
+rowStart = 22572, NROW[14] = 4407, NNZ[14] = 194904
+rowStart = 26979, NROW[15] = 5772, NNZ[15] = 251253
+rowStart = 32751, NROW[16] = 6990, NNZ[16] = 300555
+rowStart = 39741, NROW[17] = 6930, NNZ[17] = 298962
+rowStart = 46671, NROW[18] = 7356, NNZ[18] = 322308
+rowStart = 54027, NROW[19] = 9225, NNZ[19] = 394245
+rowStart = 63252, NROW[20] = 9420, NNZ[20] = 414261
+rowStart = 72672, NROW[21] = 9849, NNZ[21] = 447786
+rowStart = 82521, NROW[22] = 14253, NNZ[22] = 637677
+rowStart = 96774, NROW[23] = 20088, NNZ[23] = 918063
+rowStart = 116862, NROW[24] = 30870, NNZ[24] = 1402551
+Cache Violated at 24 level, elem = 5610204.000000, factor = 2
+rowStart = 147732, NROW[25] = 46596, NNZ[25] = 2115495
+Cache Violated at 25 level, elem = 8461980.000000, factor = 2
+rowStart = 194328, NROW[26] = 62460, NNZ[26] = 2819412
+Cache Violated at 26 level, elem = 11277648.000000, factor = 3
+rowStart = 256788, NROW[27] = 69936, NNZ[27] = 3180015
+Cache Violated at 27 level, elem = 12720060.000000, factor = 3
+rowStart = 326724, NROW[28] = 69492, NNZ[28] = 3231693
+Cache Violated at 28 level, elem = 12926772.000000, factor = 3
+rowStart = 396216, NROW[29] = 71856, NNZ[29] = 3356298
+Cache Violated at 29 level, elem = 13425192.000000, factor = 3
+rowStart = 468072, NROW[30] = 77466, NNZ[30] = 3595122
+Cache Violated at 30 level, elem = 14380488.000000, factor = 3
+rowStart = 545538, NROW[31] = 80874, NNZ[31] = 3738708
+Cache Violated at 31 level, elem = 14954832.000000, factor = 3
+rowStart = 626412, NROW[32] = 77112, NNZ[32] = 3595842
+Cache Violated at 32 level, elem = 14383368.000000, factor = 3
+rowStart = 703524, NROW[33] = 73665, NNZ[33] = 3437019
+Cache Violated at 33 level, elem = 13748076.000000, factor = 3
+rowStart = 777189, NROW[34] = 73818, NNZ[34] = 3425175
+Cache Violated at 34 level, elem = 13700700.000000, factor = 3
+rowStart = 851007, NROW[35] = 69585, NNZ[35] = 3252771
+Cache Violated at 35 level, elem = 13011084.000000, factor = 3
+rowStart = 920592, NROW[36] = 63792, NNZ[36] = 2993706
+Cache Violated at 36 level, elem = 11974824.000000, factor = 3
+rowStart = 984384, NROW[37] = 58227, NNZ[37] = 2740464
+Cache Violated at 37 level, elem = 10961856.000000, factor = 2
+rowStart = 1042611, NROW[38] = 52638, NNZ[38] = 2486682
+Cache Violated at 38 level, elem = 9946728.000000, factor = 2
+rowStart = 1095249, NROW[39] = 48456, NNZ[39] = 2294325
+Cache Violated at 39 level, elem = 9177300.000000, factor = 2
+rowStart = 1143705, NROW[40] = 43824, NNZ[40] = 2072421
+Cache Violated at 40 level, elem = 8289684.000000, factor = 2
+rowStart = 1187529, NROW[41] = 38742, NNZ[41] = 1833498
+Cache Violated at 41 level, elem = 7333992.000000, factor = 2
+rowStart = 1226271, NROW[42] = 33198, NNZ[42] = 1579023
+Cache Violated at 42 level, elem = 6316092.000000, factor = 2
+rowStart = 1259469, NROW[43] = 28428, NNZ[43] = 1354689
+rowStart = 1287897, NROW[44] = 24177, NNZ[44] = 1150371
+rowStart = 1312074, NROW[45] = 19869, NNZ[45] = 950841
+rowStart = 1331943, NROW[46] = 16467, NNZ[46] = 777816
+rowStart = 1348410, NROW[47] = 12447, NNZ[47] = 596313
+rowStart = 1360857, NROW[48] = 9432, NNZ[48] = 447084
+rowStart = 1370289, NROW[49] = 6942, NNZ[49] = 327555
+rowStart = 1377231, NROW[50] = 4239, NNZ[50] = 195093
+rowStart = 1381470, NROW[51] = 2508, NNZ[51] = 111852
+rowStart = 1383978, NROW[52] = 2226, NNZ[52] = 99513
+rowStart = 1386204, NROW[53] = 2157, NNZ[53] = 93690
+rowStart = 1388361, NROW[54] = 1728, NNZ[54] = 72369
+rowStart = 1390089, NROW[55] = 1026, NNZ[55] = 41805
+rowStart = 1391115, NROW[56] = 219, NNZ[56] = 7749
+rowStart = 1391334, NROW[57] = 15, NNZ[57] = 504
+rowStart = 1391349, NROW[58] = 0, NNZ[58] = 0
+lg = 0
+lg = 58
+NUMA statistics
+levelGroup: 0, Level = [0, 58], Nrow = 1391349, Nnz = 64531701
+Compressing 0 hopeless levels
+consolidated levels = 30
+levelPtr[0] = 0
+levelPtr[1] = 26979
+levelPtr[2] = 54027
+levelPtr[3] = 82521
+levelPtr[4] = 96774
+levelPtr[5] = 116862
+levelPtr[6] = 147732
+levelPtr[7] = 194328
+levelPtr[8] = 256788
+levelPtr[9] = 326724
+levelPtr[10] = 396216
+levelPtr[11] = 468072
+levelPtr[12] = 545538
+levelPtr[13] = 626412
+levelPtr[14] = 703524
+levelPtr[15] = 777189
+levelPtr[16] = 851007
+levelPtr[17] = 920592
+levelPtr[18] = 984384
+levelPtr[19] = 1042611
+levelPtr[20] = 1095249
+levelPtr[21] = 1143705
+levelPtr[22] = 1187529
+levelPtr[23] = 1226271
+levelPtr[24] = 1259469
+levelPtr[25] = 1287897
+levelPtr[26] = 1312074
+levelPtr[27] = 1331943
+levelPtr[28] = 1360857
+levelPtr[29] = 1391115
+levelPtr[30] = 1391349
+lg_consolidated[0] = 0, row = 0
+lg_consolidated[1] = 30, row = 1391349
+nrows = 1391349
+Finished preparing
+
+calculation started
+Num iterations =  12
+SpMV power perf. = 1.429671, time = 1.083299
+RACE power perf. = 1.396309 GFlop/s, time = 1.109182 s
+Power calculation success
+[1;34m[likwid-pin] Main PID -> core 0 - OK[0m
+cores = 1
+Reading matrix file
+Creating a general matrix out of a symmetric one
+Preparing matrix for power calculation
+power = 1
+Doing RCM permutation
+cacheElem = 6415281.994289
+nrows = 1391349
+nnz = 64531701
+nnzr = 46.380672
+RACE_CACHE_VIOLATION_CUTOFF = 10
+rowStart = 0, NROW[0] = 1, NNZ[0] = 21
+rowStart = 1, NROW[1] = 20, NNZ[1] = 672
+rowStart = 21, NROW[2] = 66, NNZ[2] = 2493
+rowStart = 87, NROW[3] = 126, NNZ[3] = 4968
+rowStart = 213, NROW[4] = 189, NNZ[4] = 7875
+rowStart = 402, NROW[5] = 288, NNZ[5] = 12483
+rowStart = 690, NROW[6] = 423, NNZ[6] = 18639
+rowStart = 1113, NROW[7] = 711, NNZ[7] = 31788
+rowStart = 1824, NROW[8] = 1164, NNZ[8] = 52641
+rowStart = 2988, NROW[9] = 1890, NNZ[9] = 84051
+rowStart = 4878, NROW[10] = 3033, NNZ[10] = 134235
+rowStart = 7911, NROW[11] = 4479, NNZ[11] = 191709
+rowStart = 12390, NROW[12] = 5298, NNZ[12] = 224235
+rowStart = 17688, NROW[13] = 4884, NNZ[13] = 208413
+rowStart = 22572, NROW[14] = 4407, NNZ[14] = 194904
+rowStart = 26979, NROW[15] = 5772, NNZ[15] = 251253
+rowStart = 32751, NROW[16] = 6990, NNZ[16] = 300555
+rowStart = 39741, NROW[17] = 6930, NNZ[17] = 298962
+rowStart = 46671, NROW[18] = 7356, NNZ[18] = 322308
+rowStart = 54027, NROW[19] = 9225, NNZ[19] = 394245
+rowStart = 63252, NROW[20] = 9420, NNZ[20] = 414261
+rowStart = 72672, NROW[21] = 9849, NNZ[21] = 447786
+rowStart = 82521, NROW[22] = 14253, NNZ[22] = 637677
+rowStart = 96774, NROW[23] = 20088, NNZ[23] = 918063
+rowStart = 116862, NROW[24] = 30870, NNZ[24] = 1402551
+rowStart = 147732, NROW[25] = 46596, NNZ[25] = 2115495
+Cache Violated at 25 level, elem = 8461980.000000, factor = 2
+rowStart = 194328, NROW[26] = 62460, NNZ[26] = 2819412
+Cache Violated at 26 level, elem = 11277648.000000, factor = 2
+rowStart = 256788, NROW[27] = 69936, NNZ[27] = 3180015
+Cache Violated at 27 level, elem = 12720060.000000, factor = 2
+rowStart = 326724, NROW[28] = 69492, NNZ[28] = 3231693
+Cache Violated at 28 level, elem = 12926772.000000, factor = 3
+rowStart = 396216, NROW[29] = 71856, NNZ[29] = 3356298
+Cache Violated at 29 level, elem = 13425192.000000, factor = 3
+rowStart = 468072, NROW[30] = 77466, NNZ[30] = 3595122
+Cache Violated at 30 level, elem = 14380488.000000, factor = 3
+rowStart = 545538, NROW[31] = 80874, NNZ[31] = 3738708
+Cache Violated at 31 level, elem = 14954832.000000, factor = 3
+rowStart = 626412, NROW[32] = 77112, NNZ[32] = 3595842
+Cache Violated at 32 level, elem = 14383368.000000, factor = 3
+rowStart = 703524, NROW[33] = 73665, NNZ[33] = 3437019
+Cache Violated at 33 level, elem = 13748076.000000, factor = 3
+rowStart = 777189, NROW[34] = 73818, NNZ[34] = 3425175
+Cache Violated at 34 level, elem = 13700700.000000, factor = 3
+rowStart = 851007, NROW[35] = 69585, NNZ[35] = 3252771
+Cache Violated at 35 level, elem = 13011084.000000, factor = 3
+rowStart = 920592, NROW[36] = 63792, NNZ[36] = 2993706
+Cache Violated at 36 level, elem = 11974824.000000, factor = 2
+rowStart = 984384, NROW[37] = 58227, NNZ[37] = 2740464
+Cache Violated at 37 level, elem = 10961856.000000, factor = 2
+rowStart = 1042611, NROW[38] = 52638, NNZ[38] = 2486682
+Cache Violated at 38 level, elem = 9946728.000000, factor = 2
+rowStart = 1095249, NROW[39] = 48456, NNZ[39] = 2294325
+Cache Violated at 39 level, elem = 9177300.000000, factor = 2
+rowStart = 1143705, NROW[40] = 43824, NNZ[40] = 2072421
+Cache Violated at 40 level, elem = 8289684.000000, factor = 2
+rowStart = 1187529, NROW[41] = 38742, NNZ[41] = 1833498
+Cache Violated at 41 level, elem = 7333992.000000, factor = 2
+rowStart = 1226271, NROW[42] = 33198, NNZ[42] = 1579023
+rowStart = 1259469, NROW[43] = 28428, NNZ[43] = 1354689
+rowStart = 1287897, NROW[44] = 24177, NNZ[44] = 1150371
+rowStart = 1312074, NROW[45] = 19869, NNZ[45] = 950841
+rowStart = 1331943, NROW[46] = 16467, NNZ[46] = 777816
+rowStart = 1348410, NROW[47] = 12447, NNZ[47] = 596313
+rowStart = 1360857, NROW[48] = 9432, NNZ[48] = 447084
+rowStart = 1370289, NROW[49] = 6942, NNZ[49] = 327555
+rowStart = 1377231, NROW[50] = 4239, NNZ[50] = 195093
+rowStart = 1381470, NROW[51] = 2508, NNZ[51] = 111852
+rowStart = 1383978, NROW[52] = 2226, NNZ[52] = 99513
+rowStart = 1386204, NROW[53] = 2157, NNZ[53] = 93690
+rowStart = 1388361, NROW[54] = 1728, NNZ[54] = 72369
+rowStart = 1390089, NROW[55] = 1026, NNZ[55] = 41805
+rowStart = 1391115, NROW[56] = 219, NNZ[56] = 7749
+rowStart = 1391334, NROW[57] = 15, NNZ[57] = 504
+rowStart = 1391349, NROW[58] = 0, NNZ[58] = 0
+lg = 0
+lg = 58
+NUMA statistics
+levelGroup: 0, Level = [0, 58], Nrow = 1391349, Nnz = 64531701
+Compressing 0 hopeless levels
+consolidated levels = 28
+levelPtr[0] = 0
+levelPtr[1] = 32751
+levelPtr[2] = 63252
+levelPtr[3] = 96774
+levelPtr[4] = 116862
+levelPtr[5] = 147732
+levelPtr[6] = 194328
+levelPtr[7] = 256788
+levelPtr[8] = 326724
+levelPtr[9] = 396216
+levelPtr[10] = 468072
+levelPtr[11] = 545538
+levelPtr[12] = 626412
+levelPtr[13] = 703524
+levelPtr[14] = 777189
+levelPtr[15] = 851007
+levelPtr[16] = 920592
+levelPtr[17] = 984384
+levelPtr[18] = 1042611
+levelPtr[19] = 1095249
+levelPtr[20] = 1143705
+levelPtr[21] = 1187529
+levelPtr[22] = 1226271
+levelPtr[23] = 1259469
+levelPtr[24] = 1287897
+levelPtr[25] = 1312074
+levelPtr[26] = 1331943
+levelPtr[27] = 1360857
+levelPtr[28] = 1391349
+lg_consolidated[0] = 0, row = 0
+lg_consolidated[1] = 28, row = 1391349
+nrows = 1391349
+Finished preparing
+
+calculation started
+Num iterations =  12
+SpMV power perf. = 1.433210, time = 1.080624
+RACE power perf. = 1.396826 GFlop/s, time = 1.108771 s
+Power calculation success
+[1;34m[likwid-pin] Main PID -> core 0 - OK[0m
+cores = 2
+Reading matrix file
+Creating a general matrix out of a symmetric one
+[1;34m[pthread wrapper] 
+[0m[1;34m[pthread wrapper] MAIN -> 0
+[0m[1;34m[pthread wrapper] PIN_MASK: [0m[1;34m0->1  [0m[1;34m
+[pthread wrapper] SKIP MASK: 0x0
+[0m[1;34m	threadid 22466514978688 -> core 1 - OK[0m[1;34m
+[0mPreparing matrix for power calculation
+power = 1
+Doing RCM permutation
+cacheElem = 2993798.264001
+nrows = 1391349
+nnz = 64531701
+nnzr = 46.380672
+RACE_CACHE_VIOLATION_CUTOFF = 10
+rowStart = 0, NROW[0] = 1, NNZ[0] = 21
+rowStart = 1, NROW[1] = 20, NNZ[1] = 672
+rowStart = 21, NROW[2] = 66, NNZ[2] = 2493
+rowStart = 87, NROW[3] = 126, NNZ[3] = 4968
+rowStart = 213, NROW[4] = 189, NNZ[4] = 7875
+rowStart = 402, NROW[5] = 288, NNZ[5] = 12483
+rowStart = 690, NROW[6] = 423, NNZ[6] = 18639
+rowStart = 1113, NROW[7] = 711, NNZ[7] = 31788
+rowStart = 1824, NROW[8] = 1164, NNZ[8] = 52641
+rowStart = 2988, NROW[9] = 1890, NNZ[9] = 84051
+rowStart = 4878, NROW[10] = 3033, NNZ[10] = 134235
+rowStart = 7911, NROW[11] = 4479, NNZ[11] = 191709
+rowStart = 12390, NROW[12] = 5298, NNZ[12] = 224235
+rowStart = 17688, NROW[13] = 4884, NNZ[13] = 208413
+rowStart = 22572, NROW[14] = 4407, NNZ[14] = 194904
+rowStart = 26979, NROW[15] = 5772, NNZ[15] = 251253
+rowStart = 32751, NROW[16] = 6990, NNZ[16] = 300555
+rowStart = 39741, NROW[17] = 6930, NNZ[17] = 298962
+rowStart = 46671, NROW[18] = 7356, NNZ[18] = 322308
+rowStart = 54027, NROW[19] = 9225, NNZ[19] = 394245
+rowStart = 63252, NROW[20] = 9420, NNZ[20] = 414261
+rowStart = 72672, NROW[21] = 9849, NNZ[21] = 447786
+rowStart = 82521, NROW[22] = 14253, NNZ[22] = 637677
+rowStart = 96774, NROW[23] = 20088, NNZ[23] = 918063
+Cache Violated at 23 level, elem = 3672252.000000, factor = 2
+rowStart = 116862, NROW[24] = 30870, NNZ[24] = 1402551
+Cache Violated at 24 level, elem = 5610204.000000, factor = 2
+rowStart = 147732, NROW[25] = 46596, NNZ[25] = 2115495
+Cache Violated at 25 level, elem = 8461980.000000, factor = 3
+rowStart = 194328, NROW[26] = 62460, NNZ[26] = 2819412
+Cache Violated at 26 level, elem = 11277648.000000, factor = 4
+rowStart = 256788, NROW[27] = 69936, NNZ[27] = 3180015
+Cache Violated at 27 level, elem = 12720060.000000, factor = 5
+rowStart = 326724, NROW[28] = 69492, NNZ[28] = 3231693
+Cache Violated at 28 level, elem = 12926772.000000, factor = 5
+rowStart = 396216, NROW[29] = 71856, NNZ[29] = 3356298
+Cache Violated at 29 level, elem = 13425192.000000, factor = 5
+rowStart = 468072, NROW[30] = 77466, NNZ[30] = 3595122
+Cache Violated at 30 level, elem = 14380488.000000, factor = 5
+rowStart = 545538, NROW[31] = 80874, NNZ[31] = 3738708
+Cache Violated at 31 level, elem = 14954832.000000, factor = 5
+rowStart = 626412, NROW[32] = 77112, NNZ[32] = 3595842
+Cache Violated at 32 level, elem = 14383368.000000, factor = 5
+rowStart = 703524, NROW[33] = 73665, NNZ[33] = 3437019
+Cache Violated at 33 level, elem = 13748076.000000, factor = 5
+rowStart = 777189, NROW[34] = 73818, NNZ[34] = 3425175
+Cache Violated at 34 level, elem = 13700700.000000, factor = 5
+rowStart = 851007, NROW[35] = 69585, NNZ[35] = 3252771
+Cache Violated at 35 level, elem = 13011084.000000, factor = 5
+rowStart = 920592, NROW[36] = 63792, NNZ[36] = 2993706
+Cache Violated at 36 level, elem = 11974824.000000, factor = 4
+rowStart = 984384, NROW[37] = 58227, NNZ[37] = 2740464
+Cache Violated at 37 level, elem = 10961856.000000, factor = 4
+rowStart = 1042611, NROW[38] = 52638, NNZ[38] = 2486682
+Cache Violated at 38 level, elem = 9946728.000000, factor = 4
+rowStart = 1095249, NROW[39] = 48456, NNZ[39] = 2294325
+Cache Violated at 39 level, elem = 9177300.000000, factor = 4
+rowStart = 1143705, NROW[40] = 43824, NNZ[40] = 2072421
+Cache Violated at 40 level, elem = 8289684.000000, factor = 3
+rowStart = 1187529, NROW[41] = 38742, NNZ[41] = 1833498
+Cache Violated at 41 level, elem = 7333992.000000, factor = 3
+rowStart = 1226271, NROW[42] = 33198, NNZ[42] = 1579023
+Cache Violated at 42 level, elem = 6316092.000000, factor = 3
+rowStart = 1259469, NROW[43] = 28428, NNZ[43] = 1354689
+Cache Violated at 43 level, elem = 5418756.000000, factor = 2
+rowStart = 1287897, NROW[44] = 24177, NNZ[44] = 1150371
+Cache Violated at 44 level, elem = 4601484.000000, factor = 2
+rowStart = 1312074, NROW[45] = 19869, NNZ[45] = 950841
+Cache Violated at 45 level, elem = 3803364.000000, factor = 2
+rowStart = 1331943, NROW[46] = 16467, NNZ[46] = 777816
+Cache Violated at 46 level, elem = 3111264.000000, factor = 2
+rowStart = 1348410, NROW[47] = 12447, NNZ[47] = 596313
+rowStart = 1360857, NROW[48] = 9432, NNZ[48] = 447084
+rowStart = 1370289, NROW[49] = 6942, NNZ[49] = 327555
+rowStart = 1377231, NROW[50] = 4239, NNZ[50] = 195093
+rowStart = 1381470, NROW[51] = 2508, NNZ[51] = 111852
+rowStart = 1383978, NROW[52] = 2226, NNZ[52] = 99513
+rowStart = 1386204, NROW[53] = 2157, NNZ[53] = 93690
+rowStart = 1388361, NROW[54] = 1728, NNZ[54] = 72369
+rowStart = 1390089, NROW[55] = 1026, NNZ[55] = 41805
+rowStart = 1391115, NROW[56] = 219, NNZ[56] = 7749
+rowStart = 1391334, NROW[57] = 15, NNZ[57] = 504
+rowStart = 1391349, NROW[58] = 0, NNZ[58] = 0
+lg = 0
+lg = 58
+NUMA statistics
+levelGroup: 0, Level = [0, 58], Nrow = 1391349, Nnz = 64531701
+Compressing 0 hopeless levels
+consolidated levels = 36
+levelPtr[0] = 0
+levelPtr[1] = 12390
+levelPtr[2] = 26979
+levelPtr[3] = 39741
+levelPtr[4] = 54027
+levelPtr[5] = 63252
+levelPtr[6] = 72672
+levelPtr[7] = 82521
+levelPtr[8] = 96774
+levelPtr[9] = 116862
+levelPtr[10] = 147732
+levelPtr[11] = 194328
+levelPtr[12] = 256788
+levelPtr[13] = 326724
+levelPtr[14] = 396216
+levelPtr[15] = 468072
+levelPtr[16] = 545538
+levelPtr[17] = 626412
+levelPtr[18] = 703524
+levelPtr[19] = 777189
+levelPtr[20] = 851007
+levelPtr[21] = 920592
+levelPtr[22] = 984384
+levelPtr[23] = 1042611
+levelPtr[24] = 1095249
+levelPtr[25] = 1143705
+levelPtr[26] = 1187529
+levelPtr[27] = 1226271
+levelPtr[28] = 1259469
+levelPtr[29] = 1287897
+levelPtr[30] = 1312074
+levelPtr[31] = 1331943
+levelPtr[32] = 1348410
+levelPtr[33] = 1360857
+levelPtr[34] = 1370289
+levelPtr[35] = 1386204
+levelPtr[36] = 1391349
+lg_consolidated[0] = 0, row = 0
+lg_consolidated[1] = 36, row = 1391349
+nrows = 1391349
+Finished preparing
+
+calculation started
+Num iterations =  24
+SpMV power perf. = 2.745713, time = 1.128130
+RACE power perf. = 2.697588 GFlop/s, time = 1.148256 s
+Power calculation success
+cores = 2
+Reading matrix file
+Creating a general matrix out of a symmetric one
+[1;34m[pthread wrapper] 
+[0m[1;34m[pthread wrapper] MAIN -> 0
+[0m[1;34m[pthread wrapper] PIN_MASK: [0m[1;34m0->1  [0m[1;34m
+[pthread wrapper] SKIP MASK: 0x0
+[0m[1;34m	threadid 23079066933120 -> core 1 - OK[0m[1;34m
+[0mPreparing matrix for power calculation
+power = 1
+Doing RCM permutation
+cacheElem = 3849169.196573
+nrows = 1391349
+nnz = 64531701
+nnzr = 46.380672
+RACE_CACHE_VIOLATION_CUTOFF = 10
+rowStart = 0, NROW[0] = 1, NNZ[0] = 21
+rowStart = 1, NROW[1] = 20, NNZ[1] = 672
+rowStart = 21, NROW[2] = 66, NNZ[2] = 2493
+rowStart = 87, NROW[3] = 126, NNZ[3] = 4968
+rowStart = 213, NROW[4] = 189, NNZ[4] = 7875
+rowStart = 402, NROW[5] = 288, NNZ[5] = 12483
+rowStart = 690, NROW[6] = 423, NNZ[6] = 18639
+rowStart = 1113, NROW[7] = 711, NNZ[7] = 31788
+rowStart = 1824, NROW[8] = 1164, NNZ[8] = 52641
+rowStart = 2988, NROW[9] = 1890, NNZ[9] = 84051
+rowStart = 4878, NROW[10] = 3033, NNZ[10] = 134235
+rowStart = 7911, NROW[11] = 4479, NNZ[11] = 191709
+rowStart = 12390, NROW[12] = 5298, NNZ[12] = 224235
+rowStart = 17688, NROW[13] = 4884, NNZ[13] = 208413
+rowStart = 22572, NROW[14] = 4407, NNZ[14] = 194904
+rowStart = 26979, NROW[15] = 5772, NNZ[15] = 251253
+rowStart = 32751, NROW[16] = 6990, NNZ[16] = 300555
+rowStart = 39741, NROW[17] = 6930, NNZ[17] = 298962
+rowStart = 46671, NROW[18] = 7356, NNZ[18] = 322308
+rowStart = 54027, NROW[19] = 9225, NNZ[19] = 394245
+rowStart = 63252, NROW[20] = 9420, NNZ[20] = 414261
+rowStart = 72672, NROW[21] = 9849, NNZ[21] = 447786
+rowStart = 82521, NROW[22] = 14253, NNZ[22] = 637677
+rowStart = 96774, NROW[23] = 20088, NNZ[23] = 918063
+rowStart = 116862, NROW[24] = 30870, NNZ[24] = 1402551
+Cache Violated at 24 level, elem = 5610204.000000, factor = 2
+rowStart = 147732, NROW[25] = 46596, NNZ[25] = 2115495
+Cache Violated at 25 level, elem = 8461980.000000, factor = 3
+rowStart = 194328, NROW[26] = 62460, NNZ[26] = 2819412
+Cache Violated at 26 level, elem = 11277648.000000, factor = 3
+rowStart = 256788, NROW[27] = 69936, NNZ[27] = 3180015
+Cache Violated at 27 level, elem = 12720060.000000, factor = 4
+rowStart = 326724, NROW[28] = 69492, NNZ[28] = 3231693
+Cache Violated at 28 level, elem = 12926772.000000, factor = 4
+rowStart = 396216, NROW[29] = 71856, NNZ[29] = 3356298
+Cache Violated at 29 level, elem = 13425192.000000, factor = 4
+rowStart = 468072, NROW[30] = 77466, NNZ[30] = 3595122
+Cache Violated at 30 level, elem = 14380488.000000, factor = 4
+rowStart = 545538, NROW[31] = 80874, NNZ[31] = 3738708
+Cache Violated at 31 level, elem = 14954832.000000, factor = 4
+rowStart = 626412, NROW[32] = 77112, NNZ[32] = 3595842
+Cache Violated at 32 level, elem = 14383368.000000, factor = 4
+rowStart = 703524, NROW[33] = 73665, NNZ[33] = 3437019
+Cache Violated at 33 level, elem = 13748076.000000, factor = 4
+rowStart = 777189, NROW[34] = 73818, NNZ[34] = 3425175
+Cache Violated at 34 level, elem = 13700700.000000, factor = 4
+rowStart = 851007, NROW[35] = 69585, NNZ[35] = 3252771
+Cache Violated at 35 level, elem = 13011084.000000, factor = 4
+rowStart = 920592, NROW[36] = 63792, NNZ[36] = 2993706
+Cache Violated at 36 level, elem = 11974824.000000, factor = 4
+rowStart = 984384, NROW[37] = 58227, NNZ[37] = 2740464
+Cache Violated at 37 level, elem = 10961856.000000, factor = 3
+rowStart = 1042611, NROW[38] = 52638, NNZ[38] = 2486682
+Cache Violated at 38 level, elem = 9946728.000000, factor = 3
+rowStart = 1095249, NROW[39] = 48456, NNZ[39] = 2294325
+Cache Violated at 39 level, elem = 9177300.000000, factor = 3
+rowStart = 1143705, NROW[40] = 43824, NNZ[40] = 2072421
+Cache Violated at 40 level, elem = 8289684.000000, factor = 3
+rowStart = 1187529, NROW[41] = 38742, NNZ[41] = 1833498
+Cache Violated at 41 level, elem = 7333992.000000, factor = 2
+rowStart = 1226271, NROW[42] = 33198, NNZ[42] = 1579023
+Cache Violated at 42 level, elem = 6316092.000000, factor = 2
+rowStart = 1259469, NROW[43] = 28428, NNZ[43] = 1354689
+Cache Violated at 43 level, elem = 5418756.000000, factor = 2
+rowStart = 1287897, NROW[44] = 24177, NNZ[44] = 1150371
+Cache Violated at 44 level, elem = 4601484.000000, factor = 2
+rowStart = 1312074, NROW[45] = 19869, NNZ[45] = 950841
+rowStart = 1331943, NROW[46] = 16467, NNZ[46] = 777816
+rowStart = 1348410, NROW[47] = 12447, NNZ[47] = 596313
+rowStart = 1360857, NROW[48] = 9432, NNZ[48] = 447084
+rowStart = 1370289, NROW[49] = 6942, NNZ[49] = 327555
+rowStart = 1377231, NROW[50] = 4239, NNZ[50] = 195093
+rowStart = 1381470, NROW[51] = 2508, NNZ[51] = 111852
+rowStart = 1383978, NROW[52] = 2226, NNZ[52] = 99513
+rowStart = 1386204, NROW[53] = 2157, NNZ[53] = 93690
+rowStart = 1388361, NROW[54] = 1728, NNZ[54] = 72369
+rowStart = 1390089, NROW[55] = 1026, NNZ[55] = 41805
+rowStart = 1391115, NROW[56] = 219, NNZ[56] = 7749
+rowStart = 1391334, NROW[57] = 15, NNZ[57] = 504
+rowStart = 1391349, NROW[58] = 0, NNZ[58] = 0
+lg = 0
+lg = 58
+NUMA statistics
+levelGroup: 0, Level = [0, 58], Nrow = 1391349, Nnz = 64531701
+Compressing 0 hopeless levels
+consolidated levels = 33
+levelPtr[0] = 0
+levelPtr[1] = 17688
+levelPtr[2] = 39741
+levelPtr[3] = 54027
+levelPtr[4] = 72672
+levelPtr[5] = 82521
+levelPtr[6] = 96774
+levelPtr[7] = 116862
+levelPtr[8] = 147732
+levelPtr[9] = 194328
+levelPtr[10] = 256788
+levelPtr[11] = 326724
+levelPtr[12] = 396216
+levelPtr[13] = 468072
+levelPtr[14] = 545538
+levelPtr[15] = 626412
+levelPtr[16] = 703524
+levelPtr[17] = 777189
+levelPtr[18] = 851007
+levelPtr[19] = 920592
+levelPtr[20] = 984384
+levelPtr[21] = 1042611
+levelPtr[22] = 1095249
+levelPtr[23] = 1143705
+levelPtr[24] = 1187529
+levelPtr[25] = 1226271
+levelPtr[26] = 1259469
+levelPtr[27] = 1287897
+levelPtr[28] = 1312074
+levelPtr[29] = 1331943
+levelPtr[30] = 1348410
+levelPtr[31] = 1360857
+levelPtr[32] = 1377231
+levelPtr[33] = 1391349
+lg_consolidated[0] = 0, row = 0
+lg_consolidated[1] = 33, row = 1391349
+nrows = 1391349
+Finished preparing
+
+calculation started
+Num iterations =  24
+SpMV power perf. = 2.743955, time = 1.128853
+RACE power perf. = 2.692968 GFlop/s, time = 1.150226 s
+Power calculation success
+cores = 2
+Reading matrix file
+Creating a general matrix out of a symmetric one
+[1;34m[pthread wrapper] 
+[0m[1;34m[pthread wrapper] MAIN -> 0
+[0m[1;34m[pthread wrapper] PIN_MASK: [0m[1;34m0->1  [0m[1;34m
+[pthread wrapper] SKIP MASK: 0x0
+[0m[1;34m	threadid 23312158562176 -> core 1 - OK[0m[1;34m
+[0mPreparing matrix for power calculation
+power = 1
+Doing RCM permutation
+cacheElem = 4704540.129145
+nrows = 1391349
+nnz = 64531701
+nnzr = 46.380672
+RACE_CACHE_VIOLATION_CUTOFF = 10
+rowStart = 0, NROW[0] = 1, NNZ[0] = 21
+rowStart = 1, NROW[1] = 20, NNZ[1] = 672
+rowStart = 21, NROW[2] = 66, NNZ[2] = 2493
+rowStart = 87, NROW[3] = 126, NNZ[3] = 4968
+rowStart = 213, NROW[4] = 189, NNZ[4] = 7875
+rowStart = 402, NROW[5] = 288, NNZ[5] = 12483
+rowStart = 690, NROW[6] = 423, NNZ[6] = 18639
+rowStart = 1113, NROW[7] = 711, NNZ[7] = 31788
+rowStart = 1824, NROW[8] = 1164, NNZ[8] = 52641
+rowStart = 2988, NROW[9] = 1890, NNZ[9] = 84051
+rowStart = 4878, NROW[10] = 3033, NNZ[10] = 134235
+rowStart = 7911, NROW[11] = 4479, NNZ[11] = 191709
+rowStart = 12390, NROW[12] = 5298, NNZ[12] = 224235
+rowStart = 17688, NROW[13] = 4884, NNZ[13] = 208413
+rowStart = 22572, NROW[14] = 4407, NNZ[14] = 194904
+rowStart = 26979, NROW[15] = 5772, NNZ[15] = 251253
+rowStart = 32751, NROW[16] = 6990, NNZ[16] = 300555
+rowStart = 39741, NROW[17] = 6930, NNZ[17] = 298962
+rowStart = 46671, NROW[18] = 7356, NNZ[18] = 322308
+rowStart = 54027, NROW[19] = 9225, NNZ[19] = 394245
+rowStart = 63252, NROW[20] = 9420, NNZ[20] = 414261
+rowStart = 72672, NROW[21] = 9849, NNZ[21] = 447786
+rowStart = 82521, NROW[22] = 14253, NNZ[22] = 637677
+rowStart = 96774, NROW[23] = 20088, NNZ[23] = 918063
+rowStart = 116862, NROW[24] = 30870, NNZ[24] = 1402551
+Cache Violated at 24 level, elem = 5610204.000000, factor = 2
+rowStart = 147732, NROW[25] = 46596, NNZ[25] = 2115495
+Cache Violated at 25 level, elem = 8461980.000000, factor = 2
+rowStart = 194328, NROW[26] = 62460, NNZ[26] = 2819412
+Cache Violated at 26 level, elem = 11277648.000000, factor = 3
+rowStart = 256788, NROW[27] = 69936, NNZ[27] = 3180015
+Cache Violated at 27 level, elem = 12720060.000000, factor = 3
+rowStart = 326724, NROW[28] = 69492, NNZ[28] = 3231693
+Cache Violated at 28 level, elem = 12926772.000000, factor = 3
+rowStart = 396216, NROW[29] = 71856, NNZ[29] = 3356298
+Cache Violated at 29 level, elem = 13425192.000000, factor = 3
+rowStart = 468072, NROW[30] = 77466, NNZ[30] = 3595122
+Cache Violated at 30 level, elem = 14380488.000000, factor = 4
+rowStart = 545538, NROW[31] = 80874, NNZ[31] = 3738708
+Cache Violated at 31 level, elem = 14954832.000000, factor = 4
+rowStart = 626412, NROW[32] = 77112, NNZ[32] = 3595842
+Cache Violated at 32 level, elem = 14383368.000000, factor = 4
+rowStart = 703524, NROW[33] = 73665, NNZ[33] = 3437019
+Cache Violated at 33 level, elem = 13748076.000000, factor = 3
+rowStart = 777189, NROW[34] = 73818, NNZ[34] = 3425175
+Cache Violated at 34 level, elem = 13700700.000000, factor = 3
+rowStart = 851007, NROW[35] = 69585, NNZ[35] = 3252771
+Cache Violated at 35 level, elem = 13011084.000000, factor = 3
+rowStart = 920592, NROW[36] = 63792, NNZ[36] = 2993706
+Cache Violated at 36 level, elem = 11974824.000000, factor = 3
+rowStart = 984384, NROW[37] = 58227, NNZ[37] = 2740464
+Cache Violated at 37 level, elem = 10961856.000000, factor = 3
+rowStart = 1042611, NROW[38] = 52638, NNZ[38] = 2486682
+Cache Violated at 38 level, elem = 9946728.000000, factor = 3
+rowStart = 1095249, NROW[39] = 48456, NNZ[39] = 2294325
+Cache Violated at 39 level, elem = 9177300.000000, factor = 2
+rowStart = 1143705, NROW[40] = 43824, NNZ[40] = 2072421
+Cache Violated at 40 level, elem = 8289684.000000, factor = 2
+rowStart = 1187529, NROW[41] = 38742, NNZ[41] = 1833498
+Cache Violated at 41 level, elem = 7333992.000000, factor = 2
+rowStart = 1226271, NROW[42] = 33198, NNZ[42] = 1579023
+Cache Violated at 42 level, elem = 6316092.000000, factor = 2
+rowStart = 1259469, NROW[43] = 28428, NNZ[43] = 1354689
+Cache Violated at 43 level, elem = 5418756.000000, factor = 2
+rowStart = 1287897, NROW[44] = 24177, NNZ[44] = 1150371
+rowStart = 1312074, NROW[45] = 19869, NNZ[45] = 950841
+rowStart = 1331943, NROW[46] = 16467, NNZ[46] = 777816
+rowStart = 1348410, NROW[47] = 12447, NNZ[47] = 596313
+rowStart = 1360857, NROW[48] = 9432, NNZ[48] = 447084
+rowStart = 1370289, NROW[49] = 6942, NNZ[49] = 327555
+rowStart = 1377231, NROW[50] = 4239, NNZ[50] = 195093
+rowStart = 1381470, NROW[51] = 2508, NNZ[51] = 111852
+rowStart = 1383978, NROW[52] = 2226, NNZ[52] = 99513
+rowStart = 1386204, NROW[53] = 2157, NNZ[53] = 93690
+rowStart = 1388361, NROW[54] = 1728, NNZ[54] = 72369
+rowStart = 1390089, NROW[55] = 1026, NNZ[55] = 41805
+rowStart = 1391115, NROW[56] = 219, NNZ[56] = 7749
+rowStart = 1391334, NROW[57] = 15, NNZ[57] = 504
+rowStart = 1391349, NROW[58] = 0, NNZ[58] = 0
+lg = 0
+lg = 58
+NUMA statistics
+levelGroup: 0, Level = [0, 58], Nrow = 1391349, Nnz = 64531701
+Compressing 0 hopeless levels
+consolidated levels = 30
+levelPtr[0] = 0
+levelPtr[1] = 26979
+levelPtr[2] = 54027
+levelPtr[3] = 72672
+levelPtr[4] = 96774
+levelPtr[5] = 116862
+levelPtr[6] = 147732
+levelPtr[7] = 194328
+levelPtr[8] = 256788
+levelPtr[9] = 326724
+levelPtr[10] = 396216
+levelPtr[11] = 468072
+levelPtr[12] = 545538
+levelPtr[13] = 626412
+levelPtr[14] = 703524
+levelPtr[15] = 777189
+levelPtr[16] = 851007
+levelPtr[17] = 920592
+levelPtr[18] = 984384
+levelPtr[19] = 1042611
+levelPtr[20] = 1095249
+levelPtr[21] = 1143705
+levelPtr[22] = 1187529
+levelPtr[23] = 1226271
+levelPtr[24] = 1259469
+levelPtr[25] = 1287897
+levelPtr[26] = 1312074
+levelPtr[27] = 1331943
+levelPtr[28] = 1348410
+levelPtr[29] = 1370289
+levelPtr[30] = 1391349
+lg_consolidated[0] = 0, row = 0
+lg_consolidated[1] = 30, row = 1391349
+nrows = 1391349
+Finished preparing
+
+calculation started
+Num iterations =  24
+SpMV power perf. = 2.743221, time = 1.129155
+RACE power perf. = 2.696916 GFlop/s, time = 1.148542 s
+Power calculation success
