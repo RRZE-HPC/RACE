@@ -35,7 +35,9 @@ class mtxPower
 
     void identifyHopelessRegions(std::vector<int> cacheViolatedLevel);
     void getHopelessStartEnd(int count, int *start, int *end);
+    void getHopelessStartEnd(int count, int *start, int *end, std::vector<int> _hopelessRegions_);
     double getElemUpperLimit(int level);
+    int workingBoundaryLength();
 
     public:
     mtxPower(Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_);
@@ -60,6 +62,7 @@ class mtxPower
     std::vector<int> getDangerRow();
     std::vector<int> getUnlockCtr();
     std::vector<int> getHopelessRegions();
+    std::vector<int> getHopelessNodePtr();
 };
 
 

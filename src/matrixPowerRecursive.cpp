@@ -9,7 +9,7 @@
     }\
 }\
 
-mtxPowerRecursive::mtxPowerRecursive(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_):graph(graph_), levelPtr(NULL),nodePtr(NULL), unlockRow(NULL), dangerRow(NULL),unlockCtr(NULL), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), perm(NULL), invPerm(NULL)
+mtxPowerRecursive::mtxPowerRecursive(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_):graph(graph_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), perm(NULL), invPerm(NULL)
 {
     int default_cutoff = 50; //make 50 factor so not much cut-off happens by default
     cache_violation_cutoff.push_back(default_cutoff); //default
@@ -27,26 +27,6 @@ mtxPowerRecursive::mtxPowerRecursive(Graph* graph_, int highestPower_, int numSh
 
 mtxPowerRecursive::~mtxPowerRecursive()
 {
-    if(levelPtr)
-    {
-        delete[] levelPtr;
-    }
-    if(nodePtr)
-    {
-        delete[] nodePtr;
-    }
-    if(unlockRow)
-    {
-        delete[] unlockRow;
-    }
-    if(dangerRow)
-    {
-        delete[] dangerRow;
-    }
-    if(unlockCtr)
-    {
-        delete[] unlockCtr;
-    }
     if(perm)
     {
         delete[] perm;
@@ -59,34 +39,52 @@ mtxPowerRecursive::~mtxPowerRecursive()
 
 int mtxPowerRecursive::get_cache_violation_cutoff(int stage)
 {
-    if(stage < (int)cache_violation_cutoff.size())
+    int cache_cutoff = 50;
+    if(stage < (int)(cache_violation_cutoff.size()-1))
     {
-        return cache_violation_cutoff[stage];
+        cache_cutoff = cache_violation_cutoff[stage+1]; //Stage numbering starts with 0, therefore stage+1
     }
     else
     {
-        return cache_violation_cutoff[0];
+        cache_cutoff = cache_violation_cutoff[0];
     }
+
+    return cache_cutoff;
 }
 
-#define INIT_STAGE_DATA\
-    std::vector<int> hopelessRegions_curStage;\
- std::vector<int> levelPtr_curStage;\
- std::vector<int> nodePtr_curStage;\
- std::vector<int> unlockRow_curStage;\
- std::vector<int> unlockCtr_curStage;\
- std::vector<int> dangerRow_curStage;\
- int *perm_curStage;\
- int nrows_curStage;\
-
-#define READ_STAGE_DATA(_stage_mtxPower_)\
-    hopelessRegions_curStage = _stage_mtxPower_.getHopelessRegions();\
-    levelPtr_curStage = _stage_mtxPower_.getLevelPtr();\
-    nodePtr_curStage = _stage_mtxPower_.getNodePtr();\
-    unlockRow_curStage = _stage_mtxPower_.getUnlockRow();\
-    unlockCtr_curStage = _stage_mtxPower_.getUnlockCtr();\
-    dangerRow_curStage = _stage_mtxPower_.getDangerRow();\
-    _stage_mtxPower_.getPerm(&perm_curStage, &nrows_curStage);\
+#define READ_STAGE_DATA(_leaf_, _stage_mtxPower_)\
+    _leaf_.hopelessRegions = _stage_mtxPower_.getHopelessRegions();\
+    _leaf_.levelPtr = _stage_mtxPower_.getLevelPtr();\
+    _leaf_.unlockRow = _stage_mtxPower_.getUnlockRow();\
+    _leaf_.unlockCtr = _stage_mtxPower_.getUnlockCtr();\
+    _leaf_.dangerRow = _stage_mtxPower_.getDangerRow();\
+    _stage_mtxPower_.getPerm(&perm_curStage, &_leaf_.nrows);\
+    std::vector<int> _nodePtr_ = _stage_mtxPower_.getNodePtr();\
+    _leaf_.nodePtr = _nodePtr_;\
+    /*create unitPtr*/\
+    int _n_nodes_ = _nodePtr_.size()-1;\
+    std::vector<int> _hopelessNodePtr_ = _stage_mtxPower_.getHopelessNodePtr();\
+    _leaf_.unitNodePtr.push_back(0);\
+    for(int n=0; n<_n_nodes_; ++n)\
+    {\
+        int levelNodeStart = _nodePtr_[n];\
+        int levelNodeEnd = _nodePtr_[n+1];\
+        _leaf_.unitPtr.push_back(levelNodeStart);\
+        for(int h=_hopelessNodePtr_[n]; h<_hopelessNodePtr_[n+1]; ++h)\
+        {\
+            _leaf_.unitPtr.push_back(_leaf_.hopelessRegions[h]); \
+            _leaf_.unitPtr.push_back(_leaf_.hopelessRegions[h]+1); \
+        }\
+        if(_leaf_.unitPtr.back() != levelNodeEnd) /*if there is no hopeless in last unit, make a dummy*/\
+        {\
+            _leaf_.unitPtr.push_back(levelNodeEnd);\
+        }\
+        _leaf_.unitNodePtr.push_back(_leaf_.unitPtr.size());\
+        if(n==(_n_nodes_-1)) \
+        {\
+            _leaf_.unitPtr.push_back(levelNodeEnd);\
+        }\
+    }
 
 #define COPY_TO_PLAIN_INT_PTR(_vec_, _plain_)\
     _plain_ = new int[_vec_.size()];\
@@ -95,67 +93,141 @@ int mtxPowerRecursive::get_cache_violation_cutoff(int stage)
         _plain_[i] = _vec_[i];\
     }\
 
+void mtxPowerRecursive::recursivePartition(int parentIdx)
+{
+    MPLeaf parentLeaf = tree[parentIdx];
+    std::vector<int> parentHopelessRegions = parentLeaf.hopelessRegions;
+    int n_hopeless = (int)(parentHopelessRegions.size());
+    int parentStage = parentLeaf.stage;
+
+    for(int h=0; h<n_hopeless; ++h)
+    {
+        MPLeaf curLeaf;
+        curLeaf.parent = parentIdx;
+        curLeaf.stage = parentStage + 1;
+        int hopelessStart = parentHopelessRegions[h];
+        printf("@@@ hopless = %d,%d\n", hopelessStart, hopelessStart+1);
+        if(parentStage>0)
+        {
+            curLeaf.nodeId = parentLeaf.nodeId;
+        }
+        else
+        {
+            //search and find
+            std::vector<int> parentNodePtr = parentLeaf.nodePtr;
+            for(int n=0; n<(int)(parentNodePtr.size()-1); ++n)
+            {
+                if( (parentNodePtr[n] <= hopelessStart) && (parentNodePtr[n+1] > hopelessStart) )
+                {
+                    curLeaf.nodeId = n;
+                    break;
+                }
+            }
+        }
+        curLeaf.range = std::vector<int>{parentLeaf.levelPtr[hopelessStart], parentLeaf.levelPtr[hopelessStart+1]};
+        printf("@@@ range = %d,%d\n", curLeaf.range[0], curLeaf.range[1]);
+        mtxPower curStage(graph, highestPower, 1, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range[0], curLeaf.range[1]);
+        curStage.findPartition();
+        int *perm_curStage;
+        READ_STAGE_DATA(curLeaf, curStage);
+        //permute
+        updatePerm(&perm, perm_curStage, totalRows, totalRows);
+        delete[] perm_curStage;
+        //push leaf to tree
+        tree.push_back(curLeaf);
+        //make this a child of parent
+        int curIdx = (int)tree.size()-1;
+        tree[parentIdx].children.push_back(curIdx);
+
+        if(!curLeaf.hopelessRegions.empty())
+        {
+            printf("recursively calling for parent = %d\n", curIdx);
+            recursivePartition(curIdx);
+        }
+    }
+}
 
 void mtxPowerRecursive::findPartition()
 {
-    INIT_STAGE_DATA;
-    int  stage=1;
+    MPLeaf curLeaf;
+    curLeaf.parent = -1;
+    curLeaf.nodeId = -1;
+    curLeaf.range = std::vector<int>{0, graph->NROW};
+    curLeaf.stage = 0;
     //partition for first stage
-    mtxPower curStage(graph, highestPower, numSharedCache, cacheSize, safetyFactor, get_cache_violation_cutoff(stage), 0, graph->NROW);
+    mtxPower curStage(graph, highestPower, numSharedCache, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range[0], curLeaf.range[1]);
     curStage.findPartition();
-    READ_STAGE_DATA(curStage);
+    int* perm_curStage;
+    READ_STAGE_DATA(curLeaf, curStage);
+    hopelessNodePtr = curStage.getHopelessNodePtr();
     updatePerm(&perm, perm_curStage, totalRows, totalRows);
     delete[] perm_curStage;
-    ++stage;
+    tree.push_back(curLeaf);
 
-    while(!hopelessRegions_curStage.empty())
+    if(!curLeaf.hopelessRegions.empty())
     {
-        int num_hopeless = (int)hopelessRegions_curStage.size()/2;
-        //do recursive treatment at hopeless regions
-        for(int h=0; h<num_hopeless; ++h)
-        {
-            int start_idx = hopelessRegions_curStage[2*h];
-            int end_idx = hopelessRegions_curStage[2*h+1];
-            int start_row = levelPtr_curStage[start_idx];
-            int end_row = levelPtr_curStage[end_idx];
-            mtxPower curNewStage(graph, highestPower, numSharedCache, cacheSize, safetyFactor, get_cache_violation_cutoff(stage), start_row, end_row);
-            curNewStage.findPartition();
-            READ_STAGE_DATA(curNewStage);
-            updatePerm(&perm, perm_curStage, totalRows, totalRows);
-            delete[] perm_curStage;
-        }
-        ++stage;
+        recursivePartition(0); //my curId=0
     }
 
     UPDATE_INVPERM(invPerm, perm);
-    totalLevel = (int)(levelPtr_curStage.size()-1);
+    //totalLevel = (int)(curLeaf.levelPtr.size()-1);
     //if empty this is final
-    COPY_TO_PLAIN_INT_PTR(levelPtr_curStage, levelPtr);
-    COPY_TO_PLAIN_INT_PTR(nodePtr_curStage, nodePtr);
-    COPY_TO_PLAIN_INT_PTR(unlockRow_curStage, unlockRow);
-    COPY_TO_PLAIN_INT_PTR(unlockCtr_curStage, unlockCtr);
-    COPY_TO_PLAIN_INT_PTR(dangerRow_curStage, dangerRow);
+    /*COPY_TO_PLAIN_INT_PTR(curLeaf.levelPtr, levelPtr);
+    COPY_TO_PLAIN_INT_PTR(nodePtr_vec, nodePtr);
+    COPY_TO_PLAIN_INT_PTR(curLeaf.unlockRow, unlockRow);
+    COPY_TO_PLAIN_INT_PTR(curLeaf.unlockCtr, unlockCtr);
+    COPY_TO_PLAIN_INT_PTR(curLeaf.dangerRow, dangerRow);
+*/
+
+    printTree();
 }
 
+void mtxPowerRecursive::printTree()
+{
+    for(int i=0; i<(int)tree.size(); ++i)
+    {
+        MPLeaf curLeaf = tree[i];
+        printf("%d. Range:[%d, %d], ", i, curLeaf.range[0], curLeaf.range[1]);
+        printf("Children:[");
+        for(int j=0; j<(int)curLeaf.children.size(); ++j)
+        {
+            printf("%d, ", curLeaf.children[j]);
+        }
+        printf("], Parent: %d, node: %d, stage: %d, cache_cutoff: %d, hopelessRegions: [",
+                curLeaf.parent, curLeaf.nodeId, curLeaf.stage, get_cache_violation_cutoff(curLeaf.stage));
+        for(int j=0; j<(int)curLeaf.hopelessRegions.size(); ++j)
+        {
+            printf("%d:%d, ", curLeaf.levelPtr[curLeaf.hopelessRegions[j]], curLeaf.levelPtr[curLeaf.hopelessRegions[j]+1]);
+        }
+        printf("], unitPtr: [");
+        for(int j=0; j<(int)curLeaf.unitPtr.size(); ++j)
+        {
+            printf("%d ", curLeaf.unitPtr[j]);
+        }
+        printf("], unitNodePtr: [");
+        for(int j=0; j<(int)curLeaf.unitNodePtr.size(); ++j)
+        {
+            printf("%d ", curLeaf.unitNodePtr[j]);
+        }
+        printf("]\n");
+    }
+}
 
-int mtxPowerRecursive::getTotalLevel()
+/*int mtxPowerRecursive::getTotalLevel()
 {
     return totalLevel;
 }
-
+*/
+/*
 int mtxPowerRecursive::getTotalNodes()
 {
     return numSharedCache;
 }
-
+*/
+/*
 int*  mtxPowerRecursive::getLevelPtrRef()
 {
     return levelPtr;
-}
-
-int*  mtxPowerRecursive::getNodePtrRef()
-{
-    return nodePtr;
 }
 
 int*  mtxPowerRecursive::getUnlockRowRef()
@@ -173,6 +245,18 @@ int*  mtxPowerRecursive::getUnlockCtrRef()
 {
     return unlockCtr;
 }
+*/
+/*
+std::vector<int> getNodePtr()
+{
+    return nodePtr;
+}
+*/
+/*
+std::vector<int> getHopelessNodePtr()
+{
+    return hopelessNodePtr;
+}*/
 
 void mtxPowerRecursive::getPerm(int **perm_, int *len)
 {

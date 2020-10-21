@@ -36,7 +36,7 @@ void mtxPower::createLevelPtr()
 {
     levelPtr =  std::vector<int>(totalLevel+1);
 
-    levelPtr[0] = 0;
+    levelPtr[0] = startRow;
 
     for(int level=0; level<totalLevel; ++level)
     {
@@ -50,6 +50,11 @@ double mtxPower::getBytePerNNZ()
     //(1+power/nnzr) -> includes mtx values, lhs and rhs vector values
     //(1+1/nnzr) -> includes col and rowPtr
     return (double)(((1+highestPower/nnzr)*sizeof(double)+(1+1/nnzr)*sizeof(int)));
+}
+
+int mtxPower::workingBoundaryLength()
+{
+    return static_cast<int>(ceil(highestPower/2.0))-1;
 }
 
 void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
@@ -114,17 +119,23 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
         prevFlag = currFlag;
     }
 
+    for(int i=0; i<(int)hopelessRegions.size(); ++i)
+    {
+        printf("hopelessRegions[%d] = %d\n", i, hopelessRegions[i]);
+    }
+    printf("merging regions that do not have min. distance\n");
     //combine hopeless region that do not have a distance of atleast
-    //(highestPower-1) between them
+    //(highestPower-1) between them; Note here distance of atleast totalBoundary
+    //is required (and not just workingBoundary)
     int n_hopeless =  (int)(hopelessRegions.size()/2.0);
     std::vector<int> new_hopelessRegions;
-    int i=0;
 
     int curStart, curEnd;
+    int nxtStart, nxtEnd;
     getHopelessStartEnd(0, &curStart, &curEnd);
     getHopelessStartEnd(1, &nxtStart, &nxtEnd);
 
-    for(int i=0; i<(n_hopeless-1); ++i)
+    for(int i=0; i<(n_hopeless); ++i)
     {
         if(curStart != -1)
         {
@@ -143,12 +154,19 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
     }
 
     hopelessRegions = new_hopelessRegions;
+    n_hopeless =  (int)(hopelessRegions.size()/2.0);
 
     new_hopelessRegions.resize(0);
 
-    hopelessNodePtr.resize(numSharedCache+1);
-    hopelessNodePtr[0] = 0;
+    hopelessNodePtr.resize(numSharedCache+1,0);
 
+    for(int i=0; i<(int)hopelessRegions.size(); ++i)
+    {
+        printf("hopelessRegions[%d] = %d\n", i, hopelessRegions[i]);
+    }
+
+    std::vector<int> toDrop;
+    printf("split hopeless with node boundaries, and ensure min. distance from node boundaries\n");
     //make sure hopelessRegions doesn't start from nodeBoundaries,
     //and split if spawning across boundaries
     for(int node=0; node<numSharedCache; ++node)
@@ -162,63 +180,73 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
             getHopelessStartEnd(i, &curStart, &curEnd);
             if(curStart >= levelStart)
             {
-                //tail crossing boundary
-                if( curEnd > levelEnd )
+                if(curStart < levelEnd)
                 {
-                    //spwaning multiple nodeBoundaries
-                    new_hopelessRegions.push_back(curStart);
-                    new_hopelessRegions.push_back(levelEnd-1);
-                }
-                else
-                {
-                    new_hopelessRegions.push_back(curStart);
-                    new_hopelessRegions.push_back(curEnd);
+                //tail crossing boundary,
+                    if(curEnd > levelEnd)
+                    {
+                        //spwaning multiple nodeBoundaries
+                        new_hopelessRegions.push_back(curStart);
+                        new_hopelessRegions.push_back(levelEnd-1);
+                    }
+                    else
+                    {
+                        new_hopelessRegions.push_back(curStart);
+                        new_hopelessRegions.push_back(curEnd);
+                    }
                 }
             }
             else
             {
                 if(curEnd > levelEnd)
                 {
-                    WARNING_PRINT("One complete node is hopeless\n");
+                    WARNING_PRINT("At least one complete node is hopeless\n");
                     new_hopelessRegions.push_back(levelStart);
                     new_hopelessRegions.push_back(levelEnd-1);
                 }
                 else
                 {
-                    //head crossing boundary
-                    new_hopelessRegions.push_back(levelStart);
-                    new_hopelessRegions.push_back(curEnd);
+                    if(curEnd >= levelStart)
+                    {
+                        //head crossing boundary
+                        new_hopelessRegions.push_back(levelStart);
+                        new_hopelessRegions.push_back(curEnd);
+                    }
                 }
             }
         }
-
         int startHopelessNodeId = hopelessNodePtr[node];
         //check if boundary within (highestPower-1), if not adjust
-        getHopelessStartEnd(startHopelessNodeId, &curStart, &curEnd);
+        getHopelessStartEnd(startHopelessNodeId, &curStart, &curEnd, new_hopelessRegions);
         //check start boundary
-        if((curStart-levelStart) < (highestPower-1))
+        if((curStart!=-1) && ((curStart-levelStart) < (highestPower-1)))
         {
             int newCurStart = levelStart+(highestPower-1);
+            //Remember curStart can be equal to curEnd
             if(curEnd < newCurStart)
             {
                 //drop this hopelessRegion
-                new_hopelessRegions.erase(new_hopelessRegions.begin()+2*startHopelessNodeId, new_hopelessRegions.begin()+2*startHopelessNodeId+1);
+                //new_hopelessRegions.erase(new_hopelessRegions.begin()+2*startHopelessNodeId, new_hopelessRegions.begin()+2*startHopelessNodeId+1);
+                toDrop.push_back(startHopelessNodeId);
             }
             else
             {
                 new_hopelessRegions[2*startHopelessNodeId] = newCurStart;
             }
         }
-        int endHopelessNodeId = new_hopelessRegions.size()/2.0;
-        getHopelessStartEnd(startHopelessNodeId, &curStart, &curEnd);
-        //check end boundary
-        if((levelEnd-curEnd) < (highestPower-1))
+        int endHopelessNodeId = static_cast<int>(new_hopelessRegions.size()/2.0)-1;
+        getHopelessStartEnd(endHopelessNodeId, &curStart, &curEnd, new_hopelessRegions);
+        //check end boundary; curEnd+1 since hopelessRegions include last level,
+        //while levelPtr is one past last level
+        if((curEnd!=-1) && ((levelEnd-(curEnd+1)) < (highestPower-1)))
         {
-            int newCurEnd = levelEnd-(highestPower-1);
+            int newCurEnd = levelEnd-(highestPower-1)-1;
+
             if(curStart > newCurEnd)
             {
                 //drop this hopelessRegion
-                new_hopelessRegions.erase(new_hopelessRegions.begin()+2*endHopelessNodeId, new_hopelessRegions.begin()+2*endHopelessNodeId+1);
+                //new_hopelessRegions.erase(new_hopelessRegions.begin()+2*endHopelessNodeId, new_hopelessRegions.begin()+2*endHopelessNodeId+1);
+                toDrop.push_back(endHopelessNodeId);
             }
             else
             {
@@ -227,11 +255,71 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
         }
 
         //now find out hopelessNodePtr
-        hopelessNodePtr[node+1] = new_hopelessRegions.size()/2.0;
+        hopelessNodePtr[node+1] = static_cast<int>(new_hopelessRegions.size()/2.0);
     }
     hopelessRegions = new_hopelessRegions;
+    new_hopelessRegions.resize(0);
+    n_hopeless =  (int)(hopelessRegions.size()/2.0);
+    std::vector<int> new_hopelessNodePtr(numSharedCache+1,0);
+
+    for(int i=0; i<(int)hopelessRegions.size(); ++i)
+    {
+        printf("hopelessRegions[%d] = %d\n", i, hopelessRegions[i]);
+    }
+
+    printf("\n");
+    for(int i=0; i<(int)hopelessNodePtr.size(); ++i)
+    {
+        printf("HopelessNodePtr[%d] = %d\n", i, hopelessNodePtr[i]);
+    }
 
 
+    printf("Dropping unnecessary regions\n");
+    for(int i=0; i<(int)toDrop.size(); ++i)
+    {
+        printf("toDrop[%d] = %d\n", i, toDrop[i]);
+    }
+
+    for(int n=0; n<numSharedCache; ++n)
+    {
+        int startHopelessNode = hopelessNodePtr[n];
+        int endHopelessNode = hopelessNodePtr[n+1];
+        for(int i=startHopelessNode; i<endHopelessNode; ++i)
+        {
+            bool dropFlag = false;
+            //now drop unwanted regions; by checking if the index is in toDrop list
+            for(int j=0; j<(int)toDrop.size(); ++j)
+            {
+                if(i==toDrop[j])
+                {
+                    dropFlag = true;
+                }
+            }
+            if(!dropFlag)
+            {
+                new_hopelessRegions.push_back(hopelessRegions[2*i]);
+                new_hopelessRegions.push_back(hopelessRegions[2*i+1]);
+            }
+        }
+        new_hopelessNodePtr[n+1] = static_cast<int>(new_hopelessRegions.size()/2.0);
+    }
+    hopelessRegions = new_hopelessRegions;
+    n_hopeless =  (int)(hopelessRegions.size()/2.0);
+    hopelessNodePtr = new_hopelessNodePtr;
+
+    for(int i=0; i<(int)hopelessRegions.size(); ++i)
+    {
+        printf("hopelessRegions[%d] = %d\n", i, hopelessRegions[i]);
+    }
+
+    printf("\n");
+    for(int i=0; i<(int)hopelessNodePtr.size(); ++i)
+    {
+        printf("HopelessNodePtr[%d] = %d\n", i, hopelessNodePtr[i]);
+    }
+
+
+    printf("save boundaries\n");
     //save the boundaries of hopeless regions
     //there are 2 kinds of boundaries
     //1) total boundary and 2) working boundary
@@ -239,12 +327,15 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
     //      hopelessRegion where computations till highestPower is not yet reached
     //2 -   working boundary includes only the boundary region which has to be
     //      calculated with hopelessRegions. Its length is ceil(highestPower/2)-1.
-    //The (total boundary - working boundary)regions are done after
-    //hopelessRegion is finished
-    //Here we save the entire totalBoundary and use the parts as required.
+    //(total boundary - working boundary)regions are done after
+    //hopelessRegion is finished.
+    //Only the working boundary is stored here, since the others are not
+    //required to be passed to Traverse class, and while doing compuatation can
+    //be obtained from levelPtr. Also others will change as consolidatePartition is called.
     hopelessRegionPositiveBoundary.resize(n_hopeless);
     hopelessRegionNegativeBoundary.resize(n_hopeless);
 
+    int boundaryLength = workingBoundaryLength();
     for(int i=0; i<n_hopeless; ++i)
     {
         std::vector<int> curPositiveBoundary;
@@ -252,7 +343,7 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
         int curHopelessStartLevel, curHopelessEndLevel;
         getHopelessStartEnd(i, &curHopelessStartLevel, &curHopelessEndLevel);
         printf("Hopeless = [%d, %d]\n", curHopelessStartLevel, curHopelessEndLevel);
-        for(int p=1; p<highestPower; ++p)
+        for(int p=0; p<=boundaryLength; ++p)
         {
             int curNegativeLevel = curHopelessStartLevel-p;
             int curPositiveLevel = curHopelessEndLevel+p;
@@ -273,7 +364,7 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
             }
             else
             {
-                curPositiveBoundary.push_back(levelPtr[curPositiveLevel]);
+                curPositiveBoundary.push_back(levelPtr[curPositiveLevel+1]);
             }
 
         }
@@ -286,7 +377,7 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
     printf("Hopeless: Negative Boundary\n");
     for(int i=0; i<n_hopeless; ++i)
     {
-        for(int p=0; p<highestPower-1; ++p)
+        for(int p=0; p<=boundaryLength; ++p)
         {
             printf("%d, ", hopelessRegionNegativeBoundary[i][p]);
         }
@@ -295,7 +386,7 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
     printf("Hopeless: Positive Boundary\n");
     for(int i=0; i<n_hopeless; ++i)
     {
-        for(int p=0; p<highestPower-1; ++p)
+        for(int p=0; p<=boundaryLength; ++p)
         {
             printf("%d, ", hopelessRegionPositiveBoundary[i][p]);
         }
@@ -397,7 +488,7 @@ void mtxPower::splitSharedCacheDomain()
     LB lb(numSharedCache, eff_vec[0], levelData, RACE::POWER);
     lb.balance();
     int len;
-    lb.getZonePtr(&cacheLevelGroup, &len);
+    lb.getZonePtr(&cacheLevelGroup, &len, startRow);
 
     if(numSharedCache != (len-1))
     {
@@ -410,11 +501,11 @@ void mtxPower::splitSharedCacheDomain()
         printf("lg[%d] = %d, lg[%d] = %d, row = %d\n", i, cacheLevelGroup[i], i+1, cacheLevelGroup[i+1], cacheLevelGroup[i+1]-cacheLevelGroup[i]);
     }*/
 
-    nodePtr = std::vector<int>(len);
+   // nodePtr = std::vector<int>(len);
     nodePtr = findMacroLevelPtr(cacheLevelGroup);
     if(nodePtr.size() != numSharedCache+1)
     {
-        ERROR_PRINT("nodePtr dimensions do not match");
+        ERROR_PRINT("nodePtr dimensions do not match, nodePtr.size() = %d, numSharedCache = %d", (int)nodePtr.size(), numSharedCache);
     }
 
     for(int i=0; i<len; ++i)
@@ -429,9 +520,10 @@ std::vector<int> mtxPower::findMacroLevelPtr(int* zones)
 {
     std::vector<int> macroLevelPtr;
     int ctr = 0;
+    printf("levelPtr size = %d\n", (int)levelPtr.size());
     for(int i=0; i<(totalLevel+1); ++i)
     {
-        if(levelPtr[i] == zones[ctr])
+        if((ctr < (numSharedCache+1)) && (levelPtr[i] == zones[ctr])) //ctr can be greater because of level with 0 rows, so guard it
         {
             macroLevelPtr.push_back(i);
             ++ctr;
@@ -442,12 +534,17 @@ std::vector<int> mtxPower::findMacroLevelPtr(int* zones)
 
 void mtxPower::getHopelessStartEnd(int count, int *start, int *end)
 {
+    getHopelessStartEnd(count, start, end, hopelessRegions);
+}
+
+void mtxPower::getHopelessStartEnd(int count, int *start, int *end, std::vector<int> _hopelessRegions_)
+{
     (*start) = -1;
     (*end) = -1;
-    if(2*count <  (int)hopelessRegions.size()-1)
+    if((count >= 0) && (2*count <  (int)_hopelessRegions_.size()-1))
     {
-        (*start) = hopelessRegions[2*count];
-        (*end) = hopelessRegions[2*count+1];
+        (*start) = _hopelessRegions_[2*count];
+        (*end) = _hopelessRegions_[2*count+1];
     }
 }
 
@@ -457,8 +554,8 @@ void mtxPower::consolidatePartition()
     dangerRow = std::vector<int>(totalLevel);
 
     std::vector<int> newLevelPtr;
-    newLevelPtr.push_back(0); //done in loop
-    int consolidated_ctr = 0;
+    newLevelPtr.push_back(startRow); //done in loop
+    int consolidated_ctr = 0; //startRow;
     unlockRow[0] = levelPtr[1];
 
 #ifdef LB_REMINDER
@@ -480,15 +577,12 @@ void mtxPower::consolidatePartition()
     }
 #endif
 
+    std::vector<int> consolidated_hopelessRegions;
     int hopelessRegionCount = 0;
     int currHopelessStart, currHopelessEnd;
     getHopelessStartEnd(hopelessRegionCount, &currHopelessStart, &currHopelessEnd);
-    printf("Hopeless = [%d, %d]\n", currHopelessStart, currHopelessEnd);
-   //TODO:
-   //1) a distance of (highestPower-1) levels between hopelessRegions, else combine them
-   //2) only one level at boundary (no consolidation) of hopeless Regions
-   //3) hopelessRegion only at body, not at head and tail, so careful with
-   //nodePtr
+
+    printf("check hopeless = [%d, %d]\n", currHopelessStart, currHopelessEnd);
     for(int node=0; node<numSharedCache; ++node)
     {
         double sumElem = 0;
@@ -512,33 +606,52 @@ void mtxPower::consolidatePartition()
             bool hopeless = false;
             bool forceUpdate = false;
 
-            int workingBoundaryLength = ceil(highestPower/2)-1;
+            int boundaryLength = workingBoundaryLength();
+
+            if(level == currHopelessStart)
+            {
+                consolidated_hopelessRegions.push_back(consolidated_ctr+1);//+1 since not yet incrmented
+                //Only start is needed since we know it would always be one
+                //level long after consolidation
+                //consolidated_hopelessRegions.push_back(consolidated_ctr+2);//+1 since it will be consecuive, note that this is pointing towards end and does not include end, contrary to hopelessRegions
+            }
+
+
 
             //check if level in working boundary of hopelessRegions; 
             //start boundary
-            if( (level >= (curHopelessStart-workingBoundaryLength)) && (level < curHopelessStart) )
+            if( (level >= (currHopelessStart-boundaryLength)) && (level <= currHopelessStart) )
             {
                 forceUpdate = true;
             }
             //end boundary
-            else if((level > curHopelessEnd) && (level <= (curHopelessEnd+workingBoundaryLength)) )
+            else if((level > currHopelessEnd) && (level <= (currHopelessEnd+boundaryLength)) )
             {
                 forceUpdate = true;
             }
             //deal with hopeless region
-            else if((level >= currHopelessStart) && (level < currHopelessEnd))
+            else if((level > currHopelessStart) && (level <= currHopelessEnd))
             {
                 //this level belongs to hopeless region
                 hopeless = true;
             }
-            else if(level == currHopelessEnd)
+            /*else if(level == currHopelessEnd)
             {
                 //don't set hopeless because now we have to end
                 //and consolidate
                 hopelessRegionCount++;
                 getHopelessStartEnd(hopelessRegionCount, &currHopelessStart, &currHopelessEnd);
+            }*/
+            if(level == (currHopelessEnd+boundaryLength+1))
+            {
+                //don't set hopeless because now we have to end
+                //and consolidate
+                hopelessRegionCount++;
+                getHopelessStartEnd(hopelessRegionCount, &currHopelessStart, &currHopelessEnd);
+                printf("check hopeless = [%d, %d]\n", currHopelessStart, currHopelessEnd);
+                forceUpdate = true;
             }
-
+            //printf("#### check level=%d, forceUpdate = %d, hopeless = %d\n", level, forceUpdate, hopeless);
             //printf("##### hopeless = %d, hopeless = [%d,%d]\n", hopeless, currHopelessStart, currHopelessEnd);
 #ifdef LB_REMINDER
             int startPow = 0;
@@ -604,6 +717,13 @@ void mtxPower::consolidatePartition()
         }
 
         consolidated_ctr += 1;
+    }
+
+    hopelessRegions = consolidated_hopelessRegions;
+
+    for(int i=0; i<consolidated_hopelessRegions.size(); ++i)
+    {
+        printf("consolidated_hopelessRegions[%d] = %d\n", i, consolidated_hopelessRegions[i]);
     }
 
     //rewrite levelPtr with newLevelPtr
@@ -741,3 +861,7 @@ std::vector<int> mtxPower::getHopelessRegions()
     return hopelessRegions;
 }
 
+std::vector<int> mtxPower::getHopelessNodePtr()
+{
+    return hopelessNodePtr;
+}
