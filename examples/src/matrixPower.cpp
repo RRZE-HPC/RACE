@@ -213,7 +213,7 @@ int main(const int argc, char * argv[])
         }
 #endif
         double spmvPowerTime = GET_TIMER(spmvPower);
-        printf("SpMV power perf. = %f, time = %f\n", flops/spmvPowerTime, spmvPowerTime);
+        printf("SpMV power perf. = %f GFlop/s, time = %f\n", flops/spmvPowerTime, spmvPowerTime);
 
     }
 

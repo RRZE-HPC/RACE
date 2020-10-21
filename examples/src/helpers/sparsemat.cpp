@@ -189,7 +189,7 @@ bool sparsemat::readFile(char* filename)
 
     delete[] col_unsorted;
     delete[] val_unsorted;
-
+    delete[] perm;
 
     rowPtr = new int[nrows+1];
 
@@ -218,6 +218,7 @@ bool sparsemat::readFile(char* filename)
     }
 
     delete[] row;
+    delete[] nnzPerRow;
 
     numaInit(false);
     //writeFile("beforePerm.mtx");
@@ -574,6 +575,8 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
     ce->getInvPerm(&invPerm, &permLen);
     permute(perm, invPerm, true);
 
+    delete [] invPerm;
+    delete [] perm;
     //no idea why need it second time w/o perm. 
     //NUMA init work nicely only if this is done; (only for pwtk, others perf
     //degradation))
