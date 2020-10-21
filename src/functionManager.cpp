@@ -4,12 +4,13 @@
 #include <typeinfo>
 #include "machine.h"
 #include "macros.h"
+#include <emmintrin.h>
 
 #define POWER_WITH_FLUSH_LOCK
 //#define RACE_DEBUG
 
 //coloring
-FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),power_fn(false), numaSplit(false), func(f_),args(args_),zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_), lockCtr(NULL), unlockRow(NULL), dangerRow(NULL), unlockCtr(NULL)
+FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),power_fn(false), numaSplit(false), func(f_),args(args_),zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_), lockCtr(NULL)
 {
     //    func = std::bind(f_,*this,std::placeholders::_1,std::placeholders::_2,args);
     /*len = 72*72*72;
@@ -20,17 +21,25 @@ FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zone
       */
     //  barrierTime = 0;
     recursiveFun = std::bind(recursiveCall, this, std::placeholders::_1);
+#pragma omp parallel
+    {
+        activethreads = omp_get_num_threads();
+    }
 }
 
 //power = true, NUMA = false
-FuncManager::FuncManager(void (*f_) (int,int,int,int,void*), void *args_, int power_, mtxPowerRecursive *matPower_, bool numaSplit_):power_fn(true), numaSplit(numaSplit_), powerFunc(f_), args(args_), power(power_), matPower(matPower_), lockCtr(NULL), lockTableCtr(NULL), unlockRow(NULL), dangerRow(NULL), unlockCtr(NULL)
+FuncManager::FuncManager(void (*f_) (int,int,int,int,void*), void *args_, int power_, mtxPowerRecursive *matPower_, bool numaSplit_):power_fn(true), numaSplit(numaSplit_), powerFunc(f_), args(args_), power(power_), matPower(matPower_), lockCtr(NULL), lockTableCtr(NULL)
 {
 #ifdef POWER_WITH_FLUSH_LOCK
     initPowerRun();
-    unlockRow = matPower->getUnlockRowRef();
-    dangerRow = matPower->getDangerRowRef();
-    unlockCtr = matPower->getUnlockCtrRef();
 #endif
+#pragma omp parallel
+    {
+        activethreads = omp_get_num_threads();
+    }
+
+    recursivePowerFun = std::bind(recursivePowerCall, this, std::placeholders::_1);
+
 }
 
 FuncManager::FuncManager(const FuncManager &obj)
@@ -46,9 +55,6 @@ FuncManager::FuncManager(const FuncManager &obj)
     serialPart = obj.serialPart;
     lockCtr = obj.lockCtr;
     lockTableCtr = obj.lockTableCtr;
-    unlockRow = obj.unlockRow;
-    dangerRow = obj.dangerRow;
-    unlockCtr = obj.unlockCtr;
     numaSplit = obj.numaSplit;
 }
 
@@ -135,7 +141,7 @@ void recursiveCall(FuncManager* funMan, int parent)
                 for(int block=startBlock; block!=endBlock; block+=inc)
                 {
                     funMan->recursiveFun(children->at(2*subBlock)+blockPerThread*tid+block);
-                    #pragma omp barrier
+#pragma omp barrier
                 }
                 //printf("Black: tid = %d, pinOrder = %d, cpu = %d\n",tid,pinOrder,sched_getcpu());
             }
@@ -147,9 +153,9 @@ void recursiveCall(FuncManager* funMan, int parent)
 void recursiveCall(FuncManager* funMan, int parentIdx)
 {
     /*if(funMan->zoneTree->at(parentIdx).pinOrder != ((int) sched_getcpu()))
-    {
-        printf("Pinning Error: parentIdx=%dto %d; really pinned to cpu = %d\n", parentIdx, funMan->zoneTree->at(parentIdx).pinOrder, sched_getcpu());
-    }*/
+      {
+      printf("Pinning Error: parentIdx=%dto %d; really pinned to cpu = %d\n", parentIdx, funMan->zoneTree->at(parentIdx).pinOrder, sched_getcpu());
+      }*/
 
     std::vector<int>* children = &(funMan->zoneTree->at(parentIdx).children);
     int blockPerThread = getBlockPerThread(funMan->zoneTree->dist, funMan->zoneTree->d2Type);
@@ -222,39 +228,39 @@ void FuncManager::powerRun()
 
 #pragma omp parallel num_threads(totalNodes)
     {
-        int levelGroup = omp_get_thread_num();
+        int nodeGroup = omp_get_thread_num();
         //body
         {
-            //if(levelGroup == 3)
+            //if(nodeGroup == 3)
             {
-            //printf("here is %d\n", sched_getcpu());
-            int startLevel = nodePtr[levelGroup];
-            int endLevel = nodePtr[levelGroup+1];
-            for(int level=startLevel; level<(endLevel); ++level)
-            {
-                for(int pow=0; pow<power; ++pow)
+                //printf("here is %d\n", sched_getcpu());
+                int startLevel = nodePtr[nodeGroup];
+                int endLevel = nodePtr[nodeGroup+1];
+                for(int level=startLevel; level<(endLevel); ++level)
                 {
-                    int powLevel = (level-pow);
-
-                    if( (powLevel >= (startLevel+pow)) && (powLevel < (endLevel-pow)) )
+                    for(int pow=0; pow<power; ++pow)
                     {
-                        //can be a function ptr
-                        powerFunc(levelPtr[powLevel], levelPtr[powLevel+1], pow+1, args);
+                        int powLevel = (level-pow);
+
+                        if( (powLevel >= (startLevel+pow)) && (powLevel < (endLevel-pow)) )
+                        {
+                            //can be a function ptr
+                            powerFunc(levelPtr[powLevel], levelPtr[powLevel+1], pow+1, args);
 #if 0
 #pragma omp parallel for schedule(static)
-                        for(int row=levelPtr[powLevel]; row<levelPtr[powLevel+1]; ++row)
-                        {
-                            double tmp = 0;
-                            for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
+                            for(int row=levelPtr[powLevel]; row<levelPtr[powLevel+1]; ++row)
                             {
-                                tmp += A[idx]*x[(pow)*graph->NROW+col[idx]];
+                                double tmp = 0;
+                                for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
+                                {
+                                    tmp += A[idx]*x[(pow)*graph->NROW+col[idx]];
+                                }
+                                x[(pow+1)*graph->NROW+row] = tmp;
                             }
-                            x[(pow+1)*graph->NROW+row] = tmp;
-                        }
 #endif
+                        }
                     }
                 }
-            }
             }
         }
 #pragma omp barrier
@@ -263,8 +269,8 @@ void FuncManager::powerRun()
         {
             //reminder-head
             {
-                int startLevel = nodePtr[levelGroup];
-                int endLevel = std::min(startLevel+pow, nodePtr[levelGroup+1]);
+                int startLevel = nodePtr[nodeGroup];
+                int endLevel = std::min(startLevel+pow, nodePtr[nodeGroup+1]);
                 for(int level=startLevel; level<endLevel; ++level)
                 {
                     //can be a function ptr
@@ -273,8 +279,8 @@ void FuncManager::powerRun()
             }
             //reminder-tail
             {
-                int endLevel = nodePtr[levelGroup+1];
-                int startLevel = std::max(nodePtr[levelGroup], endLevel-pow);
+                int endLevel = nodePtr[nodeGroup+1];
+                int startLevel = std::max(nodePtr[nodeGroup], endLevel-pow);
                 for(int level=startLevel; level<endLevel; ++level)
                 {
                     //can be a function ptr
@@ -291,11 +297,11 @@ void FuncManager::powerRun()
 
 void FuncManager::initPowerRun()
 {
-//need to move this routine to matrixPower.cpp
+    //need to move this routine to matrixPower.cpp
 #ifdef POWER_WITH_FLUSH_LOCK
-    int* nodePtr = matPower->getNodePtrRef();
-    int totalNodes = matPower->getTotalNodes();
-    int totalLevels = matPower->getTotalLevel();
+    std::vector<int> nodePtr = matPower->tree[0].nodePtr;
+    int totalNodes = nodePtr.size()-1;
+    int totalLevels = matPower->tree[0].levelPtr.size()-1;
 
     //allocate only if needed
     if(!lockCtr)
@@ -306,11 +312,11 @@ void FuncManager::initPowerRun()
     {
         int threadPerNode = omp_get_num_threads()/totalNodes;
         int tid = omp_get_thread_num();
-        int levelGroup = tid / threadPerNode;
+        int nodeGroup = tid / threadPerNode;
         int localTid = tid % threadPerNode;
         //printf("here is %d\n", sched_getcpu());
-        int startLevel = nodePtr[levelGroup];
-        int endLevel = nodePtr[levelGroup+1];
+        int startLevel = nodePtr[nodeGroup];
+        int endLevel = nodePtr[nodeGroup+1];
 
         //only 1 thread per group, maintain NUMA
         if(localTid == 0)
@@ -342,27 +348,27 @@ void FuncManager::initPowerRun()
 
 void FuncManager::NUMAInitPower()
 {
-    int* nodePtr = matPower->getNodePtrRef();
-    int* levelPtr = matPower->getLevelPtrRef();
-    int totalNodes = matPower->getTotalNodes();
+    std::vector<int> nodePtr = matPower->tree[0].nodePtr;
+    std::vector<int> levelPtr = matPower->tree[0].levelPtr;
+    int totalNodes = nodePtr.size()-1;
 #pragma omp parallel
     {
         int threadPerNode = omp_get_num_threads()/totalNodes;
         int tid = omp_get_thread_num();
-        int levelGroup = tid / threadPerNode;
-        int numaLocalArg = (numaSplit)?levelGroup:0;
-        //only first thread in each levelGroup works
-        if(tid == levelGroup*threadPerNode)
+        int nodeGroup = tid / threadPerNode;
+        int numaLocalArg = (numaSplit)?nodeGroup:0;
+        //only first thread in each nodeGroup works
+        if(tid == nodeGroup*threadPerNode)
         {
-            powerFunc(levelPtr[nodePtr[levelGroup]], levelPtr[nodePtr[levelGroup+1]], 1, numaLocalArg, args);
-            /*for(int row=nodePtr[levelGroup]; row<nodePtr[levelGroup+1]; ++row)
-            {
-                for(int idx=rowPtr_[row]; idx<rowPtr_[row+1]; ++idx)
-                {
-                    val[idx] = 0;
-                    col[idx] = 0;
-                }
-            }*/
+            powerFunc(levelPtr[nodePtr[nodeGroup]], levelPtr[nodePtr[nodeGroup+1]], 1, numaLocalArg, args);
+            /*for(int row=nodePtr[nodeGroup]; row<nodePtr[nodeGroup+1]; ++row)
+              {
+              for(int idx=rowPtr_[row]; idx<rowPtr_[row+1]; ++idx)
+              {
+              val[idx] = 0;
+              col[idx] = 0;
+              }
+              }*/
         }
     }
 }
@@ -374,7 +380,7 @@ void FuncManager::NUMAInitPower()
 {\
     if((_level_ >= 0) && (_pow_ <= power-1))\
     {\
-_Pragma("omp atomic")\
+        _Pragma("omp atomic")\
         lockTableCtr[_level_*power+_pow_]++;\
     }\
 }
@@ -392,228 +398,220 @@ _Pragma("omp atomic")\
 }\
 
 
-void FuncManager::powerRun()
+void recursivePowerCall(FuncManager* funMan, int parent)
 {
 
-    initPowerRun();
+    funMan->initPowerRun();
     //*nodePtr - for NUMA
     //**levelPtr - for power
     //int totalLevel = matPower->getTotalLevel();
-    int totalNodes = matPower->getTotalNodes();
-    int* levelPtr = matPower->getLevelPtrRef();
-    int* nodePtr = matPower->getNodePtrRef();
+    //do pointers to avoid copying expense; since tree is now stabe (size fixed)
+    //this shouldn't be a problem
+    std::vector<MPLeaf>* tree = &(funMan->matPower->tree);
+    std::vector<int> nodePtr = tree->at(parent).nodePtr;
+    int totalNodes = nodePtr.size()-1;
+    std::vector<int> levelPtr = tree->at(parent).levelPtr;
+    std::vector<int> unlockRow = tree->at(parent).unlockRow;
+    std::vector<int> dangerRow = tree->at(parent).dangerRow;
+    std::vector<int> unlockCtr = tree->at(parent).unlockCtr;
 
-
+    int power = funMan->power;
+    int activethreads = funMan->activethreads;
+    bool numaSplit = funMan->numaSplit;
+    void *args = funMan->args;
+    volatile int* lockCtr = funMan->lockCtr;
+    volatile int* lockTableCtr = funMan->lockTableCtr;
+    //don't spawn threads recursively; TODO switch off recursive before calling this function
 #pragma omp parallel
     {
-        int threadPerNode = omp_get_num_threads()/totalNodes;
+        int threadPerNode = activethreads/totalNodes;
         int tid = omp_get_thread_num();
-        int levelGroup = tid / threadPerNode;
+        int nodeGroup = tid / threadPerNode;
         int localTid = tid % threadPerNode;
-        int numaLocalArg = (numaSplit)?levelGroup:0;
+        int numaLocalArg = (numaSplit)?nodeGroup:0;
         int offset = levelPtr[nodePtr[numaLocalArg]];
-       // printf("Offset = %d\n", offset);
+        // printf("Offset = %d\n", offset);
+        int startLevel = nodePtr[nodeGroup];
+        int endLevel = nodePtr[nodeGroup+1];
+
         //body
         {
             //printf("here is %d\n", sched_getcpu());
-            int startLevel = nodePtr[levelGroup];
-            int endLevel = nodePtr[levelGroup+1];
-            int maxLevelCount = 0;
-            for(int i=0; i<totalNodes; ++i)
+            /* int maxLevelCount = 0;
+               for(int i=0; i<totalNodes; ++i)
+               {
+               maxLevelCount = std::max(maxLevelCount, (nodePtr->at(i+1)-nodePtr->at(i)));
+               }
+               int maxEndLevel = startLevel + maxLevelCount; //needed so that everyone calls barrier
+               */
+            for(int level=startLevel; level<(endLevel); ++level)
             {
-                maxLevelCount = std::max(maxLevelCount, (nodePtr[i+1]-nodePtr[i]));
-            }
-            int maxEndLevel = startLevel + maxLevelCount; //needed so that everyone calls barrier
-            for(int level=startLevel; level<(maxEndLevel); ++level)
-            {
-                if(level < endLevel)
+                //tid responsible for (level-1) lock, locks the level
+                for(int pow=0; pow<power; ++pow)
                 {
-                    //tid responsible for (level-1) lock, locks the level
-                    for(int pow=0; pow<power; ++pow)
+                    int powLevel = (level-pow);
+
+                    //square wave
+                    if( ((powLevel >= (startLevel)) && (powLevel < (endLevel))) )
                     {
-                        int powLevel = (level-pow);
-
-                        //square wave
-                        if( ((powLevel >= (startLevel)) && (powLevel < (endLevel))) )
+                        //trapezoidal wave
+                        if( ((powLevel >= (startLevel+pow)) && (powLevel < (endLevel-pow))) )
                         {
-                            //trapezoidal wave
-                            if( ((powLevel >= (startLevel+pow)) && (powLevel < (endLevel-pow))) )
+
+                            //wait till powLevel is free; use ctr[powLevel] == threads*(pow)
+                            while(lockCtr[powLevel] < threadPerNode*pow)
                             {
-
-                                //wait till powLevel is free; use ctr[powLevel] == threads*(pow)
-                                while(lockCtr[powLevel] < threadPerNode*pow)
-                                {
-                                    _mm_pause();
+                                _mm_pause();
 #ifdef RACE_DEBUG
-                                    printf("lock ctr = %d, pow = %d, level = %d\n", lockCtr[powLevel], pow, powLevel);
+                                printf("lock ctr = %d, pow = %d, level = %d\n", lockCtr[powLevel], pow, powLevel);
 #endif
-                                }
-
-                                SPLIT_LEVEL_PER_THREAD_P2P(powLevel);
-#ifdef RACE_DEBUG
-                                printf("power = %d, pow = %d, level = %d, tid = %d, start row = %d, unlock row = %d, danger row = %d, end_row = %d\n", power, pow, powLevel, omp_get_thread_num(), startRow_tid, currUnlockRow, dangerRowStart, endRow_tid);
-#endif
-
-                                //int z = (pow) + (powLevel);
-                                //int cons_term = std::max(0,z-power); //the term for having consequtive numbers
-                                //int powLevel_to_unlock = ((z*(z+1))>>1) + (pow+1) - (cons_term*(cons_term+1)>>1);
-
-                                if(dangerRowStart <= startRow_tid)
-                                {
-                                    //check lock
-                                    WAIT(powLevel, pow);
-                                    powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);
-#ifdef RACE_DEBUG
-                                    printf("5. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), startRow_tid, endRow_tid, pow, powLevel);
-#endif
-                                    if(startRow_tid < currUnlockRow)
-                                    {
-                                        //unlock
-                                        UNLOCK((powLevel-1), (pow+1));
-#ifdef RACE_DEBUG
-                                        printf("tid = %d, Unlocking Level = %d, pow = %d\n", omp_get_thread_num(), powLevel-1, pow+1);
-#endif
-                                    }
-                                }
-                                else if(dangerRowStart >= currUnlockRow)
-                                {
-                                    int till_row = startRow_tid;
-                                    if(startRow_tid < currUnlockRow)
-                                    {
-                                        till_row = std::min(currUnlockRow, endRow_tid);
-                                        powerFunc(startRow_tid, till_row, pow+1, numaLocalArg, args);
-#ifdef RACE_DEBUG
-                                        printf("1. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), startRow_tid, currUnlockRow, pow, powLevel);
-#endif
-                                        //unlock
-
-                                        UNLOCK((powLevel-1), (pow+1));
-#ifdef RACE_DEBUG
-                                        printf("tid = %d, Unlocking Level = %d, pow = %d\n", omp_get_thread_num(), powLevel-1, pow+1);
-#endif
-                                    }
-                                    /*else
-                                    {
-                                        till_row = startRow_tid;
-                                        //powerFunc(startRow_tid, endRow_tid, pow+1, args);
-                                        //till_row = endRow_tid;
-                                    }*/
-                                    if(dangerRowStart > endRow_tid)
-                                    {
-                                        powerFunc(till_row, endRow_tid, pow+1, numaLocalArg, args);
-#ifdef RACE_DEBUG
-                                        printf("2. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), till_row, endRow_tid, pow, powLevel);
-#endif
-                                    }
-                                    else
-                                    {
-                                        powerFunc(till_row, dangerRowStart, pow+1, numaLocalArg, args);
-#ifdef RACE_DEBUG
-                                        printf("3. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), till_row, dangerRowStart, pow, powLevel);
-#endif
-
-                                        //check lock
-                                        WAIT(powLevel, pow);
-
-                                        powerFunc(dangerRowStart, endRow_tid, pow+1, numaLocalArg, args);
-#ifdef RACE_DEBUG
-                                        printf("4. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), dangerRowStart, endRow_tid, pow, powLevel);
-#endif
-
-                                    }
-                                }
-                                /*else if(dangerRowStart <= startRow_tid)
-                                {
-                                    //check lock
-                                                                        WAIT(powLevel, pow);
-                                    powerFunc(startRow_tid, endRow_tid, pow+1, args);
-#ifdef RACE_DEBUG
-                                    printf("5. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), startRow_tid, endRow_tid, pow, powLevel);
-#endif
-
-                                    if(endRow_tid == currUnlockRow)
-                                    {
-                                        //unlock
-                                        UNLOCK((powLevel-1), (pow+1));
-#ifdef RACE_DEBUG
-                                        printf("tid = %d, Unlocking Level = %d, pow = %d\n", omp_get_thread_num(), powLevel-1, pow+1);
-#endif
-                                    }
-                                }*/
-                                else
-                                {
-                                    ERROR_PRINT("I thought this wouldn't happen, please report, tid = %d", omp_get_thread_num());
-                                    exit(-1);
-                                }
-                                #pragma omp atomic //atomic is update by default
-                                lockCtr[powLevel] ++;
                             }
-                            else //only unlocking is done, no computation, computation done in reminder loop
-                            {
 
-
-                                SPLIT_LEVEL_PER_THREAD_P2P(powLevel);
+                            SPLIT_LEVEL_PER_THREAD_P2P(powLevel);
 #ifdef RACE_DEBUG
-                                printf("** power = %d, pow = %d, level = %d, tid = %d, start row = %d, unlock row = %d, danger row = %d, end_row = %d\n", power, pow, powLevel, omp_get_thread_num(), startRow_tid, currUnlockRow, dangerRowStart, endRow_tid);
+                            printf("power = %d, pow = %d, level = %d, tid = %d, start row = %d, unlock row = %d, danger row = %d, end_row = %d\n", power, pow, powLevel, omp_get_thread_num(), startRow_tid, currUnlockRow, dangerRowStart, endRow_tid);
 #endif
-                                if(0)
-                                {
 
-                                    ERROR_PRINT("Should never be here");
-                                    //To suppress unused variable warning
-                                    printf("** power = %d, pow = %d, level = %d, tid = %d, start row = %d, unlock row = %d, danger row = %d, end_row = %d\n", power, pow, powLevel, omp_get_thread_num(), startRow_tid, currUnlockRow, dangerRowStart, endRow_tid);
-                                }
-                                //if( (startRow_tid < currUnlockRow) && (endRow_tid >= currUnlockRow) ) //only 1 thread will be here
-   //                             #pragma omp single
-                                if(startRow_tid < currUnlockRow) //only 1 thread will be here
+                            //int z = (pow) + (powLevel);
+                            //int cons_term = std::max(0,z-power); //the term for having consequtive numbers
+                            //int powLevel_to_unlock = ((z*(z+1))>>1) + (pow+1) - (cons_term*(cons_term+1)>>1);
+
+                            if(dangerRowStart <= startRow_tid)
+                            {
+                                //check lock
+                                WAIT(powLevel, pow);
+                                funMan->powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);
+#ifdef RACE_DEBUG
+                                printf("5. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), startRow_tid, endRow_tid, pow, powLevel);
+#endif
+                                if(startRow_tid < currUnlockRow)
                                 {
-                                    //unlock powLevel -1 for pow+1
-                                    //int z = (pow) + (powLevel);
-                                    //int cons_term = std::max(0,z-power); //the term for having consequtive numbers
-                                    //int powLevel_to_unlock = ((z*(z+1))>>1) + (pow+1) - (cons_term*(cons_term+1)>>1);
+                                    //unlock
+                                    UNLOCK((powLevel-1), (pow+1));
+#ifdef RACE_DEBUG
+                                    printf("tid = %d, Unlocking Level = %d, pow = %d\n", omp_get_thread_num(), powLevel-1, pow+1);
+#endif
+                                }
+                            }
+                            else if(dangerRowStart >= currUnlockRow)
+                            {
+                                int till_row = startRow_tid;
+                                if(startRow_tid < currUnlockRow)
+                                {
+                                    till_row = std::min(currUnlockRow, endRow_tid);
+                                    funMan->powerFunc(startRow_tid, till_row, pow+1, numaLocalArg, args);
+#ifdef RACE_DEBUG
+                                    printf("1. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), startRow_tid, currUnlockRow, pow, powLevel);
+#endif
+                                    //unlock
 
                                     UNLOCK((powLevel-1), (pow+1));
 #ifdef RACE_DEBUG
                                     printf("tid = %d, Unlocking Level = %d, pow = %d\n", omp_get_thread_num(), powLevel-1, pow+1);
 #endif
                                 }
+                                /*else
+                                  {
+                                  till_row = startRow_tid;
+                                //funMan->powerFunc(startRow_tid, endRow_tid, pow+1, args);
+                                //till_row = endRow_tid;
+                                }*/
+                                if(dangerRowStart > endRow_tid)
+                                {
+                                    funMan->powerFunc(till_row, endRow_tid, pow+1, numaLocalArg, args);
+#ifdef RACE_DEBUG
+                                    printf("2. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), till_row, endRow_tid, pow, powLevel);
+#endif
+                                }
+                                else
+                                {
+                                    funMan->powerFunc(till_row, dangerRowStart, pow+1, numaLocalArg, args);
+#ifdef RACE_DEBUG
+                                    printf("3. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), till_row, dangerRowStart, pow, powLevel);
+#endif
 
+                                    //check lock
+                                    WAIT(powLevel, pow);
+
+                                    funMan->powerFunc(dangerRowStart, endRow_tid, pow+1, numaLocalArg, args);
+#ifdef RACE_DEBUG
+                                    printf("4. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), dangerRowStart, endRow_tid, pow, powLevel);
+#endif
+
+                                }
                             }
+                            else
+                            {
+                                ERROR_PRINT("I thought this wouldn't happen, please report, tid = %d", omp_get_thread_num());
+                                exit(-1);
+                            }
+#pragma omp atomic //atomic is update by default
+                            lockCtr[powLevel] ++;
                         }
-                    }
-                }
-//#pragma omp barrier
-            }
-        }
+                        else //trapezoidal-wave; only unlocking is done, no computation, computation done in reminder loop
+                        {
+
+
+                            SPLIT_LEVEL_PER_THREAD_P2P(powLevel);
+#ifdef RACE_DEBUG
+                            printf("** power = %d, pow = %d, level = %d, tid = %d, start row = %d, unlock row = %d, danger row = %d, end_row = %d\n", power, pow, powLevel, omp_get_thread_num(), startRow_tid, currUnlockRow, dangerRowStart, endRow_tid);
+#endif
+                            if(0)
+                            {
+
+                                ERROR_PRINT("Should never be here");
+                                //To suppress unused variable warning
+                                printf("** power = %d, pow = %d, level = %d, tid = %d, start row = %d, unlock row = %d, danger row = %d, end_row = %d\n", power, pow, powLevel, omp_get_thread_num(), startRow_tid, currUnlockRow, dangerRowStart, endRow_tid);
+                            }
+                            //if( (startRow_tid < currUnlockRow) && (endRow_tid >= currUnlockRow) ) //only 1 thread will be here
+                            //                             #pragma omp single
+                            if(startRow_tid < currUnlockRow) //only 1 thread will be here
+                            {
+                                //unlock powLevel -1 for pow+1
+                                //int z = (pow) + (powLevel);
+                                //int cons_term = std::max(0,z-power); //the term for having consequtive numbers
+                                //int powLevel_to_unlock = ((z*(z+1))>>1) + (pow+1) - (cons_term*(cons_term+1)>>1);
+
+                                UNLOCK((powLevel-1), (pow+1));
+#ifdef RACE_DEBUG
+                                printf("tid = %d, Unlocking Level = %d, pow = %d\n", omp_get_thread_num(), powLevel-1, pow+1);
+#endif
+                            }
+
+                        } //trapezoidal-wave
+                    }//square-wave
+                } //pow
+            } //level
+        }//body
         //reminder
         for(int pow=1; pow<power; ++pow)
         {
 #pragma omp barrier
             //reminder-head
             {
-                int startLevel = nodePtr[levelGroup];
-                int endLevel = std::min(startLevel+pow, nodePtr[levelGroup+1]);
+                int startLevel = nodePtr[nodeGroup];
+                int endLevel = std::min(startLevel+pow, nodePtr[nodeGroup+1]);
                 for(int level=startLevel; level<endLevel; ++level)
                 {
                     SPLIT_LEVEL_PER_THREAD(level);
                     //can be a function ptr
-                    powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);
+                    funMan->powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);
                 }
             }
             //reminder-tail
             {
-                int endLevel = nodePtr[levelGroup+1];
-                int startLevel = std::max(nodePtr[levelGroup], endLevel-pow);
+                int endLevel = nodePtr[nodeGroup+1];
+                int startLevel = std::max(nodePtr[nodeGroup], endLevel-pow);
                 for(int level=startLevel; level<endLevel; ++level)
                 {
                     SPLIT_LEVEL_PER_THREAD(level);
                     //can be a function ptr
-                    powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);
+                    funMan->powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);
                 }
 
             }
-        }
-    }
+        } //pow
+    } //parallel
 }
 
 #else
@@ -629,13 +627,13 @@ void FuncManager::powerRun()
     {
         int threadPerNode = omp_get_num_threads()/totalNodes;
         int tid = omp_get_thread_num();
-        int levelGroup = tid / threadPerNode;
+        int nodeGroup = tid / threadPerNode;
         int localTid = tid % threadPerNode;
         //body
         {
             //printf("here is %d\n", sched_getcpu());
-            int startLevel = nodePtr[levelGroup];
-            int endLevel = nodePtr[levelGroup+1];
+            int startLevel = nodePtr[nodeGroup];
+            int endLevel = nodePtr[nodeGroup+1];
             int maxLevelCount = 0;
             for(int i=0; i<totalNodes; ++i)
             {
@@ -669,24 +667,24 @@ void FuncManager::powerRun()
 #endif
                         }
 #pragma omp barrier
-//for correctness it has to be here, but its rarely that this conflict happens
-//to detect this run for example FDM-512 with p=80
-//I think we need this actually, but this actually
-//separates into inCache and burst phase
+                        //for correctness it has to be here, but its rarely that this conflict happens
+                        //to detect this run for example FDM-512 with p=80
+                        //I think we need this actually, but this actually
+                        //separates into inCache and burst phase
                     }
                 }
-//#pragma omp barrier
+                //#pragma omp barrier
 
             }
         }
-//#pragma omp barrier
+        //#pragma omp barrier
         //reminder
         for(int pow=1; pow<power; ++pow)
         {
             //reminder-head
             {
-                int startLevel = nodePtr[levelGroup];
-                int endLevel = std::min(startLevel+pow, nodePtr[levelGroup+1]);
+                int startLevel = nodePtr[nodeGroup];
+                int endLevel = std::min(startLevel+pow, nodePtr[nodeGroup+1]);
                 for(int level=startLevel; level<endLevel; ++level)
                 {
                     SPLIT_LEVEL_PER_THREAD(level);
@@ -696,8 +694,8 @@ void FuncManager::powerRun()
             }
             //reminder-tail
             {
-                int endLevel = nodePtr[levelGroup+1];
-                int startLevel = std::max(nodePtr[levelGroup], endLevel-pow);
+                int endLevel = nodePtr[nodeGroup+1];
+                int startLevel = std::max(nodePtr[nodeGroup], endLevel-pow);
                 for(int level=startLevel; level<endLevel; ++level)
                 {
                     SPLIT_LEVEL_PER_THREAD(level);
@@ -724,11 +722,11 @@ void FuncManager::Run(bool rev_)
             ERROR_PRINT("NO Zone Tree present; Have you registered the function");
         }
 
-/*        if(rev)
-        {
-            func(serialPart[1],serialPart[0],args);
-        }
-*/
+        /*        if(rev)
+                  {
+                  func(serialPart[1],serialPart[0],args);
+                  }
+                  */
         int root = 0;
 #ifdef RACE_KERNEL_THREAD_OMP
         int resetNestedState = omp_get_nested();
@@ -767,7 +765,8 @@ void FuncManager::Run(bool rev_)
         //set nested parallelism
         //printf("setting nested\n");
         omp_set_nested(0);
-        powerRun();
+        recursivePowerFun(0);
+        //powerRun();
 
         //reset states
         omp_set_nested(resetNestedState);
@@ -777,8 +776,8 @@ void FuncManager::Run(bool rev_)
 }
 
 /*void FuncManager::RunOMP()
-{
-    //test_omp(a,b,c,d,0,len,1);
+  {
+//test_omp(a,b,c,d,0,len,1);
 }*/
 
 bool FuncManager::isNumaSplit()

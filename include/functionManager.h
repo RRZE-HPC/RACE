@@ -13,6 +13,8 @@ class FuncManager;
 
 void recursiveCall(FuncManager* funMan, int parent);
 
+void recursivePowerCall(FuncManager* funMan, int parent);
+
 class FuncManager
 {
     private:
@@ -25,6 +27,7 @@ class FuncManager
         powerFuncType powerFunc;
         void* args;
         int power;
+        int activethreads;
         ZoneTree* zoneTree;
         LevelPool* pool;
         mtxPowerRecursive* matPower;
@@ -32,11 +35,15 @@ class FuncManager
         volatile int* lockCtr;
         volatile bool* lockTable;
         volatile int* lockTableCtr;
-        int* unlockRow;
-        int* dangerRow;
-        int* unlockCtr;
+        //int* unlockRow;
+        //int* dangerRow;
+        //int* unlockCtr;
         friend void recursiveCall(FuncManager* funMan, int parent);
         std::function<void(int)> recursiveFun;
+
+        friend void recursivePowerCall(FuncManager* funMan, int parent);
+        std::function<void(int)> recursivePowerFun;
+
         //double *a, *b, *c, *d;
         //int len;
     public:
@@ -47,7 +54,7 @@ class FuncManager
         void SerialPartRun();
         void initPowerRun();
         void NUMAInitPower();
-        void powerRun();
+       // void powerRun();
         void Run(bool rev_=false);
         bool isNumaSplit();
         //void RunOMP();
