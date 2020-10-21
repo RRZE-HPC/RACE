@@ -294,7 +294,7 @@ void ZoneTree::printTree()
             printf("%d, ",currLeaf->valueZ[j]);
         }
 
-        printf("] Childre:[");
+        printf("] Children:[");
 
         for(unsigned j=0; j<currLeaf->children.size(); ++j)
         {

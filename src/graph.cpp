@@ -240,6 +240,7 @@ void Graph::permuteAndRemoveSerialPart()
     }
 
     permutedGraph.swap(*(this));
+    delete[] invPerm;
 }
 
 Graph::Graph(int nrow, int ncol, int *rowPtr, int *col, int *initPerm, int *initInvPerm):graphData(nrow),NROW(nrow),NCOL(ncol)

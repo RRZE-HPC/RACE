@@ -44,6 +44,12 @@ RACE_error RACE::Interface::RACEColor(int highestPower, int numSharedCache, doub
     else
     {
         powerCalculator = new mtxPowerRecursive(graph, highestPower, numSharedCache, cacheSize, safetyFactor);
+        //sanity check
+        if(requestedThreads%numSharedCache)
+        {
+            ERROR_PRINT("Threads (=%d) not a multiple of requested nodes (=%d)\n", requestedThreads, numSharedCache);
+            exit(-1);
+        }
         powerCalculator->findPartition();
         int len;
         powerCalculator->getPerm(&perm, &len);
@@ -543,13 +549,12 @@ void RACE::Interface::numaInitMtxVec(int **rowPtr_, int **col_, double **val_, i
 
 void RACE::Interface::getNumaSplitting(int **split, int *splitLen)
 {
-
-    int NUMAdomains = powerCalculator->getTotalNodes();
+    std::vector<int> levelGroupPtr = powerCalculator->tree[0].nodePtr;
+    int NUMAdomains = levelGroupPtr.size()-1;
+    std::vector<int> levelPtr = powerCalculator->tree[0].levelPtr;
     (*split) = (int*) malloc(sizeof(int)*(NUMAdomains+1));
     for(int i=0; i<=NUMAdomains; ++i)
     {
-        int *levelPtr = powerCalculator->getLevelPtrRef();
-        int *levelGroupPtr = powerCalculator->getNodePtrRef();
         (*split)[i] = levelPtr[levelGroupPtr[i]];
     }
     (*splitLen) = NUMAdomains+1;

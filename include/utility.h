@@ -6,6 +6,8 @@
 #include <vector>
 #include <unistd.h>
 #include <sys/mman.h>
+#include <stdio.h>
+#include <string.h>
 
 template <typename T> inline void sort(T *arr, int range_lo, int range_hi, bool rev=false)
 {
