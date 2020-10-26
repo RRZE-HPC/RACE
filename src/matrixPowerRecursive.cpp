@@ -11,8 +11,13 @@
 
 mtxPowerRecursive::mtxPowerRecursive(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_):graph(graph_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), perm(NULL), invPerm(NULL)
 {
-    int default_cutoff = 50; //make 50 factor so not much cut-off happens by default
-    cache_violation_cutoff.push_back(default_cutoff); //default
+    std::vector<int> default_cutoff;
+    getEnv("RACE_CACHE_VIOLATION_CUTOFF_DEFAULT", default_cutoff);
+    if(default_cutoff.empty())
+    {
+        default_cutoff.push_back(50);//make 50 factor so not much cut-off happens by default
+    }
+    cache_violation_cutoff.push_back(default_cutoff[0]); //default
     getEnv("RACE_CACHE_VIOLATION_CUTOFF", cache_violation_cutoff);
 
     totalRows = graph->NROW;

@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <omp.h>
 #include "mmio.h"
@@ -153,7 +154,7 @@ int main(const int argc, char * argv[])
 
     densemat *x, *xExact;
 
-    double initVal = 1/(double)NROWS;
+    double initVal = 1; ///(double)NROWS;
     //x stores value in the form
     //   x[0],   x[1], ....,   x[nrows-1]
     //  Ax[0],  Ax[1], ....,  Ax[nrows-1]
@@ -170,7 +171,6 @@ int main(const int argc, char * argv[])
     for(int iter=0; iter<10; ++iter)
     {
         matPowerNuma(mat_numa_local, power, xRACE);
-        //matPower(mat, power, xRACE);
     }
     STOP_TIMER(matPower_init);
     double initTime = GET_TIMER(matPower_init);
@@ -228,8 +228,8 @@ int main(const int argc, char * argv[])
     START_TIMER(matPower);
     for(int iter=0; iter<iterations; ++iter)
     {
-        matPowerNuma(mat_numa_local, power, xRACE);
-        //matPower(mat, power, xRACE);
+        //matPowerNuma(mat_numa_local, power, xRACE);
+        matPower(mat, power, xRACE);
     }
     /*for(int pow=0; pow<power; ++pow)
       {

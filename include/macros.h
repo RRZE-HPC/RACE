@@ -17,8 +17,8 @@
 #define UNUSED(x) (void)(x)
 
 #define SPLIT_LEVEL_PER_THREAD(_level_)\
-    int _startRow_ = levelPtr[_level_];\
-    int _endRow_ = levelPtr[_level_+1];\
+    int _startRow_ = levelPtr->at(_level_);\
+    int _endRow_ = levelPtr->at(_level_+1);\
     int _RowPerThread_ = (_endRow_ - _startRow_)/threadPerNode;\
     int startRow_tid = _startRow_ + localTid*_RowPerThread_;\
     startRow_tid -= offset;\
@@ -26,6 +26,19 @@
     endRow_tid -= offset;\
 
 #define SPLIT_LEVEL_PER_THREAD_P2P(_level_)\
+    int _startRow_ = levelPtr->at(_level_);\
+    int _endRow_ = levelPtr->at(_level_+1);\
+    int _RowPerThread_ = (_endRow_ - _startRow_)/threadPerNode;\
+    int startRow_tid = _startRow_ + localTid*_RowPerThread_;\
+    startRow_tid -= offset;\
+    int endRow_tid = (localTid == (threadPerNode-1)) ? _endRow_ : _startRow_ + (localTid+1)*_RowPerThread_;\
+    endRow_tid -= offset;\
+    int currUnlockRow = unlockRow->at(_level_);\
+    currUnlockRow -= offset;\
+    int dangerRowStart = dangerRow->at(_level_);\
+    dangerRowStart -= offset;\
+
+#define SPLIT_LEVEL_PER_THREAD_P2P_NOREF(_level_)\
     int _startRow_ = levelPtr[_level_];\
     int _endRow_ = levelPtr[_level_+1];\
     int _RowPerThread_ = (_endRow_ - _startRow_)/threadPerNode;\

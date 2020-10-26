@@ -15,6 +15,8 @@ void recursiveCall(FuncManager* funMan, int parent);
 
 void recursivePowerCall(FuncManager* funMan, int parent);
 
+void recursivePowerCallSerial(FuncManager* funMan, int parent);
+
 class FuncManager
 {
     private:
@@ -32,17 +34,21 @@ class FuncManager
         LevelPool* pool;
         mtxPowerRecursive* matPower;
         std::vector<int> serialPart;
-        volatile int* lockCtr;
-        volatile bool* lockTable;
-        volatile int* lockTableCtr;
+        std::vector<volatile int*> lockCtr;
+        std::vector<volatile bool*> lockTable;
+        std::vector<volatile int*> lockTableCtr;
         //int* unlockRow;
         //int* dangerRow;
         //int* unlockCtr;
         friend void recursiveCall(FuncManager* funMan, int parent);
         std::function<void(int)> recursiveFun;
 
-        friend void recursivePowerCall(FuncManager* funMan, int parent);
-        std::function<void(int)> recursivePowerFun;
+        friend void recursivePowerCallSerial(FuncManager* funMan, int parent);
+
+        void powerCallGeneral(int startLevel, int endLevel, int boundaryStart, int boundaryEnd, int startSlope, int endSlope, int threadPerNode, const std::vector<int> *levelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent);
+        void powerCallNodeReminder(int startSlope, int endSlope, int threadPerNode, const std::vector<int> *levelPtr, const std::vector<int> *nodePtr, int numaLocalArg, int offset);
+        void powerCallHopelessReminder(int level, int startPower, int endPower, int direction, int threadPerNode, const std::vector<int> *levelPtr, int numaLocalArg, int offset, int parent);
+            std::function<void(int)> recursivePowerFun;
 
         //double *a, *b, *c, *d;
         //int len;
@@ -52,7 +58,7 @@ class FuncManager
         FuncManager(const FuncManager &obj);
         ~FuncManager();
         void SerialPartRun();
-        void initPowerRun();
+        void initPowerRun(int parent);
         void NUMAInitPower();
        // void powerRun();
         void Run(bool rev_=false);

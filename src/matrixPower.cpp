@@ -788,7 +788,7 @@ void mtxPower::findUnlockCtr()
             //initialize lockTableCtr
             for(int l=startLevel; l<endLevel; ++l)
             {
-                SPLIT_LEVEL_PER_THREAD_P2P(l);
+                SPLIT_LEVEL_PER_THREAD_P2P_NOREF(l);
                 if(currUnlockRow > startRow_tid)
                 {
 #pragma omp atomic
