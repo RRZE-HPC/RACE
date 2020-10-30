@@ -233,7 +233,6 @@ inline void PLAIN_SPMV_KERNEL(int start, int end, int pow, void* args)
         }
   //  }
 }
-
 //plain spmv
 void plain_spmv(sparsemat* mat, densemat* x)
 {
@@ -242,6 +241,43 @@ void plain_spmv(sparsemat* mat, densemat* x)
     DELETE_ARG();
 }
 
+
+inline void PLAIN_SPMV_NUMA_KERNEL(int start, int end, int pow, void* args)
+{
+    DECODE_FROM_VOID_NUMA(args);
+
+    int parentId = omp_get_thread_num();
+//#pragma omp parallel
+//    {
+        //int ctr = 0;
+#pragma omp parallel for schedule(static)
+        for(int row=start; row<end; ++row)
+        {
+            int nrows = mat->mat->nrows;
+            int totalThreads = omp_get_num_threads();
+            int threadPerNode = totalThreads/mat->NUMAdomains;
+            int tid = omp_get_thread_num();
+            int numa_domain = tid/threadPerNode;
+            double tmp = 0;
+            const int col_offset = (pow-1)*nrows;
+            const int row_offset = mat->splitRows[numa_domain];
+#pragma nounroll
+#pragma simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)
+            for(int idx=mat->rowPtr[numa_domain][row]; idx<mat->rowPtr[numa_domain][row+1]; ++idx)
+            {
+                tmp += mat->val[numa_domain][idx]*x->val[col_offset+mat->col[numa_domain][idx]];
+            }
+            x->val[(pow)*nrows+row+row_offset] = tmp;
+        }
+  //  }
+}
+
+void plain_spmv_numa(NUMAmat *mat, densemat *x)
+{
+    ENCODE_TO_VOID_NUMA(mat, NULL, x);
+    PLAIN_SPMV_NUMA_KERNEL(0, mat->mat->nrows, 1, voidArg);
+    DELETE_ARG();
+}
 
 inline void MKL_SPMV_KERNEL(int start, int end, int pow, void* args)
 {
