@@ -32,6 +32,8 @@ class mtxPower
     int cache_violation_cutoff;
     int startRow;
     int endRow;
+    int nodeId;
+    int numRootNodes;
 
     void identifyHopelessRegions(std::vector<int> cacheViolatedLevel);
     void getHopelessStartEnd(int count, int *start, int *end);
@@ -40,7 +42,7 @@ class mtxPower
     int workingBoundaryLength();
 
     public:
-    mtxPower(Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_);
+    mtxPower(Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, int nodeId_=-1, int numRootNodes_=-1);
     ~mtxPower();
     void findPartition();
     void splitSharedCacheDomain();

@@ -10,7 +10,7 @@
 //#define RACE_DEBUG
 
 //coloring
-FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),power_fn(false), numaSplit(false), func(f_),args(args_),zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_)
+FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),power_fn(false), numaSplit(false), func(f_),args(args_),zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_), nodeBarrier(NULL), barrierCount(NULL)
 {
     //    func = std::bind(f_,*this,std::placeholders::_1,std::placeholders::_2,args);
     /*len = 72*72*72;
@@ -21,6 +21,7 @@ FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zone
       */
     //  barrierTime = 0;
     recursiveFun = std::bind(recursiveCall, this, std::placeholders::_1);
+    CL_pad = 256;
 #pragma omp parallel
     {
         activethreads = omp_get_num_threads();
@@ -28,20 +29,36 @@ FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zone
 }
 
 //power = true, NUMA = false
-FuncManager::FuncManager(void (*f_) (int,int,int,int,void*), void *args_, int power_, mtxPowerRecursive *matPower_, bool numaSplit_):power_fn(true), numaSplit(numaSplit_), powerFunc(f_), args(args_), power(power_), matPower(matPower_)
+FuncManager::FuncManager(void (*f_) (int,int,int,int,void*), void *args_, int power_, mtxPowerRecursive *matPower_, bool numaSplit_):power_fn(true), numaSplit(numaSplit_), powerFunc(f_), args(args_), power(power_), matPower(matPower_), nodeBarrier(NULL), barrierCount(NULL)
 {
-#ifdef POWER_WITH_FLUSH_LOCK
-    //    initPowerRun();
-    lockCtr = std::vector<volatile int*>(matPower->tree.size(), NULL);
-    lockTableCtr = std::vector<volatile int*>(matPower->tree.size(), NULL);
-#endif
 #pragma omp parallel
     {
         activethreads = omp_get_num_threads();
     }
 
-    recursivePowerFun = std::bind(recursivePowerCall, this, std::placeholders::_1);
+    totalNodes = matPower->tree[0].nodePtr.size()-1;
+    threadPerNode = activethreads/totalNodes;
+    CL_pad = 256;
+#ifdef POWER_WITH_FLUSH_LOCK
+    //    initPowerRun();
+    lockCtr = std::vector<volatile int*>(matPower->tree.size(), NULL);
+    lockTableCtr = std::vector<volatile int*>(matPower->tree.size(), NULL);
+    nodeBarrier = new volatile int[totalNodes*CL_pad];
+    barrierCount = new volatile int[totalNodes*CL_pad];
 
+#pragma omp parallel
+    {
+        int tid = omp_get_thread_num();
+        int localTid = tid%threadPerNode;
+        int node_id = tid/threadPerNode;
+        if(localTid == 0)
+        {
+            nodeBarrier[node_id*CL_pad] = 0;
+            barrierCount[node_id*CL_pad] = 0;
+        }
+    }
+#endif
+    recursivePowerFun = std::bind(recursivePowerCall, this, std::placeholders::_1);
 }
 
 FuncManager::FuncManager(const FuncManager &obj)
@@ -98,6 +115,10 @@ FuncManager::~FuncManager()
             }
 #endif
         }
+    }
+    if(nodeBarrier)
+    {
+        delete[] nodeBarrier;
     }
 }
 
@@ -303,15 +324,53 @@ void FuncManager::powerRun()
 
 #endif
 
+#define NODE_BARRIER_RESET(_node_id_, _localTid_)\
+    if(_localTid_==0)\
+    {\
+        barrierCount[_node_id_*CL_pad] = 0;\
+    }\
+
+#define NODE_BARRIER_INIT(_node_id_, _localTid_)\
+    if(_localTid_==0)\
+    {\
+        barrierCount[_node_id_*CL_pad]++;\
+    }\
+
+#define NODE_BARRIER_SYNC(_node_id_)\
+    _Pragma("omp atomic")\
+    ++nodeBarrier[_node_id_*CL_pad];\
+    while(nodeBarrier[_node_id_*CL_pad] != barrierCount[_node_id_*CL_pad]*threadPerNode)\
+    {\
+        _mm_pause();\
+    }\
+
+
 void FuncManager::initPowerRun(int parent)
 {
     //need to move this routine to matrixPower.cpp
 #ifdef POWER_WITH_FLUSH_LOCK
-    std::vector<int>* nodePtr = &(matPower->tree[parent].nodePtr);
-    int totalNodes = nodePtr->size()-1;
     int totalLevels = matPower->tree[parent].levelPtr.size()-1;
 
-#pragma omp single
+    int tid = omp_get_thread_num();
+    int nodeGroup = tid / threadPerNode;
+
+    std::vector<int>* nodePtr = &(matPower->tree[parent].nodePtr);
+
+    int nodePos = 0;
+    if(parent==0)
+    {
+        nodePos = nodeGroup; //only in this case nodeGroup is different for nodePtr access
+    }
+    int startLevel = nodePtr->at(nodePos);
+    int endLevel = nodePtr->at(nodePos+1);
+
+
+    int localTid = tid % threadPerNode;
+    int allocTid = (parent==0)?tid:localTid; //find local or global, depending on whether it is root
+
+    NODE_BARRIER_INIT(nodeGroup, localTid);
+
+    if(allocTid == 0)
     {
         if(lockCtr[parent])
         {
@@ -322,39 +381,31 @@ void FuncManager::initPowerRun(int parent)
         {
             lockCtr[parent] = new volatile int[totalLevels];
         }
-    }
 
-    //TODO parallelise this routines
-//#pragma omp parallel
-    {
-        int threadPerNode = omp_get_num_threads()/totalNodes;
-        int tid = omp_get_thread_num();
-        int nodeGroup = tid / threadPerNode;
-        int localTid = tid % threadPerNode;
-        //printf("here is %d\n", sched_getcpu());
-        int startLevel = nodePtr->at(nodeGroup);
-        int endLevel = nodePtr->at(nodeGroup+1);
-
-        //only 1 thread per group, maintain NUMA
-        if(localTid == 0)
-        {
-            for(int level=startLevel; level<endLevel; ++level)
-            {
-                lockCtr[parent][level] = 0;
-            }
-        }
-    }
-
-#pragma omp single
-    {
         //pow-level semi locks
         if(lockTableCtr[parent])
         {
             free((void*)lockTableCtr[parent]);
         }
         lockTableCtr[parent] = (volatile int*)malloc(sizeof(volatile int)*power*totalLevels);
+    }
 
-        for(int l=0; l<totalLevels; ++l)
+    if(parent==0)
+    {
+#pragma omp barrier
+    }
+    //TODO parallelise this routines
+    //#pragma omp parallel
+    //printf("here is %d\n", sched_getcpu());
+
+    //only 1 thread per group, maintain NUMA
+    if(localTid == 0)
+    {
+        for(int level=startLevel; level<endLevel; ++level)
+        {
+            lockCtr[parent][level] = 0;
+        }
+        for(int l=startLevel; l<endLevel; ++l)
         {
             for(int p=0; p<power; ++p)
             {
@@ -363,24 +414,23 @@ void FuncManager::initPowerRun(int parent)
         }
     }
 
+    NODE_BARRIER_SYNC(nodeGroup);
 #endif
 }
 
 void FuncManager::NUMAInitPower()
 {
-    std::vector<int> nodePtr = matPower->tree[0].nodePtr;
-    std::vector<int> levelPtr = matPower->tree[0].levelPtr;
-    int totalNodes = nodePtr.size()-1;
+    std::vector<int> *nodePtr = &(matPower->tree[0].nodePtr);
+    std::vector<int> *levelPtr = &(matPower->tree[0].levelPtr);
 #pragma omp parallel
     {
-        int threadPerNode = omp_get_num_threads()/totalNodes;
         int tid = omp_get_thread_num();
         int nodeGroup = tid / threadPerNode;
         int numaLocalArg = (numaSplit)?nodeGroup:0;
         //only first thread in each nodeGroup works
         if(tid == nodeGroup*threadPerNode)
         {
-            powerFunc(levelPtr[nodePtr[nodeGroup]], levelPtr[nodePtr[nodeGroup+1]], 1, numaLocalArg, args);
+            powerFunc(levelPtr->at(nodePtr->at(nodeGroup)), levelPtr->at(nodePtr->at(nodeGroup+1)), 1, numaLocalArg, args);
             /*for(int row=nodePtr[nodeGroup]; row<nodePtr[nodeGroup+1]; ++row)
               {
               for(int idx=rowPtr_[row]; idx<rowPtr_[row+1]; ++idx)
@@ -412,14 +462,14 @@ void FuncManager::NUMAInitPower()
         while(lockTableCtr[parent][_level_*power+_pow_] != unlockCtr->at(_level_+1))\
         {\
             _mm_pause();\
-            /*printf("Waiting on %d, need to reach%d, pow = %d, level = %d, startRow_tid = %d, unlock = %d, danger = %d, endRow_tid = %d\n", lockTableCtr[_level_*power+_pow_], unlockCtr[_level_], _pow_, _level_, startRow_tid, currUnlockRow, dangerRowStart, endRow_tid);*/\
+            /*printf("Tid = %d, Waiting on %d, need to reach %d, pow = %d, level = %d, startRow_tid = %d, unlock = %d, danger = %d, endRow_tid = %d\n", tid, lockTableCtr[parent][_level_*power+_pow_], unlockCtr->at(_level_), _pow_, _level_, startRow_tid, currUnlockRow, dangerRowStart, endRow_tid);*/\
         }\
     }\
 }\
 
 
 //startSlope and endSlope of computation
-void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boundaryStart, int boundaryEnd, int startSlope, int endSlope, int threadPerNode, const std::vector<int> *levelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent)
+void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boundaryStart, int boundaryEnd, int startSlope, int endSlope, const std::vector<int> *levelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent)
 {
     int tid = omp_get_thread_num();
     int localTid = tid % threadPerNode;
@@ -450,7 +500,7 @@ void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boundarySta
                 {
                     _mm_pause();
 #ifdef RACE_DEBUG
-                    printf("lock ctr = %d, pow = %d, level = %d\n", lockCtr[parent][powLevel], pow, powLevel);
+                    printf("lock ctr = %d, parent = %d, pow = %d, level = %d\n", lockCtr[parent][powLevel], parent, pow, powLevel);
 #endif
                 }
 
@@ -542,7 +592,7 @@ void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boundarySta
 
 //direction > 0 : triangle
 //else : upside-down triangle
-void FuncManager::powerCallHopelessReminder(int pivotLevel, int startPower, int endPower, int direction, int threadPerNode, const std::vector<int> *levelPtr, int numaLocalArg, int offset, int parent)
+void FuncManager::powerCallHopelessReminder(int pivotLevel, int startPower, int endPower, int direction, const std::vector<int> *levelPtr, int numaLocalArg, int offset, int parent)
 {
     int tid = omp_get_thread_num();
     int localTid = tid % threadPerNode;
@@ -554,7 +604,7 @@ void FuncManager::powerCallHopelessReminder(int pivotLevel, int startPower, int 
         for(int base_len=(endPower-startPower); base_len>=0; --base_len)
         {
 //Barrier has to be replaced with p2p, because only barrier within a node
-#pragma omp barrier
+//#pragma omp barrier
             //reminder-head
             int startLevel = pivotLevel-base_len;
             int endLevel = pivotLevel+base_len;
@@ -575,7 +625,7 @@ void FuncManager::powerCallHopelessReminder(int pivotLevel, int startPower, int 
     {
         for(int base_len=0; base_len<=(startPower-endPower); ++base_len)
         {
-#pragma omp barrier
+//#pragma omp barrier
             //reminder-head
             int startLevel = pivotLevel-base_len;
             int endLevel = pivotLevel+base_len;
@@ -590,7 +640,7 @@ void FuncManager::powerCallHopelessReminder(int pivotLevel, int startPower, int 
     }
 }
 
-void FuncManager::powerCallNodeReminder(int threadPerNode, int startSlope, int endSlope, const std::vector<int> *levelPtr, const std::vector<int> *nodePtr, int numaLocalArg, int offset)
+void FuncManager::powerCallNodeReminder(int startSlope, int endSlope, const std::vector<int> *levelPtr, const std::vector<int> *nodePtr, int numaLocalArg, int offset)
 {
     int tid = omp_get_thread_num();
     int localTid = tid % threadPerNode;
@@ -630,55 +680,62 @@ void recursivePowerCall(FuncManager* funMan, int parent)
 {
 #pragma omp parallel
     {
-        recursivePowerCallSerial(funMan, parent);
+        funMan->recursivePowerCallSerial(parent);
     }
 }
 
-void recursivePowerCallSerial(FuncManager* funMan, int parent)
+void FuncManager::recursivePowerCallSerial(int parent)
 {
 //#pragma omp parallel
     {
         //printf("parent = %d\n", parent);
-        funMan->initPowerRun(parent);
+        initPowerRun(parent);
         //*nodePtr - for NUMA
         //**levelPtr - for power
         //int totalLevel = matPower->getTotalLevel();
         //do pointers to avoid copying expense; since tree is now stabe (size fixed)
         //this shouldn't be a problem
-        std::vector<MPLeaf>* tree = &(funMan->matPower->tree);
+        std::vector<MPLeaf>* tree = &(matPower->tree);
         std::vector<int>* nodePtr = &(tree->at(parent).nodePtr);
-        int totalNodes = nodePtr->size()-1;
+        std::vector<int>* nodePtrRoot = &(tree->at(0).nodePtr);
         std::vector<int>* levelPtr  = &(tree->at(parent).levelPtr);
+        std::vector<int>* levelPtrRoot  = &(tree->at(0).levelPtr);
         std::vector<int>* unlockRow = &(tree->at(parent).unlockRow);
         std::vector<int>* dangerRow = &(tree->at(parent).dangerRow);
         std::vector<int>* unlockCtr = &(tree->at(parent).unlockCtr);
         std::vector<int>* unitPtr = &(tree->at(parent).unitPtr);
         std::vector<int>* unitNodePtr = &(tree->at(parent).unitNodePtr);
+        std::vector<int>* childrenNodeStart = &(tree->at(parent).childrenNodeStart);
 
         //all delete after putting reminder with general
-        //int power = funMan->power;
-        bool numaSplit = funMan->numaSplit;
-        int threadPerNode = funMan->activethreads/totalNodes;
+        //int power = power;
         //printf("####### nthreads = %d\n", omp_get_num_threads());
         int tid = omp_get_thread_num();
         //int localTid = tid % threadPerNode;
         int nodeGroup = tid / threadPerNode;
         int numaLocalArg = (numaSplit)?nodeGroup:0;
         int offset = 0;
-        offset = (parent==0)?levelPtr->at(nodePtr->at(numaLocalArg)):0;
-        // printf("Offset = %d\n", offset);
-        int startNode = unitNodePtr->at(nodeGroup);
-        int endNode = unitNodePtr->at(nodeGroup+1);
+        offset = levelPtrRoot->at(nodePtrRoot->at(numaLocalArg));
+
+        int numNodes = 1;
+        int nodePos = 0;
+        if(parent==0)
+        {
+            numNodes = totalNodes;
+            nodePos = nodeGroup; //only in this case nodeGroup is different for nodePtr access
+        }
+        int startNode = unitNodePtr->at(nodePos);
+        int endNode = unitNodePtr->at(nodePos+1);
         int unitCtr = startNode;
         int childCount = 0; //TODO: child count start for each node
 
         int nodeStartSlope=0, nodeEndSlope=0;
         //find start and end slope
-        if(nodeGroup != 0)
+        if(nodePos != 0)
         {
             nodeStartSlope = 1;
         }
-        if(nodeGroup != (totalNodes-1))
+        if(nodePos != (numNodes-1))
         {
             nodeEndSlope = -1;
         }
@@ -686,9 +743,9 @@ void recursivePowerCallSerial(FuncManager* funMan, int parent)
         while(unitCtr < endNode)
         {
             int startSlope=-1, endSlope=-1;
-            int startSkew = (funMan->power-1);
+            int startSkew = (power-1);
             //find start and end slope
-            if(unitCtr == 0)
+            if(unitCtr == startNode)
             {
                 startSlope = nodeStartSlope;
                 startSkew = 0;
@@ -700,32 +757,38 @@ void recursivePowerCallSerial(FuncManager* funMan, int parent)
 
             int startLevel = unitPtr->at(unitCtr)+startSkew;
             int endLevel = unitPtr->at(unitCtr+1);
-            //printf("unitCtr = %d, startSlope = %d, endSlope = %d, startLevel = %d, endLevel = %d, startRow = %d, endRow = %d\n", unitCtr, startSlope, endSlope, startLevel, endLevel, levelPtr->at(startLevel), levelPtr->at(endLevel));
+            //printf("threadPerNode = %d, unitCtr = %d, startSlope = %d, endSlope = %d, startLevel = %d, endLevel = %d, startRow = %d, endRow = %d\n", threadPerNode, unitCtr, startSlope, endSlope, startLevel, endLevel, levelPtr->at(startLevel), levelPtr->at(endLevel));
             //main-body
-            funMan->powerCallGeneral(startLevel, endLevel, startLevel, endLevel, startSlope, endSlope, threadPerNode, levelPtr, unlockRow, unlockCtr, dangerRow, numaLocalArg, offset, parent);
+            powerCallGeneral(startLevel, endLevel, startLevel, endLevel, startSlope, endSlope, levelPtr, unlockRow, unlockCtr, dangerRow, numaLocalArg, offset, parent);
             //printf("main finished\n");
             int hopelessEnd = unitPtr->at(unitCtr+2);
             if(hopelessEnd > endLevel)
             {
+                int childrenStart = childrenNodeStart->at(nodePos);
                 //right-reminder of Hopeless, TODO currently only for power=2
-                funMan->powerCallHopelessReminder(hopelessEnd, 1, 1, 1, threadPerNode, levelPtr, numaLocalArg, offset, parent);
+                powerCallHopelessReminder(hopelessEnd, 1, 1, 1, levelPtr, numaLocalArg, offset, parent);
                 //printf("right-reminder finished\n");
+                //printf("calling recursively child = children[%d]=%d\n", childrenStart+childCount, tree->at(parent).children[childrenStart+childCount]);
                 //do recursive call to hopeless region
-                recursivePowerCallSerial(funMan, tree->at(parent).children[childCount]);
+                recursivePowerCallSerial(tree->at(parent).children[childrenStart+childCount]);
                 //printf("recursive finished\n");
                 ++childCount;
                 //left-reminder of Hopeless, TODO currently only for power=2
-                funMan->powerCallHopelessReminder(endLevel-1, 2, 2, -1, threadPerNode, levelPtr, numaLocalArg, offset, parent);
+                powerCallHopelessReminder(endLevel-1, 2, 2, -1, levelPtr, numaLocalArg, offset, parent);
                 //printf("left-reminder finished\n");
             }
             unitCtr = unitCtr+2;
         }
 
         //treat NUMA-interfaces
-        if(totalNodes > 1)
+        if(numNodes > 1)
         {
-            funMan->powerCallNodeReminder(nodeStartSlope, nodeEndSlope, threadPerNode, levelPtr, nodePtr, numaLocalArg, offset);
+            //printf("doing node reminder\n");
+            powerCallNodeReminder(nodeStartSlope, nodeEndSlope, levelPtr, nodePtr, numaLocalArg, offset);
+            //printf("node reminder finished\n");
         }
+
+        //NODE_BARRIER_RESET(nodeGroup, localTid)
 
     } //parallel
 }
@@ -735,13 +798,11 @@ void recursivePowerCallSerial(FuncManager* funMan, int parent)
 void FuncManager::powerRun()
 {
     //int totalLevel = matPower->getTotalLevel();
-    int totalNodes = matPower->getTotalNodes();
     int* levelPtr = matPower->getLevelPtrRef();
     int* nodePtr = matPower->getNodePtrRef();
 
 #pragma omp parallel
     {
-        int threadPerNode = omp_get_num_threads()/totalNodes;
         int tid = omp_get_thread_num();
         int nodeGroup = tid / threadPerNode;
         int localTid = tid % threadPerNode;

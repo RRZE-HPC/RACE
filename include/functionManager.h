@@ -15,8 +15,6 @@ void recursiveCall(FuncManager* funMan, int parent);
 
 void recursivePowerCall(FuncManager* funMan, int parent);
 
-void recursivePowerCallSerial(FuncManager* funMan, int parent);
-
 class FuncManager
 {
     private:
@@ -30,10 +28,15 @@ class FuncManager
         void* args;
         int power;
         int activethreads;
+        int totalNodes;
+        int threadPerNode;
+        int CL_pad;
         ZoneTree* zoneTree;
         LevelPool* pool;
         mtxPowerRecursive* matPower;
         std::vector<int> serialPart;
+        volatile int* nodeBarrier;
+        volatile int* barrierCount;
         std::vector<volatile int*> lockCtr;
         std::vector<volatile bool*> lockTable;
         std::vector<volatile int*> lockTableCtr;
@@ -41,13 +44,13 @@ class FuncManager
         //int* dangerRow;
         //int* unlockCtr;
         friend void recursiveCall(FuncManager* funMan, int parent);
+        friend void recursivePowerCall(FuncManager* funMan, int parent);
         std::function<void(int)> recursiveFun;
 
-        friend void recursivePowerCallSerial(FuncManager* funMan, int parent);
-
-        void powerCallGeneral(int startLevel, int endLevel, int boundaryStart, int boundaryEnd, int startSlope, int endSlope, int threadPerNode, const std::vector<int> *levelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent);
-        void powerCallNodeReminder(int startSlope, int endSlope, int threadPerNode, const std::vector<int> *levelPtr, const std::vector<int> *nodePtr, int numaLocalArg, int offset);
-        void powerCallHopelessReminder(int level, int startPower, int endPower, int direction, int threadPerNode, const std::vector<int> *levelPtr, int numaLocalArg, int offset, int parent);
+        void recursivePowerCallSerial(int parent);
+        void powerCallGeneral(int startLevel, int endLevel, int boundaryStart, int boundaryEnd, int startSlope, int endSlope, const std::vector<int> *levelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent);
+        void powerCallNodeReminder(int startSlope, int endSlope, const std::vector<int> *levelPtr, const std::vector<int> *nodePtr, int numaLocalArg, int offset);
+        void powerCallHopelessReminder(int level, int startPower, int endPower, int direction, const std::vector<int> *levelPtr, int numaLocalArg, int offset, int parent);
             std::function<void(int)> recursivePowerFun;
 
         //double *a, *b, *c, *d;

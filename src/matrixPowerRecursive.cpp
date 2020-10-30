@@ -105,6 +105,17 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
     int n_hopeless = (int)(parentHopelessRegions.size());
     int parentStage = parentLeaf.stage;
 
+    std::vector<int> parentNodePtr = parentLeaf.nodePtr;
+    int totalNodes = (int)(parentNodePtr.size()-1);
+    if(parentStage==0)
+    {
+        tree[parentIdx].childrenNodeStart.resize(totalNodes,0);
+    }
+    else
+    {
+        tree[parentIdx].childrenNodeStart.resize(1,0);
+    }
+
     for(int h=0; h<n_hopeless; ++h)
     {
         MPLeaf curLeaf;
@@ -112,15 +123,16 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
         curLeaf.stage = parentStage + 1;
         int hopelessStart = parentHopelessRegions[h];
         printf("@@@ hopless = %d,%d\n", hopelessStart, hopelessStart+1);
+        int push_nodeId = 0;
         if(parentStage>0)
         {
             curLeaf.nodeId = parentLeaf.nodeId;
+
         }
         else
         {
             //search and find
-            std::vector<int> parentNodePtr = parentLeaf.nodePtr;
-            for(int n=0; n<(int)(parentNodePtr.size()-1); ++n)
+            for(int n=0; n<totalNodes; ++n)
             {
                 if( (parentNodePtr[n] <= hopelessStart) && (parentNodePtr[n+1] > hopelessStart) )
                 {
@@ -128,10 +140,11 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
                     break;
                 }
             }
+            push_nodeId = curLeaf.nodeId;
         }
         curLeaf.range = std::vector<int>{parentLeaf.levelPtr[hopelessStart], parentLeaf.levelPtr[hopelessStart+1]};
         printf("@@@ range = %d,%d\n", curLeaf.range[0], curLeaf.range[1]);
-        mtxPower curStage(graph, highestPower, 1, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range[0], curLeaf.range[1]);
+        mtxPower curStage(graph, highestPower, 1, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range[0], curLeaf.range[1], curLeaf.nodeId, numSharedCache);
         curStage.findPartition();
         int *perm_curStage;
         READ_STAGE_DATA(curLeaf, curStage);
@@ -143,12 +156,21 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
         //make this a child of parent
         int curIdx = (int)tree.size()-1;
         tree[parentIdx].children.push_back(curIdx);
-
+        if((push_nodeId+1) < totalNodes)
+        {
+            tree[parentIdx].childrenNodeStart[push_nodeId+1]++;
+        }
         if(!curLeaf.hopelessRegions.empty())
         {
             printf("recursively calling for parent = %d\n", curIdx);
             recursivePartition(curIdx);
         }
+    }
+
+    //sum-up the buckets of childrenNodeStart
+    for(int node=1; node<totalNodes; ++node)
+    {
+        tree[parentIdx].childrenNodeStart[node] += tree[parentIdx].childrenNodeStart[node-1];
     }
 }
 
@@ -197,6 +219,11 @@ void mtxPowerRecursive::printTree()
         for(int j=0; j<(int)curLeaf.children.size(); ++j)
         {
             printf("%d, ", curLeaf.children[j]);
+        }
+        printf("], ChildrenNodeStart:[");
+        for(int j=0; j<(int)curLeaf.childrenNodeStart.size(); ++j)
+        {
+            printf("%d, ", curLeaf.childrenNodeStart[j]);
         }
         printf("], Parent: %d, node: %d, stage: %d, cache_cutoff: %d, hopelessRegions: [",
                 curLeaf.parent, curLeaf.nodeId, curLeaf.stage, get_cache_violation_cutoff(curLeaf.stage));

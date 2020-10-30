@@ -7,7 +7,10 @@
 
 //#define LB_REMINDER
 
-mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_):graph(graph_), cacheLevelGroup(NULL),levelData(NULL), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), cache_violation_cutoff(cache_violation_cutoff_), startRow(startRow_), endRow(endRow_)
+//nodeId tells which node is responsible for the current leaf
+//-1(default): all,
+//else the node number
+mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, int nodeId_, int numRootNodes_):graph(graph_), cacheLevelGroup(NULL),levelData(NULL), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), cache_violation_cutoff(cache_violation_cutoff_), startRow(startRow_), endRow(endRow_), nodeId(nodeId_), numRootNodes(numRootNodes_)
 {
     traverser = new Traverse(graph, RACE::ONE, startRow, endRow);
 }
@@ -778,27 +781,39 @@ void mtxPower::findUnlockCtr()
         {
 
             int totalNodes = getTotalNodes();
+            if(nodeId != -1)
+            {
+                totalNodes = numRootNodes; //else totalNodes will be 1
+            }
             int threadPerNode = omp_get_num_threads()/totalNodes;
             int tid = omp_get_thread_num();
             int node = tid / threadPerNode;
             int localTid = tid % threadPerNode;
-            int startLevel = nodePtr[node];
-            int endLevel = nodePtr[node+1];
+            int nodePos = 0;
+            if(nodeId==-1)
+            {
+                nodePos = node;
+            }
+            int startLevel = nodePtr[nodePos];
+            int endLevel = nodePtr[nodePos+1];
             int offset = 0; //doesn't matter what is offset
             //initialize lockTableCtr
-            for(int l=startLevel; l<endLevel; ++l)
+            if( (nodeId == -1) || (node == nodeId) ) //when root use all threads, else only threadPerNode threads
             {
-                SPLIT_LEVEL_PER_THREAD_P2P_NOREF(l);
-                if(currUnlockRow > startRow_tid)
+                for(int l=startLevel; l<endLevel; ++l)
                 {
+                    SPLIT_LEVEL_PER_THREAD_P2P_NOREF(l);
+                    if(currUnlockRow > startRow_tid)
+                    {
 #pragma omp atomic
-                    ++unlockCtr[l];
-                }
-                if(0)
-                {
-                    ERROR_PRINT("Should never be here");
-                    //Suppress unused warning
-                    printf("%d, %d\n", endRow_tid, dangerRowStart);
+                        ++unlockCtr[l];
+                    }
+                    if(0)
+                    {
+                        ERROR_PRINT("Should never be here");
+                        //Suppress unused warning
+                        printf("%d, %d\n", endRow_tid, dangerRowStart);
+                    }
                 }
             }
         }

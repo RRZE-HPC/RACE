@@ -21,6 +21,7 @@ struct MPLeaf
     int parent;
     int stage;
     std::vector<int> children;
+    std::vector<int> childrenNodeStart;
 };
 
 class mtxPowerRecursive
