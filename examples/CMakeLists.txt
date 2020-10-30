@@ -177,9 +177,12 @@ file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/helpers/*.cpp)
 add_executable(race ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/main.cpp)
 
 add_executable(mtxPower ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/matrixPower.cpp)
+add_executable(mtxPowerNuma ${SOURCES}
+    ${PROJECT_SOURCE_DIR}/src/matrixPowerNuma.cpp)
 add_executable(param_study ${SOURCES} ${PROJECT_SOURCE_DIR}/src/param_study.cpp)
 add_executable(spmv ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/spmv.cpp)
-add_executable(tradPower ${SOURCES} ${PROJECT_SOURCE_DIR}/src/trad_spmv_power.cpp)
+add_executable(tradPower ${SOURCES} ${PROJECT_SOURCE_DIR}/src/tradPower.cpp)
+add_executable(tradPowerNuma ${SOURCES} ${PROJECT_SOURCE_DIR}/src/tradPowerNuma.cpp)
 
 set(EXT_LIBRARIES "${BLAS_LIBRARIES}")
 
@@ -189,17 +192,21 @@ endif()
 
 target_link_libraries(race "${EXT_LIBRARIES}")
 target_link_libraries(mtxPower "${EXT_LIBRARIES}")
+target_link_libraries(mtxPowerNuma "${EXT_LIBRARIES}")
 target_link_libraries(param_study "${EXT_LIBRARIES}")
 target_link_libraries(spmv "${EXT_LIBRARIES}")
 target_link_libraries(tradPower "${EXT_LIBRARIES}")
+target_link_libraries(tradPowerNuma "${EXT_LIBRARIES}")
 
 if(RACE_USE_SPMP)
     include_directories(SYSTEM ${PROJECT_BINARY_DIR}/SpMP/src)
     add_dependencies(race SpMP)
     add_dependencies(mtxPower SpMP)
+    add_dependencies(mtxPowerNuma SpMP)
     add_dependencies(param_study SpMP)
     add_dependencies(spmv SpMP)
     add_dependencies(tradPower SpMP)
+    add_dependencies(tradPowerNuma SpMP)
 endif()
 
 

@@ -778,29 +778,42 @@ NUMAmat::NUMAmat(sparsemat *mat_, bool manual, std::vector<int> splitRows_):mat(
         int currNrows = endRow - startRow;
         rowPtr[domain] = new int[currNrows+1];
     }
-    mat->ce->numaInitRowPtr(rowPtr);
 
-    for(int domain = 0; domain<NUMAdomains; ++domain)
+    if(!manual)
     {
-        int startRow = splitRows[domain];
-        int endRow = splitRows[domain+1];
-        int currNrows = endRow - startRow;
-        //BCSR not yet for NUMAmat
-        nrows[domain] = currNrows;
-        //rowPtr[domain] = new int[currNrows+1];
-        rowPtr[domain][0] = 0;
-        int cur_nnz = 0;
-        for(int row=0; row<currNrows; ++row)
-        {
-            //rowPtr[domain][row+1] = mat->rowPtr[row+1+startRow];
+        mat->ce->numaInitRowPtr(rowPtr);
+    }
 
-            for(int idx=mat->rowPtr[row+startRow]; idx<mat->rowPtr[row+1+startRow]; ++idx)
+#pragma omp parallel
+    {
+        int totalThreads = omp_get_num_threads();
+        int tid = omp_get_thread_num();
+        int threadPerNode = totalThreads/NUMAdomains;
+        int domain = tid/threadPerNode;
+        int localTid = tid%threadPerNode;
+
+        if(localTid == 0)
+        {
+            int startRow = splitRows[domain];
+            int endRow = splitRows[domain+1];
+            int currNrows = endRow - startRow;
+            //BCSR not yet for NUMAmat
+            nrows[domain] = currNrows;
+            //rowPtr[domain] = new int[currNrows+1];
+            rowPtr[domain][0] = 0;
+            int cur_nnz = 0;
+            for(int row=0; row<currNrows; ++row)
             {
-                ++cur_nnz;
+                //rowPtr[domain][row+1] = mat->rowPtr[row+1+startRow];
+
+                for(int idx=mat->rowPtr[row+startRow]; idx<mat->rowPtr[row+1+startRow]; ++idx)
+                {
+                    ++cur_nnz;
+                }
+                rowPtr[domain][row+1] = cur_nnz;
             }
-            rowPtr[domain][row+1] = cur_nnz;
+            nnz[domain] = cur_nnz;
         }
-        nnz[domain] = cur_nnz;
     }
     for(int domain = 0; domain<NUMAdomains; ++domain)
     {
@@ -809,23 +822,36 @@ NUMAmat::NUMAmat(sparsemat *mat_, bool manual, std::vector<int> splitRows_):mat(
         val[domain] = new double[cur_nnz];
     }
 
-    mat->ce->numaInitMtxVec(rowPtr, col, val, 1);
-    for(int domain = 0; domain<NUMAdomains; ++domain)
+    if(!manual)
     {
-        int startRow = splitRows[domain];
-        int endRow = splitRows[domain+1];
-        int currNrows = endRow - startRow;
+        mat->ce->numaInitMtxVec(rowPtr, col, val, 1);
+    }
 
-        for(int row=0; row<currNrows; ++row)
+#pragma omp parallel
+    {
+        int totalThreads = omp_get_num_threads();
+        int tid = omp_get_thread_num();
+        int threadPerNode = totalThreads/NUMAdomains;
+        int domain = tid/threadPerNode;
+        int localTid = tid%threadPerNode;
+
+        if(localTid == 0)
         {
-            for(int idx=mat->rowPtr[row+startRow], local_idx=rowPtr[domain][row]; idx<mat->rowPtr[row+1+startRow]; ++idx,++local_idx)
+            int startRow = splitRows[domain];
+            int endRow = splitRows[domain+1];
+            int currNrows = endRow - startRow;
+
+            for(int row=0; row<currNrows; ++row)
             {
-                col[domain][local_idx] = mat->col[idx];
-                val[domain][local_idx] = mat->val[idx];
+                for(int idx=mat->rowPtr[row+startRow], local_idx=rowPtr[domain][row]; idx<mat->rowPtr[row+1+startRow]; ++idx,++local_idx)
+                {
+                    col[domain][local_idx] = mat->col[idx];
+                    val[domain][local_idx] = mat->val[idx];
+                }
             }
         }
     }
-/*
+    /*
     printf("Mat = \n");
     for(int row=0; row<mat->nrows; ++row)
     {
