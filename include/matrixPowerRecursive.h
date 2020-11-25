@@ -6,11 +6,15 @@
 struct MPLeaf
 {
     int nrows;
-    std::vector<int> range;
     std::vector<int> nodePtr;
-    std::vector<int> levelPtr;
-    std::vector<int> hopelessRegions;
     int nodeId;
+    std::vector<int> range;
+    std::vector<std::vector<int>> negativeBoundaries;
+    std::vector<std::vector<int>> positiveBoundaries;
+    std::vector<int> levelPtr;
+    std::vector<std::vector<int>> levelPtrNegativeBoundary;
+    std::vector<std::vector<int>> levelPtrPositiveBoundary;
+    std::vector<int> hopelessRegions;
     std::vector<int> unlockCtr;
     std::vector<int> unlockRow;
     std::vector<int> dangerRow;

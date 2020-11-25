@@ -38,6 +38,23 @@
     int dangerRowStart = dangerRow->at(_level_);\
     dangerRowStart -= offset;\
 
+#define SPLIT_LEVEL_PER_THREAD_BOUNDARY(_level_, _boundary_)\
+    int _negativeStartRow_ = levelPtrNegativeBoundary->at(_boundary_)[_level_];\
+    int _negativeEndRow_ = levelPtrNegativeBoundary->at(_boundary_)[_level_+1];\
+    int _negativeRowPerThread_ = (_negativeEndRow_- _negativeStartRow_)/threadPerNode;\
+    int negative_startRow_tid = _negativeStartRow_ + localTid*_negativeRowPerThread_;\
+    negative_startRow_tid -= offset;\
+    int negative_endRow_tid = (localTid == (threadPerNode-1)) ? _negativeEndRow_ : _negativeStartRow_+(localTid+1)*_negativeRowPerThread_;\
+    negative_endRow_tid -= offset;\
+    int _positiveStartRow_ = levelPtrPositiveBoundary->at(_boundary_)[_level_];\
+    int _positiveEndRow_ = levelPtrPositiveBoundary->at(_boundary_)[_level_+1];\
+    int _positiveRowPerThread_ = (_positiveEndRow_- _positiveStartRow_)/threadPerNode;\
+    int positive_startRow_tid = _positiveStartRow_ + localTid*_positiveRowPerThread_;\
+    positive_startRow_tid -= offset;\
+    int positive_endRow_tid = (localTid == (threadPerNode-1)) ? _positiveEndRow_ : _positiveStartRow_+(localTid+1)*_positiveRowPerThread_;\
+    positive_endRow_tid -= offset;\
+
+
 #define SPLIT_LEVEL_PER_THREAD_P2P_NOREF(_level_)\
     int _startRow_ = levelPtr[_level_];\
     int _endRow_ = levelPtr[_level_+1];\

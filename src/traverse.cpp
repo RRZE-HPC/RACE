@@ -4,7 +4,7 @@
 #include <omp.h>
 
 std::map<int, LevelData> Traverse::cachedData;
-Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_, int numRoots_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_), numRoots(numRoots_), graphSize(graph_->graphData.size()),distFromRoot(NULL),perm(NULL),invPerm(NULL),levelData(NULL)
+Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_, int numRoots_, std::vector<int> negativeBoundary_, std::vector<int> positiveBoundary_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_), numRoots(numRoots_), graphSize(graph_->graphData.size()),distFromRoot(NULL),perm(NULL),invPerm(NULL), negativeBoundary(negativeBoundary_), positiveBoundary(positiveBoundary_), levelData(NULL)
 {
     if(rangeHi == -1)
     {
@@ -23,7 +23,12 @@ Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, 
 
     invPerm = new int[graph->NROW];
 
-
+    int numNegativeBoundary = negativeBoundary.empty()?0:negativeBoundary.size()-1;
+    int numPositiveBoundary = positiveBoundary.empty()?0:positiveBoundary.size()-1;
+    printf("Num negative boundary = %d, positive boundary = %d\n", numNegativeBoundary, numPositiveBoundary);
+    levelDataNegativeBoundary.resize(numNegativeBoundary, NULL);
+    levelDataPositiveBoundary.resize(numPositiveBoundary, NULL);
+    //for main (target) region
     levelData = new LevelData;
     UNUSED(parentIdx);
 
@@ -46,9 +51,23 @@ Traverse::~Traverse()
     if(levelData) {
         delete levelData;
     }
+
+    int numNegativeBoundary = negativeBoundary.empty()?0:negativeBoundary.size()-1;
+    int numPositiveBoundary = positiveBoundary.empty()?0:positiveBoundary.size()-1;
+
+    for(int b=0; b<numNegativeBoundary; ++b)
+    {
+        if(levelDataNegativeBoundary[b]) {
+            delete levelDataNegativeBoundary[b];
+        }
+    }
+    for(int b=0; b<numPositiveBoundary; ++b)
+    {
+        if(levelDataPositiveBoundary[b]) {
+            delete levelDataPositiveBoundary[b];
+        }
+    }
 }
-
-
 
 //@brief This function finds children and assigns proper distance to them
 //@in parent_id
@@ -56,7 +75,14 @@ Traverse::~Traverse()
 std::vector<int> Traverse::markChildren(int currChild, int currLvl)
 {
     std::vector<int> nxtChildren;//next children
-    if( (rangeLo<=currChild) && (rangeHi>currChild) ) {
+    int targetRangeLo = rangeLo;
+    int targetRangeHi = rangeHi;
+
+    if(dist==RACE::POWER) {
+        targetRangeLo = negativeBoundary.empty()?rangeLo:negativeBoundary.back();
+        targetRangeHi = positiveBoundary.empty()?rangeHi:positiveBoundary.back();
+    }
+    if( (targetRangeLo<=currChild) && (targetRangeHi>currChild) ) {
         if(distFromRoot[currChild] == -1) {
             Counter::add();
             distFromRoot[currChild] = currLvl;
@@ -109,6 +135,14 @@ void Traverse::calculateDistance()
     {
         bool marked_all = false;
         int root = rangeLo;
+        int targetRangeLo = rangeLo;
+        int targetRangeHi = rangeHi;
+
+        if(dist==RACE::POWER) {
+            targetRangeLo = negativeBoundary.empty()?rangeLo:negativeBoundary.back();
+            targetRangeHi = positiveBoundary.empty()?rangeHi:positiveBoundary.back();
+        }
+
         std::vector<int> currChildren;
         //currChildren.push_back(root); //The root
         for(int i=0; i<numRoots; ++i)
@@ -145,10 +179,9 @@ void Traverse::calculateDistance()
             currChildren.assign(children.begin(),children.end());
             currLvl += 1;
 
-            if( marked_all==true && (Counter::val != (rangeHi-rangeLo)) ) {
-                //printf("We have islands in range [%d - %d]\n",rangeLo,rangeHi);
+            if( marked_all==true && (Counter::val != (targetRangeHi-targetRangeLo)) ) {
                 //now process islands
-                for(int i=rangeLo; i<rangeHi; ++i) {
+                for(int i=targetRangeLo; i<targetRangeHi; ++i) {
                     if(distFromRoot[i] == -1) {
                         //Found him, mark him as distance 2 apart
                         currLvl += 1;
@@ -161,16 +194,18 @@ void Traverse::calculateDistance()
         }
 
         levelData->totalLevel = currLvl;
-        //printf("Total Level = %d\n",levelData->totalLevel);
+        printf("Total Level = %d\n",levelData->totalLevel);
 
         createLevelData();
+        printf("created Level Data\n");
         permuteGraph();
+        printf("permuted graph\n");
     }
 }
 
-RACE_error Traverse::createLevelData()
+RACE_error Traverse::findLevelData(int lower_nrows, int upper_nrows, int totalLevel, LevelData* curLevelData)
 {
-    int totalLevel = levelData->totalLevel;
+    curLevelData->totalLevel = totalLevel;
     int* levelRow_ = new int[totalLevel];
     int* levelNnz_ = new int[totalLevel];
     for(int i=0; i<totalLevel; ++i) {
@@ -178,7 +213,7 @@ RACE_error Traverse::createLevelData()
         levelNnz_[i] = 0;
     }
 
-    for(int i=rangeLo; i<rangeHi; ++i)
+    for(int i=lower_nrows; i<upper_nrows; ++i)
     {
         int curr_dist = distFromRoot[i];
         if(curr_dist == -1)
@@ -191,41 +226,136 @@ RACE_error Traverse::createLevelData()
         levelRow_[curr_dist]+=1;
         levelNnz_[curr_dist] += graph->graphData[i].children.size();
         //levelNnz_[curr_dist] += graph->graphData[i].upperNnz;
+
     }
 
-    levelData->levelRow = levelRow_;
-    levelData->levelNnz = levelNnz_;
+    curLevelData->levelRow = levelRow_;
+    curLevelData->levelNnz = levelNnz_;
 
-    levelData->nrow=0;
-    levelData->nnz=0;
+    curLevelData->nrow=0;
+    curLevelData->nnz=0;
     for(int i=0; i<totalLevel; ++i)
     {
-        levelData->nrow += levelRow_[i];
-        levelData->nnz += levelNnz_[i];
+        curLevelData->nrow += levelRow_[i];
+        curLevelData->nnz += levelNnz_[i];
     }
+    return RACE_SUCCESS;
+}
 
+RACE_error Traverse::createLevelData()
+{
+    RACE_error err_flag = RACE_SUCCESS;
+    //levelData for main body (region)
+    err_flag = findLevelData(rangeLo, rangeHi, levelData->totalLevel, levelData);
+    if(err_flag != RACE_SUCCESS)
+    {
+        ERROR_PRINT("Something went wrong in levelData calculation");
+        return err_flag;
+    }
+    //handle bondary levels in case its power calculation
+    if(dist == RACE::POWER)
+    {
+        int numNegativeBoundaries = negativeBoundary.empty()?0:(int)(negativeBoundary.size()-1);
+        int numPositiveBoundaries = positiveBoundary.empty()?0:(int)(positiveBoundary.size()-1);
+
+        //negative-boundary
+        for(int b=0; b<numNegativeBoundaries; ++b)
+        {
+            int lower_nrows = negativeBoundary[b+1];
+            int upper_nrows = negativeBoundary[b];
+
+            LevelData* curLevelData = new LevelData;
+            err_flag = RACE_SUCCESS;
+            err_flag = findLevelData(lower_nrows, upper_nrows, levelData->totalLevel, curLevelData);
+            if(err_flag != RACE_SUCCESS)
+            {
+                ERROR_PRINT("Something went wrong in levelData calculation for boundaries");
+                return err_flag;
+            }
+
+            levelDataNegativeBoundary[b] = curLevelData;
+        }
+        //positive-boundary
+        for(int b=0; b<numPositiveBoundaries; ++b)
+        {
+            int lower_nrows = positiveBoundary[b];
+            int upper_nrows = positiveBoundary[b+1];
+
+            LevelData* curLevelData = new LevelData;
+            err_flag = RACE_SUCCESS;
+            err_flag = findLevelData(lower_nrows, upper_nrows, levelData->totalLevel, curLevelData);
+            if(err_flag != RACE_SUCCESS)
+            {
+                ERROR_PRINT("Something went wrong in levelData calculation for boundaries");
+                return err_flag;
+            }
+
+            levelDataPositiveBoundary[b] = curLevelData;
+        }
+    }
     //cache this data for later use
     //Don't cache this won't happen in 
     //the current strategy
     //cachedData[parentIdx] = (*levelData);
-    return RACE_SUCCESS;
+    return err_flag;
 }
 
 void Traverse::permuteGraph()
 {
-    //create permutation vector First
-    sortPerm(distFromRoot, perm, rangeLo, rangeHi);
+    int numRegions = 1;
+    std::vector<int> regionRange;
+    regionRange.push_back(rangeLo);
+    regionRange.push_back(rangeHi);
+    int minRange = rangeLo;
+    int maxRange = rangeHi;
 
-    //create invPerm
-    for(int i=rangeLo; i<rangeHi; ++i) {
-        invPerm[perm[i]] = i;
+    if(dist==RACE::POWER)
+    {
+        int numNegativeBoundaries = negativeBoundary.empty()?0:(int)(negativeBoundary.size()-1);
+        int numPositiveBoundaries = positiveBoundary.empty()?0:(int)(positiveBoundary.size()-1);
+        numRegions += numNegativeBoundaries + numPositiveBoundaries;
+
+        //negative-boundary
+        for(int b=0; b<numNegativeBoundaries; ++b)
+        {
+            int lower_nrows = negativeBoundary[b+1];
+            int upper_nrows = negativeBoundary[b];
+            regionRange.push_back(lower_nrows);
+            regionRange.push_back(upper_nrows);
+        }
+
+        //positive-boundary
+        for(int b=0; b<numPositiveBoundaries; ++b)
+        {
+            int lower_nrows = positiveBoundary[b];
+            int upper_nrows = positiveBoundary[b+1];
+            regionRange.push_back(lower_nrows);
+            regionRange.push_back(upper_nrows);
+        }
+
+        minRange = negativeBoundary.empty()?rangeLo:negativeBoundary.back();
+        maxRange = positiveBoundary.empty()?rangeHi:positiveBoundary.back();
+    }
+
+    for(int regionIdx=0; regionIdx<numRegions; ++regionIdx)
+    {
+        int targetRangeLo = regionRange[2*regionIdx];
+        int targetRangeHi = regionRange[2*regionIdx+1];
+
+        //create permutation vector First
+        sortPerm(distFromRoot, perm, targetRangeLo, targetRangeHi);
+
+        //create invPerm
+        for(int i=targetRangeLo; i<targetRangeHi; ++i) {
+            invPerm[perm[i]] = i;
+        }
     }
 
     Graph permutedGraph(*(graph));
 
 
     //Permute rows
-    for(int i=rangeLo; i<rangeHi; ++i)
+    for(int i=minRange; i<maxRange; ++i)
     {
         permutedGraph.graphData[i].children = graph->graphData[perm[i]].children;
     }
@@ -238,7 +368,7 @@ void Traverse::permuteGraph()
         for(unsigned j=0; j<children->size(); ++j)
         {
             int child = children->at(j);
-            if( (child>=rangeLo) && (child<rangeHi) ) {
+            if( (child>=minRange) && (child<maxRange) ) {
                 children->at(j) = invPerm[child];
             }
         }
@@ -267,4 +397,24 @@ LevelData* Traverse::getLevelData()
     LevelData* levelData_ = levelData;
     levelData = NULL;
     return levelData_;
+}
+
+std::vector<LevelData*> Traverse::getLevelDataNegativeBoundary()
+{
+     std::vector<LevelData*> retLevelDataNegativeBoundary = levelDataNegativeBoundary;
+     for(int b=0; b<(int)levelDataNegativeBoundary.size(); ++b)
+     {
+         levelDataNegativeBoundary[b] = NULL;
+     }
+    return retLevelDataNegativeBoundary;
+}
+
+std::vector<LevelData*> Traverse::getLevelDataPositiveBoundary()
+{
+     std::vector<LevelData*> retLevelDataPositiveBoundary = levelDataPositiveBoundary;
+     for(int b=0; b<(int)levelDataPositiveBoundary.size(); ++b)
+     {
+         levelDataPositiveBoundary[b] = NULL;
+     }
+    return retLevelDataPositiveBoundary;
 }

@@ -12,7 +12,6 @@
 class mtxPower
 {
     Graph* graph;
-    std::vector<int> levelPtr;
     std::vector<int> nodePtr;
     std::vector<int> unlockRow;//for p2p sync
     std::vector<int> dangerRow;// for p2p sync
@@ -20,9 +19,22 @@ class mtxPower
     int* cacheLevelGroup;
     std::vector<int> hopelessRegions; //stores level index at hopeless boundary
     std::vector<int> hopelessNodePtr;
-    std::vector<std::vector<int>> hopelessRegionPositiveBoundary; //stores rows in boundary
-    std::vector<std::vector<int>> hopelessRegionNegativeBoundary; //stores rows in boundary
+    std::vector<std::vector<int>> hopelessRegionPositiveBoundary; //stores rows in new boundary
+    std::vector<std::vector<int>> hopelessRegionNegativeBoundary; //stores rows in new boundary
+
+    //Details of main (target) region
+    int startRow, endRow;
     LevelData* levelData;
+    std::vector<int> levelPtr;
+
+    //Details of boundary of parent
+    std::vector<int> negativeBoundary;
+    std::vector<int> positiveBoundary;
+    std::vector<LevelData*> levelDataNegativeBoundary;//of parent
+    std::vector<LevelData*> levelDataPositiveBoundary;//of parent
+    std::vector<std::vector<int>> levelPtrNegativeBoundary;//levelPtr corresponding to negative boundary
+    std::vector<std::vector<int>> levelPtrPositiveBoundary;//levelPtr corresponding to positive boundary
+
     Traverse* traverser;
     int totalLevel;
     int highestPower;
@@ -30,8 +42,6 @@ class mtxPower
     double cacheSize;
     double safetyFactor;
     int cache_violation_cutoff;
-    int startRow;
-    int endRow;
     int nodeId;
     int numRootNodes;
 
@@ -40,9 +50,10 @@ class mtxPower
     void getHopelessStartEnd(int count, int *start, int *end, std::vector<int> _hopelessRegions_);
     double getElemUpperLimit(int level);
     int workingBoundaryLength();
+    std::vector<int> findLevelPtr(int startNode, LevelData* curLevelData);
 
     public:
-    mtxPower(Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, int nodeId_=-1, int numRootNodes_=-1);
+    mtxPower(Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<int> negativeBoundary={}, std::vector<int>  positiveBoundary={}, int nodeId_=-1, int numRootNodes_=-1);
     ~mtxPower();
     void findPartition();
     void splitSharedCacheDomain();
@@ -59,12 +70,16 @@ class mtxPower
     int getTotalLevel();
     int getTotalNodes();
     std::vector<int> getLevelPtr();
+    std::vector<std::vector<int>> getLevelPtrNegativeBoundary();
+    std::vector<std::vector<int>> getLevelPtrPositiveBoundary();
     std::vector<int> getNodePtr();
     std::vector<int> getUnlockRow();
     std::vector<int> getDangerRow();
     std::vector<int> getUnlockCtr();
     std::vector<int> getHopelessRegions();
     std::vector<int> getHopelessNodePtr();
+    std::vector<std::vector<int>> getHopelessNegativeBoundaries();
+    std::vector<std::vector<int>> getHopelessPositiveBoundaries();
 };
 
 

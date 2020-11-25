@@ -59,7 +59,11 @@ int mtxPowerRecursive::get_cache_violation_cutoff(int stage)
 
 #define READ_STAGE_DATA(_leaf_, _stage_mtxPower_)\
     _leaf_.hopelessRegions = _stage_mtxPower_.getHopelessRegions();\
+    _leaf_.negativeBoundaries = _stage_mtxPower_.getHopelessNegativeBoundaries();\
+    _leaf_.positiveBoundaries = _stage_mtxPower_.getHopelessPositiveBoundaries();\
     _leaf_.levelPtr = _stage_mtxPower_.getLevelPtr();\
+    _leaf_.levelPtrNegativeBoundary = _stage_mtxPower_.getLevelPtrNegativeBoundary();\
+    _leaf_.levelPtrPositiveBoundary = _stage_mtxPower_.getLevelPtrPositiveBoundary();\
     _leaf_.unlockRow = _stage_mtxPower_.getUnlockRow();\
     _leaf_.unlockCtr = _stage_mtxPower_.getUnlockCtr();\
     _leaf_.dangerRow = _stage_mtxPower_.getDangerRow();\
@@ -144,7 +148,7 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
         }
         curLeaf.range = std::vector<int>{parentLeaf.levelPtr[hopelessStart], parentLeaf.levelPtr[hopelessStart+1]};
         printf("@@@ range = %d,%d\n", curLeaf.range[0], curLeaf.range[1]);
-        mtxPower curStage(graph, highestPower, 1, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range[0], curLeaf.range[1], curLeaf.nodeId, numSharedCache);
+        mtxPower curStage(graph, highestPower, 1, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range[0], curLeaf.range[1], parentLeaf.negativeBoundaries[h], parentLeaf.positiveBoundaries[h], curLeaf.nodeId, numSharedCache);
         curStage.findPartition();
         int *perm_curStage;
         READ_STAGE_DATA(curLeaf, curStage);

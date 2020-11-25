@@ -781,7 +781,7 @@ NUMAmat::NUMAmat(sparsemat *mat_, bool manual, std::vector<int> splitRows_):mat(
 
     if(!manual)
     {
-        mat->ce->numaInitRowPtr(rowPtr);
+    //    mat->ce->numaInitRowPtr(rowPtr);
     }
 
 #pragma omp parallel
@@ -824,7 +824,7 @@ NUMAmat::NUMAmat(sparsemat *mat_, bool manual, std::vector<int> splitRows_):mat(
 
     if(!manual)
     {
-        mat->ce->numaInitMtxVec(rowPtr, col, val, 1);
+    //    mat->ce->numaInitMtxVec(rowPtr, col, val, 1);
     }
 
 #pragma omp parallel

@@ -10,9 +10,10 @@
 //nodeId tells which node is responsible for the current leaf
 //-1(default): all,
 //else the node number
-mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, int nodeId_, int numRootNodes_):graph(graph_), cacheLevelGroup(NULL),levelData(NULL), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), cache_violation_cutoff(cache_violation_cutoff_), startRow(startRow_), endRow(endRow_), nodeId(nodeId_), numRootNodes(numRootNodes_)
+mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<int> negativeBoundary_, std::vector<int> positiveBoundary_, int nodeId_, int numRootNodes_):graph(graph_), cacheLevelGroup(NULL), startRow(startRow_), endRow(endRow_), levelData(NULL), negativeBoundary(negativeBoundary_), positiveBoundary(positiveBoundary_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), cache_violation_cutoff(cache_violation_cutoff_), nodeId(nodeId_), numRootNodes(numRootNodes_)
 {
-    traverser = new Traverse(graph, RACE::ONE, startRow, endRow);
+    traverser = new Traverse(graph, RACE::POWER, startRow, endRow, 0, 1, negativeBoundary, positiveBoundary);
+
 }
 
 mtxPower::~mtxPower()
@@ -26,25 +27,89 @@ mtxPower::~mtxPower()
     {
         delete levelData;
     }
+
+    for(int b=0; b<(int)levelDataNegativeBoundary.size(); ++b)
+    {
+        if(levelDataNegativeBoundary[b])
+        {
+            delete levelDataNegativeBoundary[b];
+        }
+    }
+
+    for(int b=0; b<(int)levelDataPositiveBoundary.size(); ++b)
+    {
+        if(levelDataPositiveBoundary[b])
+        {
+            delete levelDataPositiveBoundary[b];
+        }
+    }
 }
 
 double mtxPower::getElemUpperLimit(int level)
 {
     //(highestPower+1)*NNZ
-    return (safetyFactor*(highestPower+1)*levelData->levelNnz[level]);
+    int nnz_in_level = levelData->levelNnz[level];
+    for(int b=0; b<(int)levelDataNegativeBoundary.size(); ++b)
+    {
+        nnz_in_level += levelDataNegativeBoundary[b]->levelNnz[level];
+        nnz_in_level += levelDataPositiveBoundary[b]->levelNnz[level];
+    }
+
+    return (safetyFactor*(highestPower+1)*nnz_in_level);
     //return (safetyFactor*(2*highestPower-1)*levelData->levelNnz[level]);
+}
+
+std::vector<int> mtxPower::findLevelPtr(int startNode, LevelData* curLevelData)
+{
+    std::vector<int> curLevelPtr(totalLevel+1);
+    curLevelPtr[0] = startNode;
+
+    for(int level=0; level<totalLevel; ++level)
+    {
+        curLevelPtr[level+1] = curLevelPtr[level] + curLevelData->levelRow[level];
+    }
+
+    return curLevelPtr;
 }
 
 void mtxPower::createLevelPtr()
 {
-    levelPtr =  std::vector<int>(totalLevel+1);
+    levelPtr = findLevelPtr(startRow, levelData);
 
-    levelPtr[0] = startRow;
-
-    for(int level=0; level<totalLevel; ++level)
+    //find levelPtr corresponding to boundaries
+    int numNegativeBoundary = levelDataNegativeBoundary.size();
+    int numPositiveBoundary = levelDataPositiveBoundary.size();
+    if((numNegativeBoundary != 0) && ((numNegativeBoundary != numPositiveBoundary) || (numNegativeBoundary != workingBoundaryLength())))
     {
-        levelPtr[level+1] = levelPtr[level] + levelData->levelRow[level];
+        ERROR_PRINT("Something went wrong, working boundary length does not match. numNegativeBoundary = %d, numPositiveBoundary = %d, workingBoundaryLength = %d\n", numNegativeBoundary, numPositiveBoundary, workingBoundaryLength());
+        return;
     }
+
+    levelPtrNegativeBoundary.resize(numNegativeBoundary);
+    levelPtrPositiveBoundary.resize(numPositiveBoundary);
+    for(int b=0; b<numNegativeBoundary; ++b)
+    {
+        LevelData* curLevelData = levelDataNegativeBoundary[b];
+        int curStartRow = negativeBoundary[b+1];
+        levelPtrNegativeBoundary[b] = findLevelPtr(curStartRow, curLevelData);
+    }
+
+    for(int b=0; b<numPositiveBoundary; ++b)
+    {
+        LevelData* curLevelData = levelDataPositiveBoundary[b];
+        int curStartRow = positiveBoundary[b];
+        levelPtrPositiveBoundary[b] = findLevelPtr(curStartRow, curLevelData);
+    }
+
+    for(int b=0; b<numNegativeBoundary; ++b)
+    {
+        printf("Consolidated boundary level[%d]\n", b);
+        for(int i=0; i<totalLevel+1; ++i)
+        {
+            printf("levelPtrNegativeBoundary[%d] = %d, levelPtrPositiveBoundary[%d] = %d\n", i, levelPtrNegativeBoundary[b][i], i, levelPtrPositiveBoundary[b][i]);
+        }
+    }
+
 }
 
 double mtxPower::getBytePerNNZ()
@@ -406,6 +471,9 @@ void mtxPower::findPartition()
 {
     traverser->calculateDistance();
     levelData = traverser->getLevelData();
+    levelDataNegativeBoundary = traverser->getLevelDataNegativeBoundary();
+    levelDataPositiveBoundary = traverser->getLevelDataPositiveBoundary();
+
     totalLevel = levelData->totalLevel;
     createLevelPtr();
     double nnzr = levelData->nnz/(double)levelData->nrow;
@@ -436,7 +504,7 @@ void mtxPower::findPartition()
         //if violated mark the levels
         if(currElem > cacheElem)
         {
-            int factor = static_cast<int>(ceil(getElemUpperLimit(level)/cacheElem));
+            int factor = static_cast<int>(ceil(currElem/cacheElem));
 
             //for merging, merge nearby levels that have violation greater than
             //cacheViolationTolerance, because they are not going to bring
@@ -557,7 +625,21 @@ void mtxPower::consolidatePartition()
     dangerRow = std::vector<int>(totalLevel);
 
     std::vector<int> newLevelPtr;
-    newLevelPtr.push_back(startRow); //done in loop
+    newLevelPtr.push_back(levelPtr[0]); //done in loop
+
+    std::vector<std::vector<int>> newLevelPtrNegativeBoundary;
+    std::vector<std::vector<int>> newLevelPtrPositiveBoundary;
+    int numBoundaries = levelPtrNegativeBoundary.size();
+
+    newLevelPtrNegativeBoundary.resize(numBoundaries);
+    newLevelPtrPositiveBoundary.resize(numBoundaries);
+
+    for(int b=0; b<numBoundaries; ++b)
+    {
+        newLevelPtrNegativeBoundary[b].push_back(levelPtrNegativeBoundary[b][0]);
+        newLevelPtrPositiveBoundary[b].push_back(levelPtrPositiveBoundary[b][0]);
+    }
+
     int consolidated_ctr = 0; //startRow;
     unlockRow[0] = levelPtr[1];
 
@@ -698,10 +780,81 @@ void mtxPower::consolidatePartition()
                         sumNNZ = curNNZ;
                         newLevelPtr.push_back(levelPtr[level]);
 
+                        int maxUnlockNRows_boundaries = 0;
+                        int maxDangerNRows_boundaries = 0;
+                        for(int b=0; b<numBoundaries; ++b)
+                        {
+                            newLevelPtrNegativeBoundary[b].push_back(levelPtrNegativeBoundary[b][level]);
+                            newLevelPtrPositiveBoundary[b].push_back(levelPtrPositiveBoundary[b][level]);
+                            if((level+1) <= totalLevel)
+                            {
+                                maxUnlockNRows_boundaries = std::max(maxUnlockNRows_boundaries, (levelPtrNegativeBoundary[b][level+1]-levelPtrNegativeBoundary[b][level]));
+                                maxUnlockNRows_boundaries = std::max(maxUnlockNRows_boundaries, (levelPtrPositiveBoundary[b][level+1]-levelPtrPositiveBoundary[b][level]));
+                                maxDangerNRows_boundaries = std::min(maxDangerNRows_boundaries, (levelPtrNegativeBoundary[b][level] - levelPtrNegativeBoundary[b][level-1]));
+                                maxDangerNRows_boundaries = std::min(maxDangerNRows_boundaries, (levelPtrPositiveBoundary[b][level] - levelPtrPositiveBoundary[b][level-1]));
+                            }
+                        }
+
+                        //see the note below to know why this is done; its to
+                        //prevent overshoooting of unlockRow
+                        if(unlockRow[consolidated_ctr] > newLevelPtr[newLevelPtr.size()-1])
+                        {
+                            unlockRow[consolidated_ctr] = newLevelPtr[newLevelPtr.size()-1];
+                        }
+
+                        int dangerNRows_main = levelPtr[level] - levelPtr[level-1];
                         dangerRow[consolidated_ctr] = levelPtr[level-1];
+                        if(dangerNRows_main < maxDangerNRows_boundaries)
+                        {
+                            //int prevDangerRow = dangerRow[consolidated_ctr];
+                            //find a level within current consolidated levelPtr,
+                            //i.e., lower or equal to levelPtr[level] - maxDangerNRows_boundaries
+                            int rowToFind = levelPtr[level] - maxDangerNRows_boundaries;
+                            int prevConsolidatedLevelPtr =  newLevelPtr[newLevelPtr.size()-2];
+                            if(rowToFind < prevConsolidatedLevelPtr)
+                            {
+                                dangerRow[consolidated_ctr] = prevConsolidatedLevelPtr;
+                            }
+                            else
+                            {
+                                int levelInc = 1;
+                                int curNrows = levelPtr[level] - levelPtr[level-levelInc];
+                                //now search to find
+                                while((curNrows < maxDangerNRows_boundaries)&&((level-levelInc)>=0))
+                                {
+                                    ++levelInc;
+                                    curNrows = levelPtr[level] - levelPtr[level-levelInc];
+                                }
+                                dangerRow[consolidated_ctr] = levelPtr[level-levelInc];
+                            }
+                            //Not printing the warning since at start and end levels
+                            //this can happen frequently, since the main levels
+                            //are small at this region
+                            //WARNING_PRINT("There are bulky/irregular boundaries");// changing dangerRow[%d] from %d to %d", consolidated_ctr, prevDangerRow, dangerRow[consolidated_ctr]);
+                        }
+                        //TODO: modify unlockRow to reflect levelPtr at Boundaries
                         if((level+1) <= totalLevel)
                         {
+                            int unlockNRows_main = levelPtr[level+1] - levelPtr[level];
                             unlockRow[consolidated_ctr + 1] = levelPtr[level+1];
+
+                            if(unlockNRows_main < maxUnlockNRows_boundaries)
+                            {
+                                //printf("unlockNrows_main = %d, maxUnlockNRows_boundaries = %d\n", unlockNRows_main, maxUnlockNRows_boundaries);
+                                //int prevUnlockRow = unlockRow[consolidated_ctr + 1];
+                                int levelInc = 1;
+                                int curNrows = levelPtr[level+levelInc] - levelPtr[level];
+                                while((curNrows < maxUnlockNRows_boundaries) && ((level+levelInc)<totalLevel))
+                                {
+                                    ++levelInc;
+                                    curNrows = levelPtr[level+levelInc] - levelPtr[level];
+                                }
+                                unlockRow[consolidated_ctr + 1] = levelPtr[level+levelInc];
+                                //WARNING_PRINT("There are bulky/irregular boundaries");// changing unlockRow[%d] from %d to %d", consolidated_ctr + 1, prevUnlockRow, unlockRow[consolidated_ctr + 1]);
+                            }
+                            //NOTE: it might happen unlockRow shoots the next consolidatedLevelPtr (newLevelPtr) boundary,
+                            //which cannot be checked without knowing next consolidatedLevelPtr boundary. 
+                            //Therefore once next one is known we have to check for this.
                         }
                         consolidated_ctr += 1;
                         consolidated_curLevelCtr += 1;
@@ -712,6 +865,15 @@ void mtxPower::consolidatePartition()
         }
         int lastLevel = nodePtr[node+1];
         newLevelPtr.push_back(levelPtr[lastLevel]);
+
+        for(int b=0; b<numBoundaries; ++b)
+        {
+            //Using back instead of levelPtrNegativeBoundary[b][lastLevel] since
+            //lastLevel might terminate before since main levels can be with 0 rows.
+            //However, it might be that the boundary levels are not 0.
+            newLevelPtrNegativeBoundary[b].push_back(levelPtrNegativeBoundary[b].back());
+            newLevelPtrPositiveBoundary[b].push_back(levelPtrPositiveBoundary[b].back());
+        }
 
         dangerRow[consolidated_ctr] = levelPtr[lastLevel-1];
         if((lastLevel+1) <= totalLevel)
@@ -724,7 +886,7 @@ void mtxPower::consolidatePartition()
 
     hopelessRegions = consolidated_hopelessRegions;
 
-    for(int i=0; i<consolidated_hopelessRegions.size(); ++i)
+    for(int i=0; i<(int)consolidated_hopelessRegions.size(); ++i)
     {
         printf("consolidated_hopelessRegions[%d] = %d\n", i, consolidated_hopelessRegions[i]);
     }
@@ -737,6 +899,18 @@ void mtxPower::consolidatePartition()
     {
         levelPtr[i] = newLevelPtr[i];
         printf("levelPtr[%d] = %d\n", i, levelPtr[i]);
+    }
+
+    for(int b=0; b<numBoundaries; ++b)
+    {
+        levelPtrNegativeBoundary[b] = newLevelPtrNegativeBoundary[b];
+        levelPtrPositiveBoundary[b] = newLevelPtrPositiveBoundary[b];
+
+        printf("Consolidated boundary level[%d], size negative = %d, size positive = %d\n", b, (int)newLevelPtrNegativeBoundary[b].size(), (int)newLevelPtrPositiveBoundary[b].size());
+        for(int i=0; i<totalLevel+1; ++i)
+        {
+            printf("levelPtrNegativeBoundary[%d] = %d, levelPtrPositiveBoundary[%d] = %d\n", i, levelPtrNegativeBoundary[b][i], i, levelPtrPositiveBoundary[b][i]);
+        }
     }
 
     std::vector<int> newNodePtr = findMacroLevelPtr(cacheLevelGroup);
@@ -846,6 +1020,16 @@ std::vector<int> mtxPower::getLevelPtr()
     return levelPtr;
 }
 
+std::vector<std::vector<int>> mtxPower::getLevelPtrNegativeBoundary()
+{
+    return levelPtrNegativeBoundary;
+}
+
+std::vector<std::vector<int>> mtxPower::getLevelPtrPositiveBoundary()
+{
+    return levelPtrPositiveBoundary;
+}
+
 int mtxPower::getTotalNodes()
 {
     return numSharedCache;
@@ -879,4 +1063,14 @@ std::vector<int> mtxPower::getHopelessRegions()
 std::vector<int> mtxPower::getHopelessNodePtr()
 {
     return hopelessNodePtr;
+}
+
+std::vector<std::vector<int>> mtxPower::getHopelessNegativeBoundaries()
+{
+    return hopelessRegionNegativeBoundary;
+}
+
+std::vector<std::vector<int>> mtxPower::getHopelessPositiveBoundaries()
+{
+    return hopelessRegionPositiveBoundary;
 }

@@ -125,6 +125,8 @@ int main(const int argc, char * argv[])
 
     int power = param.iter;
     printf("power = %d\n", power);
+
+    //mat->writeFile("matrixBeforeProcessing.mtx");
 /*
 #ifdef LIKWID_PERFMON
 #pragma omp parallel
