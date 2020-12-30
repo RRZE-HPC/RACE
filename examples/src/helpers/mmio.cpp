@@ -67,11 +67,11 @@ int mm_read_unsymmetric_sparse(const char *fname, int *M_, int *N_, int *nz_,
 
     if(mm_is_pattern(matcode))
     {
-        printf("pattern matrix all non-zero values will be set to zeros.\n");
+        printf("pattern matrix all non-zero values will be set to 0.01.\n");
 
         for(int i=0; i<nz; ++i)
         {
-            val[i] = 0.0;
+            val[i] = 0.01;
         }
     }
 

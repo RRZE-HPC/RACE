@@ -12,7 +12,7 @@
 #endif
 
 
-sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL)
+sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), finalPerm(NULL), finalInvPerm(NULL)
 {
 }
 
@@ -44,6 +44,12 @@ sparsemat::~sparsemat()
 
     if(rcmInvPerm)
         delete[] rcmInvPerm;
+
+    if(finalPerm)
+        delete[] finalPerm;
+
+    if(finalInvPerm)
+        delete[] finalInvPerm;
 
 /*    if(rowPtr_bcsr)
         delete[] rowPtr_bcsr;
@@ -100,7 +106,7 @@ bool sparsemat::readFile(char* filename)
         exit(0);
     }
 
-    int ncols;
+    //int ncols;
     int *row;
     int *col_unsorted;
     double *val_unsorted;
@@ -112,7 +118,7 @@ bool sparsemat::readFile(char* filename)
     }
     if(nrows != ncols)
     {
-        printf("Currently only Symmetric matrices are supported\n");
+        ERROR_PRINT("Matrix not square. Currently only square matrices are supported\n");
         return false;
     }
 
@@ -558,6 +564,13 @@ void sparsemat::doRCMPermute()
 {
     doRCM();
     permute(rcmPerm, rcmInvPerm);
+    if(finalPerm)
+    {
+        delete [] finalPerm;
+        delete [] finalInvPerm;
+    }
+    finalPerm = rcmPerm;
+    finalInvPerm = rcmInvPerm;
     rcmPerm = NULL;
     rcmInvPerm = NULL;
 }
@@ -575,8 +588,16 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
     ce->getInvPerm(&invPerm, &permLen);
     permute(perm, invPerm, true);
 
-    delete [] invPerm;
-    delete [] perm;
+    if(finalPerm)
+    {
+        delete [] finalPerm;
+        delete [] finalInvPerm;
+    }
+
+    finalPerm = perm;
+    finalInvPerm = invPerm;
+    //delete [] invPerm;
+    //delete [] perm;
     //no idea why need it second time w/o perm. 
     //NUMA init work nicely only if this is done; (only for pwtk, others perf
     //degradation))
@@ -604,8 +625,15 @@ int sparsemat::colorAndPermute(dist distance, int nthreads, int smt, PinMethod p
 
     //now permute the matrix according to the permutation vector
     permute(perm, invPerm);
-    delete[] perm;
-    delete[] invPerm;
+
+    if(finalPerm)
+    {
+        delete [] finalPerm;
+        delete [] finalInvPerm;
+    }
+
+    finalPerm = perm;
+    finalInvPerm = invPerm;
 
     //pin omp threads as in RACE for proper NUMA
     pinOMP(nthreads);
@@ -628,6 +656,30 @@ void sparsemat::numaInit(bool RACEalloc)
     permute(NULL, NULL, RACEalloc);
 }
 
+densemat* sparsemat::permute_densemat(densemat *vec)
+{
+    densemat* newVec = new densemat(nrows, vec->ncols);
+    newVec->setVal(0);
+
+    if(nrows != vec->nrows)
+    {
+        ERROR_PRINT("Permutation of densemat not possible, dimension of matrix and vector do not match");
+    }
+    for(int row=0; row<nrows; ++row)
+    {
+        int perm_row = row;
+        if(finalPerm != NULL)
+        {
+            perm_row = finalPerm[row];
+        }
+        for(int col=0; col<vec->ncols; ++col)
+        {
+            newVec->val[col*nrows+row] = vec->val[col*nrows+perm_row];
+        }
+    }
+    return newVec;
+}
+
 //symmetrically permute
 void sparsemat::permute(int *_perm_, int*  _invPerm_, bool RACEalloc)
 {
@@ -646,6 +698,7 @@ void sparsemat::permute(int *_perm_, int*  _invPerm_, bool RACEalloc)
 
     newRowPtr[0] = 0;
 
+    printf("Initing rowPtr\n");
     if(!RACEalloc)
     {
         //NUMA init
@@ -685,11 +738,13 @@ void sparsemat::permute(int *_perm_, int*  _invPerm_, bool RACEalloc)
     }
 
 
+    printf("Initing mtxVec\n");
     if(RACEalloc)
     {
         ce->numaInitMtxVec(newRowPtr, newCol, newVal, NULL);
     }
 
+    printf("Finished inting\n");
     if(_perm_ != NULL)
     {
         //with NUMA init

@@ -14,6 +14,8 @@
 #include "timer.h"
 #include <iostream>
 
+//#define VALIDATE_wo_PERM
+
 void capitalize(char* beg)
 {
     int i = 0;
@@ -121,10 +123,32 @@ int main(const int argc, char * argv[])
     {
         printf("Error in reading sparse matrix file\n");
     }
-    printf("Preparing matrix for power calculation\n");
 
+    int NROWS = mat->nrows;
+    double initVal = 1; ///(double)NROWS;
     int power = param.iter;
     printf("power = %d\n", power);
+
+    densemat* xTRAD = NULL;
+#ifdef VALIDATE_wo_PERM
+    if(param.validate)
+    {
+        xTRAD=new densemat(NROWS, power+1);
+        densemat* xTRAD_0 = xTRAD->view(0,0);
+
+        xTRAD_0->setVal(initVal);
+
+        //now calculate xTRAD in traditional way
+        for(int pow=0; pow<power; ++pow)
+        {
+            densemat *x = xTRAD->view(pow,pow);
+            plain_spmv(mat, x);
+        }
+
+    }
+#endif
+
+    printf("Preparing matrix for power calculation\n");
 
     //mat->writeFile("matrixBeforeProcessing.mtx");
 /*
@@ -151,11 +175,9 @@ int main(const int argc, char * argv[])
     INFO_PRINT("Matrix statistics");
     INFO_PRINT("Nrows = %d, NNZ = %d, NNZR = %f\n", mat->nrows, mat->nnz, mat->nnz/((double)mat->nrows));
 
-    int NROWS = mat->nrows;
 
     densemat *x, *xExact;
 
-    double initVal = 1; ///(double)NROWS;
     //x stores value in the form
     //   x[0],   x[1], ....,   x[nrows-1]
     //  Ax[0],  Ax[1], ....,  Ax[nrows-1]
@@ -181,11 +203,13 @@ int main(const int argc, char * argv[])
 
     double flops = 2.0*power*iterations*(double)mat->nnz*1e-9;
 
-    densemat* xTRAD = NULL;
     if(param.validate)
     {
-        xTRAD=new densemat(NROWS, power+1);
-        densemat* xTRAD_0 = xTRAD->view(0,0);
+        densemat* xTRAD_perf=new densemat(NROWS, power+1);
+#ifndef VALIDATE_wo_PERM
+        xTRAD=xTRAD_perf;
+#endif
+        densemat* xTRAD_0 = xTRAD_perf->view(0,0);
 
         xTRAD_0->setVal(initVal);
 
@@ -202,7 +226,7 @@ int main(const int argc, char * argv[])
         {
             for(int pow=0; pow<power; ++pow)
             {
-                densemat *x = xTRAD->view(pow,pow);
+                densemat *x = xTRAD_perf->view(pow,pow);
                 plain_spmv(mat, x);
             }
         }
@@ -215,7 +239,9 @@ int main(const int argc, char * argv[])
 #endif
         double spmvPowerTime = GET_TIMER(spmvPower);
         printf("SpMV power perf. = %f GFlop/s, time = %f\n", flops/spmvPowerTime, spmvPowerTime);
-
+#ifdef VALIDATE_wo_PERM
+        delete xTRAD_perf;
+#endif
     }
 
 
@@ -250,7 +276,14 @@ int main(const int argc, char * argv[])
 
     if(param.validate)
     {
-        bool flag = checkEqual(xTRAD, xRACE, param.tol);
+        //permute the trad vector for comparison
+#ifdef VALIDATE_wo_PERM
+        densemat* xTRAD_permuted = mat->permute_densemat(xTRAD);
+#else
+        densemat* xTRAD_permuted = xTRAD;
+#endif
+
+        bool flag = checkEqual(xTRAD_permuted, xRACE, param.tol);
         if(!flag)
         {
             printf("Power calculation failed\n");
@@ -259,6 +292,9 @@ int main(const int argc, char * argv[])
         {
             printf("Power calculation success\n");
         }
+#ifdef VALIDATE_wo_PERM
+        delete xTRAD_permuted;
+#endif
         delete xTRAD;
     }
 

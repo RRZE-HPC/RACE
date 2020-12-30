@@ -233,11 +233,14 @@ inline void PLAIN_SPMV_KERNEL(int start, int end, int pow, void* args)
         }
   //  }
 }
+void MAT_SPMV_KERNEL(int start, int end, int pow, int numa_domain, void* args);
+
 //plain spmv
 void plain_spmv(sparsemat* mat, densemat* x)
 {
     ENCODE_TO_VOID(mat, NULL, x);
     PLAIN_SPMV_KERNEL(0, mat->nrows, 1, voidArg);
+    //MAT_SPMV_KERNEL(0, mat->nrows, 1, 0, voidArg);
     DELETE_ARG();
 }
 
