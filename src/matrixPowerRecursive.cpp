@@ -58,12 +58,9 @@ int mtxPowerRecursive::get_cache_violation_cutoff(int stage)
 }
 
 #define READ_STAGE_DATA(_leaf_, _stage_mtxPower_)\
-    _leaf_.hopelessRegions = _stage_mtxPower_.getHopelessRegions();\
-    _leaf_.negativeBoundaries = _stage_mtxPower_.getHopelessNegativeBoundaries();\
-    _leaf_.positiveBoundaries = _stage_mtxPower_.getHopelessPositiveBoundaries();\
-    _leaf_.levelPtr = _stage_mtxPower_.getLevelPtr();\
-    _leaf_.levelPtrNegativeBoundary = _stage_mtxPower_.getLevelPtrNegativeBoundary();\
-    _leaf_.levelPtrPositiveBoundary = _stage_mtxPower_.getLevelPtrPositiveBoundary();\
+    _leaf_.hid = _stage_mtxPower_.getHopelessRegions();\
+    _leaf_.lp = _stage_mtxPower_.getLevelPtr();\
+    _leaf_.blp = _stage_mtxPower_.getBoundaryLevelPtr();\
     _leaf_.unlockRow = _stage_mtxPower_.getUnlockRow();\
     _leaf_.unlockCtr = _stage_mtxPower_.getUnlockCtr();\
     _leaf_.dangerRow = _stage_mtxPower_.getDangerRow();\
@@ -74,25 +71,23 @@ int mtxPowerRecursive::get_cache_violation_cutoff(int stage)
     int _n_nodes_ = _nodePtr_.size()-1;\
     std::vector<int> _hopelessNodePtr_ = _stage_mtxPower_.getHopelessNodePtr();\
     _leaf_.unitNodePtr.push_back(0);\
+    _leaf_.unitPtr.push_back(_nodePtr_[0]);\
     for(int n=0; n<_n_nodes_; ++n)\
     {\
-        int levelNodeStart = _nodePtr_[n];\
+        /*int levelNodeStart = _nodePtr_[n];*/\
         int levelNodeEnd = _nodePtr_[n+1];\
-        _leaf_.unitPtr.push_back(levelNodeStart);\
-        for(int h=_hopelessNodePtr_[n]; h<_hopelessNodePtr_[n+1]; ++h)\
+        for(int hn=_hopelessNodePtr_[n]; hn<_hopelessNodePtr_[n+1]; ++hn)\
         {\
-            _leaf_.unitPtr.push_back(_leaf_.hopelessRegions[h]); \
-            _leaf_.unitPtr.push_back(_leaf_.hopelessRegions[h]+1); \
+            printf("@@@@@@@@@ hopelessNodePtr[%d] = %d, hopelessNodePtr[%d] = %d\n", n, _hopelessNodePtr_[n], n+1, _hopelessNodePtr_[n+1]);\
+            _leaf_.unitPtr.push_back(_leaf_.hid[hn]); \
+            _leaf_.unitPtr.push_back(_leaf_.hid[hn]+1); \
         }\
         if(_leaf_.unitPtr.back() != levelNodeEnd) /*if there is no hopeless in last unit, make a dummy*/\
         {\
             _leaf_.unitPtr.push_back(levelNodeEnd);\
-        }\
-        _leaf_.unitNodePtr.push_back(_leaf_.unitPtr.size());\
-        if(n==(_n_nodes_-1)) \
-        {\
             _leaf_.unitPtr.push_back(levelNodeEnd);\
         }\
+        _leaf_.unitNodePtr.push_back(_leaf_.unitPtr.size()-1);\
     }
 
 #define COPY_TO_PLAIN_INT_PTR(_vec_, _plain_)\
@@ -105,7 +100,7 @@ int mtxPowerRecursive::get_cache_violation_cutoff(int stage)
 void mtxPowerRecursive::recursivePartition(int parentIdx)
 {
     MPLeaf parentLeaf = tree[parentIdx];
-    std::vector<int> parentHopelessRegions = parentLeaf.hopelessRegions;
+    std::vector<int> parentHopelessRegions = parentLeaf.hid;
     int n_hopeless = (int)(parentHopelessRegions.size());
     int parentStage = parentLeaf.stage;
 
@@ -146,9 +141,78 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
             }
             push_nodeId = curLeaf.nodeId;
         }
-        curLeaf.range = std::vector<int>{parentLeaf.levelPtr[hopelessStart], parentLeaf.levelPtr[hopelessStart+1]};
-        printf("@@@ range = %d,%d\n", curLeaf.range[0], curLeaf.range[1]);
-        mtxPower curStage(graph, highestPower, 1, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range[0], curLeaf.range[1], parentLeaf.negativeBoundaries[h], parentLeaf.positiveBoundaries[h], curLeaf.nodeId, numSharedCache);
+        curLeaf.range.lo = parentLeaf.lp[hopelessStart];
+        curLeaf.range.hi = parentLeaf.lp[hopelessStart+1];
+        int wbl = workingBoundaryLength_base(highestPower);
+
+        int numBoundaries = (int)parentLeaf.blp.size();//external (ancestoral boundaries)
+        for(int i=0; i<(int)numBoundaries; ++i)
+        {
+            for(int wr=0; wr<wbl; ++wr)//working radius
+            {
+                std::map<int, std::vector<int>> *curParentBLP = &(parentLeaf.blp[i][wr]);
+                for(auto mapIter = curParentBLP->begin(); mapIter != curParentBLP->end(); ++mapIter)
+                {
+                    std::vector<std::map<int,Range>> curBoundaryRange(wbl);
+
+                    //for(int r=-wbl; r<=wbl; ++r)
+                    //TODO for r=2 onwards -ve and +ve matters since they are no
+                    //more continuous
+                    //for(int r=1; r<=wbl; ++r)
+                    for(int r=-wbl; r<=wbl; ++r)
+                    {
+                        Range curRange;
+                        if(r==-1)
+                        {
+                            //we dont need to distinguish
+                            //between negative, positive and zero for external boundaries in this case,
+                            //this reduces the number of regions considerably
+
+                            r = 1;//skip other r till r=1
+                            curRange.lo = (mapIter->second)[hopelessStart-r];
+                            curRange.hi = (mapIter->second)[hopelessStart+r+1];
+                        }
+                        else
+                        {
+                            curRange.lo = (mapIter->second)[hopelessStart+r];
+                            curRange.hi = (mapIter->second)[hopelessStart+r+1];
+                        }
+
+                        if(curRange.hi > curRange.lo)
+                        {
+                            curBoundaryRange[wr][r] = curRange;
+                        }
+                        else
+                        {
+                            printf("omiting [%d, %d]  boundary\n", curRange.lo, curRange.hi);
+                        }
+                    }
+                    curLeaf.boundaryRange.push_back(curBoundaryRange);
+                }
+            }
+        }
+
+        //push current boundary
+        std::vector<std::map<int,Range>> curBoundaryRange(wbl);
+        for(int r=-wbl; r<=wbl; ++r)
+        {
+            if(r!=0)
+            {
+                Range curRange;
+                curRange.lo = parentLeaf.lp[hopelessStart+r];
+                curRange.hi = parentLeaf.lp[hopelessStart+r+1];
+                //push only if it is non empty
+                if(curRange.hi > curRange.lo)
+                {
+                    curBoundaryRange[std::abs(r)-1][r] = curRange; //push direct boundary
+                }
+            }
+        }
+        curLeaf.boundaryRange.push_back(curBoundaryRange);
+
+        printf("@@@ range = %d,%d\n", curLeaf.range.lo, curLeaf.range.hi);
+        //TODO: mtxPower with boundaryRange
+        mtxPower curStage(graph, highestPower, 1, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range.lo, curLeaf.range.hi, curLeaf.boundaryRange, curLeaf.nodeId, numSharedCache);
         curStage.findPartition();
         int *perm_curStage;
         READ_STAGE_DATA(curLeaf, curStage);
@@ -164,7 +228,7 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
         {
             tree[parentIdx].childrenNodeStart[push_nodeId+1]++;
         }
-        if(!curLeaf.hopelessRegions.empty())
+        if(!curLeaf.hid.empty())
         {
             printf("recursively calling for parent = %d\n", curIdx);
             recursivePartition(curIdx);
@@ -183,10 +247,11 @@ void mtxPowerRecursive::findPartition()
     MPLeaf curLeaf;
     curLeaf.parent = -1;
     curLeaf.nodeId = -1;
-    curLeaf.range = std::vector<int>{0, graph->NROW};
+    curLeaf.range.lo = 0;
+    curLeaf.range.hi = graph->NROW;
     curLeaf.stage = 0;
     //partition for first stage
-    mtxPower curStage(graph, highestPower, numSharedCache, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range[0], curLeaf.range[1]);
+    mtxPower curStage(graph, highestPower, numSharedCache, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range.lo, curLeaf.range.hi);
     curStage.findPartition();
     int* perm_curStage;
     READ_STAGE_DATA(curLeaf, curStage);
@@ -195,15 +260,15 @@ void mtxPowerRecursive::findPartition()
     delete[] perm_curStage;
     tree.push_back(curLeaf);
 
-    if(!curLeaf.hopelessRegions.empty())
+    if(!curLeaf.hid.empty())
     {
         recursivePartition(0); //my curId=0
     }
 
     UPDATE_INVPERM(invPerm, perm);
-    //totalLevel = (int)(curLeaf.levelPtr.size()-1);
+    //totalLevel = (int)(curLeaf.lp.size()-1);
     //if empty this is final
-    /*COPY_TO_PLAIN_INT_PTR(curLeaf.levelPtr, levelPtr);
+    /*COPY_TO_PLAIN_INT_PTR(curLeaf.lp, lp);
     COPY_TO_PLAIN_INT_PTR(nodePtr_vec, nodePtr);
     COPY_TO_PLAIN_INT_PTR(curLeaf.unlockRow, unlockRow);
     COPY_TO_PLAIN_INT_PTR(curLeaf.unlockCtr, unlockCtr);
@@ -218,7 +283,7 @@ void mtxPowerRecursive::printTree()
     for(int i=0; i<(int)tree.size(); ++i)
     {
         MPLeaf curLeaf = tree[i];
-        printf("%d. Range:[%d, %d], ", i, curLeaf.range[0], curLeaf.range[1]);
+        printf("%d. Range:[%d, %d], ", i, curLeaf.range.lo, curLeaf.range.hi);
         printf("Children:[");
         for(int j=0; j<(int)curLeaf.children.size(); ++j)
         {
@@ -231,9 +296,14 @@ void mtxPowerRecursive::printTree()
         }
         printf("], Parent: %d, node: %d, stage: %d, cache_cutoff: %d, hopelessRegions: [",
                 curLeaf.parent, curLeaf.nodeId, curLeaf.stage, get_cache_violation_cutoff(curLeaf.stage));
-        for(int j=0; j<(int)curLeaf.hopelessRegions.size(); ++j)
+        for(int j=0; j<(int)curLeaf.hid.size(); ++j)
         {
-            printf("%d:%d, ", curLeaf.levelPtr[curLeaf.hopelessRegions[j]], curLeaf.levelPtr[curLeaf.hopelessRegions[j]+1]);
+            printf("%d:%d, ", curLeaf.lp[curLeaf.hid[j]], curLeaf.lp[curLeaf.hid[j]+1]);
+        }
+        printf("], hid: [");
+        for(int j=0; j<(int)curLeaf.hid.size(); ++j)
+        {
+            printf("%d ", curLeaf.hid[j]);
         }
         printf("], unitPtr: [");
         for(int j=0; j<(int)curLeaf.unitPtr.size(); ++j)
@@ -245,6 +315,10 @@ void mtxPowerRecursive::printTree()
         {
             printf("%d ", curLeaf.unitNodePtr[j]);
         }
+        printf("], Boundaries: [");
+        EXEC_BOUNDARY_STRUCTURE(curLeaf.boundaryRange,
+                printf("%d -> (%d, %d) ", _radius_, _val_.lo, _val_.hi);
+                );
         printf("]\n");
     }
 }
@@ -263,7 +337,7 @@ int mtxPowerRecursive::getTotalNodes()
 /*
 int*  mtxPowerRecursive::getLevelPtrRef()
 {
-    return levelPtr;
+    return lp;
 }
 
 int*  mtxPowerRecursive::getUnlockRowRef()

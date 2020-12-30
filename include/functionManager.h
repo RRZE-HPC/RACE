@@ -48,12 +48,12 @@ class FuncManager
         std::function<void(int)> recursiveFun;
 
         void recursivePowerCallSerial(int parent);
-        void powerCallGeneral(int startLevel, int endLevel, int boundaryStart, int boundaryEnd, int startSlope, int endSlope, const std::vector<int> *levelPtr, const std::vector<std::vector<int>> *levelPtrNegativeBoundary, const std::vector<std::vector<int>> *levelPtrPositiveBoundary, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent);
-        void powerCallNodeReminder(int startSlope, int endSlope, const std::vector<int> *levelPtr, const std::vector<int> *nodePtr, int numaLocalArg, int offset);
-        void powerCallHopelessRightReminder(int leftmostLevel, const std::vector<int> *levelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent);
-        void powerCallHopelessLeftReminder(int rightmostLevel, const std::vector<int> *levelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent);
-        void powerCallReleaseHopelessRegionLocks(int hopelessStartLevel, int parent);
-            std::function<void(int)> recursivePowerFun;
+        inline void powerCallGeneral(int startLevel, int endLevel, int boundaryStart, int boundaryEnd, int startSlope, int endSlope, const std::vector<int> *levelPtr, const std::vector<std::vector<std::map<int,std::vector<int>>>>* boundaryLevelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent);
+        inline void powerCallNodeReminder(int startSlope, int endSlope, const std::vector<int> *levelPtr, const std::vector<int> *nodePtr, int numaLocalArg, int offset);
+        inline void powerCallHopelessRightReminder(int leftmostLevel, const std::vector<int> *levelPtr, const std::vector<std::vector<std::map<int,std::vector<int>>>>* boundaryLevelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent);
+        inline void powerCallHopelessLeftReminder(int rightmostLevel, const std::vector<int> *levelPtr, const std::vector<std::vector<std::map<int,std::vector<int>>>>* boundaryLevelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent);
+        inline void powerCallReleaseHopelessRegionLocks(int hopelessStartLevel, int parent);
+        std::function<void(int)> recursivePowerFun;
 
         //double *a, *b, *c, *d;
         //int len;

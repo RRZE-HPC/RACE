@@ -58,7 +58,6 @@ bool parser::parse_arg(int argc, char **argv)
                 {
                     printf("No parameters specified.\n Usage: %s -m [MATRIX] -i [ITERATIONS] -c [CORES] -t [SMT] -p [FILL/SCATTER]\n", prgname);
                     return false;
-                    break;
                 }
             case 'm':
                 {
@@ -119,7 +118,6 @@ bool parser::parse_arg(int argc, char **argv)
                 {
                     help();
                     return 0;
-                    break;
                 }
             default:
                 break;

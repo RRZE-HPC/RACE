@@ -34,6 +34,18 @@ namespace RACE {
 
 }
 
+struct Range
+{
+    int lo;
+    int hi;
+
+    Range();
+};
+
+inline Range::Range():lo(-1),hi(-1)
+{
+}
+
 struct ZoneLeaf;
 
 typedef std::vector<ZoneLeaf> tree_t;

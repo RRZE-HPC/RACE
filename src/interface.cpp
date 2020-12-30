@@ -551,7 +551,7 @@ void RACE::Interface::getNumaSplitting(int **split, int *splitLen)
 {
     std::vector<int> levelGroupPtr = powerCalculator->tree[0].nodePtr;
     int NUMAdomains = levelGroupPtr.size()-1;
-    std::vector<int> levelPtr = powerCalculator->tree[0].levelPtr;
+    std::vector<int> levelPtr = powerCalculator->tree[0].lp;
     (*split) = (int*) malloc(sizeof(int)*(NUMAdomains+1));
     for(int i=0; i<=NUMAdomains; ++i)
     {

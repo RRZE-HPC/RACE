@@ -38,21 +38,14 @@
     int dangerRowStart = dangerRow->at(_level_);\
     dangerRowStart -= offset;\
 
-#define SPLIT_LEVEL_PER_THREAD_BOUNDARY(_level_, _boundary_)\
-    int _negativeStartRow_ = levelPtrNegativeBoundary->at(_boundary_)[_level_];\
-    int _negativeEndRow_ = levelPtrNegativeBoundary->at(_boundary_)[_level_+1];\
-    int _negativeRowPerThread_ = (_negativeEndRow_- _negativeStartRow_)/threadPerNode;\
-    int negative_startRow_tid = _negativeStartRow_ + localTid*_negativeRowPerThread_;\
-    negative_startRow_tid -= offset;\
-    int negative_endRow_tid = (localTid == (threadPerNode-1)) ? _negativeEndRow_ : _negativeStartRow_+(localTid+1)*_negativeRowPerThread_;\
-    negative_endRow_tid -= offset;\
-    int _positiveStartRow_ = levelPtrPositiveBoundary->at(_boundary_)[_level_];\
-    int _positiveEndRow_ = levelPtrPositiveBoundary->at(_boundary_)[_level_+1];\
-    int _positiveRowPerThread_ = (_positiveEndRow_- _positiveStartRow_)/threadPerNode;\
-    int positive_startRow_tid = _positiveStartRow_ + localTid*_positiveRowPerThread_;\
-    positive_startRow_tid -= offset;\
-    int positive_endRow_tid = (localTid == (threadPerNode-1)) ? _positiveEndRow_ : _positiveStartRow_+(localTid+1)*_positiveRowPerThread_;\
-    positive_endRow_tid -= offset;\
+#define SPLIT_LEVEL_PER_THREAD_BOUNDARY(_level_)\
+    int _StartRow_ = _val_[_level_];\
+    int _EndRow_ = _val_[_level_+1];\
+    int _RowPerThread_ = (_EndRow_- _StartRow_)/threadPerNode;\
+    int startRow_tid = _StartRow_ + localTid*_RowPerThread_;\
+    startRow_tid -= offset;\
+    int endRow_tid = (localTid == (threadPerNode-1)) ? _EndRow_ : _StartRow_+(localTid+1)*_RowPerThread_;\
+    endRow_tid -= offset;\
 
 
 #define SPLIT_LEVEL_PER_THREAD_P2P_NOREF(_level_)\
@@ -69,5 +62,65 @@
     dangerRowStart -= offset;\
 
 
+//last argument is the statement that you want to init for each boundary ranges
+#define INIT_BOUNDARY_STRUCTURE(_boundaryRange_, _newVar_, ...)\
+{\
+    int _numBoundaries_ = (int)_boundaryRange_.size();\
+    _newVar_.resize(_numBoundaries_);\
+    for(int _region_=0; _region_<_numBoundaries_; ++_region_)\
+    {\
+        int _wbl_=_boundaryRange_[_region_].size();\
+        _newVar_[_region_].resize(_wbl_);\
+        for(int _workingRadius_=0; _workingRadius_<_wbl_; ++_workingRadius_)\
+        {\
+            std::map<int, Range> *_curBoundaryRange_ = &(_boundaryRange_[_region_][_workingRadius_]);\
+            for(auto _mapIter_ = _curBoundaryRange_->begin(); _mapIter_ != _curBoundaryRange_->end(); ++_mapIter_)\
+            {\
+                int _radius_ = _mapIter_->first;\
+                _newVar_[_region_][_workingRadius_][_radius_] = __VA_ARGS__;\
+            }\
+        }\
+    }\
+}\
+
+//last argument is the statement that you want to execute for each boundary ranges
+#define EXEC_BOUNDARY_STRUCTURE(_var_, ...)\
+{\
+    int _numBoundaries_ = (int)_var_.size();\
+    for(int _region_=0; _region_<_numBoundaries_; ++_region_)\
+    {\
+        int _wbl_=_var_[_region_].size();\
+        for(int _workingRadius_=0; _workingRadius_<_wbl_; ++_workingRadius_)\
+        {\
+            for(auto _mapIter_ = _var_[_region_][_workingRadius_].begin(); _mapIter_ != _var_[_region_][_workingRadius_].end(); ++_mapIter_)\
+            {\
+                int _radius_ = _mapIter_->first;\
+                auto _val_ = _mapIter_->second;\
+                __VA_ARGS__;\
+            }\
+        }\
+    }\
+}\
+
+
+//last argument is the statement that you want to execute for each boundary ranges
+//only difference with previous macro is: _radius_ is not defined in inner-loop,
+//so avoid annoying compiler remarks
+#define EXEC_BOUNDARY_STRUCTURE_wo_radius(_var_, ...)\
+{\
+    int _numBoundaries_ = (int)_var_.size();\
+    for(int _region_=0; _region_<_numBoundaries_; ++_region_)\
+    {\
+        int _wbl_=_var_[_region_].size();\
+        for(int _workingRadius_=0; _workingRadius_<_wbl_; ++_workingRadius_)\
+        {\
+            for(auto _mapIter_ = _var_[_region_][_workingRadius_].begin(); _mapIter_ != _var_[_region_][_workingRadius_].end(); ++_mapIter_)\
+            {\
+                auto _val_ = _mapIter_->second;\
+                __VA_ARGS__;\
+            }\
+        }\
+    }\
+}\
 
 #endif

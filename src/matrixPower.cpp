@@ -1,6 +1,5 @@
 #include "matrixPower.h"
 #include "utility.h"
-#include <cmath>
 #include "macros.h"
 #include "lb.h"
 #include "omp.h"
@@ -10,9 +9,15 @@
 //nodeId tells which node is responsible for the current leaf
 //-1(default): all,
 //else the node number
-mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<int> negativeBoundary_, std::vector<int> positiveBoundary_, int nodeId_, int numRootNodes_):graph(graph_), cacheLevelGroup(NULL), startRow(startRow_), endRow(endRow_), levelData(NULL), negativeBoundary(negativeBoundary_), positiveBoundary(positiveBoundary_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), cache_violation_cutoff(cache_violation_cutoff_), nodeId(nodeId_), numRootNodes(numRootNodes_)
+mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<std::vector<std::map<int, Range>>> boundaryRange_, int nodeId_, int numRootNodes_):graph(graph_), cacheLevelGroup(NULL), startRow(startRow_), endRow(endRow_), levelData(NULL), boundaryRange(boundaryRange_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), cache_violation_cutoff(cache_violation_cutoff_), nodeId(nodeId_), numRootNodes(numRootNodes_)
 {
-    traverser = new Traverse(graph, RACE::POWER, startRow, endRow, 0, 1, negativeBoundary, positiveBoundary);
+    EXEC_BOUNDARY_STRUCTURE(boundaryRange,
+            printf("####### check working rad %d, rad %d, range [%d, %d]\n", _workingRadius_, _radius_, boundaryRange[_region_][_workingRadius_][_radius_].lo, boundaryRange[_region_][_workingRadius_][_radius_].hi);
+            UNUSED(_val_);
+            );
+
+
+    traverser = new Traverse(graph, RACE::POWER, startRow, endRow, 0, 1, boundaryRange);
 
 }
 
@@ -28,32 +33,23 @@ mtxPower::~mtxPower()
         delete levelData;
     }
 
-    for(int b=0; b<(int)levelDataNegativeBoundary.size(); ++b)
-    {
-        if(levelDataNegativeBoundary[b])
-        {
-            delete levelDataNegativeBoundary[b];
-        }
-    }
-
-    for(int b=0; b<(int)levelDataPositiveBoundary.size(); ++b)
-    {
-        if(levelDataPositiveBoundary[b])
-        {
-            delete levelDataPositiveBoundary[b];
-        }
-    }
+    EXEC_BOUNDARY_STRUCTURE_wo_radius(boundaryLevelData,
+            if(_val_!=NULL)
+            {
+                delete _val_;
+            }
+        );
 }
 
 double mtxPower::getElemUpperLimit(int level)
 {
     //(highestPower+1)*NNZ
     int nnz_in_level = levelData->levelNnz[level];
-    for(int b=0; b<(int)levelDataNegativeBoundary.size(); ++b)
-    {
-        nnz_in_level += levelDataNegativeBoundary[b]->levelNnz[level];
-        nnz_in_level += levelDataPositiveBoundary[b]->levelNnz[level];
-    }
+    //not including boundaries for now, since this shows better
+    //performance in case of HPCG matrix, TODO: need to test other matrices
+    EXEC_BOUNDARY_STRUCTURE_wo_radius(boundaryLevelData,
+            nnz_in_level += _val_->levelNnz[level];);
+
 
     return (safetyFactor*(highestPower+1)*nnz_in_level);
     //return (safetyFactor*(2*highestPower-1)*levelData->levelNnz[level]);
@@ -76,40 +72,17 @@ void mtxPower::createLevelPtr()
 {
     levelPtr = findLevelPtr(startRow, levelData);
 
+    INIT_BOUNDARY_STRUCTURE(boundaryRange, boundaryLevelPtr, {});
     //find levelPtr corresponding to boundaries
-    int numNegativeBoundary = levelDataNegativeBoundary.size();
-    int numPositiveBoundary = levelDataPositiveBoundary.size();
-    if((numNegativeBoundary != 0) && ((numNegativeBoundary != numPositiveBoundary) || (numNegativeBoundary != workingBoundaryLength())))
-    {
-        ERROR_PRINT("Something went wrong, working boundary length does not match. numNegativeBoundary = %d, numPositiveBoundary = %d, workingBoundaryLength = %d\n", numNegativeBoundary, numPositiveBoundary, workingBoundaryLength());
-        return;
-    }
-
-    levelPtrNegativeBoundary.resize(numNegativeBoundary);
-    levelPtrPositiveBoundary.resize(numPositiveBoundary);
-    for(int b=0; b<numNegativeBoundary; ++b)
-    {
-        LevelData* curLevelData = levelDataNegativeBoundary[b];
-        int curStartRow = negativeBoundary[b+1];
-        levelPtrNegativeBoundary[b] = findLevelPtr(curStartRow, curLevelData);
-    }
-
-    for(int b=0; b<numPositiveBoundary; ++b)
-    {
-        LevelData* curLevelData = levelDataPositiveBoundary[b];
-        int curStartRow = positiveBoundary[b];
-        levelPtrPositiveBoundary[b] = findLevelPtr(curStartRow, curLevelData);
-    }
-
-    for(int b=0; b<numNegativeBoundary; ++b)
+    EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr, printf("region = %d, workingRadius = %d, radius = %d\n", _region_, _workingRadius_, _radius_);boundaryLevelPtr[_region_][_workingRadius_][_radius_] = findLevelPtr(boundaryRange[_region_][_workingRadius_][_radius_].lo, boundaryLevelData[_region_][_workingRadius_][_radius_]));
+    /*for(int b=0; b<numNegativeBoundary; ++b)
     {
         printf("Consolidated boundary level[%d]\n", b);
         for(int i=0; i<totalLevel+1; ++i)
         {
             printf("levelPtrNegativeBoundary[%d] = %d, levelPtrPositiveBoundary[%d] = %d\n", i, levelPtrNegativeBoundary[b][i], i, levelPtrPositiveBoundary[b][i]);
         }
-    }
-
+    }*/
 }
 
 double mtxPower::getBytePerNNZ()
@@ -122,7 +95,7 @@ double mtxPower::getBytePerNNZ()
 
 int mtxPower::workingBoundaryLength()
 {
-    return static_cast<int>(ceil(highestPower/2.0))-1;
+    return workingBoundaryLength_base(highestPower);
 }
 
 void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
@@ -207,7 +180,9 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
     {
         if(curStart != -1)
         {
-            while(((nxtStart-curEnd) < (highestPower-1)) && (nxtStart!=-1))
+            //((nxtStart-curEnd)-1): -1 since hopelessRegion is an inclusive
+            //range
+            while(( ((nxtStart-curEnd)-1) < (highestPower-1)) && (nxtStart!=-1))
             {
                 //distance is less, merging
                 curEnd = nxtEnd;
@@ -284,10 +259,10 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
             }
         }
         int startHopelessNodeId = hopelessNodePtr[node];
-        //check if boundary within (highestPower-1), if not adjust
         getHopelessStartEnd(startHopelessNodeId, &curStart, &curEnd, new_hopelessRegions);
-        //check start boundary
-        if((curStart!=-1) && ((curStart-levelStart) < (highestPower-1)))
+        //check if boundary within (highestPower-1), if not adjust
+        //check start boundary, -1 since hopelessIds are inclusive
+        if((curStart!=-1) && (((curStart-levelStart)-1) < (highestPower-1)))
         {
             int newCurStart = levelStart+(highestPower-1);
             //Remember curStart can be equal to curEnd
@@ -305,8 +280,8 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
         int endHopelessNodeId = static_cast<int>(new_hopelessRegions.size()/2.0)-1;
         getHopelessStartEnd(endHopelessNodeId, &curStart, &curEnd, new_hopelessRegions);
         //check end boundary; curEnd+1 since hopelessRegions include last level,
-        //while levelPtr is one past last level
-        if((curEnd!=-1) && ((levelEnd-(curEnd+1)) < (highestPower-1)))
+        //while levelPtr is one past last level, -1 since hopelessIds are inclusive
+        if((curEnd!=-1) && (((levelEnd-1)-(curEnd)-1) < (highestPower-1)))
         {
             int newCurEnd = levelEnd-(highestPower-1)-1;
 
@@ -462,17 +437,12 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
     }
 }
 
-//TODO: Write a wrapper function that calls findPartition
-//based on levelTree info
 
-//return levelTree
-//TODO : add 2 args to findPartition: start and end
 void mtxPower::findPartition()
 {
     traverser->calculateDistance();
     levelData = traverser->getLevelData();
-    levelDataNegativeBoundary = traverser->getLevelDataNegativeBoundary();
-    levelDataPositiveBoundary = traverser->getLevelDataPositiveBoundary();
+    boundaryLevelData = traverser->getBoundaryLevelData();
 
     totalLevel = levelData->totalLevel;
     createLevelPtr();
@@ -627,19 +597,8 @@ void mtxPower::consolidatePartition()
     std::vector<int> newLevelPtr;
     newLevelPtr.push_back(levelPtr[0]); //done in loop
 
-    std::vector<std::vector<int>> newLevelPtrNegativeBoundary;
-    std::vector<std::vector<int>> newLevelPtrPositiveBoundary;
-    int numBoundaries = levelPtrNegativeBoundary.size();
-
-    newLevelPtrNegativeBoundary.resize(numBoundaries);
-    newLevelPtrPositiveBoundary.resize(numBoundaries);
-
-    for(int b=0; b<numBoundaries; ++b)
-    {
-        newLevelPtrNegativeBoundary[b].push_back(levelPtrNegativeBoundary[b][0]);
-        newLevelPtrPositiveBoundary[b].push_back(levelPtrPositiveBoundary[b][0]);
-    }
-
+    std::vector<std::vector<std::map<int, std::vector<int>>>> newBoundaryLevelPtr;
+    INIT_BOUNDARY_STRUCTURE(boundaryRange, newBoundaryLevelPtr, {boundaryLevelPtr[_region_][_workingRadius_][_radius_][0]});
     int consolidated_ctr = 0; //startRow;
     unlockRow[0] = levelPtr[1];
 
@@ -658,9 +617,11 @@ void mtxPower::consolidatePartition()
 
             maxSumBoundaries[pow] = std::max(maxSumBoundaries[pow],startNNZ+endNNZ);
         }
-        printf("Boundary @ power %d = %d\n", pow+1, maxSumBoundaries[pow]);
     }
 #endif
+
+    //need distance on power-1 between hopeless regions
+    int boundaryLength = (highestPower-1); //workingBoundaryLength();
 
     std::vector<int> consolidated_hopelessRegions;
     int hopelessRegionCount = 0;
@@ -668,6 +629,7 @@ void mtxPower::consolidatePartition()
     getHopelessStartEnd(hopelessRegionCount, &currHopelessStart, &currHopelessEnd);
 
     printf("check hopeless = [%d, %d]\n", currHopelessStart, currHopelessEnd);
+
     for(int node=0; node<numSharedCache; ++node)
     {
         double sumElem = 0;
@@ -676,10 +638,26 @@ void mtxPower::consolidatePartition()
         int consolidated_curLevelCtr = 0;
         //int totalLevelInGroup = nodePtr[node+1]-nodePtr[node];
 
-
         //newLevelPtr.push_back(levelPtr[nodePtr[node]]);
         for(int level=nodePtr[node]; level<nodePtr[node+1]; ++level)
         {
+            //check if boundary start is less than curr Node start
+            if( (currHopelessStart >= nodePtr[node]) && (currHopelessEnd < nodePtr[node+1]) )
+            {
+                if((currHopelessStart-boundaryLength) < nodePtr[node])
+                {
+                    ERROR_PRINT("There are not sufficient levels. Some boundary levels are outside the region. Try limiting the recursion depth (stages) using the environment variable RACE_CACHE_VIOLATION_CUTOFF");
+                    printf("start lhs = %d, rhs = %d\n", currHopelessStart-boundaryLength, nodePtr[node]);
+                    exit(-1);
+                }
+                if((currHopelessEnd+boundaryLength) > nodePtr[node+1]-1)
+                {
+                    ERROR_PRINT("There are not sufficient levels. Some boundary levels are outside the region. Try limiting the recursion depth (stages) using the environment variable RACE_CACHE_VIOLATION_CUTOFF");
+                    printf("end lhs = %d, rhs = %d\n", currHopelessEnd+boundaryLength, nodePtr[node+1]-1);
+                    exit(-1);
+                }
+            }
+
             double currElem = getElemUpperLimit(level);
             double bytePerNNZ = getBytePerNNZ();
             double cacheElem = cacheSize/bytePerNNZ;
@@ -691,51 +669,51 @@ void mtxPower::consolidatePartition()
             bool hopeless = false;
             bool forceUpdate = false;
 
-            int boundaryLength = workingBoundaryLength();
-
-            if(level == currHopelessStart)
+            if(currHopelessStart != -1)
             {
-                consolidated_hopelessRegions.push_back(consolidated_ctr+1);//+1 since not yet incrmented
-                //Only start is needed since we know it would always be one
-                //level long after consolidation
-                //consolidated_hopelessRegions.push_back(consolidated_ctr+2);//+1 since it will be consecuive, note that this is pointing towards end and does not include end, contrary to hopelessRegions
-            }
-
-
-
-            //check if level in working boundary of hopelessRegions; 
-            //start boundary
-            if( (level >= (currHopelessStart-boundaryLength)) && (level <= currHopelessStart) )
-            {
-                forceUpdate = true;
-            }
-            //end boundary
-            else if((level > currHopelessEnd) && (level <= (currHopelessEnd+boundaryLength)) )
-            {
-                forceUpdate = true;
-            }
-            //deal with hopeless region
-            else if((level > currHopelessStart) && (level <= currHopelessEnd))
-            {
-                //this level belongs to hopeless region
-                hopeless = true;
-            }
-            /*else if(level == currHopelessEnd)
-            {
+                //check if level in working boundary of hopelessRegions; 
+                //start boundary
+                if( (level >= (currHopelessStart-boundaryLength)) && (level <= currHopelessStart) )
+                {
+                    forceUpdate = true;
+                }
+                //end boundary
+                else if((level > currHopelessEnd) && (level <= (currHopelessEnd+boundaryLength)) )
+                {
+                    forceUpdate = true;
+                }
+                //deal with hopeless region
+                else if((level > currHopelessStart) && (level <= currHopelessEnd))
+                {
+                    //this level belongs to hopeless region
+                    hopeless = true;
+                }
+                /*else if(level == currHopelessEnd)
+                  {
                 //don't set hopeless because now we have to end
                 //and consolidate
                 hopelessRegionCount++;
                 getHopelessStartEnd(hopelessRegionCount, &currHopelessStart, &currHopelessEnd);
-            }*/
-            if(level == (currHopelessEnd+boundaryLength+1))
-            {
-                //don't set hopeless because now we have to end
-                //and consolidate
-                hopelessRegionCount++;
-                getHopelessStartEnd(hopelessRegionCount, &currHopelessStart, &currHopelessEnd);
-                printf("check hopeless = [%d, %d]\n", currHopelessStart, currHopelessEnd);
-                forceUpdate = true;
+                }*/
+                if(level == (currHopelessEnd+boundaryLength+1))
+                {
+                   //don't set hopeless because now we have to end
+                    //and consolidate
+                    hopelessRegionCount++;
+                    getHopelessStartEnd(hopelessRegionCount, &currHopelessStart, &currHopelessEnd);
+                    printf("check hopeless = [%d, %d]\n", currHopelessStart, currHopelessEnd);
+                    forceUpdate = true;
+                }
+                if(level == currHopelessStart)
+                {
+                    consolidated_hopelessRegions.push_back(consolidated_ctr+1);//+1 since not yet incrmented
+                    //Only start is needed since we know it would always be one
+                    //level long after consolidation
+                    //consolidated_hopelessRegions.push_back(consolidated_ctr+2);//+1 since it will be consecuive, note that this is pointing towards end and does not include end, contrary to hopelessRegions
+                }
             }
+
+
             //printf("#### check level=%d, forceUpdate = %d, hopeless = %d\n", level, forceUpdate, hopeless);
             //printf("##### hopeless = %d, hopeless = [%d,%d]\n", hopeless, currHopelessStart, currHopelessEnd);
 #ifdef LB_REMINDER
@@ -743,10 +721,10 @@ void mtxPower::consolidatePartition()
 #endif
             if(curLevelCtr > 0 && !hopeless)
             {
-                //second condition to avoid bulk levels at boundary,
-                //as this is processed without caching
 
 #ifdef LB_REMINDER
+                //second condition to avoid bulk levels at boundary,
+                //as this is processed without caching
                 if( (sumElem >= cacheElem) || ( (numSharedCache > 1) && ( (consolidated_curLevelCtr < (highestPower)) || (curLevelCtr > (totalLevelInGroup-highestPower)) ) ) )
 #else
                 if((sumElem >= cacheElem) || forceUpdate)
@@ -782,18 +760,15 @@ void mtxPower::consolidatePartition()
 
                         int maxUnlockNRows_boundaries = 0;
                         int maxDangerNRows_boundaries = 0;
-                        for(int b=0; b<numBoundaries; ++b)
-                        {
-                            newLevelPtrNegativeBoundary[b].push_back(levelPtrNegativeBoundary[b][level]);
-                            newLevelPtrPositiveBoundary[b].push_back(levelPtrPositiveBoundary[b][level]);
-                            if((level+1) <= totalLevel)
-                            {
-                                maxUnlockNRows_boundaries = std::max(maxUnlockNRows_boundaries, (levelPtrNegativeBoundary[b][level+1]-levelPtrNegativeBoundary[b][level]));
-                                maxUnlockNRows_boundaries = std::max(maxUnlockNRows_boundaries, (levelPtrPositiveBoundary[b][level+1]-levelPtrPositiveBoundary[b][level]));
-                                maxDangerNRows_boundaries = std::min(maxDangerNRows_boundaries, (levelPtrNegativeBoundary[b][level] - levelPtrNegativeBoundary[b][level-1]));
-                                maxDangerNRows_boundaries = std::min(maxDangerNRows_boundaries, (levelPtrPositiveBoundary[b][level] - levelPtrPositiveBoundary[b][level-1]));
-                            }
-                        }
+
+                        EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr,
+                                newBoundaryLevelPtr[_region_][_workingRadius_][_radius_].push_back(_val_[level]);
+                                if((level+1) <= totalLevel)
+                                {
+                                    maxUnlockNRows_boundaries = std::max(maxUnlockNRows_boundaries, (_val_[level+1]-_val_[level]));
+                                    maxDangerNRows_boundaries = std::max(maxDangerNRows_boundaries, (_val_[level]-_val_[level-1]));
+                                }
+                                );
 
                         //see the note below to know why this is done; its to
                         //prevent overshoooting of unlockRow
@@ -832,7 +807,6 @@ void mtxPower::consolidatePartition()
                             //are small at this region
                             //WARNING_PRINT("There are bulky/irregular boundaries");// changing dangerRow[%d] from %d to %d", consolidated_ctr, prevDangerRow, dangerRow[consolidated_ctr]);
                         }
-                        //TODO: modify unlockRow to reflect levelPtr at Boundaries
                         if((level+1) <= totalLevel)
                         {
                             int unlockNRows_main = levelPtr[level+1] - levelPtr[level];
@@ -866,14 +840,7 @@ void mtxPower::consolidatePartition()
         int lastLevel = nodePtr[node+1];
         newLevelPtr.push_back(levelPtr[lastLevel]);
 
-        for(int b=0; b<numBoundaries; ++b)
-        {
-            //Using back instead of levelPtrNegativeBoundary[b][lastLevel] since
-            //lastLevel might terminate before since main levels can be with 0 rows.
-            //However, it might be that the boundary levels are not 0.
-            newLevelPtrNegativeBoundary[b].push_back(levelPtrNegativeBoundary[b].back());
-            newLevelPtrPositiveBoundary[b].push_back(levelPtrPositiveBoundary[b].back());
-        }
+        EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr, newBoundaryLevelPtr[_region_][_workingRadius_][_radius_].push_back(_val_.back()););
 
         dangerRow[consolidated_ctr] = levelPtr[lastLevel-1];
         if((lastLevel+1) <= totalLevel)
@@ -901,18 +868,7 @@ void mtxPower::consolidatePartition()
         printf("levelPtr[%d] = %d\n", i, levelPtr[i]);
     }
 
-    for(int b=0; b<numBoundaries; ++b)
-    {
-        levelPtrNegativeBoundary[b] = newLevelPtrNegativeBoundary[b];
-        levelPtrPositiveBoundary[b] = newLevelPtrPositiveBoundary[b];
-
-        printf("Consolidated boundary level[%d], size negative = %d, size positive = %d\n", b, (int)newLevelPtrNegativeBoundary[b].size(), (int)newLevelPtrPositiveBoundary[b].size());
-        for(int i=0; i<totalLevel+1; ++i)
-        {
-            printf("levelPtrNegativeBoundary[%d] = %d, levelPtrPositiveBoundary[%d] = %d\n", i, levelPtrNegativeBoundary[b][i], i, levelPtrPositiveBoundary[b][i]);
-        }
-    }
-
+    boundaryLevelPtr = newBoundaryLevelPtr;
     std::vector<int> newNodePtr = findMacroLevelPtr(cacheLevelGroup);
     if(nodePtr.size() != numSharedCache+1)
     {
@@ -1020,14 +976,9 @@ std::vector<int> mtxPower::getLevelPtr()
     return levelPtr;
 }
 
-std::vector<std::vector<int>> mtxPower::getLevelPtrNegativeBoundary()
+std::vector<std::vector<std::map<int, std::vector<int>>>> mtxPower::getBoundaryLevelPtr()
 {
-    return levelPtrNegativeBoundary;
-}
-
-std::vector<std::vector<int>> mtxPower::getLevelPtrPositiveBoundary()
-{
-    return levelPtrPositiveBoundary;
+    return boundaryLevelPtr;
 }
 
 int mtxPower::getTotalNodes()

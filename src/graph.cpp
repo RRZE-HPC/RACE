@@ -15,10 +15,10 @@
 //TODO no need to put only diagonal elements in Graph
 RACE_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *initInvPerm)
 {
-    if(NROW != NCOL) {
+    /*if(NROW != NCOL) {
         ERROR_PRINT("NROW!=NCOL : Currently Graph BMC supports only undirected Graph");
         return RACE_ERR_MATRIX_SYMM;
-    }
+    }*/
 
     int nodeWithChildren = 0;
 
@@ -78,7 +78,7 @@ RACE_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *
     //resize Graph to the small size
     if(nodeWithChildren != NROW) {
         printf("ctr = %d\n", ++irr_ctr);
-        ERROR_PRINT("Currently Graph has to be connected and irreducible");
+        WARNING_PRINT("Graph is not connected or irreducible. For coloring this is necessary, however for matrix power kernels this will work");
         //return RACE_ERR_NOT_IMPLEMENTED;
         /*int ctr = 0;
         for(intIter iter=pureDiag.begin(); iter!=pureDiag.end(); ++iter) {
@@ -89,7 +89,7 @@ RACE_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *
 
     if(!pureDiag.empty())
     {
-        ERROR_PRINT("Currently Graph has to be connected and irreducible");
+        WARNING_PRINT("Graph is not connected or irreducible. For coloring this is necessary, however for matrix power kernels this will work");
     //    return RACE_ERR_NOT_IMPLEMENTED;
     }
 
@@ -248,9 +248,22 @@ Graph::Graph(int nrow, int ncol, int *rowPtr, int *col, int *initPerm, int *init
     RACE_FN(createGraphFromCRS(rowPtr, col, initPerm, initInvPerm));
 }
 
-Graph::Graph(const Graph& srcGraph):graphData(srcGraph.graphData),pureDiag(srcGraph.pureDiag),serialPartRow(srcGraph.serialPartRow),perm(srcGraph.perm),NROW(srcGraph.NROW),NCOL(srcGraph.NCOL), NROW_serial(srcGraph.NROW_serial), NNZ_serial(srcGraph.NNZ_serial)
+/*Graph::Graph(const Graph& srcGraph):graphData(srcGraph.graphData),pureDiag(srcGraph.pureDiag),serialPartRow(srcGraph.serialPartRow),perm(srcGraph.perm),NROW(srcGraph.NROW),NCOL(srcGraph.NCOL), NROW_serial(srcGraph.NROW_serial), NNZ_serial(srcGraph.NNZ_serial)
 {
+}*/
+
+Graph::Graph(const Graph& srcGraph)
+{
+    graphData = srcGraph.graphData;
+    pureDiag = srcGraph.pureDiag;
+    serialPartRow = srcGraph.serialPartRow;
+    perm = srcGraph.perm;
+    NROW = srcGraph.NROW;
+    NCOL = srcGraph.NCOL; 
+    NROW_serial = srcGraph.NROW_serial;
+    NNZ_serial = srcGraph.NNZ_serial;
 }
+
 
 RACE_error Graph::swap(Graph& other)
 {
