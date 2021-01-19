@@ -512,6 +512,29 @@ void FuncManager::NUMAInitPower()
 
 #endif
 
+#define BOUNDARY_WORK\
+    if((pow > 0) && (pow < (power-1)))\
+    {\
+        EXEC_BOUNDARY_STRUCTURE((*boundaryLevelPtr),\
+                if((pow > _workingRadius_) && ( pow < (power-(_workingRadius_+1)) ))\
+                {\
+                    if( (pow > (_radius_-1)) && (pow < (power-(_radius_))) )\
+                    {\
+                        SPLIT_LEVEL_PER_THREAD_BOUNDARY(powLevel);\
+                        if(endRow_tid > startRow_tid) /*there wont be region if this is not true*/\
+                        {\
+/*
+ * #ifdef RACE_DEBUG
+                            printf("tid = %d, rowPerThread = %d, doing boundary [%d, %d] with pow = %d, powLevel = %d\n", omp_get_thread_num(), _RowPerThread_, startRow_tid, endRow_tid, pow, powLevel);
+#endif
+*/\
+                            powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);\
+                        }\
+                    }\
+                }\
+                );\
+    }
+
 //startSlope and endSlope of computation
 inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boundaryStart, int boundaryEnd, int startSlope, int endSlope, const std::vector<int> *levelPtr, const std::vector<std::vector<std::map<int,std::vector<int>>>>* boundaryLevelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent)
 {
@@ -567,7 +590,8 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
                 }*/
 
                 //move boundary inside so after each WAIT call
-                if((pow > 0) && (pow < (power-1)))
+                //WAIT(powLevel, pow);
+                /* if((pow > 0) && (pow < (power-1)))
                 {
                     EXEC_BOUNDARY_STRUCTURE((*boundaryLevelPtr),
                             if((pow > _workingRadius_) && ( pow < (power-(_workingRadius_+1)) ))
@@ -586,7 +610,7 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
                                 }
                             }
                         );
-                }
+                }*/
 /*
                     for(int b=0; b<workingBoundaryLength; ++b)
                     {
@@ -625,6 +649,7 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
                 {
                     //check lock
                     WAIT(powLevel, pow);
+                    BOUNDARY_WORK;
 
                     powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);
 #ifdef RACE_DEBUG
@@ -644,6 +669,7 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
                     //this branch can be optimised
                     //check lock
                     WAIT(powLevel, pow);
+                    BOUNDARY_WORK;
 
                     powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);
 #ifdef RACE_DEBUG
@@ -688,6 +714,7 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
                     }*/
                     if(dangerRowStart > endRow_tid)
                     {
+                        BOUNDARY_WORK;
                         powerFunc(till_row, endRow_tid, pow+1, numaLocalArg, args);
 #ifdef RACE_DEBUG
                         printf("2. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), till_row, endRow_tid, pow, powLevel);
@@ -702,6 +729,7 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
 
                         //check lock
                         WAIT(powLevel, pow);
+                        BOUNDARY_WORK;
 
                         powerFunc(dangerRowStart, endRow_tid, pow+1, numaLocalArg, args);
 #ifdef RACE_DEBUG
@@ -920,14 +948,6 @@ inline void FuncManager::powerCallNodeReminder(int startSlope, int endSlope, con
     }
 }
 
-void recursivePowerCall(FuncManager* funMan, int parent)
-{
-#pragma omp parallel
-    {
-        funMan->recursivePowerCallSerial(parent);
-    }
-}
-
 void FuncManager::recursivePowerCallSerial(int parent)
 {
 //#pragma omp parallel
@@ -1050,26 +1070,28 @@ void FuncManager::recursivePowerCallSerial(int parent)
 
 #else
 
-void FuncManager::powerRun()
+//Very old branch: No support for split NUMA nodes and stuff with this branch
+void FuncManager::recursivePowerCallSerial(int parent)
 {
-    //int totalLevel = matPower->getTotalLevel();
-    int* levelPtr = matPower->getLevelPtrRef();
-    int* nodePtr = matPower->getNodePtrRef();
+    std::vector<MPLeaf>* tree = &(matPower->tree);
+    std::vector<int>* nodePtr = &(tree->at(parent).nodePtr);
+    std::vector<int>* levelPtr  = &(tree->at(parent).lp);
 
-#pragma omp parallel
+//#pragma omp parallel
     {
         int tid = omp_get_thread_num();
         int nodeGroup = tid / threadPerNode;
         int localTid = tid % threadPerNode;
+        int offset = 0;
         //body
         {
             //printf("here is %d\n", sched_getcpu());
-            int startLevel = nodePtr[nodeGroup];
-            int endLevel = nodePtr[nodeGroup+1];
+            int startLevel = nodePtr->at(nodeGroup);
+            int endLevel = nodePtr->at(nodeGroup+1);
             int maxLevelCount = 0;
             for(int i=0; i<totalNodes; ++i)
             {
-                maxLevelCount = std::max(maxLevelCount, (nodePtr[i+1]-nodePtr[i]));
+                maxLevelCount = std::max(maxLevelCount, (nodePtr->at(i+1)-nodePtr->at(i)));
             }
             int maxEndLevel = startLevel + maxLevelCount; //needed so that everyone calls barrier
             for(int level=startLevel; level<(maxEndLevel); ++level)
@@ -1084,7 +1106,8 @@ void FuncManager::powerRun()
                         {
                             SPLIT_LEVEL_PER_THREAD(powLevel);
                             //can be a function ptr
-                            powerFunc(startRow_tid, endRow_tid, pow+1, args);
+                            powerFunc(startRow_tid, endRow_tid, pow+1, 0, args);
+
 #if 0
 #pragma omp parallel for schedule(static)
                             for(int row=levelPtr[powLevel]; row<levelPtr[powLevel+1]; ++row)
@@ -1115,24 +1138,24 @@ void FuncManager::powerRun()
         {
             //reminder-head
             {
-                int startLevel = nodePtr[nodeGroup];
-                int endLevel = std::min(startLevel+pow, nodePtr[nodeGroup+1]);
+                int startLevel = nodePtr->at(nodeGroup);
+                int endLevel = std::min(startLevel+pow, nodePtr->at(nodeGroup+1));
                 for(int level=startLevel; level<endLevel; ++level)
                 {
                     SPLIT_LEVEL_PER_THREAD(level);
                     //can be a function ptr
-                    powerFunc(startRow_tid, endRow_tid, pow+1, args);
+                    powerFunc(startRow_tid, endRow_tid, pow+1, 0, args);
                 }
             }
             //reminder-tail
             {
-                int endLevel = nodePtr[nodeGroup+1];
-                int startLevel = std::max(nodePtr[nodeGroup], endLevel-pow);
+                int endLevel = nodePtr->at(nodeGroup+1);
+                int startLevel = std::max(nodePtr->at(nodeGroup), endLevel-pow);
                 for(int level=startLevel; level<endLevel; ++level)
                 {
                     SPLIT_LEVEL_PER_THREAD(level);
                     //can be a function ptr
-                    powerFunc(startRow_tid, endRow_tid, pow+1, args);
+                    powerFunc(startRow_tid, endRow_tid, pow+1, 0, args);
                 }
 
             }
@@ -1142,6 +1165,15 @@ void FuncManager::powerRun()
 }
 
 #endif
+
+void recursivePowerCall(FuncManager* funMan, int parent)
+{
+#pragma omp parallel
+    {
+        funMan->recursivePowerCallSerial(parent);
+    }
+}
+
 
 void FuncManager::Run(bool rev_)
 {
@@ -1198,7 +1230,6 @@ void FuncManager::Run(bool rev_)
         //printf("setting nested\n");
         omp_set_nested(0);
         recursivePowerFun(0);
-        //powerRun();
 
         //reset states
         omp_set_nested(resetNestedState);
