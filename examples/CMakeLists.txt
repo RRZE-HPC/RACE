@@ -183,6 +183,7 @@ add_executable(param_study ${SOURCES} ${PROJECT_SOURCE_DIR}/src/param_study.cpp)
 add_executable(spmv ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/spmv.cpp)
 add_executable(tradPower ${SOURCES} ${PROJECT_SOURCE_DIR}/src/tradPower.cpp)
 add_executable(tradPowerNuma ${SOURCES} ${PROJECT_SOURCE_DIR}/src/tradPowerNuma.cpp)
+add_executable(matStat ${SOURCES} ${PROJECT_SOURCE_DIR}/src/mat_stat.cpp)
 
 set(EXT_LIBRARIES "${BLAS_LIBRARIES}")
 
@@ -197,6 +198,7 @@ target_link_libraries(param_study "${EXT_LIBRARIES}")
 target_link_libraries(spmv "${EXT_LIBRARIES}")
 target_link_libraries(tradPower "${EXT_LIBRARIES}")
 target_link_libraries(tradPowerNuma "${EXT_LIBRARIES}")
+target_link_libraries(matStat "${EXT_LIBRARIES}")
 
 if(RACE_USE_SPMP)
     include_directories(SYSTEM ${PROJECT_BINARY_DIR}/SpMP/src)
@@ -211,6 +213,7 @@ endif()
 
 
 file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/perf_script.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
+file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/extract_matDetails.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
 file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/check-state.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
 file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/config.txt DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
 file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/machine-state.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)

@@ -57,5 +57,7 @@ int main(const int argc, char * argv[])
         std::cout<<it->first<<"->"<<it->second<<std::endl;
     }
 
+    printf("Nrows = %d\n", NROWS);
+    printf("NNZ = %d\n", mat->nnz);
     delete mat;
 }
