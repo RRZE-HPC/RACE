@@ -1,0 +1,1680 @@
+
+################################################################################
+# Hostname
+################################################################################
+casclakesp2.rrze.uni-erlangen.de
+
+################################################################################
+# Operating System
+################################################################################
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=18.04
+DISTRIB_CODENAME=bionic
+DISTRIB_DESCRIPTION="Ubuntu 18.04.5 LTS"
+NAME="Ubuntu"
+VERSION="18.04.5 LTS (Bionic Beaver)"
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME="Ubuntu 18.04.5 LTS"
+VERSION_ID="18.04"
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+VERSION_CODENAME=bionic
+UBUNTU_CODENAME=bionic
+
+################################################################################
+# Operating System (LSB)
+################################################################################
+No LSB modules are available.
+
+################################################################################
+# Operating System Kernel
+################################################################################
+Linux casclakesp2 4.15.0-132-generic #136-Ubuntu SMP Tue Jan 12 14:58:42 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
+
+################################################################################
+# Logged in users
+################################################################################
+ 15:49:02 up 20 days,  4:28,  0 users,  load average: 1.00, 3.02, 2.32
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+
+################################################################################
+# CPUset
+################################################################################
+Domain N:
+	0,40,1,41,2,42,3,43,4,44,5,45,6,46,7,47,8,48,9,49,10,50,11,51,12,52,13,53,14,54,15,55,16,56,17,57,18,58,19,59,20,60,21,61,22,62,23,63,24,64,25,65,26,66,27,67,28,68,29,69,30,70,31,71,32,72,33,73,34,74,35,75,36,76,37,77,38,78,39,79
+
+Domain S0:
+	0,40,1,41,2,42,3,43,4,44,5,45,6,46,7,47,8,48,9,49,10,50,11,51,12,52,13,53,14,54,15,55,16,56,17,57,18,58,19,59
+
+Domain S1:
+	20,60,21,61,22,62,23,63,24,64,25,65,26,66,27,67,28,68,29,69,30,70,31,71,32,72,33,73,34,74,35,75,36,76,37,77,38,78,39,79
+
+Domain C0:
+	0,40,1,41,2,42,3,43,4,44,5,45,6,46,7,47,8,48,9,49,10,50,11,51,12,52,13,53,14,54,15,55,16,56,17,57,18,58,19,59
+
+Domain C1:
+	20,60,21,61,22,62,23,63,24,64,25,65,26,66,27,67,28,68,29,69,30,70,31,71,32,72,33,73,34,74,35,75,36,76,37,77,38,78,39,79
+
+Domain M0:
+	0,40,1,41,2,42,3,43,4,44,5,45,6,46,7,47,8,48,9,49,10,50,11,51,12,52,13,53,14,54,15,55,16,56,17,57,18,58,19,59
+
+Domain M1:
+	20,60,21,61,22,62,23,63,24,64,25,65,26,66,27,67,28,68,29,69,30,70,31,71,32,72,33,73,34,74,35,75,36,76,37,77,38,78,39,79
+
+
+################################################################################
+# CGroups
+################################################################################
+Allowed CPUs: 0-79
+Allowed Memory controllers: 0-1
+
+################################################################################
+# Topology
+################################################################################
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Xeon(R) Gold 6248 CPU @ 2.50GHz
+CPU type:	Intel Cascadelake SP processor
+CPU stepping:	7
+********************************************************************************
+Hardware Thread Topology
+********************************************************************************
+Sockets:		2
+Cores per socket:	20
+Threads per core:	2
+--------------------------------------------------------------------------------
+HWThread	Thread		Core		Socket		Available
+0		0		0		0		*
+1		0		1		0		*
+2		0		2		0		*
+3		0		3		0		*
+4		0		4		0		*
+5		0		5		0		*
+6		0		6		0		*
+7		0		7		0		*
+8		0		8		0		*
+9		0		9		0		*
+10		0		10		0		*
+11		0		11		0		*
+12		0		12		0		*
+13		0		13		0		*
+14		0		14		0		*
+15		0		15		0		*
+16		0		16		0		*
+17		0		17		0		*
+18		0		18		0		*
+19		0		19		0		*
+20		0		20		1		*
+21		0		21		1		*
+22		0		22		1		*
+23		0		23		1		*
+24		0		24		1		*
+25		0		25		1		*
+26		0		26		1		*
+27		0		27		1		*
+28		0		28		1		*
+29		0		29		1		*
+30		0		30		1		*
+31		0		31		1		*
+32		0		32		1		*
+33		0		33		1		*
+34		0		34		1		*
+35		0		35		1		*
+36		0		36		1		*
+37		0		37		1		*
+38		0		38		1		*
+39		0		39		1		*
+40		1		0		0		*
+41		1		1		0		*
+42		1		2		0		*
+43		1		3		0		*
+44		1		4		0		*
+45		1		5		0		*
+46		1		6		0		*
+47		1		7		0		*
+48		1		8		0		*
+49		1		9		0		*
+50		1		10		0		*
+51		1		11		0		*
+52		1		12		0		*
+53		1		13		0		*
+54		1		14		0		*
+55		1		15		0		*
+56		1		16		0		*
+57		1		17		0		*
+58		1		18		0		*
+59		1		19		0		*
+60		1		20		1		*
+61		1		21		1		*
+62		1		22		1		*
+63		1		23		1		*
+64		1		24		1		*
+65		1		25		1		*
+66		1		26		1		*
+67		1		27		1		*
+68		1		28		1		*
+69		1		29		1		*
+70		1		30		1		*
+71		1		31		1		*
+72		1		32		1		*
+73		1		33		1		*
+74		1		34		1		*
+75		1		35		1		*
+76		1		36		1		*
+77		1		37		1		*
+78		1		38		1		*
+79		1		39		1		*
+--------------------------------------------------------------------------------
+Socket 0:		( 0 40 1 41 2 42 3 43 4 44 5 45 6 46 7 47 8 48 9 49 10 50 11 51 12 52 13 53 14 54 15 55 16 56 17 57 18 58 19 59 )
+Socket 1:		( 20 60 21 61 22 62 23 63 24 64 25 65 26 66 27 67 28 68 29 69 30 70 31 71 32 72 33 73 34 74 35 75 36 76 37 77 38 78 39 79 )
+--------------------------------------------------------------------------------
+********************************************************************************
+Cache Topology
+********************************************************************************
+Level:			1
+Size:			32 kB
+Cache groups:		( 0 40 ) ( 1 41 ) ( 2 42 ) ( 3 43 ) ( 4 44 ) ( 5 45 ) ( 6 46 ) ( 7 47 ) ( 8 48 ) ( 9 49 ) ( 10 50 ) ( 11 51 ) ( 12 52 ) ( 13 53 ) ( 14 54 ) ( 15 55 ) ( 16 56 ) ( 17 57 ) ( 18 58 ) ( 19 59 ) ( 20 60 ) ( 21 61 ) ( 22 62 ) ( 23 63 ) ( 24 64 ) ( 25 65 ) ( 26 66 ) ( 27 67 ) ( 28 68 ) ( 29 69 ) ( 30 70 ) ( 31 71 ) ( 32 72 ) ( 33 73 ) ( 34 74 ) ( 35 75 ) ( 36 76 ) ( 37 77 ) ( 38 78 ) ( 39 79 )
+--------------------------------------------------------------------------------
+Level:			2
+Size:			1 MB
+Cache groups:		( 0 40 ) ( 1 41 ) ( 2 42 ) ( 3 43 ) ( 4 44 ) ( 5 45 ) ( 6 46 ) ( 7 47 ) ( 8 48 ) ( 9 49 ) ( 10 50 ) ( 11 51 ) ( 12 52 ) ( 13 53 ) ( 14 54 ) ( 15 55 ) ( 16 56 ) ( 17 57 ) ( 18 58 ) ( 19 59 ) ( 20 60 ) ( 21 61 ) ( 22 62 ) ( 23 63 ) ( 24 64 ) ( 25 65 ) ( 26 66 ) ( 27 67 ) ( 28 68 ) ( 29 69 ) ( 30 70 ) ( 31 71 ) ( 32 72 ) ( 33 73 ) ( 34 74 ) ( 35 75 ) ( 36 76 ) ( 37 77 ) ( 38 78 ) ( 39 79 )
+--------------------------------------------------------------------------------
+Level:			3
+Size:			28 MB
+Cache groups:		( 0 40 1 41 2 42 3 43 4 44 5 45 6 46 7 47 8 48 9 49 10 50 11 51 12 52 13 53 14 54 15 55 16 56 17 57 18 58 19 59 ) ( 20 60 21 61 22 62 23 63 24 64 25 65 26 66 27 67 28 68 29 69 30 70 31 71 32 72 33 73 34 74 35 75 36 76 37 77 38 78 39 79 )
+--------------------------------------------------------------------------------
+********************************************************************************
+NUMA Topology
+********************************************************************************
+NUMA domains:		2
+--------------------------------------------------------------------------------
+Domain:			0
+Processors:		( 0 40 1 41 2 42 3 43 4 44 5 45 6 46 7 47 8 48 9 49 10 50 11 51 12 52 13 53 14 54 15 55 16 56 17 57 18 58 19 59 )
+Distances:		10 21
+Free memory:		192276 MB
+Total memory:		193136 MB
+--------------------------------------------------------------------------------
+Domain:			1
+Processors:		( 20 60 21 61 22 62 23 63 24 64 25 65 26 66 27 67 28 68 29 69 30 70 31 71 32 72 33 73 34 74 35 75 36 76 37 77 38 78 39 79 )
+Distances:		21 10
+Free memory:		192681 MB
+Total memory:		193506 MB
+--------------------------------------------------------------------------------
+
+################################################################################
+# NUMA Topology
+################################################################################
+available: 2 nodes (0-1)
+node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59
+node 0 size: 193136 MB
+node 0 free: 192288 MB
+node 1 cpus: 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79
+node 1 size: 193505 MB
+node 1 free: 192681 MB
+node distances:
+node   0   1 
+  0:  10  21 
+  1:  21  10 
+
+################################################################################
+# Frequencies
+################################################################################
+Current CPU frequencies:
+HWThread 0: governor  performance min/cur/max 1.0/1.93346/3.9 GHz Turbo 1
+HWThread 1: governor  performance min/cur/max 1.0/3.416204/3.9 GHz Turbo 1
+HWThread 2: governor  performance min/cur/max 1.0/3.094796/3.9 GHz Turbo 1
+HWThread 3: governor  performance min/cur/max 1.0/2.854014/3.9 GHz Turbo 1
+HWThread 4: governor  performance min/cur/max 1.0/2.617376/3.9 GHz Turbo 1
+HWThread 5: governor  performance min/cur/max 1.0/1.669015/3.9 GHz Turbo 1
+HWThread 6: governor  performance min/cur/max 1.0/1.87434/3.9 GHz Turbo 1
+HWThread 7: governor  performance min/cur/max 1.0/2.481853/3.9 GHz Turbo 1
+HWThread 8: governor  performance min/cur/max 1.0/2.532862/3.9 GHz Turbo 1
+HWThread 9: governor  performance min/cur/max 1.0/2.798092/3.9 GHz Turbo 1
+HWThread 10: governor  performance min/cur/max 1.0/1.363534/3.9 GHz Turbo 1
+HWThread 11: governor  performance min/cur/max 1.0/1.364292/3.9 GHz Turbo 1
+HWThread 12: governor  performance min/cur/max 1.0/2.635691/3.9 GHz Turbo 1
+HWThread 13: governor  performance min/cur/max 1.0/1.916631/3.9 GHz Turbo 1
+HWThread 14: governor  performance min/cur/max 1.0/2.974802/3.9 GHz Turbo 1
+HWThread 15: governor  performance min/cur/max 1.0/3.332141/3.9 GHz Turbo 1
+HWThread 16: governor  performance min/cur/max 1.0/3.180889/3.9 GHz Turbo 1
+HWThread 17: governor  performance min/cur/max 1.0/3.248752/3.9 GHz Turbo 1
+HWThread 18: governor  performance min/cur/max 1.0/1.856142/3.9 GHz Turbo 1
+HWThread 19: governor  performance min/cur/max 1.0/2.809144/3.9 GHz Turbo 1
+HWThread 20: governor  performance min/cur/max 1.0/2.726182/3.9 GHz Turbo 1
+HWThread 21: governor  performance min/cur/max 1.0/1.542767/3.9 GHz Turbo 1
+HWThread 22: governor  performance min/cur/max 1.0/1.390377/3.9 GHz Turbo 1
+HWThread 23: governor  performance min/cur/max 1.0/3.535179/3.9 GHz Turbo 1
+HWThread 24: governor  performance min/cur/max 1.0/1.626405/3.9 GHz Turbo 1
+HWThread 25: governor  performance min/cur/max 1.0/1.901793/3.9 GHz Turbo 1
+HWThread 26: governor  performance min/cur/max 1.0/1.463395/3.9 GHz Turbo 1
+HWThread 27: governor  performance min/cur/max 1.0/1.829101/3.9 GHz Turbo 1
+HWThread 28: governor  performance min/cur/max 1.0/1.459511/3.9 GHz Turbo 1
+HWThread 29: governor  performance min/cur/max 1.0/1.308207/3.9 GHz Turbo 1
+HWThread 30: governor  performance min/cur/max 1.0/1.872486/3.9 GHz Turbo 1
+HWThread 31: governor  performance min/cur/max 1.0/1.988484/3.9 GHz Turbo 1
+HWThread 32: governor  performance min/cur/max 1.0/1.478608/3.9 GHz Turbo 1
+HWThread 33: governor  performance min/cur/max 1.0/1.916757/3.9 GHz Turbo 1
+HWThread 34: governor  performance min/cur/max 1.0/2.392711/3.9 GHz Turbo 1
+HWThread 35: governor  performance min/cur/max 1.0/1.367065/3.9 GHz Turbo 1
+HWThread 36: governor  performance min/cur/max 1.0/2.82904/3.9 GHz Turbo 1
+HWThread 37: governor  performance min/cur/max 1.0/3.043379/3.9 GHz Turbo 1
+HWThread 38: governor  performance min/cur/max 1.0/2.184732/3.9 GHz Turbo 1
+HWThread 39: governor  performance min/cur/max 1.0/3.078241/3.9 GHz Turbo 1
+HWThread 40: governor  performance min/cur/max 1.0/3.165899/3.9 GHz Turbo 1
+HWThread 41: governor  performance min/cur/max 1.0/3.404348/3.9 GHz Turbo 1
+HWThread 42: governor  performance min/cur/max 1.0/1.606317/3.9 GHz Turbo 1
+HWThread 43: governor  performance min/cur/max 1.0/1.840847/3.9 GHz Turbo 1
+HWThread 44: governor  performance min/cur/max 1.0/1.266507/3.9 GHz Turbo 1
+HWThread 45: governor  performance min/cur/max 1.0/1.212655/3.9 GHz Turbo 1
+HWThread 46: governor  performance min/cur/max 1.0/2.517725/3.9 GHz Turbo 1
+HWThread 47: governor  performance min/cur/max 1.0/1.339939/3.9 GHz Turbo 1
+HWThread 48: governor  performance min/cur/max 1.0/1.821602/3.9 GHz Turbo 1
+HWThread 49: governor  performance min/cur/max 1.0/2.186105/3.9 GHz Turbo 1
+HWThread 50: governor  performance min/cur/max 1.0/1.900734/3.9 GHz Turbo 1
+HWThread 51: governor  performance min/cur/max 1.0/2.192767/3.9 GHz Turbo 1
+HWThread 52: governor  performance min/cur/max 1.0/2.004823/3.9 GHz Turbo 1
+HWThread 53: governor  performance min/cur/max 1.0/3.372178/3.9 GHz Turbo 1
+HWThread 54: governor  performance min/cur/max 1.0/2.2143/3.9 GHz Turbo 1
+HWThread 55: governor  performance min/cur/max 1.0/2.998701/3.9 GHz Turbo 1
+HWThread 56: governor  performance min/cur/max 1.0/2.941702/3.9 GHz Turbo 1
+HWThread 57: governor  performance min/cur/max 1.0/2.661508/3.9 GHz Turbo 1
+HWThread 58: governor  performance min/cur/max 1.0/2.415505/3.9 GHz Turbo 1
+HWThread 59: governor  performance min/cur/max 1.0/2.356876/3.9 GHz Turbo 1
+HWThread 60: governor  performance min/cur/max 1.0/2.27321/3.9 GHz Turbo 1
+HWThread 61: governor  performance min/cur/max 1.0/1.147044/3.9 GHz Turbo 1
+HWThread 62: governor  performance min/cur/max 1.0/1.084153/3.9 GHz Turbo 1
+HWThread 63: governor  performance min/cur/max 1.0/1.448104/3.9 GHz Turbo 1
+HWThread 64: governor  performance min/cur/max 1.0/2.943613/3.9 GHz Turbo 1
+HWThread 65: governor  performance min/cur/max 1.0/1.38909/3.9 GHz Turbo 1
+HWThread 66: governor  performance min/cur/max 1.0/2.67117/3.9 GHz Turbo 1
+HWThread 67: governor  performance min/cur/max 1.0/2.673311/3.9 GHz Turbo 1
+HWThread 68: governor  performance min/cur/max 1.0/1.138707/3.9 GHz Turbo 1
+HWThread 69: governor  performance min/cur/max 1.0/2.071359/3.9 GHz Turbo 1
+HWThread 70: governor  performance min/cur/max 1.0/1.423714/3.9 GHz Turbo 1
+HWThread 71: governor  performance min/cur/max 1.0/2.243993/3.9 GHz Turbo 1
+HWThread 72: governor  performance min/cur/max 1.0/1.061836/3.9 GHz Turbo 1
+HWThread 73: governor  performance min/cur/max 1.0/1.074457/3.9 GHz Turbo 1
+HWThread 74: governor  performance min/cur/max 1.0/1.379363/3.9 GHz Turbo 1
+HWThread 75: governor  performance min/cur/max 1.0/1.354238/3.9 GHz Turbo 1
+HWThread 76: governor  performance min/cur/max 1.0/1.708021/3.9 GHz Turbo 1
+HWThread 77: governor  performance min/cur/max 1.0/2.15895/3.9 GHz Turbo 1
+HWThread 78: governor  performance min/cur/max 1.0/1.233329/3.9 GHz Turbo 1
+HWThread 79: governor  performance min/cur/max 1.0/3.181297/3.9 GHz Turbo 1
+
+Current Uncore frequencies:
+Socket 0: min/max 2.4/2.4 GHz
+Socket 1: min/max 2.4/2.4 GHz
+
+################################################################################
+# Prefetchers
+################################################################################
+Feature               HWThread 0	HWThread 40	HWThread 1	HWThread 41	HWThread 2	HWThread 42	HWThread 3	HWThread 43	HWThread 4	HWThread 44	HWThread 5	HWThread 45	HWThread 6	HWThread 46	HWThread 7	HWThread 47	HWThread 8	HWThread 48	HWThread 9	HWThread 49	HWThread 10	HWThread 50	HWThread 11	HWThread 51	HWThread 12	HWThread 52	HWThread 13	HWThread 53	HWThread 14	HWThread 54	HWThread 15	HWThread 55	HWThread 16	HWThread 56	HWThread 17	HWThread 57	HWThread 18	HWThread 58	HWThread 19	HWThread 59	HWThread 20	HWThread 60	HWThread 21	HWThread 61	HWThread 22	HWThread 62	HWThread 23	HWThread 63	HWThread 24	HWThread 64	HWThread 25	HWThread 65	HWThread 26	HWThread 66	HWThread 27	HWThread 67	HWThread 28	HWThread 68	HWThread 29	HWThread 69	HWThread 30	HWThread 70	HWThread 31	HWThread 71	HWThread 32	HWThread 72	HWThread 33	HWThread 73	HWThread 34	HWThread 74	HWThread 35	HWThread 75	HWThread 36	HWThread 76	HWThread 37	HWThread 77	HWThread 38	HWThread 78	HWThread 39	HWThread 79	
+HW_PREFETCHER         on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	
+CL_PREFETCHER         on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	
+DCU_PREFETCHER        on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	
+IP_PREFETCHER         on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	
+FAST_STRINGS          on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	
+THERMAL_CONTROL       on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	
+PERF_MON              on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	
+FERR_MULTIPLEX        off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	
+BRANCH_TRACE_STORAGE  on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	
+XTPR_MESSAGE          off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	
+PEBS                  on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	
+SPEEDSTEP             on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	
+MONITOR               on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	
+SPEEDSTEP_LOCK        off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	
+CPUID_MAX_VAL         off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	
+XD_BIT                on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	
+DYN_ACCEL             off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	
+TURBO_MODE            on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	on	
+TM2                   off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	off	
+
+################################################################################
+# Load
+################################################################################
+1.00 2.98 2.31 1/833 74496
+
+################################################################################
+# Performance energy bias
+################################################################################
+Performance energy bias: 0 (0=highest performance, 15 = lowest energy)
+
+################################################################################
+# NUMA balancing
+################################################################################
+Enabled: 0
+
+################################################################################
+# General memory info
+################################################################################
+MemTotal:       395921696 kB
+MemFree:        394203428 kB
+MemAvailable:   392737864 kB
+Buffers:            5612 kB
+Cached:            98580 kB
+SwapCached:            0 kB
+Active:            83660 kB
+Inactive:          59328 kB
+Active(anon):      38824 kB
+Inactive(anon):    12140 kB
+Active(file):      44836 kB
+Inactive(file):    47188 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+SwapTotal:      31998972 kB
+SwapFree:       31998972 kB
+Dirty:               464 kB
+Writeback:             0 kB
+AnonPages:         38812 kB
+Mapped:            59640 kB
+Shmem:             12144 kB
+Slab:             758344 kB
+SReclaimable:     295900 kB
+SUnreclaim:       462444 kB
+KernelStack:       14592 kB
+PageTables:         3384 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:    229959820 kB
+Committed_AS:     394348 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:           0 kB
+VmallocChunk:          0 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:         0 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+CmaTotal:              0 kB
+CmaFree:               0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:      960828 kB
+DirectMap2M:    27011072 kB
+DirectMap1G:    374341632 kB
+
+################################################################################
+# Transparent huge pages
+################################################################################
+Enabled: [always] madvise never
+Use zero page: 1
+
+################################################################################
+# Hardware power limits
+################################################################################
+RAPL domain package-1
+- Limit0  MaxPower NAuW Limit NAuW TimeWindow NAus
+- Limit1  MaxPower NAuW Limit NAuW TimeWindow NAus
+RAPL domain package-0
+- Limit0  MaxPower NAuW Limit NAuW TimeWindow NAus
+- Limit1  MaxPower NAuW Limit NAuW TimeWindow NAus
+
+################################################################################
+# Compiler
+################################################################################
+icc (ICC) 19.0.5.281 20190815
+Copyright (C) 1985-2019 Intel Corporation.  All rights reserved.
+
+
+################################################################################
+# MPI
+################################################################################
+Intel(R) MPI Library for Linux* OS, Version 2019 Update 5 Build 20190806 (id: 7e5a4f84c)
+Copyright 2003-2019, Intel Corporation.
+
+################################################################################
+# dmidecode
+################################################################################
+# dmidecode 3.1
+Getting SMBIOS data from sysfs.
+SMBIOS 3.2 present.
+# SMBIOS implementations newer than version 3.1.1 are not
+# fully supported by this version of dmidecode.
+
+Handle 0x0003, DMI type 0, 26 bytes
+BIOS Information
+	Vendor: HPE
+	Version: U32
+	Release Date: 04/18/2019
+	Address: 0xF0000
+	Runtime Size: 64 kB
+	ROM Size: 64 MB
+	Characteristics:
+		PCI is supported
+		PNP is supported
+		BIOS is upgradeable
+		BIOS shadowing is allowed
+		ESCD support is available
+		Boot from CD is supported
+		Selectable boot is supported
+		EDD is supported
+		5.25"/360 kB floppy services are supported (int 13h)
+		5.25"/1.2 MB floppy services are supported (int 13h)
+		3.5"/720 kB floppy services are supported (int 13h)
+		Print screen service is supported (int 5h)
+		8042 keyboard services are supported (int 9h)
+	(Line containing Serial number has been censored)
+		Printer services are supported (int 17h)
+		CGA/mono video services are supported (int 10h)
+		ACPI is supported
+		USB legacy is supported
+		BIOS boot specification is supported
+		Function key-initiated network boot is supported
+		Targeted content distribution is supported
+		UEFI is supported
+	BIOS Revision: 2.4
+	Firmware Revision: 1.43
+
+Handle 0x0004, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: U44
+	Internal Connector Type: Access Bus (USB)
+	External Reference Designator: USB PORT 1
+	External Connector Type: Access Bus (USB)
+	Port Type: USB
+
+Handle 0x0005, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: J132
+	Internal Connector Type: Access Bus (USB)
+	External Reference Designator: USB PORT 2
+	External Connector Type: Access Bus (USB)
+	Port Type: USB
+
+Handle 0x0006, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: J130
+	Internal Connector Type: Access Bus (USB)
+	External Reference Designator: USB PORT 3
+	External Connector Type: Access Bus (USB)
+	Port Type: USB
+
+Handle 0x0007, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: J106
+	Internal Connector Type: Access Bus (USB)
+	External Reference Designator: USB PORT 4
+	External Connector Type: Access Bus (USB)
+	Port Type: USB
+
+Handle 0x0008, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: J161
+	Internal Connector Type: Access Bus (USB)
+	External Reference Designator: USB PORT 5
+	External Connector Type: Access Bus (USB)
+	Port Type: USB
+
+Handle 0x0009, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: J132
+	Internal Connector Type: Access Bus (USB)
+	External Reference Designator: USB PORT 6
+	External Connector Type: Access Bus (USB)
+	Port Type: USB
+
+Handle 0x000A, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: J12
+	Internal Connector Type: Access Bus (USB)
+	External Reference Designator: USB PORT 7
+	External Connector Type: Access Bus (USB)
+	Port Type: USB
+
+Handle 0x000B, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: J12
+	Internal Connector Type: Access Bus (USB)
+	External Reference Designator: USB PORT 8
+	External Connector Type: Access Bus (USB)
+	Port Type: USB
+
+Handle 0x000C, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: J87
+	Internal Connector Type: None
+	External Reference Designator: Com PORT
+	External Connector Type: DB-9 male
+	(Line containing Serial number has been censored)
+
+Handle 0x000D, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: J28
+	Internal Connector Type: None
+	External Reference Designator: Video PORT
+	External Connector Type: DB-15 female
+	Port Type: Video Port
+
+Handle 0x000E, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: J39
+	Internal Connector Type: None
+	External Reference Designator: ILO NIC PORT
+	External Connector Type: RJ-45
+	Port Type: Network Port
+
+Handle 0x000F, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: J109
+	Internal Connector Type: None
+	External Reference Designator: NIC PORT 1
+	External Connector Type: RJ-45
+	Port Type: Network Port
+
+Handle 0x0010, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: J109
+	Internal Connector Type: None
+	External Reference Designator: NIC PORT 2
+	External Connector Type: RJ-45
+	Port Type: Network Port
+
+Handle 0x0011, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: J109
+	Internal Connector Type: None
+	External Reference Designator: NIC PORT 3
+	External Connector Type: RJ-45
+	Port Type: Network Port
+
+Handle 0x0012, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: J109
+	Internal Connector Type: None
+	External Reference Designator: NIC PORT 4
+	External Connector Type: RJ-45
+	Port Type: Network Port
+
+Handle 0x0013, DMI type 16, 23 bytes
+Physical Memory Array
+	Location: System Board Or Motherboard
+	Use: System Memory
+	Error Correction Type: Multi-bit ECC
+	Maximum Capacity: 3 TB
+	Error Information Handle: Not Provided
+	Number Of Devices: 12
+
+Handle 0x0014, DMI type 16, 23 bytes
+Physical Memory Array
+	Location: System Board Or Motherboard
+	Use: System Memory
+	Error Correction Type: Multi-bit ECC
+	Maximum Capacity: 3 TB
+	Error Information Handle: Not Provided
+	Number Of Devices: 12
+
+Handle 0x001F, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0013
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: PROC 1 DIMM 1
+	Bank Locator: Not Specified
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: HPE
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: P03052-091
+	Rank: 2
+	Configured Clock Speed: 2933 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0020, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0013
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: 1
+	Locator: PROC 1 DIMM 2
+	Bank Locator: Not Specified
+	Type: Other
+	Type Detail: Synchronous
+	Speed: Unknown
+	Manufacturer: UNKNOWN
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: NOT AVAILABLE
+	Rank: Unknown
+	Configured Clock Speed: Unknown
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x0021, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0013
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: 2
+	Locator: PROC 1 DIMM 3
+	Bank Locator: Not Specified
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: HPE
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: P03052-091
+	Rank: 2
+	Configured Clock Speed: 2933 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0022, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0013
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: 3
+	Locator: PROC 1 DIMM 4
+	Bank Locator: Not Specified
+	Type: Other
+	Type Detail: Synchronous
+	Speed: Unknown
+	Manufacturer: UNKNOWN
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: NOT AVAILABLE
+	Rank: Unknown
+	Configured Clock Speed: Unknown
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x0023, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0013
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: 4
+	Locator: PROC 1 DIMM 5
+	Bank Locator: Not Specified
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: HPE
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: P03052-091
+	Rank: 2
+	Configured Clock Speed: 2933 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0024, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0013
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: 5
+	Locator: PROC 1 DIMM 6
+	Bank Locator: Not Specified
+	Type: Other
+	Type Detail: Synchronous
+	Speed: Unknown
+	Manufacturer: UNKNOWN
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: NOT AVAILABLE
+	Rank: Unknown
+	Configured Clock Speed: Unknown
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x0025, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0013
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: 6
+	Locator: PROC 1 DIMM 7
+	Bank Locator: Not Specified
+	Type: Other
+	Type Detail: Synchronous
+	Speed: Unknown
+	Manufacturer: UNKNOWN
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: NOT AVAILABLE
+	Rank: Unknown
+	Configured Clock Speed: Unknown
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x0026, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0013
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: 7
+	Locator: PROC 1 DIMM 8
+	Bank Locator: Not Specified
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: HPE
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: P03052-091
+	Rank: 2
+	Configured Clock Speed: 2933 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0027, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0013
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: 8
+	Locator: PROC 1 DIMM 9
+	Bank Locator: Not Specified
+	Type: Other
+	Type Detail: Synchronous
+	Speed: Unknown
+	Manufacturer: UNKNOWN
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: NOT AVAILABLE
+	Rank: Unknown
+	Configured Clock Speed: Unknown
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x0028, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0013
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: 9
+	Locator: PROC 1 DIMM 10
+	Bank Locator: Not Specified
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: HPE
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: P03052-091
+	Rank: 2
+	Configured Clock Speed: 2933 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0029, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0013
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: 10
+	Locator: PROC 1 DIMM 11
+	Bank Locator: Not Specified
+	Type: Other
+	Type Detail: Synchronous
+	Speed: Unknown
+	Manufacturer: UNKNOWN
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: NOT AVAILABLE
+	Rank: Unknown
+	Configured Clock Speed: Unknown
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x002A, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0013
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: 11
+	Locator: PROC 1 DIMM 12
+	Bank Locator: Not Specified
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: HPE
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: P03052-091
+	Rank: 2
+	Configured Clock Speed: 2933 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x002B, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0014
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: 12
+	Locator: PROC 2 DIMM 1
+	Bank Locator: Not Specified
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: HPE
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: P03052-091
+	Rank: 2
+	Configured Clock Speed: 2933 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x002C, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0014
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: 13
+	Locator: PROC 2 DIMM 2
+	Bank Locator: Not Specified
+	Type: Other
+	Type Detail: Synchronous
+	Speed: Unknown
+	Manufacturer: UNKNOWN
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: NOT AVAILABLE
+	Rank: Unknown
+	Configured Clock Speed: Unknown
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x002D, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0014
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: 14
+	Locator: PROC 2 DIMM 3
+	Bank Locator: Not Specified
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: HPE
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: P03052-091
+	Rank: 2
+	Configured Clock Speed: 2933 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x002E, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0014
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: 15
+	Locator: PROC 2 DIMM 4
+	Bank Locator: Not Specified
+	Type: Other
+	Type Detail: Synchronous
+	Speed: Unknown
+	Manufacturer: UNKNOWN
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: NOT AVAILABLE
+	Rank: Unknown
+	Configured Clock Speed: Unknown
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x002F, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0014
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: 16
+	Locator: PROC 2 DIMM 5
+	Bank Locator: Not Specified
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: HPE
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: P03052-091
+	Rank: 2
+	Configured Clock Speed: 2933 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0030, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0014
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: 17
+	Locator: PROC 2 DIMM 6
+	Bank Locator: Not Specified
+	Type: Other
+	Type Detail: Synchronous
+	Speed: Unknown
+	Manufacturer: UNKNOWN
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: NOT AVAILABLE
+	Rank: Unknown
+	Configured Clock Speed: Unknown
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x0031, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0014
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: 18
+	Locator: PROC 2 DIMM 7
+	Bank Locator: Not Specified
+	Type: Other
+	Type Detail: Synchronous
+	Speed: Unknown
+	Manufacturer: UNKNOWN
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: NOT AVAILABLE
+	Rank: Unknown
+	Configured Clock Speed: Unknown
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x0032, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0014
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: 19
+	Locator: PROC 2 DIMM 8
+	Bank Locator: Not Specified
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: HPE
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: P03052-091
+	Rank: 2
+	Configured Clock Speed: 2933 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0033, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0014
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: 20
+	Locator: PROC 2 DIMM 9
+	Bank Locator: Not Specified
+	Type: Other
+	Type Detail: Synchronous
+	Speed: Unknown
+	Manufacturer: UNKNOWN
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: NOT AVAILABLE
+	Rank: Unknown
+	Configured Clock Speed: Unknown
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x0034, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0014
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: 21
+	Locator: PROC 2 DIMM 10
+	Bank Locator: Not Specified
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: HPE
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: P03052-091
+	Rank: 2
+	Configured Clock Speed: 2933 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0035, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0014
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: DIMM
+	Set: 22
+	Locator: PROC 2 DIMM 11
+	Bank Locator: Not Specified
+	Type: Other
+	Type Detail: Synchronous
+	Speed: Unknown
+	Manufacturer: UNKNOWN
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: NOT AVAILABLE
+	Rank: Unknown
+	Configured Clock Speed: Unknown
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x0036, DMI type 17, 84 bytes
+Memory Device
+	Array Handle: 0x0014
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 32 GB
+	Form Factor: DIMM
+	Set: 23
+	Locator: PROC 2 DIMM 12
+	Bank Locator: Not Specified
+	Type: DDR4
+	Type Detail: Synchronous Registered (Buffered)
+	Speed: 2933 MT/s
+	Manufacturer: HPE
+	(Line containing Serial number has been censored)
+	Asset Tag: Not Specified
+	Part Number: P03052-091
+	Rank: 2
+	Configured Clock Speed: 2933 MT/s
+	Minimum Voltage: 1.2 V
+	Maximum Voltage: 1.2 V
+	Configured Voltage: 1.2 V
+
+Handle 0x0069, DMI type 7, 27 bytes
+Cache Information
+	Socket Designation: L1-Cache
+	Configuration: Enabled, Not Socketed, Level 1
+	Operational Mode: Write Back
+	Location: Internal
+	Installed Size: 1280 kB
+	Maximum Size: 1280 kB
+	Supported SRAM Types:
+		Synchronous
+	Installed SRAM Type: Synchronous
+	Speed: Unknown
+	Error Correction Type: Single-bit ECC
+	System Type: Unified
+	Associativity: 8-way Set-associative
+
+Handle 0x006A, DMI type 7, 27 bytes
+Cache Information
+	Socket Designation: L2-Cache
+	Configuration: Enabled, Not Socketed, Level 2
+	Operational Mode: Varies With Memory Address
+	Location: Internal
+	Installed Size: 20480 kB
+	Maximum Size: 20480 kB
+	Supported SRAM Types:
+		Synchronous
+	Installed SRAM Type: Synchronous
+	Speed: Unknown
+	Error Correction Type: Single-bit ECC
+	System Type: Unified
+	Associativity: 16-way Set-associative
+
+Handle 0x006B, DMI type 7, 27 bytes
+Cache Information
+	Socket Designation: L3-Cache
+	Configuration: Enabled, Not Socketed, Level 3
+	Operational Mode: Varies With Memory Address
+	Location: Internal
+	Installed Size: 28160 kB
+	Maximum Size: 28160 kB
+	Supported SRAM Types:
+		Synchronous
+	Installed SRAM Type: Synchronous
+	Speed: Unknown
+	Error Correction Type: Single-bit ECC
+	System Type: Unified
+	Associativity: Fully Associative
+
+Handle 0x006C, DMI type 4, 48 bytes
+Processor Information
+	Socket Designation: Proc 1
+	Type: Central Processor
+	Family: Xeon
+	Manufacturer: Intel(R) Corporation
+	ID: 57 06 05 00 FF FB EB BF
+	Signature: Type 0, Family 6, Model 85, Stepping 7
+	Flags:
+		FPU (Floating-point unit on-chip)
+		VME (Virtual mode extension)
+		DE (Debugging extension)
+		PSE (Page size extension)
+		TSC (Time stamp counter)
+		MSR (Model specific registers)
+		PAE (Physical address extension)
+		MCE (Machine check exception)
+		CX8 (CMPXCHG8 instruction supported)
+		APIC (On-chip APIC hardware supported)
+		SEP (Fast system call)
+		MTRR (Memory type range registers)
+		PGE (Page global enable)
+		MCA (Machine check architecture)
+		CMOV (Conditional move instruction supported)
+		PAT (Page attribute table)
+		PSE-36 (36-bit page size extension)
+		CLFSH (CLFLUSH instruction supported)
+		DS (Debug store)
+		ACPI (ACPI supported)
+		MMX (MMX technology supported)
+		FXSR (FXSAVE and FXSTOR instructions supported)
+		SSE (Streaming SIMD extensions)
+		SSE2 (Streaming SIMD extensions 2)
+		SS (Self-snoop)
+		HTT (Multi-threading)
+		TM (Thermal monitor supported)
+		PBE (Pending break enabled)
+	Version: Intel(R) Xeon(R) Gold 6248 CPU @ 2.50GHz
+	Voltage: 1.6 V
+	External Clock: 100 MHz
+	Max Speed: 4000 MHz
+	Current Speed: 2500 MHz
+	Status: Populated, Enabled
+	Upgrade: Socket LGA3647-1
+	L1 Cache Handle: 0x0069
+	L2 Cache Handle: 0x006A
+	L3 Cache Handle: 0x006B
+	(Line containing Serial number has been censored)
+	Asset Tag: UNKNOWN
+	Part Number: Not Specified
+	Core Count: 20
+	Core Enabled: 20
+	Thread Count: 40
+	Characteristics:
+		64-bit capable
+		Multi-Core
+		Hardware Thread
+		Execute Protection
+		Enhanced Virtualization
+		Power/Performance Control
+
+Handle 0x006D, DMI type 7, 27 bytes
+Cache Information
+	Socket Designation: L1-Cache
+	Configuration: Enabled, Not Socketed, Level 1
+	Operational Mode: Write Back
+	Location: Internal
+	Installed Size: 1280 kB
+	Maximum Size: 1280 kB
+	Supported SRAM Types:
+		Synchronous
+	Installed SRAM Type: Synchronous
+	Speed: Unknown
+	Error Correction Type: Single-bit ECC
+	System Type: Unified
+	Associativity: 8-way Set-associative
+
+Handle 0x006E, DMI type 7, 27 bytes
+Cache Information
+	Socket Designation: L2-Cache
+	Configuration: Enabled, Not Socketed, Level 2
+	Operational Mode: Varies With Memory Address
+	Location: Internal
+	Installed Size: 20480 kB
+	Maximum Size: 20480 kB
+	Supported SRAM Types:
+		Synchronous
+	Installed SRAM Type: Synchronous
+	Speed: Unknown
+	Error Correction Type: Single-bit ECC
+	System Type: Unified
+	Associativity: 16-way Set-associative
+
+Handle 0x006F, DMI type 7, 27 bytes
+Cache Information
+	Socket Designation: L3-Cache
+	Configuration: Enabled, Not Socketed, Level 3
+	Operational Mode: Varies With Memory Address
+	Location: Internal
+	Installed Size: 28160 kB
+	Maximum Size: 28160 kB
+	Supported SRAM Types:
+		Synchronous
+	Installed SRAM Type: Synchronous
+	Speed: Unknown
+	Error Correction Type: Single-bit ECC
+	System Type: Unified
+	Associativity: Fully Associative
+
+Handle 0x0070, DMI type 4, 48 bytes
+Processor Information
+	Socket Designation: Proc 2
+	Type: Central Processor
+	Family: Xeon
+	Manufacturer: Intel(R) Corporation
+	ID: 57 06 05 00 FF FB EB BF
+	Signature: Type 0, Family 6, Model 85, Stepping 7
+	Flags:
+		FPU (Floating-point unit on-chip)
+		VME (Virtual mode extension)
+		DE (Debugging extension)
+		PSE (Page size extension)
+		TSC (Time stamp counter)
+		MSR (Model specific registers)
+		PAE (Physical address extension)
+		MCE (Machine check exception)
+		CX8 (CMPXCHG8 instruction supported)
+		APIC (On-chip APIC hardware supported)
+		SEP (Fast system call)
+		MTRR (Memory type range registers)
+		PGE (Page global enable)
+		MCA (Machine check architecture)
+		CMOV (Conditional move instruction supported)
+		PAT (Page attribute table)
+		PSE-36 (36-bit page size extension)
+		CLFSH (CLFLUSH instruction supported)
+		DS (Debug store)
+		ACPI (ACPI supported)
+		MMX (MMX technology supported)
+		FXSR (FXSAVE and FXSTOR instructions supported)
+		SSE (Streaming SIMD extensions)
+		SSE2 (Streaming SIMD extensions 2)
+		SS (Self-snoop)
+		HTT (Multi-threading)
+		TM (Thermal monitor supported)
+		PBE (Pending break enabled)
+	Version: Intel(R) Xeon(R) Gold 6248 CPU @ 2.50GHz
+	Voltage: 1.6 V
+	External Clock: 100 MHz
+	Max Speed: 4000 MHz
+	Current Speed: 2500 MHz
+	Status: Populated, Enabled
+	Upgrade: Socket LGA3647-1
+	L1 Cache Handle: 0x006D
+	L2 Cache Handle: 0x006E
+	L3 Cache Handle: 0x006F
+	(Line containing Serial number has been censored)
+	Asset Tag: UNKNOWN
+	Part Number: Not Specified
+	Core Count: 20
+	Core Enabled: 20
+	Thread Count: 40
+	Characteristics:
+		64-bit capable
+		Multi-Core
+		Hardware Thread
+		Execute Protection
+		Enhanced Virtualization
+		Power/Performance Control
+
+Handle 0x008D, DMI type 1, 27 bytes
+System Information
+	Manufacturer: HPE
+	Product Name: ProLiant DL360 Gen10
+	Version: Not Specified
+	(Line containing Serial number has been censored)
+	(Line containing UUID has been censored)
+	Wake-up Type: Power Switch
+	SKU Number: 867959-B21
+	Family: ProLiant
+
+Handle 0x009D, DMI type 3, 21 bytes
+Chassis Information
+	Manufacturer: HPE
+	Type: Rack Mount Chassis
+	Lock: Not Present
+	Version: Not Specified
+	(Line containing Serial number has been censored)
+	Asset Tag:                                 
+	Boot-up State: Safe
+	Power Supply State: Safe
+	Thermal State: Safe
+	Security Status: Unknown
+	OEM Information: 0x00000000
+	Height: 1 U
+	Number Of Power Cords: 2
+	Contained Elements: 0
+
+Handle 0x00AB, DMI type 2, 15 bytes
+Base Board Information
+	Manufacturer: HPE
+	Product Name: ProLiant DL360 Gen10
+	Version: Not Specified
+	(Line containing Serial number has been censored)
+	Asset Tag:                                 
+	Features:
+		Board is a hosting board
+		Board is removable
+		Board is replaceable
+	Location In Chassis: Not Specified
+	Chassis Handle: 0x0000
+	Type: Motherboard
+	Contained Object Handles: 0
+
+Handle 0x00AE, DMI type 41, 11 bytes
+Onboard Device
+	Reference Designation: Embedded LOM 1 Port 1
+	Type: Ethernet
+	Status: Enabled
+	Type Instance: 1
+	Bus Address: 0000:02:00.0
+
+Handle 0x00AF, DMI type 41, 11 bytes
+Onboard Device
+	Reference Designation: Embedded LOM 1 Port 2
+	Type: Ethernet
+	Status: Enabled
+	Type Instance: 2
+	Bus Address: 0000:02:00.1
+
+Handle 0x00B0, DMI type 41, 11 bytes
+Onboard Device
+	Reference Designation: Embedded LOM 1 Port 3
+	Type: Ethernet
+	Status: Enabled
+	Type Instance: 3
+	Bus Address: 0000:02:00.2
+
+Handle 0x00B1, DMI type 41, 11 bytes
+Onboard Device
+	Reference Designation: Embedded LOM 1 Port 4
+	Type: Ethernet
+	Status: Enabled
+	Type Instance: 4
+	Bus Address: 0000:02:00.3
+
+Handle 0x00B2, DMI type 41, 11 bytes
+Onboard Device
+	Reference Designation: Embedded FlexibleLOM 1 Port 1
+	Type: Ethernet
+	Status: Enabled
+	Type Instance: 5
+	Bus Address: 0000:5d:00.0
+
+Handle 0x00B3, DMI type 41, 11 bytes
+Onboard Device
+	Reference Designation: Embedded FlexibleLOM 1 Port 2
+	Type: Ethernet
+	Status: Enabled
+	Type Instance: 6
+	Bus Address: 0000:5d:00.1
+
+Handle 0x00B4, DMI type 41, 11 bytes
+Onboard Device
+	Reference Designation: Embedded RAID 1
+	Type: SAS Controller
+	Status: Enabled
+	Type Instance: 1
+	Bus Address: 0000:5c:00.0
+
+Handle 0x00B5, DMI type 41, 11 bytes
+Onboard Device
+	Reference Designation: Embedded Device
+	Type: Video
+	Status: Enabled
+	Type Instance: 1
+	Bus Address: 0000:01:00.1
+
+Handle 0x00B6, DMI type 9, 17 bytes
+System Slot Information
+	Designation: PCI-E Slot 1
+	Type: x16 PCI Express 3
+	Current Usage: Available
+	Length: Long
+	ID: 1
+	Characteristics:
+		3.3 V is provided
+		PME signal is supported
+	Bus Address: 0000:12:00.0
+
+Handle 0x00B7, DMI type 9, 17 bytes
+System Slot Information
+	Designation: PCI-E Slot 2
+	Type: x8 PCI Express 3
+	Current Usage: Available
+	Length: Short
+	ID: 2
+	Characteristics:
+		3.3 V is provided
+		PME signal is supported
+	Bus Address: 0000:37:00.0
+
+Handle 0x00BA, DMI type 32, 11 bytes
+System Boot Information
+	Status: No errors detected
+
+
+################################################################################
+# environment variables
+################################################################################
+SLURM_MPI_TYPE=pmi2
+LC_ALL=en_US.UTF-8
+LD_LIBRARY_PATH=/mnt/opt/likwid-5.1.0/lib:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/compiler/lib/intel64:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/compiler/lib/intel64_lin:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/ipp/lib/intel64:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/tbb/lib/intel64/gcc4.7:/apps/intel/ComposerXE2019/debugger_2019/libipt/intel64/lib:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/daal/lib/intel64_lin:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/tbb/lib/intel64_lin/gcc4.4:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/libfabric/lib:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/lib/release:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/lib
+SLURM_NODEID=0
+SLURM_TASK_PID=74194
+MKL_INC=-I/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/include
+SSH_CONNECTION=131.188.3.39 52892 192.168.80.235 22
+INCLUDE=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/include
+MKL_SHLIB=-L/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread -lm
+SLURM_PRIO_PROCESS=0
+LANG=en_US
+SLURM_SUBMIT_DIR=/home/hpc/unrz/unrz002h/MatrixPower_recursive/MatrixPower/examples/build_casclakesp2_new/matrixPower_perf_test
+HISTCONTROL=ignoredups
+LIKWID_LIBDIR=/mnt/opt/likwid-5.1.0/lib
+HOSTNAME=casclakesp2
+IPPROOT=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/ipp
+OLDPWD=/home/hpc/unrz/unrz002h/MatrixPower_recursive/MatrixPower/examples/build_casclakesp2_new/matrixPower_perf_test
+MPICHHOME=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64
+I_MPI_SLURM_EXT=1
+SLURM_CPUS_PER_TASK=80
+RRZECLUSTER=TESTCLUSTER
+EDITOR=/usr/bin/vim
+ENVIRONMENT=BATCH
+PATH_modshare=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/bin:1:/usr/bin:1:/mnt/opt/likwid-5.1.0/bin:1:/usr/local/bin:1:/apps/cmake/3.11.1/bin:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/bin/intel64:1:/home/hpc/unrz/unrz002h/installkit/iaca_2.3/iaca-lin64/bin:1:/mnt/opt/likwid-5.1.0/sbin:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/rrze-bin-intel:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/libfabric/bin:1:/bin:1:/snap/bin:1:/sbin:1:/usr/sbin:1:/usr/games:1:/home/hpc/unrz/unrz002h/installkit/bin:1:/usr/local/sbin:1:/usr/local/games:1
+MPIHOME=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64
+HPCVAULT=/home/vault/unrz/unrz002h
+LOADEDMODULES_modshare=intelmpi/2019up05-intel:1:likwid/5.1.0:1:mkl/2019up05:1:cmake/3.11.1:1:intel64/19.0up05:1
+FPATH=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/include
+FPATH_modshare=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/include:1
+INTEL_F_HOME=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/compiler
+CPATH_modshare=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/pstl/include:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/tbb/include:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/include:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/ipp/include:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/daal/include:1
+SLURM_PROCID=0
+SLURM_JOB_GID=12000
+WOODYHOME=/home/woody/unrz/unrz002h
+I_MPI_HYDRA_BOOTSTRAP=slurm
+SLURMD_NODENAME=casclakesp2
+LIKWID_FORCE=1
+I_MPI_HYDRA_JMI_LIBRARY=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/lib/libjmi_slurm.so
+FI_PROVIDER_PATH=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/libfabric/lib/prov
+SLURM_TASKS_PER_NODE=1
+INTEL_PYTHONHOME=/apps/intel/ComposerXE2019/debugger_2019/python/intel64/
+MKL_INCDIR=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/include
+LD_LIBRARY_PATH_modshare=/mnt/opt/likwid-5.1.0/lib:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/ipp/lib/intel64:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/libfabric/lib:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/compiler/lib/intel64:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/daal/lib/intel64_lin:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/compiler/lib/intel64_lin:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin:1:/apps/intel/ComposerXE2019/debugger_2019/libipt/intel64/lib:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/tbb/lib/intel64_lin/gcc4.4:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/tbb/lib/intel64/gcc4.7:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/lib:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/lib/release:1
+CLASSPATH=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/daal/lib/daal.jar:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/lib/mpi.jar
+XDG_SESSION_ID=6050
+LIBRARY_PATH_modshare=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/daal/lib/intel64_lin:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/tbb/lib/intel64_lin/gcc4.4:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/ipp/lib/intel64:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/compiler/lib/intel64_lin:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/tbb/lib/intel64/gcc4.7:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin:1
+SLURM_NNODES=1
+USER=unrz002h
+MPIINCDIR=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/include
+I_MPI_HARD_FINALIZE=1
+NLSPATH_modshare=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/locale/%l_%t/%N:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/compiler/lib/intel64/locale/%l_%t/%N:1:/apps/intel/ComposerXE2019/debugger_2019/gdb/intel64/share/locale/%l_%t/%N:1
+GROUP=unrz
+LIKWID_DEFINES=-DLIKWID_PERFMON
+PWD=/home/hpc/unrz/unrz002h/MatrixPower_recursive/MatrixPower/examples/build_casclakesp2_new/matrixPower_perf_test
+SLURM_JOB_NODELIST=casclakesp2
+HOME=/home/hpc/unrz/unrz002h
+LIKWID_LIB=-L/mnt/opt/likwid-5.1.0/lib
+SLURM_CLUSTER_NAME=hpctestcluster
+LC_CTYPE=UTF-8
+SLURM_NODELIST=casclakesp2
+CLICOLOR=1
+SSH_CLIENT=131.188.3.39 52892 22
+SEP=-------------------------------------------------------------
+CLASSPATH_modshare=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/daal/lib/daal.jar:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/lib/mpi.jar:1
+CPATH=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/ipp/include:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/pstl/include:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/tbb/include:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/daal/include:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/include
+LIKWID_INCDIR=/mnt/opt/likwid-5.1.0/include
+WORK=/home/woody/unrz/unrz002h
+SLURM_JOB_CPUS_PER_NODE=80
+SLURM_TOPOLOGY_ADDR=casclakesp2
+_LMFILES__modshare=/apps/modules/modulefiles/tools/cmake/3.11.1:1:/apps/modules/modulefiles/development/intelmpi/2019up05-intel:1:/opt/modules/modulefiles/testcluster/likwid/5.1.0:1:/apps/modules/modulefiles/development/intel64/19.0up05:1:/apps/modules/modulefiles/libraries/mkl/2019up05:1
+NLSPATH=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/compiler/lib/intel64/locale/%l_%t/%N:/apps/intel/ComposerXE2019/debugger_2019/gdb/intel64/share/locale/%l_%t/%N:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/locale/%l_%t/%N
+SLURM_WORKING_CLUSTER=hpctestcluster:192.168.80.182:6817:8960:102
+MKL_LIBDIR=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin
+MPIINC=-I/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/include
+MKL_LIB_THREADED=-Wl,--start-group  /apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/libmkl_intel_lp64.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/libmkl_intel_thread.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/libmkl_core.a -Wl,--end-group -lpthread -lm -qopenmp
+SLURM_JOB_NAME=casclakesp2.batch
+TMPDIR=/tmp
+LIBRARY_PATH=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/ipp/lib/intel64:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/compiler/lib/intel64_lin:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/tbb/lib/intel64/gcc4.7:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/daal/lib/intel64_lin:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/tbb/lib/intel64_lin/gcc4.4:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin
+LC_NUMERIC=en_US.UTF-8
+SLURM_JOBID=22383
+LIKWID_INC=-I/mnt/opt/likwid-5.1.0/include
+SLURM_CONF=/var/tmp/slurmd_spool/conf-cache/slurm.conf
+LOADEDMODULES=intelmpi/2019up05-intel:mkl/2019up05:intel64/19.0up05:likwid/5.1.0:cmake/3.11.1
+HADHPCSYSINFO=1
+DAALROOT=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/daal
+MPILIB=-L/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/lib
+INTEL_LICENSE_FILE=1713@license4
+SLURM_NODE_ALIASES=(null)
+I_MPI_FABRICS=shm
+SLURM_JOB_QOS=normal
+SLURM_TOPOLOGY_ADDR_PATTERN=node
+SSH_TTY=/dev/pts/10
+MAIL=/var/mail/unrz002h
+MKL_CDFT=-Wl,--start-group  /apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/libmkl_cdft_core.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/libmkl_intel_lp64.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/libmkl_intel_thread.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/libmkl_core.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/libmkl_blacs_intelmpi_lp64.a -Wl,--end-group -lpthread -lm -qopenmp
+SLURM_CPUS_ON_NODE=80
+SLURM_JOB_NUM_NODES=1
+SHELL=/bin/bash
+TERM=xterm-256color
+MKL_BASE=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl
+SLURM_JOB_UID=352231
+MANPATH_modshare=:2:/mnt/opt/likwid-5.1.0/man:1:/apps/intel/ComposerXE2019/documentation_2019/en/debugger/gdb-ia/man/:1:/apps/intel/ComposerXE2019/man/common:2:/apps/intel/mpi/man:1:/apps/cmake/3.11.1/man:1:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/man:2
+SLURM_JOB_PARTITION=work
+MKL_SLIB_THREADED=-Wl,--start-group -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -Wl,--end-group -lpthread -lm -qopenmp
+MKLPATH=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin
+TMOUT=3660
+SLURM_JOB_USER=unrz002h
+SHLVL=4
+LANGUAGE=en_US:
+SLURM_SUBMIT_HOST=testfront1
+PYTHONPATH=:/home/hpc/unrz/unrz002h/Apps/share/python
+SLURM_JOB_ACCOUNT=unrz
+INTEL_C_HOME=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/compiler
+MANPATH=/apps/cmake/3.11.1/man:/mnt/opt/likwid-5.1.0/man:/apps/intel/ComposerXE2019/documentation_2019/en/debugger/gdb-ia/man/:/apps/intel/ComposerXE2019/man/common:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/man:/apps/intel/mpi/man::
+MKL_LIB=-Wl,--start-group /apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/libmkl_intel_lp64.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/libmkl_sequential.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/libmkl_core.a -Wl,--end-group -lpthread -lm
+MODULEPATH=/opt/modules/modulefiles/testcluster:/apps/modules/modulefiles/applications:/apps/modules/modulefiles/development:/apps/modules/modulefiles/libraries:/apps/modules/modulefiles/tools:/apps/modules/modulefiles/deprecated:/apps/modules/modulefiles/testing
+MPIROOTDIR=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64
+SLURM_GTIDS=0
+LOGNAME=unrz002h
+XDG_RUNTIME_DIR=/run/user/352231
+MKLROOT=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl
+MODULEPATH_modshare=/apps/modules/modulefiles/testing:4:/apps/modules/modulefiles/development:4:/apps/modules/modulefiles/applications:4:/apps/modules/modulefiles/deprecated:4:/apps/modules/modulefiles/tools:4:/apps/modules/modulefiles/libraries:4:/opt/modules/modulefiles/testcluster:4
+PSTLROOT=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/pstl
+PATH=/apps/cmake/3.11.1/bin:/mnt/opt/likwid-5.1.0/sbin:/mnt/opt/likwid-5.1.0/bin:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/bin/intel64:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/rrze-bin-intel:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/bin:/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi/intel64/libfabric/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/hpc/unrz/unrz002h/installkit/iaca_2.3/iaca-lin64/bin:/home/hpc/unrz/unrz002h/installkit/bin
+SLURM_JOB_ID=22383
+TBBROOT=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/tbb
+_LMFILES_=/apps/modules/modulefiles/development/intelmpi/2019up05-intel:/apps/modules/modulefiles/libraries/mkl/2019up05:/apps/modules/modulefiles/development/intel64/19.0up05:/opt/modules/modulefiles/testcluster/likwid/5.1.0:/apps/modules/modulefiles/tools/cmake/3.11.1
+MODULESHOME=/opt/modules
+INFOPATH_modshare=/apps/intel/ComposerXE2019/documentation_2019/en/debugger/gdb-ia/info/:1
+INFOPATH=/apps/intel/ComposerXE2019/documentation_2019/en/debugger/gdb-ia/info/
+I_MPI_ROOT=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mpi
+HISTSIZE=100000
+HISTFILESIZE=100000
+INTEL_LICENSE_FILE_modshare=1713@license4:1
+MKL_SCALAPACK=/apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/libmkl_scalapack_lp64.a -Wl,--start-group  /apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/libmkl_intel_lp64.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/libmkl_intel_thread.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/libmkl_core.a /apps/intel/ComposerXE2019/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64_lin/libmkl_blacs_intelmpi_lp64.a -Wl,--end-group -lpthread -lm -qopenmp
+SLURM_LOCALID=0
+_=/usr/bin/env
