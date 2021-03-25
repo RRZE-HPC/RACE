@@ -36,7 +36,7 @@ Please see the [example folder](https://bitbucket.org/essex/race/src/master/exam
 
 If you are using RACE please use the following reference:
 
-* C. L. Alappat, G. Hager, O. Schenk, J. Thies, A. Basermann, A. R. Bishop, H. Fehske, and G. Wellein: 
+* C. L. Alappat, A. Basermann, A. R. Bishop,  H. Fehske, G. Hager, O. Schenk, J. Thies, and G. Wellein: 
   A Recursive Algebraic Coloring Technique for Hardware-Efficient Symmetric Sparse Matrix-Vector Multiplication. ACM Trans. Parallel Comput., 2020, [https://doi.org/10.1145/3399732](https://doi.org/10.1145/3399732)
   
 ### Further Reading ###
