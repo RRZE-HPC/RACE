@@ -158,11 +158,17 @@ int main(const int argc, char * argv[])
         LIKWID_MARKER_START("pre_process");
     }
 #endif*/
+    INIT_TIMER(pre_process);
+    START_TIMER(pre_process);
     if(param.RCM_flag)
     {
         mat->doRCM();
     }
     mat->prepareForPower(power, param.nodes, param.cache_size*1024*1024, param.cores, param.smt, param.pin);
+    STOP_TIMER(pre_process);
+    double pre_process_time = GET_TIMER(pre_process);
+    printf("Pre-processing time = %f s\n", pre_process_time);
+
 /*#ifdef LIKWID_PERFMON
 #pragma omp parallel
     {

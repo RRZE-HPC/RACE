@@ -25,6 +25,9 @@ void capitalize(char* beg)
 
 int main(const int argc, char * argv[])
 {
+#ifdef LIKWID_PERFMON
+    LIKWID_MARKER_INIT;
+#endif
 
     int err;
     parser param;
@@ -44,11 +47,17 @@ int main(const int argc, char * argv[])
     int power = param.iter;
     printf("power = %d\n", power);
 
-
+    INIT_TIMER(pre_process);
+    START_TIMER(pre_process);
     if(param.RCM_flag)
     {
         mat->doRCMPermute(); //Permute();
     }
+    STOP_TIMER(pre_process);
+    double pre_process_time = GET_TIMER(pre_process);
+    printf("Pre-processing time = %f s\n", pre_process_time);
+
+
     //mat->writeFile("after_RCM.mtx");
     //mat->prepareForPower(power, param.nodes, param.cache_size*1024*1024, param.cores, param.smt, param.pin);
     //mat->numaInit();
@@ -84,6 +93,14 @@ int main(const int argc, char * argv[])
     //xTRAD->setRand();
 
     INIT_TIMER(spmv);
+
+#ifdef LIKWID_PERFMON
+#pragma omp parallel
+        {
+            LIKWID_MARKER_START("Trad_power");
+        }
+#endif
+ 
     START_TIMER(spmv);
     for(int iter=0; iter<iterations; ++iter)
     {
@@ -94,6 +111,13 @@ int main(const int argc, char * argv[])
         }
     }
     STOP_TIMER(spmv);
+#ifdef LIKWID_PERFMON
+#pragma omp parallel
+        {
+            LIKWID_MARKER_STOP("Trad_power");
+        }
+#endif
+ 
     double spmvPowerTime = GET_TIMER(spmv);
     double flops = 2.0*iterations*power*(double)mat->nnz*1e-9;
 
@@ -101,4 +125,9 @@ int main(const int argc, char * argv[])
 
     delete mat;
     delete xTRAD;
+
+#ifdef LIKWID_PERFMON
+    LIKWID_MARKER_CLOSE;
+#endif
+
 }
