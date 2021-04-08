@@ -28,10 +28,12 @@ void gs(densemat* b, sparsemat* mat, densemat* x, int iter);
 void kacz(densemat* b, sparsemat* mat, densemat* x, int iter);
 void symm_spmv(densemat* b, sparsemat* mat, densemat* x, int iter);
 void plain_spmv(sparsemat* mat, densemat* x);
+void plain_spmv_only_highest(sparsemat* mat, densemat* x, int power);
 void plain_spmv_numa(NUMAmat* mat, densemat* x);
 
 void mkl_spmv(sparsemat* mat, densemat* x);
 void matPower(sparsemat* A, int power, densemat *x);
+void matPower_only_highest(sparsemat* A, int power, densemat *x);
 void matPowerNuma(NUMAmat* A, int power, densemat *x);
 void matPowerBCSR(sparsemat* A, int power, densemat *x);
 
