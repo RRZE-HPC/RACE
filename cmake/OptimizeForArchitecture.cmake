@@ -117,7 +117,9 @@ macro(AutodetectHostArchitecture)
             set(TARGET_ARCHITECTURE "cannonlake")
          elseif(_cpu_model EQUAL 158)
             set(TARGET_ARCHITECTURE "kabylake")
-         elseif(_cpu_model EQUAL 85) # 55
+         elseif(_cpu_model EQUAL 106) # 106
+            set(TARGET_ARCHITECTURE "ice-lake")
+         elseif(_cpu_model EQUAL 85) # 85
             set(TARGET_ARCHITECTURE "skylake-avx512")
          elseif(_cpu_model EQUAL 78 OR _cpu_model EQUAL 94) # 4E, 5E
             set(TARGET_ARCHITECTURE "skylake")
@@ -188,7 +190,7 @@ macro(OptimizeForArchitecture)
    #Setting the value to \"auto\" will try to optimize for the architecture where cmake is called. \
    #Other supported values are: \"none\", \"generic\", \"core\", \"merom\" (65nm Core2), \
    #\"penryn\" (45nm Core2), \"nehalem\", \"westmere\", \"sandy-bridge\", \"ivy-bridge\", \
-   #\"haswell\", \"broadwell\", \"skylake\", \"skylake-avx512\", \"cannonlake\", \"silvermont\", \
+   #\"haswell\", \"broadwell\", \"ice-lake\", \"skylake\", \"skylake-avx512\", \"cannonlake\", \"silvermont\", \
    #\"goldmont\", \"knl\" (Knights Landing), \"atom\", \"k8\", \"k8-sse3\", \"barcelona\", \
    #\"istanbul\", \"magny-cours\", \"bulldozer\", \"interlagos\", \"piledriver\", \
    #\"AMD 14h\", \"AMD 16h\".")
@@ -255,6 +257,11 @@ macro(OptimizeForArchitecture)
       _skylake_avx512()
       list(APPEND _available_vector_units_list "avx512ifma" "avx512vbmi")
    endmacro()
+   macro(_icelake)
+      list(APPEND _march_flag_list "icelake-server")
+      _cannonlake()
+      #    list(APPEND _available_vector_units_list "avx512f" "avx512cd" "avx512dq" "avx512bw" "avx512vl")
+   endmacro()
    macro(_knightslanding)
       list(APPEND _march_flag_list "knl")
       _broadwell()
@@ -281,6 +288,8 @@ macro(OptimizeForArchitecture)
       endif()
    elseif(TARGET_ARCHITECTURE STREQUAL "knl")
       _knightslanding()
+   elseif(TARGET_ARCHITECTURE STREQUAL "ice-lake")
+      _icelake()
    elseif(TARGET_ARCHITECTURE STREQUAL "cannonlake")
       _cannonlake()
    elseif(TARGET_ARCHITECTURE STREQUAL "skylake-xeon" OR TARGET_ARCHITECTURE STREQUAL "skylake-avx512")

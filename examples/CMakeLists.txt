@@ -215,6 +215,7 @@ endif()
 
 
 file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/perf_script.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
+file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/perf_script_w_likwid.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
 file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/extract_matDetails.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
 file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/check-state.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
 file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/config.txt DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
