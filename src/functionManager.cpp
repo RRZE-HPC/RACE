@@ -512,14 +512,58 @@ void FuncManager::NUMAInitPower()
 
 #endif
 
+#define EXEC_BOUNDARY_STRUCTURE_w_wave_shape_wo_radius(_var_, _pow_,...)\
+{\
+    int _wbl_ = (int)_var_.size();\
+    for(int _workingRadius_=0; _workingRadius_<_wbl_; ++_workingRadius_)\
+    {\
+        if((_pow_ > _workingRadius_) && ( _pow_ < (power-(_workingRadius_+1)) ))\
+        {\
+            for(auto _mapIter_ = _var_[_workingRadius_].begin(); _mapIter_ != _var_[_workingRadius_].end(); ++_mapIter_)\
+            {\
+                auto* _entity_ = &(_mapIter_->second);\
+                int _numBoundaries_ = (int)_entity_->size();\
+                for(int _region_=0; _region_<_numBoundaries_; ++_region_)\
+                {\
+                    auto* _val_ = &(_entity_->at(_region_));\
+                    __VA_ARGS__;\
+                }\
+            }\
+        }\
+    }\
+}
+
+
+#define EXEC_BOUNDARY_STRUCTURE_w_wave_shape(_var_, _pow_,...)\
+{\
+    int _wbl_ = (int)_var_.size();\
+    for(int _workingRadius_=0; _workingRadius_<_wbl_; ++_workingRadius_)\
+    {\
+        if((_pow_ > _workingRadius_) && ( _pow_ < (power-(_workingRadius_+1)) ))\
+        {\
+            for(auto _mapIter_ = _var_[_workingRadius_].begin(); _mapIter_ != _var_[_workingRadius_].end(); ++_mapIter_)\
+            {\
+                int _radius_ = _mapIter_->first;\
+                if( (_pow_ > (_radius_-1)) && (_pow_ < (power-(_radius_))) )\
+                {\
+                    auto* _entity_ = &(_mapIter_->second);\
+                    int _numBoundaries_ = (int)_entity_->size();\
+                    for(int _region_=0; _region_<_numBoundaries_; ++_region_)\
+                    {\
+                        auto* _val_ = &(_entity_->at(_region_));\
+                        __VA_ARGS__;\
+                    }\
+                }\
+            }\
+        }\
+    }\
+}
+
+
 #define BOUNDARY_WORK\
     if((pow > 0) && (pow < (power-1)))\
     {\
-        EXEC_BOUNDARY_STRUCTURE((*boundaryLevelPtr),\
-                if((pow > _workingRadius_) && ( pow < (power-(_workingRadius_+1)) ))\
-                {\
-                    if( (pow > (_radius_-1)) && (pow < (power-(_radius_))) )\
-                    {\
+        EXEC_BOUNDARY_STRUCTURE_w_wave_shape((*boundaryLevelPtr), pow, \
                         SPLIT_LEVEL_PER_THREAD_BOUNDARY(powLevel);\
                         if(endRow_tid > startRow_tid) /*there wont be region if this is not true*/\
                         {\
@@ -530,13 +574,11 @@ void FuncManager::NUMAInitPower()
 */\
                             powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);\
                         }\
-                    }\
-                }\
                 );\
     }
 
 //startSlope and endSlope of computation
-inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boundaryStart, int boundaryEnd, int startSlope, int endSlope, const std::vector<int> *levelPtr, const std::vector<std::vector<std::map<int,std::vector<int>>>>* boundaryLevelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent)
+inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boundaryStart, int boundaryEnd, int startSlope, int endSlope, const std::vector<int> *levelPtr, const std::vector<std::map<int, std::vector<std::vector<int>>>>* boundaryLevelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent)
 {
     int tid = omp_get_thread_num();
     int localTid = tid % threadPerNode;
@@ -749,7 +791,7 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
 
 
 //right-reminder
-inline void FuncManager::powerCallHopelessRightReminder(int leftmostLevel, const std::vector<int> *levelPtr, const std::vector<std::vector<std::map<int,std::vector<int>>>>* boundaryLevelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent)
+inline void FuncManager::powerCallHopelessRightReminder(int leftmostLevel, const std::vector<int> *levelPtr, const std::vector<std::map<int, std::vector<std::vector<int>>>>* boundaryLevelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent)
 {
     int tid = omp_get_thread_num();
     int localTid = tid % threadPerNode;
@@ -777,10 +819,8 @@ inline void FuncManager::powerCallHopelessRightReminder(int leftmostLevel, const
 
             if(p > 0)
             {
-                EXEC_BOUNDARY_STRUCTURE_wo_radius((*boundaryLevelPtr),
-                        if((p > _workingRadius_) && ( p < (power-(_workingRadius_+1)) ))
-                        {
-                            SPLIT_LEVEL_PER_THREAD_BOUNDARY(powLevel);
+                EXEC_BOUNDARY_STRUCTURE_w_wave_shape_wo_radius((*boundaryLevelPtr), p,
+                        SPLIT_LEVEL_PER_THREAD_BOUNDARY(powLevel);
                             if(endRow_tid > startRow_tid) //there wont be region if this is not true
                             {
 #ifdef RACE_DEBUG
@@ -789,7 +829,6 @@ inline void FuncManager::powerCallHopelessRightReminder(int leftmostLevel, const
 
                                 powerFunc(startRow_tid, endRow_tid, p+1, numaLocalArg, args);
                             }
-                        }
                     );
             }
 
@@ -816,7 +855,7 @@ inline void FuncManager::powerCallHopelessRightReminder(int leftmostLevel, const
 
 
 //left-reminder
-inline void FuncManager::powerCallHopelessLeftReminder(int rightmostLevel, const std::vector<int> *levelPtr, const std::vector<std::vector<std::map<int,std::vector<int>>>>* boundaryLevelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent)
+inline void FuncManager::powerCallHopelessLeftReminder(int rightmostLevel, const std::vector<int> *levelPtr, const std::vector<std::map<int, std::vector<std::vector<int>>>>* boundaryLevelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent)
 {
     int tid = omp_get_thread_num();
     int localTid = tid % threadPerNode;
@@ -845,9 +884,7 @@ inline void FuncManager::powerCallHopelessLeftReminder(int rightmostLevel, const
             }
             if(p < (power-1))
             {
-                EXEC_BOUNDARY_STRUCTURE_wo_radius((*boundaryLevelPtr),
-                        if(( p < (power-(_workingRadius_+1)) ) && (p > _workingRadius_))
-                        {
+                EXEC_BOUNDARY_STRUCTURE_w_wave_shape_wo_radius((*boundaryLevelPtr), p,
                             SPLIT_LEVEL_PER_THREAD_BOUNDARY(powLevel);
                             if(endRow_tid > startRow_tid) //there wont be region if this is not true
                             {
@@ -857,7 +894,6 @@ inline void FuncManager::powerCallHopelessLeftReminder(int rightmostLevel, const
 
                                 powerFunc(startRow_tid, endRow_tid, p+1, numaLocalArg, args);
                             }
-                        }
                     );
             }
 
@@ -964,7 +1000,7 @@ void FuncManager::recursivePowerCallSerial(int parent)
         std::vector<int>* nodePtr = &(tree->at(parent).nodePtr);
         std::vector<int>* nodePtrRoot = &(tree->at(0).nodePtr);
         std::vector<int>* levelPtr  = &(tree->at(parent).lp);
-        std::vector<std::vector<std::map<int,std::vector<int>>>>* boundaryLevelPtr = &(tree->at(parent).blp);
+        std::vector<std::map<int, std::vector<std::vector<int>>>>* boundaryLevelPtr = &(tree->at(parent).blp);
         std::vector<int>* levelPtrRoot  = &(tree->at(0).lp);
         std::vector<int>* unlockRow = &(tree->at(parent).unlockRow);
         std::vector<int>* dangerRow = &(tree->at(parent).dangerRow);

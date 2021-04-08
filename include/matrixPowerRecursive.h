@@ -12,21 +12,19 @@ struct MPLeaf
     int nrows;
     Range range;
     //boundaryRange structure
-    //
-    //->different regions (stages)
     //  ->workingBoundaryRadius (tells me what was its radius when generated
     //  initially from pure main region, this is necessary to limit the max power on
     //  these regions)
     //      ->radius (current radius) made a map, so can be empty too
     //          -> ranges
     //radii are stored -p -(p-1) ... -1 0 1 ... (p-1) (p)
-    std::vector<std::vector<std::map<int, Range>>> boundaryRange;
+    std::vector<std::map<int, std::vector<Range>>> boundaryRange;
 
     //outputs
     std::vector<int> hid; //hopelessRegions Ids;
     std::vector<int> lp;//levelPtr; //only of main
     //same structure as boundaryRange
-    std::vector<std::vector<std::map<int,std::vector<int>>>> blp; //boundaryLevelPtr;
+    std::vector<std::map<int, std::vector<std::vector<int>>>> blp;
 
     //std::vector<int> hopelessRegions;//I think this should be same as hid
     std::vector<int> unlockCtr;

@@ -4,7 +4,7 @@
 #include <omp.h>
 
 std::map<int, LevelData> Traverse::cachedData;
-Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_, int numRoots_, std::vector<std::vector<std::map<int,Range>>> boundaryRange_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_), numRoots(numRoots_), graphSize(graph_->graphData.size()),distFromRoot(NULL),perm(NULL),invPerm(NULL), boundaryRange(boundaryRange_), levelData(NULL)
+Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_, int numRoots_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_), numRoots(numRoots_), graphSize(graph_->graphData.size()),distFromRoot(NULL),perm(NULL),invPerm(NULL), boundaryRange(boundaryRange_), levelData(NULL)
 {
     if(rangeHi == -1)
     {
@@ -30,7 +30,7 @@ Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, 
         EXEC_BOUNDARY_STRUCTURE_wo_radius(boundaryRange, totalNodesIncBoundary += (_val_.hi - _val_.lo); );
     }
 
-    printf("Num boundary regions = %d\n", (int)boundaryRange.size());
+    //printf("Num boundary regions = %d\n", (int)boundaryRange.size());
     //for main (target) region
     levelData = new LevelData;
     UNUSED(parentIdx);
@@ -89,6 +89,8 @@ std::vector<int> Traverse::markChildren(int currChild, int currLvl)
                 flag_child=true;
                 _numBoundaries_ = -1; //break from regions
                 _wbl_ = -1; //break from working radius
+                _mapIter_ = boundaryRange[_workingRadius_].end();//break from radius
+                --_mapIter_;
                 break;
                 }
                 );
@@ -324,14 +326,14 @@ RACE_error Traverse::createLevelData()
         EXEC_BOUNDARY_STRUCTURE(boundaryLevelData,
                 _val_ = new LevelData;
                 err_flag = RACE_SUCCESS;
-                Range curRange = boundaryRange[_region_][_workingRadius_][_radius_];
+                Range curRange = boundaryRange[_workingRadius_][_radius_][_region_];
                 err_flag = findLevelData(curRange.lo, curRange.hi, levelData->totalLevel, _val_);
                 if(err_flag != RACE_SUCCESS)
                 {
                     ERROR_PRINT("Something went wrong in levelData calculation for boundaries");
                     return err_flag;
                 }
-                boundaryLevelData[_region_][_workingRadius_][_radius_] = _val_;
+                boundaryLevelData[_workingRadius_][_radius_][_region_] = _val_;
             );
     }
 
@@ -414,6 +416,8 @@ void Traverse::permuteGraph()
                         }
                         _numBoundaries_ = -1; //break from regions
                         _wbl_ = -1; //break from working radius
+                        _mapIter_ = boundaryRange[_workingRadius_].end();//break from radius
+                        --_mapIter_;
                         break;
                     );
             }
@@ -449,12 +453,12 @@ LevelData* Traverse::getLevelData()
     return levelData_;
 }
 
-std::vector<std::vector<std::map<int, LevelData*>>> Traverse::getBoundaryLevelData()
+std::vector<std::map<int, std::vector<LevelData*>>> Traverse::getBoundaryLevelData()
 {
-    std::vector<std::vector<std::map<int, LevelData*>>> retBoundaryLevelData = boundaryLevelData;
+    std::vector<std::map<int, std::vector<LevelData*>>> retBoundaryLevelData = boundaryLevelData;
     EXEC_BOUNDARY_STRUCTURE(boundaryLevelData,
             _val_ = NULL;
-            boundaryLevelData[_region_][_workingRadius_][_radius_] = _val_;
+            boundaryLevelData[_workingRadius_][_radius_][_region_] = _val_;
             );
     return retBoundaryLevelData;
 }

@@ -145,55 +145,84 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
         curLeaf.range.hi = parentLeaf.lp[hopelessStart+1];
         int wbl = workingBoundaryLength_base(highestPower);
 
-        int numBoundaries = (int)parentLeaf.blp.size();//external (ancestoral boundaries)
-        for(int i=0; i<(int)numBoundaries; ++i)
+        curLeaf.boundaryRange.resize(wbl);
+        if(!parentLeaf.blp.empty())
         {
             for(int wr=0; wr<wbl; ++wr)//working radius
             {
-                std::map<int, std::vector<int>> *curParentBLP = &(parentLeaf.blp[i][wr]);
+                //std::map<int, std::vector<std::vector<int>>> *curParentBLP = curParentBLP = &(parentLeaf.blp[wr]);
+                std::map<int, std::vector<std::vector<int>>> *curParentBLP = &(parentLeaf.blp[wr]);
                 for(auto mapIter = curParentBLP->begin(); mapIter != curParentBLP->end(); ++mapIter)
                 {
-                    std::vector<std::map<int,Range>> curBoundaryRange(wbl);
+                    //int radius = mapIter->first;
+                    std::vector<std::vector<int>> *entity = &(mapIter->second);
 
-                    //for(int r=-wbl; r<=wbl; ++r)
-                    //TODO for r=2 onwards -ve and +ve matters since they are no
-                    //more continuous
-                    //for(int r=1; r<=wbl; ++r)
-                    for(int r=-wbl; r<=wbl; ++r)
+                    int numBoundaries = (int)entity->size();//external (ancestoral boundaries)
+                    for(int i=0; i<(int)numBoundaries; ++i)
                     {
-                        Range curRange;
-                        if(r==-1)
-                        {
-                            //we dont need to distinguish
-                            //between negative, positive and zero for external boundaries in this case,
-                            //this reduces the number of regions considerably
 
-                            r = 1;//skip other r till r=1
-                            curRange.lo = (mapIter->second)[hopelessStart-r];
-                            curRange.hi = (mapIter->second)[hopelessStart+r+1];
-                        }
-                        else
+                        //for(int r=-wbl; r<=wbl; ++r)
+                        //for(int r=1; r<=wbl; ++r)
+                        for(int r=-wbl; r<=wbl; ++r)
                         {
-                            curRange.lo = (mapIter->second)[hopelessStart+r];
-                            curRange.hi = (mapIter->second)[hopelessStart+r+1];
-                        }
+                            Range curRange;
+                            if(r==-1)
+                            {
+                                //we dont need to distinguish
+                                //between negative, positive and zero for external boundaries in this case,
+                                //this reduces the number of regions considerably
 
-                        if(curRange.hi > curRange.lo)
-                        {
-                            curBoundaryRange[wr][r] = curRange;
-                        }
-                        else
-                        {
-                            printf("omiting [%d, %d]  boundary\n", curRange.lo, curRange.hi);
+                                r = 1;//skip other r till r=1
+                                curRange.lo = (mapIter->second)[i][hopelessStart-r];
+                                curRange.hi = (mapIter->second)[i][hopelessStart+r+1];
+                            }
+                            else
+                            {
+                                curRange.lo = (mapIter->second)[i][hopelessStart+r];
+                                curRange.hi = (mapIter->second)[i][hopelessStart+r+1];
+                            }
+
+                            if(curRange.hi > curRange.lo)
+                            {
+                                //check if this is continuous to some previous
+                                //range, if yes then merge
+                                int prevRegionSize = (int)curLeaf.boundaryRange[wr][r].size();
+
+                                bool merge= false;
+                                for(int prevReg=0; prevReg<prevRegionSize; ++prevReg)
+                                {
+                                    Range prevRange = curLeaf.boundaryRange[wr][r][prevReg];
+                                    if(curRange.lo == prevRange.hi)
+                                    {
+                                        //merge
+                                        curLeaf.boundaryRange[wr][r][prevReg].hi = curRange.hi;
+                                        merge = true;
+                                    }
+                                    else if(curRange.hi == prevRange.lo)
+                                    {
+                                        //merge
+                                        curLeaf.boundaryRange[wr][r][prevReg].lo = curRange.lo;
+                                        merge = true;
+                                    }
+                                }
+
+                                if(!merge)
+                                {
+                                    curLeaf.boundaryRange[wr][r].push_back(curRange);
+                                }
+                            }
+                            else
+                            {
+                                printf("omiting [%d, %d]  boundary\n", curRange.lo, curRange.hi);
+                            }
                         }
                     }
-                    curLeaf.boundaryRange.push_back(curBoundaryRange);
                 }
             }
         }
 
         //push current boundary
-        std::vector<std::map<int,Range>> curBoundaryRange(wbl);
+        //std::vector<std::map<int,Range>> curBoundaryRange(wbl);
         for(int r=-wbl; r<=wbl; ++r)
         {
             if(r!=0)
@@ -204,11 +233,10 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
                 //push only if it is non empty
                 if(curRange.hi > curRange.lo)
                 {
-                    curBoundaryRange[std::abs(r)-1][r] = curRange; //push direct boundary
+                    curLeaf.boundaryRange[std::abs(r)-1][r].push_back(curRange);//push direct boudary
                 }
             }
         }
-        curLeaf.boundaryRange.push_back(curBoundaryRange);
 
         printf("@@@ range = %d,%d\n", curLeaf.range.lo, curLeaf.range.hi);
         //TODO: mtxPower with boundaryRange
@@ -317,7 +345,7 @@ void mtxPowerRecursive::printTree()
         }
         printf("], Boundaries: [");
         EXEC_BOUNDARY_STRUCTURE(curLeaf.boundaryRange,
-                printf("%d -> (%d, %d) ", _radius_, _val_.lo, _val_.hi);
+                printf("{%d,%d} -> (%d, %d) ", _workingRadius_, _radius_, _val_.lo, _val_.hi);
                 );
         printf("]\n");
     }

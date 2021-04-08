@@ -27,12 +27,12 @@ class Traverse{
         int* perm;
         int* invPerm;
 
-        std::vector<std::vector<std::map<int, Range>>> boundaryRange;
+        std::vector<std::map<int, std::vector<Range>>> boundaryRange;
         int totalNodesIncBoundary;
 
         //Level Details
         LevelData* levelData;
-        std::vector<std::vector<std::map<int, LevelData*>>> boundaryLevelData;
+        std::vector<std::map<int, std::vector<LevelData*>>> boundaryLevelData;
 
         std::vector<int> markChildren(int currChild, int currLvl);
         RACE_error findLevelData(int lower_nrows, int upper_nrows, int totalLevel, LevelData* curLevelData);
@@ -40,7 +40,7 @@ class Traverse{
         void permuteGraph();
     public:
         //constructor
-        Traverse(Graph *graph_, RACE::dist dist, int rangeLo_=0, int rangeHi_=-1, int parentIdx=0, int numRoots=1, std::vector<std::vector<std::map<int, Range>>> boundaryRange_={});
+        Traverse(Graph *graph_, RACE::dist dist, int rangeLo_=0, int rangeHi_=-1, int parentIdx=0, int numRoots=1, std::vector<std::map<int, std::vector<Range>>> boundaryRange_={});
         ~Traverse();
         void calculateDistance();
 
@@ -48,7 +48,7 @@ class Traverse{
         void getPerm(int  **perm_, int *len);
         void getInvPerm(int **invPerm_, int *len);
         LevelData* getLevelData();
-        std::vector<std::vector<std::map<int, LevelData*>>> getBoundaryLevelData();
+        std::vector<std::map<int, std::vector<LevelData*>>> getBoundaryLevelData();
 };
 
 struct Counter{

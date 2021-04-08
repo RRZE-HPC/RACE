@@ -28,9 +28,9 @@ class mtxPower
     std::vector<int> levelPtr;
 
     //Details of boundary of parent
-    std::vector<std::vector<std::map<int, Range>>> boundaryRange;
-    std::vector<std::vector<std::map<int, LevelData*>>> boundaryLevelData;
-    std::vector<std::vector<std::map<int, std::vector<int>>>> boundaryLevelPtr;
+    std::vector<std::map<int, std::vector<Range>>> boundaryRange;
+    std::vector<std::map<int, std::vector<LevelData*>>> boundaryLevelData;
+    std::vector<std::map<int, std::vector<std::vector<int>>>> boundaryLevelPtr;
 
     Traverse* traverser;
     int totalLevel;
@@ -50,7 +50,7 @@ class mtxPower
     std::vector<int> findLevelPtr(int startNode, LevelData* curLevelData);
 
     public:
-    mtxPower(Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<std::vector<std::map<int, Range>>> boundaryRange={}, int nodeId_=-1, int numRootNodes_=-1);
+    mtxPower(Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<std::map<int, std::vector<Range>>> boundaryRange={}, int nodeId_=-1, int numRootNodes_=-1);
     ~mtxPower();
     void findPartition();
     void splitSharedCacheDomain();
@@ -67,7 +67,7 @@ class mtxPower
     int getTotalLevel();
     int getTotalNodes();
     std::vector<int> getLevelPtr();
-    std::vector<std::vector<std::map<int, std::vector<int>>>> getBoundaryLevelPtr();
+    std::vector<std::map<int, std::vector<std::vector<int>>>> getBoundaryLevelPtr();
     std::vector<int> getNodePtr();
     std::vector<int> getUnlockRow();
     std::vector<int> getDangerRow();

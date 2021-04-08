@@ -9,10 +9,10 @@
 //nodeId tells which node is responsible for the current leaf
 //-1(default): all,
 //else the node number
-mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<std::vector<std::map<int, Range>>> boundaryRange_, int nodeId_, int numRootNodes_):graph(graph_), cacheLevelGroup(NULL), startRow(startRow_), endRow(endRow_), levelData(NULL), boundaryRange(boundaryRange_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), cache_violation_cutoff(cache_violation_cutoff_), nodeId(nodeId_), numRootNodes(numRootNodes_)
+mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_, int nodeId_, int numRootNodes_):graph(graph_), cacheLevelGroup(NULL), startRow(startRow_), endRow(endRow_), levelData(NULL), boundaryRange(boundaryRange_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), cache_violation_cutoff(cache_violation_cutoff_), nodeId(nodeId_), numRootNodes(numRootNodes_)
 {
     EXEC_BOUNDARY_STRUCTURE(boundaryRange,
-            printf("####### check working rad %d, rad %d, range [%d, %d]\n", _workingRadius_, _radius_, boundaryRange[_region_][_workingRadius_][_radius_].lo, boundaryRange[_region_][_workingRadius_][_radius_].hi);
+            printf("####### check working rad %d, rad %d, range [%d, %d]\n", _workingRadius_, _radius_, boundaryRange[_workingRadius_][_radius_][_region_].lo, boundaryRange[_workingRadius_][_radius_][_region_].hi);
             UNUSED(_val_);
             );
 
@@ -50,7 +50,6 @@ double mtxPower::getElemUpperLimit(int level)
     EXEC_BOUNDARY_STRUCTURE_wo_radius(boundaryLevelData,
             nnz_in_level += _val_->levelNnz[level];);
 
-
     return (safetyFactor*(highestPower+1)*nnz_in_level);
     //return (safetyFactor*(2*highestPower-1)*levelData->levelNnz[level]);
 }
@@ -74,7 +73,7 @@ void mtxPower::createLevelPtr()
 
     INIT_BOUNDARY_STRUCTURE(boundaryRange, boundaryLevelPtr, {});
     //find levelPtr corresponding to boundaries
-    EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr, printf("region = %d, workingRadius = %d, radius = %d\n", _region_, _workingRadius_, _radius_);boundaryLevelPtr[_region_][_workingRadius_][_radius_] = findLevelPtr(boundaryRange[_region_][_workingRadius_][_radius_].lo, boundaryLevelData[_region_][_workingRadius_][_radius_]));
+    EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr, printf("workingRadius = %d, radius = %d, region = %d\n", _workingRadius_, _radius_, _region_);boundaryLevelPtr[_workingRadius_][_radius_][_region_] = findLevelPtr(boundaryRange[_workingRadius_][_radius_][_region_].lo, boundaryLevelData[_workingRadius_][_radius_][_region_]));
     /*for(int b=0; b<numNegativeBoundary; ++b)
     {
         printf("Consolidated boundary level[%d]\n", b);
@@ -597,8 +596,8 @@ void mtxPower::consolidatePartition()
     std::vector<int> newLevelPtr;
     newLevelPtr.push_back(levelPtr[0]); //done in loop
 
-    std::vector<std::vector<std::map<int, std::vector<int>>>> newBoundaryLevelPtr;
-    INIT_BOUNDARY_STRUCTURE(boundaryRange, newBoundaryLevelPtr, {boundaryLevelPtr[_region_][_workingRadius_][_radius_][0]});
+    std::vector<std::map<int, std::vector<std::vector<int>>>> newBoundaryLevelPtr;
+    INIT_BOUNDARY_STRUCTURE(boundaryRange, newBoundaryLevelPtr, {boundaryLevelPtr[_workingRadius_][_radius_][_region_][0]});
     int consolidated_ctr = 0; //startRow;
     unlockRow[0] = levelPtr[1];
 
@@ -762,7 +761,7 @@ void mtxPower::consolidatePartition()
                         int maxDangerNRows_boundaries = 0;
 
                         EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr,
-                                newBoundaryLevelPtr[_region_][_workingRadius_][_radius_].push_back(_val_[level]);
+                                newBoundaryLevelPtr[_workingRadius_][_radius_][_region_].push_back(_val_[level]);
                                 if((level+1) <= totalLevel)
                                 {
                                     maxUnlockNRows_boundaries = std::max(maxUnlockNRows_boundaries, (_val_[level+1]-_val_[level]));
@@ -840,7 +839,7 @@ void mtxPower::consolidatePartition()
         int lastLevel = nodePtr[node+1];
         newLevelPtr.push_back(levelPtr[lastLevel]);
 
-        EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr, newBoundaryLevelPtr[_region_][_workingRadius_][_radius_].push_back(_val_.back()););
+        EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr, newBoundaryLevelPtr[_workingRadius_][_radius_][_region_].push_back(_val_.back()););
 
         dangerRow[consolidated_ctr] = levelPtr[lastLevel-1];
         if((lastLevel+1) <= totalLevel)
@@ -976,7 +975,7 @@ std::vector<int> mtxPower::getLevelPtr()
     return levelPtr;
 }
 
-std::vector<std::vector<std::map<int, std::vector<int>>>> mtxPower::getBoundaryLevelPtr()
+std::vector<std::map<int, std::vector<std::vector<int>>>> mtxPower::getBoundaryLevelPtr()
 {
     return boundaryLevelPtr;
 }

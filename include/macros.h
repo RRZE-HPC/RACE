@@ -39,12 +39,12 @@
     dangerRowStart -= offset;\
 
 #define SPLIT_LEVEL_PER_THREAD_BOUNDARY(_level_)\
-    int _StartRow_ = _val_[_level_];\
-    int _EndRow_ = _val_[_level_+1];\
-    int _RowPerThread_ = (_EndRow_- _StartRow_)/threadPerNode;\
-    int startRow_tid = _StartRow_ + localTid*_RowPerThread_;\
+    int _StartRowBoundary_ = _val_->at(_level_);\
+    int _EndRowBoundary_ = _val_->at(_level_+1);\
+    int _RowPerThreadBoundary_ = (_EndRowBoundary_- _StartRowBoundary_)/threadPerNode;\
+    int startRow_tid = _StartRowBoundary_ + localTid*_RowPerThreadBoundary_;\
     startRow_tid -= offset;\
-    int endRow_tid = (localTid == (threadPerNode-1)) ? _EndRow_ : _StartRow_+(localTid+1)*_RowPerThread_;\
+    int endRow_tid = (localTid == (threadPerNode-1)) ? _EndRowBoundary_ : _StartRowBoundary_+(localTid+1)*_RowPerThreadBoundary_;\
     endRow_tid -= offset;\
 
 
@@ -65,62 +65,65 @@
 //last argument is the statement that you want to init for each boundary ranges
 #define INIT_BOUNDARY_STRUCTURE(_boundaryRange_, _newVar_, ...)\
 {\
-    int _numBoundaries_ = (int)_boundaryRange_.size();\
-    _newVar_.resize(_numBoundaries_);\
-    for(int _region_=0; _region_<_numBoundaries_; ++_region_)\
+    int _wbl_ = (int)_boundaryRange_.size();\
+    _newVar_.resize(_wbl_);\
+    for(int _workingRadius_=0; _workingRadius_<_wbl_; ++_workingRadius_)\
     {\
-        int _wbl_=_boundaryRange_[_region_].size();\
-        _newVar_[_region_].resize(_wbl_);\
-        for(int _workingRadius_=0; _workingRadius_<_wbl_; ++_workingRadius_)\
+        std::map<int, std::vector<Range>> *_curBoundaryRange_ = &(_boundaryRange_[_workingRadius_]);\
+        for(auto _mapIter_ = _curBoundaryRange_->begin(); _mapIter_ != _curBoundaryRange_->end(); ++_mapIter_)\
         {\
-            std::map<int, Range> *_curBoundaryRange_ = &(_boundaryRange_[_region_][_workingRadius_]);\
-            for(auto _mapIter_ = _curBoundaryRange_->begin(); _mapIter_ != _curBoundaryRange_->end(); ++_mapIter_)\
+            int _radius_ = _mapIter_->first;\
+            std::vector<Range>* _ranges_ = &(_mapIter_->second);\
+            int _num_regions_ = (int)_ranges_->size();\
+            _newVar_[_workingRadius_][_radius_].resize(_num_regions_);\
+            for(int _region_=0; _region_<_num_regions_; ++_region_)\
             {\
-                int _radius_ = _mapIter_->first;\
-                _newVar_[_region_][_workingRadius_][_radius_] = __VA_ARGS__;\
+                _newVar_[_workingRadius_][_radius_][_region_] = __VA_ARGS__;\
             }\
         }\
     }\
-}\
+}
 
 //last argument is the statement that you want to execute for each boundary ranges
 #define EXEC_BOUNDARY_STRUCTURE(_var_, ...)\
 {\
-    int _numBoundaries_ = (int)_var_.size();\
-    for(int _region_=0; _region_<_numBoundaries_; ++_region_)\
+    int _wbl_ = (int)_var_.size();\
+    for(int _workingRadius_=0; _workingRadius_<_wbl_; ++_workingRadius_)\
     {\
-        int _wbl_=_var_[_region_].size();\
-        for(int _workingRadius_=0; _workingRadius_<_wbl_; ++_workingRadius_)\
+        for(auto _mapIter_ = _var_[_workingRadius_].begin(); _mapIter_ != _var_[_workingRadius_].end(); ++_mapIter_)\
         {\
-            for(auto _mapIter_ = _var_[_region_][_workingRadius_].begin(); _mapIter_ != _var_[_region_][_workingRadius_].end(); ++_mapIter_)\
+            int _radius_ = _mapIter_->first;\
+            auto* _entity_ = &(_mapIter_->second);\
+            int _numBoundaries_ = (int)_entity_->size();\
+            for(int _region_=0; _region_<_numBoundaries_; ++_region_)\
             {\
-                int _radius_ = _mapIter_->first;\
-                auto _val_ = _mapIter_->second;\
+                auto _val_ = _entity_->at(_region_);\
                 __VA_ARGS__;\
             }\
         }\
     }\
-}\
-
+}
 
 //last argument is the statement that you want to execute for each boundary ranges
 //only difference with previous macro is: _radius_ is not defined in inner-loop,
 //so avoid annoying compiler remarks
 #define EXEC_BOUNDARY_STRUCTURE_wo_radius(_var_, ...)\
 {\
-    int _numBoundaries_ = (int)_var_.size();\
-    for(int _region_=0; _region_<_numBoundaries_; ++_region_)\
+    int _wbl_ = (int)_var_.size();\
+    for(int _workingRadius_=0; _workingRadius_<_wbl_; ++_workingRadius_)\
     {\
-        int _wbl_=_var_[_region_].size();\
-        for(int _workingRadius_=0; _workingRadius_<_wbl_; ++_workingRadius_)\
+        for(auto _mapIter_ = _var_[_workingRadius_].begin(); _mapIter_ != _var_[_workingRadius_].end(); ++_mapIter_)\
         {\
-            for(auto _mapIter_ = _var_[_region_][_workingRadius_].begin(); _mapIter_ != _var_[_region_][_workingRadius_].end(); ++_mapIter_)\
+            auto _entity_ = &(_mapIter_->second);\
+            int _numBoundaries_ = (int)_entity_->size();\
+            for(int _region_=0; _region_<_numBoundaries_; ++_region_)\
             {\
-                auto _val_ = _mapIter_->second;\
+                auto _val_ = _entity_->at(_region_);\
                 __VA_ARGS__;\
             }\
         }\
     }\
-}\
+}
+
 
 #endif
