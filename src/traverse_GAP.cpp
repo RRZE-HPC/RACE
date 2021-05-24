@@ -15,6 +15,8 @@ Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, 
         rangeHi = graph->NROW;
     }
 
+    totalThreads = omp_get_num_threads();
+
     distFromRoot = new int[graphSize];
     parent = new int[graphSize];
     for(int i=0; i<graphSize; ++i) {
@@ -36,14 +38,14 @@ Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, 
     if(dist == RACE::POWER)
     {
         //if this is recursive part
-        if((rangeLo!=0) && (rangeHi!=graph->NROW))
+        if((rangeLo!=0) || (rangeHi!=graph->NROW))
         {
             INIT_BOUNDARY_STRUCTURE(boundaryRange, boundaryLevelData, NULL);
             EXEC_BOUNDARY_STRUCTURE_wo_radius(boundaryRange, totalNodesIncBoundary += (_val_.hi - _val_.lo); minBoundary=std::min(minBoundary, _val_.lo); maxBoundary=std::max(maxBoundary, _val_.hi);)
             boundary_bm = new Bitmap((maxBoundary-minBoundary)+1);
             boundary_bm->reset();
             //printf("offset Boundary = %d\n", minBoundary);
-            EXEC_BOUNDARY_STRUCTURE_wo_radius(boundaryRange, for(int node=_val_.lo; node<_val_.hi; ++node) { boundary_bm->set_bit(node-minBoundary);} );//use set_bit_atomic if parallelized
+            EXEC_BOUNDARY_STRUCTURE_wo_radius(boundaryRange, for(int node=_val_.lo; node<_val_.hi; ++node) { boundary_bm->set_bit(static_cast<size_t>(node-minBoundary));} );//use set_bit_atomic if parallelized
         }
     }
 
@@ -97,7 +99,8 @@ void Traverse::TDStep(int currLvl)
     int localCtr=0;
     int localColRangeLo = colRangeLo;
     int localColRangeHi = colRangeHi;
-#pragma omp parallel
+    //int curThreads = std::min(totalThreads, (int)(queue.size()/100.0)); //at least 100 work per thread
+#pragma omp parallel //num_threads(curThreads)
     {
         QueueBuffer<int> lqueue(queue);
 #pragma omp for reduction(+:localCtr) reduction(min:localColRangeLo) reduction(max:localColRangeHi)
@@ -130,7 +133,7 @@ void Traverse::TDStep(int currLvl)
                     {
                         if((child >= minBoundary) && (child <= maxBoundary))
                         {
-                            if( boundary_bm->get_bit(child-minBoundary) )
+                            if( boundary_bm->get_bit(static_cast<size_t>(child-minBoundary)) )
                             {
                                 if(compare_and_swap(parent[child], curr_val, u))
                                 {
@@ -353,6 +356,7 @@ void Traverse::permuteGraph()
     regionRange.push_back(rangeHi);
 
     Graph permutedGraph(*(graph));
+
     if(dist==RACE::POWER)
     {
         EXEC_BOUNDARY_STRUCTURE_wo_radius(boundaryRange, regionRange.push_back(_val_.lo); regionRange.push_back(_val_.hi); numRegions++;);
@@ -405,19 +409,23 @@ void Traverse::permuteGraph()
     for(int i=colRangeLo/*rangeLo*/; i<colRangeHi/*rangeHi*/; ++i)
     {
         std::vector<int> *children = &(permutedGraph.graphData[i].children);
-        for(unsigned j=0; j<children->size(); ++j)
+        for(int j=0; j<children->size(); ++j)
         {
             int child = children->at(j);
             bool inNodesIncBoundaries = false;
             if( (child>=rangeLo) && (child<rangeHi) ) {
                 inNodesIncBoundaries = true;
             }
-            if((RACE::POWER) && (!inNodesIncBoundaries))
+            if((RACE::POWER) && ((!inNodesIncBoundaries) && boundary_bm))
             {
+
                 /*
                 if((child >= minBoundary) && (child <= maxBoundary))
                 {
-                    inNodesIncBoundaries = boundary_bm->get_bit(child-minBoundary);
+                    if(boundary_bm->get_bit(static_cast<size_t>(child-minBoundary)))
+                    {
+                        inNodesIncBoundaries = true;
+                    }
                 }*/
                 EXEC_BOUNDARY_STRUCTURE_wo_radius(boundaryRange,
                         if(( (child>=_val_.lo) && (child<_val_.hi) ))
