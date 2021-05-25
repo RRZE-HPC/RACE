@@ -11,6 +11,12 @@ include(${PROJECT_SOURCE_DIR}/cmake/OptimizeForArchitecture.cmake)
 AutodetectHostArchitecture()
 OptimizeForArchitecture()
 
+
+#if (NOT BUILD_SHARED_LIBS)
+#    message(STATUS "No library type specified. Setting it to shared.")
+#    set(BUILD_SHARED_LIBS ON CACHE BOOL "Set to ON/OFF for shared/static library build.")
+#endif()
+
 if(USE_AVX512F)
     set(VECTOR_LENGTH 8)
 elseif(USE_AVX OR USE_AVX2)
@@ -220,3 +226,20 @@ file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/extract_matDetails.sh DEST
 file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/check-state.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
 file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/config.txt DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
 file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/machine-state.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
+
+
+#add_library(RACE_example ${SOURCES})
+
+#file(GLOB HEADERS ${PROJECT_SOURCE_DIR}/include/*.h)
+#install(FILES ${HEADERS} DESTINATION include/RACE_example)
+
+#configure_file(${PROJECT_SOURCE_DIR}/race_example-config.cmake.in ${PROJECT_BINARY_DIR}/race_example-config.cmake @ONLY)
+#install(FILES ${PROJECT_BINARY_DIR}/race_example-config.cmake DESTINATION lib/RACE_example)
+
+#if (${BUILD_SHARED_LIBS})
+#    install(TARGETS RACE_example EXPORT RACE_example-targets LIBRARY DESTINATION lib/RACE_example)
+#else ()
+#    install(TARGETS RACE_example EXPORT RACE_example-targets ARCHIVE DESTINATION lib/RACE_example)
+#endif()
+
+

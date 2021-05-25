@@ -90,7 +90,7 @@ if (RACE_USE_GAP)
             PREFIX ${PROJECT_BINARY_DIR}/GAP
             URL https://github.com/sbeamer/gapbs/archive/refs/heads/master.zip
             CONFIGURE_COMMAND ""
-            BUILD_COMMAND make 
+            BUILD_COMMAND ""
             BUILD_IN_SOURCE 1
             INSTALL_COMMAND ""
             )

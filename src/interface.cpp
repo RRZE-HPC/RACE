@@ -43,8 +43,6 @@ RACE_error RACE::Interface::RACEColor(int highestPower, int numSharedCache, doub
     }
     else
     {
-
-START_TIME(RACE_COLOR);
         powerCalculator = new mtxPowerRecursive(graph, highestPower, numSharedCache, cacheSize, safetyFactor);
         //sanity check
         if(requestedThreads%numSharedCache)
@@ -52,17 +50,12 @@ START_TIME(RACE_COLOR);
             ERROR_PRINT("Threads (=%d) not a multiple of requested nodes (=%d)\n", requestedThreads, numSharedCache);
             exit(-1);
         }
-        START_TIME(findPartition);
         powerCalculator->findPartition();
-        STOP_TIME(findPartition);
-        PRINT_TIME(findPartition);
         int len;
         powerCalculator->getPerm(&perm, &len);
         powerCalculator->getInvPerm(&invPerm, &len);
         //Pin pin(NULL, 1, RACE::FILL);
         //pin.pinPowerThread(numSharedCache);
-STOP_TIME(RACE_COLOR);
-PRINT_TIME(RACE_COLOR);
 
         return RACE_SUCCESS;
 

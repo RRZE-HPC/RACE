@@ -55,7 +55,7 @@ int main(const int argc, char * argv[])
     }
     STOP_TIMER(pre_process);
     double pre_process_time = GET_TIMER(pre_process);
-    printf("Pre-processing time = %f s\n", pre_process_time);
+    printf("Total pre-processing time = %f s\n", pre_process_time);
 
 
     //mat->writeFile("after_RCM.mtx");

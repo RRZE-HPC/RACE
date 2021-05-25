@@ -56,6 +56,7 @@ struct sparsemat
     sparsemat();
     ~sparsemat();
 
+    void initCover(int nrows_, int nnz_, double *val_, int *rowPtr_, int *col_);
     densemat* permute_densemat(densemat *vec);
 
 };

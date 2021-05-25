@@ -3,7 +3,7 @@
 
 #include "sparsemat.h"
 #include "densemat.h"
-
+#include <complex>
 struct kernelArg
 {
     sparsemat* mat;

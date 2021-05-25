@@ -10,10 +10,21 @@
     #include "SpMP/CSR.hpp"
     #include "SpMP/reordering/BFSBipartite.hpp"
 #endif
-
+#include "timer.h"
 
 sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), finalPerm(NULL), finalInvPerm(NULL)
 {
+}
+
+//to transfer from a different library the data structure
+//need to be called after contructor
+void sparsemat::initCover(int nrows_, int nnz_, double *val_, int *rowPtr_, int *col_)
+{
+    nrows=nrows_;
+    nnz=nnz_;
+    val=val_;
+    rowPtr=rowPtr_;
+    col=col_;
 }
 
 sparsemat::~sparsemat()
@@ -580,8 +591,12 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
     //permute(rcmInvPerm, rcmPerm);
     //rcmPerm = NULL;
     //rcmInvPerm = NULL;
+    INIT_TIMER(pre_process_kernel);
+    START_TIMER(pre_process_kernel);
     ce = new Interface(nrows, nthreads, RACE::POWER, rowPtr, col, smt, pinMethod, rcmPerm, rcmInvPerm);
     ce->RACEColor(highestPower, numSharedCache, cacheSize);
+    STOP_TIMER(pre_process_kernel);
+    printf("RACE pre-processing time = %fs\n", GET_TIMER(pre_process_kernel));
 
     int *perm, *invPerm, permLen;
     ce->getPerm(&perm, &permLen);
