@@ -68,8 +68,47 @@ template <typename T> inline void getEnv(std::string envName, std::vector<T>& va
     }
 }
 
-//updates first peermutation array based on the current permutation
+//updates first permutation array based on the current permutation
 inline void updatePerm(int **mainPerm, int *currPerm, int len, int fullLen)
+{
+    int *totPerm = new int [fullLen];
+
+    if(*mainPerm)
+    {
+#pragma omp parallel for schedule(runtime)
+        for(int i=0; i<len; ++i)
+        {
+            totPerm[i] = (*mainPerm)[currPerm[i]];
+        }
+        for(int i=len; i<fullLen; ++i)
+        {
+            totPerm[i] = (*mainPerm)[i];
+        }
+    }
+    else
+    {
+#pragma omp parallel for schedule(runtime)
+        for(int i=0; i<len; ++i)
+        {
+            totPerm[i] = currPerm[i];
+        }
+        for(int i=len; i<fullLen; ++i)
+        {
+            totPerm[i] = i;
+        }
+    }
+
+    //swap mainPerm and totPerm
+    int *temp = (*mainPerm);
+    (*mainPerm) = totPerm;
+    totPerm = temp;
+
+    delete[] totPerm;
+}
+
+
+//updates first permutation array based on the current permutation
+inline void updatePerm(int **mainPerm, std::vector<int> currPerm, int len, int fullLen)
 {
     int *totPerm = new int [fullLen];
 
