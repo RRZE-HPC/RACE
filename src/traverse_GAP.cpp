@@ -24,13 +24,14 @@ Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, 
         parent[i] = -1;
     }
 
-
+    //this is to store permutation vector for current BFS step only
     perm = new int[graph->NROW];
+    invPerm = new int[graph->NROW];
     for(int i=0; i<graph->NROW; ++i) {
         perm[i] = i;
+        invPerm[i] = i;
     }
 
-    invPerm = new int[graph->NROW];
 
     totalNodesIncBoundary=(rangeHi-rangeLo);//the main nodes
     minBoundary = rangeLo;
@@ -107,10 +108,17 @@ void Traverse::TDStep(int currLvl)
         for( auto q_iter=queue.begin(); q_iter<queue.end(); q_iter++)
         {
             int u = *q_iter;
-            std::vector<int> *children = &(graph->graphData[u].children);
+            int perm_u = u;
+#ifdef PERMUTE_ON_FLY
+            perm_u = graph->totalPerm[u];
+#endif
+            std::vector<int> *children = &(graph->graphData[perm_u].children);
             for(auto child_iter=children->begin(); child_iter!=children->end(); ++child_iter)
             {
                 int child = *child_iter;
+#ifdef PERMUTE_ON_FLY
+                child = graph->totalInvPerm[child];
+#endif
 
                 //actually not needed in case of dist ONE, because you dont need
                 //to worry about boundary. But doesn't hurt
@@ -274,7 +282,11 @@ RACE_error Traverse::findLevelData(int lower_nrows, int upper_nrows, int totalLe
         }
 
         levelRow_[curr_dist]+=1;
+#ifdef PERMUTE_ON_FLY
+        levelNnz_[curr_dist] += graph->graphData[graph->totalPerm[i]].children.size();
+#else
         levelNnz_[curr_dist] += graph->graphData[i].children.size();
+#endif
         //levelNnz_[curr_dist] += graph->graphData[i].upperNnz;
 
     }
@@ -355,7 +367,9 @@ void Traverse::permuteGraph()
     regionRange.push_back(rangeLo);
     regionRange.push_back(rangeHi);
 
+#ifndef PERMUTE_ON_FLY
     Graph permutedGraph(*(graph));
+#endif
 
     if(dist==RACE::POWER)
     {
@@ -369,29 +383,31 @@ void Traverse::permuteGraph()
 
         //create permutation vector First
         sortPerm(distFromRoot, perm, targetRangeLo, targetRangeHi);
-
-        //create invPerm
+       //create invPerm
 #pragma omp parallel for schedule(static)
         for(int i=targetRangeLo; i<targetRangeHi; ++i) {
             invPerm[perm[i]] = i;
         }
 
+#ifndef PERMUTE_ON_FLY
         //Permute rows
 #pragma omp parallel for schedule(static)
         for(int i=targetRangeLo; i<targetRangeHi; ++i)
         {
             permutedGraph.graphData[i].children = graph->graphData[perm[i]].children;
         }
+#endif
 
     }
+#ifdef PERMUTE_ON_FLY
+        updatePerm(&graph->totalPerm, perm, graph->NROW, graph->NROW);
 
+#pragma omp parallel for schedule(static)
+        for(int i=0; i<graph->NROW; ++i) {
+            graph->totalInvPerm[graph->totalPerm[i]] = i;
+        }
 
-    //Permute rows : moved inside previous loop, I dont see any problem now.
-    //TODO: verify
-    /*for(int i=minRange; i<maxRange; ++i)
-    {
-        permutedGraph.graphData[i].children = graph->graphData[perm[i]].children;
-    }*/
+#endif
 
     if(colRangeHi != rangeHi)
     {
@@ -402,16 +418,19 @@ void Traverse::permuteGraph()
         ERROR_PRINT("Error col range less than row range");
     }
     printf("Range = [%d,%d], colRange = [%d, %d]\n", rangeLo, rangeHi, colRangeLo, colRangeHi);
+
+#ifndef PERMUTE_ON_FLY
     //Permute columns
     //TODO only neighbors
     //for(int i=0/*rangeLo*/; i<graph->NROW/*rangeHi*/; ++i)
 #pragma omp parallel for schedule(static)
-    for(int i=colRangeLo/*rangeLo*/; i<colRangeHi/*rangeHi*/; ++i)
+    for(int i=colRangeLo; i<colRangeHi; ++i)
     {
         std::vector<int> *children = &(permutedGraph.graphData[i].children);
         for(int j=0; j<children->size(); ++j)
         {
             int child = children->at(j);
+#if 1
             bool inNodesIncBoundaries = false;
             if( (child>=rangeLo) && (child<rangeHi) ) {
                 inNodesIncBoundaries = true;
@@ -419,26 +438,29 @@ void Traverse::permuteGraph()
             if((RACE::POWER) && ((!inNodesIncBoundaries) && boundary_bm))
             {
 
-                /*
                 if((child >= minBoundary) && (child <= maxBoundary))
                 {
                     if(boundary_bm->get_bit(static_cast<size_t>(child-minBoundary)))
                     {
                         inNodesIncBoundaries = true;
                     }
-                }*/
+                }
+                /*
                 EXEC_BOUNDARY_STRUCTURE_wo_radius(boundaryRange,
-                        if(( (child>=_val_.lo) && (child<_val_.hi) ))
+                        if((child>=_val_.lo) && (child<_val_.hi))
                         {
                             inNodesIncBoundaries = true;
+                            _numBoundaries_ = -1; //break from regions
+                            _wbl_ = -1; //break from working radius
+                            _mapIter_ = boundaryRange[_workingRadius_].end();//break from radius
+                            --_mapIter_;
+                            break;
                         }
-                        _numBoundaries_ = -1; //break from regions
-                        _wbl_ = -1; //break from working radius
-                        _mapIter_ = boundaryRange[_workingRadius_].end();//break from radius
-                        --_mapIter_;
-                        break;
                     );
+                    */
             }
+#endif
+
             if(inNodesIncBoundaries)
             {
                 children->at(j) = invPerm[child];
@@ -447,20 +469,31 @@ void Traverse::permuteGraph()
     }
 
     permutedGraph.swap(*(graph));
+#endif
 }
 
 //Getter functions
 void Traverse::getPerm(int **perm_, int *len)
 {
+#ifndef PERMUTE_ON_FLY
     (*perm_) = perm;
     perm = NULL;
+#else
+    WARNING_PRINT("Use getPerm from graph directly when PERMUTE_ON_FLY is active");
+    (*perm_) = graph->totalPerm;
+#endif
     (*len) = graph->NROW;
 }
 
 void Traverse::getInvPerm(int **invPerm_, int *len)
 {
+#ifndef PERMUTE_ON_FLY
     (*invPerm_) = invPerm;
     invPerm = NULL;
+#else
+    WARNING_PRINT("Use getPerm from graph directly when PERMUTE_ON_FLY is active");
+    (*invPerm_) = graph->totalInvPerm;
+#endif
     (*len) = graph->NROW;
 }
 
