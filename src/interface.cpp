@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include "utility.h"
+#include "timing.h"
 
 RACE::Interface::Interface(int nrow_,int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_, RACE::PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):graph(NULL),nrow(nrow_),distance(dist_),d2Type(d2Type_),lbTarget(lbTarget_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL),powerCalculator(NULL)
 {
@@ -35,7 +36,6 @@ RACE::Interface::~Interface()
 
 RACE_error RACE::Interface::RACEColor(int highestPower, int numSharedCache, double cacheSize, double safetyFactor)
 {
-
     if(distance != RACE::POWER)
     {
         ERROR_PRINT("If you need to calculate power set distance to RACE::POWER");
@@ -43,6 +43,8 @@ RACE_error RACE::Interface::RACEColor(int highestPower, int numSharedCache, doub
     }
     else
     {
+
+START_TIME(RACE_COLOR);
         powerCalculator = new mtxPowerRecursive(graph, highestPower, numSharedCache, cacheSize, safetyFactor);
         //sanity check
         if(requestedThreads%numSharedCache)
@@ -50,13 +52,20 @@ RACE_error RACE::Interface::RACEColor(int highestPower, int numSharedCache, doub
             ERROR_PRINT("Threads (=%d) not a multiple of requested nodes (=%d)\n", requestedThreads, numSharedCache);
             exit(-1);
         }
+        START_TIME(findPartition);
         powerCalculator->findPartition();
+        STOP_TIME(findPartition);
+        PRINT_TIME(findPartition);
         int len;
         powerCalculator->getPerm(&perm, &len);
         powerCalculator->getInvPerm(&invPerm, &len);
-        Pin pin(NULL, 1, RACE::FILL);
-        pin.pinPowerThread(numSharedCache);
+        //Pin pin(NULL, 1, RACE::FILL);
+        //pin.pinPowerThread(numSharedCache);
+STOP_TIME(RACE_COLOR);
+PRINT_TIME(RACE_COLOR);
+
         return RACE_SUCCESS;
+
     }
 }
 
@@ -124,6 +133,7 @@ void RACE::Interface::printZoneTree()
 
 void RACE::Interface::getPerm(int **perm_, int *len_)
 {
+#if 0 //now included
     if(initPerm)
     {
         int *totPerm = new int [nrow];
@@ -140,11 +150,16 @@ void RACE::Interface::getPerm(int **perm_, int *len_)
     {
         (*perm_) = perm;
     }
+#else
+    //initPerm included
+    (*perm_) = perm;
+#endif
     (*len_) = nrow;
 }
 
 void RACE::Interface::getInvPerm(int **invPerm_, int *len_)
 {
+#if 0 //now included
     if(initInvPerm)
     {
         int *totInvPerm = new int [nrow];
@@ -162,6 +177,9 @@ void RACE::Interface::getInvPerm(int **invPerm_, int *len_)
     {
         (*invPerm_) = invPerm;
     }
+#else
+    (*invPerm_) = invPerm;
+#endif
     (*len_) = nrow;
 }
 

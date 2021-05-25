@@ -1,17 +1,26 @@
 #include "level_recursion.h"
 #include "utility.h"
+#include "config.h"
 
 LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist dist_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):graph(graph_), dist(dist_), d2Type(d2Type_), lbTarget(lbTarget_), requestNThreads(requestNThreads_), perm(NULL), invPerm(NULL)
 {
     zoneTree = new ZoneTree(dist, d2Type, lbTarget);
-    int totalRows;
-    graph->getInitialPerm(&perm, &totalRows); //This is for serial part, and does not include initPerm
-    invPerm = new int[totalRows];
-
+#ifndef PERMUTE_ON_FLY
+    int totalRows = graph->NROW+graph->NROW_serial;
+    //copy initial permutations
+    int* perm = new int[totalRows];
+    int* invPerm = new int[totalRows];
+    for(int i=0; i<totalRows; ++i)
+    {
+        perm[i] = graph->totalPerm[i]; //Includes both serial and initPerm
+        invPerm[i] = graph->totalInvPerm[i]; //Includes both serial and initPerm
+    }
+#endif
+    /*invPerm = new int[totalRows];
     for(int i=0; i<totalRows; ++i)
     {
         invPerm[perm[i]] = i;
-    }
+    }*/
 
     double default_eff = 40;
 /*    char *lvlEff = getenv("RACE_EFFICIENCY");
@@ -229,12 +238,13 @@ void LevelRecursion::recursivePartition(int parentIdx, int parentSubIdx, int cur
             {
                 Traverse traverse(graph, dist, range[j], range[j+1], currIdx);
                 traverse.calculateDistance();
+#ifndef PERMUTE_ON_FLY
                 int *levelPerm = NULL;
                 int len;
                 traverse.getPerm(&levelPerm, &len);
                 updatePerm(&perm, levelPerm, len, len+graph->NROW_serial);
                 delete[] levelPerm;
-
+#endif
                 LevelData* levelData = traverse.getLevelData();
                 //Try to spawn all the threads required
                 bool locFlag = zoneTree->spawnChild(currIdx, j, currIdxNThreads, levelData, efficiency(currLevel));
@@ -273,11 +283,13 @@ void LevelRecursion::levelBalancing()
     //Traverse
     Traverse traverse(graph, dist);
     traverse.calculateDistance();
+#ifndef PERMUTE_ON_FLY
     int *levelPerm = NULL;
     int len;
     traverse.getPerm(&levelPerm, &len);
     updatePerm(&perm, levelPerm, len, len+graph->NROW_serial);
     delete[] levelPerm;
+#endif
     LevelData* levelData = traverse.getLevelData();
     int currLevel = 1;
     int lvlOneThreads = requestNThreads;
@@ -301,11 +313,17 @@ void LevelRecursion::levelBalancing()
         WARNING_PRINT("Could not spawn requested threads = %d. Threads limited to %d", requestNThreads, availableNThreads);
     }
 
+#ifndef PERMUTE_ON_FLY
     //update invPerm
     for(int i=0; i<graph->NROW+graph->NROW_serial; ++i)
     {
         invPerm[perm[i]] = i;
     }
+#else
+    int len;
+    graph->getPerm(&perm, &len);
+    graph->getInvPerm(&invPerm, &len);
+#endif
 }
 
 //Getter functions

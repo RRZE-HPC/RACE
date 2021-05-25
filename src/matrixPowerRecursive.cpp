@@ -1,8 +1,10 @@
 #include "matrixPowerRecursive.h"
 #include "utility.h"
+#include "config.h"
 
 #define UPDATE_INVPERM(_invPerm_, _perm_)\
 {\
+    _Pragma("omp parallel for schedule(static)")\
     for(int i=0; i<totalRows; ++i)\
     {\
         _invPerm_[_perm_[i]] = i;\
@@ -21,13 +23,17 @@ mtxPowerRecursive::mtxPowerRecursive(Graph* graph_, int highestPower_, int numSh
     getEnv("RACE_CACHE_VIOLATION_CUTOFF", cache_violation_cutoff);
 
     totalRows = graph->NROW;
+#ifndef PERMUTE_ON_FLY
     perm =  new int[totalRows];
     invPerm =  new int[totalRows];
+    //copy initial permutations
+#pragma omp parallel for schedule(static)
     for(int i=0; i<totalRows; ++i)
     {
-        perm[i] = i;
-        invPerm[i] = i;
+        perm[i] = graph->totalPerm[i];
+        invPerm[i] = graph->totalInvPerm[i];
     }
+#endif
 }
 
 mtxPowerRecursive::~mtxPowerRecursive()
@@ -57,14 +63,17 @@ int mtxPowerRecursive::get_cache_violation_cutoff(int stage)
     return cache_cutoff;
 }
 
-#define READ_STAGE_DATA(_leaf_, _stage_mtxPower_)\
+#define READ_STAGE_DATA(_leaf_, _stage_mtxPower_, _readPermute_)\
     _leaf_.hid = _stage_mtxPower_.getHopelessRegions();\
     _leaf_.lp = _stage_mtxPower_.getLevelPtr();\
     _leaf_.blp = _stage_mtxPower_.getBoundaryLevelPtr();\
     _leaf_.unlockRow = _stage_mtxPower_.getUnlockRow();\
     _leaf_.unlockCtr = _stage_mtxPower_.getUnlockCtr();\
     _leaf_.dangerRow = _stage_mtxPower_.getDangerRow();\
-    _stage_mtxPower_.getPerm(&perm_curStage, &_leaf_.nrows);\
+    if(_readPermute_)\
+    {\
+        _stage_mtxPower_.getPerm(&perm_curStage, &_leaf_.nrows);\
+    }\
     std::vector<int> _nodePtr_ = _stage_mtxPower_.getNodePtr();\
     _leaf_.nodePtr = _nodePtr_;\
     /*create unitPtr*/\
@@ -242,12 +251,18 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
         //TODO: mtxPower with boundaryRange
         mtxPower curStage(graph, highestPower, 1, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range.lo, curLeaf.range.hi, curLeaf.boundaryRange, curLeaf.nodeId, numSharedCache);
         curStage.findPartition();
+
         int *perm_curStage;
-        READ_STAGE_DATA(curLeaf, curStage);
+#ifdef PERMUTE_ON_FLY
+        READ_STAGE_DATA(curLeaf, curStage, false);
+#else
+        READ_STAGE_DATA(curLeaf, curStage, true);
         //permute
         updatePerm(&perm, perm_curStage, totalRows, totalRows);
         delete[] perm_curStage;
-        //push leaf to tree
+#endif
+
+       //push leaf to tree
         tree.push_back(curLeaf);
         //make this a child of parent
         int curIdx = (int)tree.size()-1;
@@ -281,11 +296,16 @@ void mtxPowerRecursive::findPartition()
     //partition for first stage
     mtxPower curStage(graph, highestPower, numSharedCache, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range.lo, curLeaf.range.hi);
     curStage.findPartition();
-    int* perm_curStage;
-    READ_STAGE_DATA(curLeaf, curStage);
     hopelessNodePtr = curStage.getHopelessNodePtr();
+    int* perm_curStage;
+#ifdef PERMUTE_ON_FLY
+    READ_STAGE_DATA(curLeaf, curStage, false);
+#else
+    READ_STAGE_DATA(curLeaf, curStage, true);
     updatePerm(&perm, perm_curStage, totalRows, totalRows);
     delete[] perm_curStage;
+#endif
+
     tree.push_back(curLeaf);
 
     if(!curLeaf.hid.empty())
@@ -293,7 +313,13 @@ void mtxPowerRecursive::findPartition()
         recursivePartition(0); //my curId=0
     }
 
+#ifndef PERMUTE_ON_FLY
     UPDATE_INVPERM(invPerm, perm);
+#else
+    int len;
+    graph->getPerm(&perm, &len);
+    graph->getInvPerm(&invPerm, &len);
+#endif
     //totalLevel = (int)(curLeaf.lp.size()-1);
     //if empty this is final
     /*COPY_TO_PLAIN_INT_PTR(curLeaf.lp, lp);
