@@ -3,6 +3,8 @@
 #include "macros.h"
 #include "lb.h"
 #include "omp.h"
+#include "config.h"
+#include "timing.h"
 
 //#define LB_REMINDER
 
@@ -11,12 +13,13 @@
 //else the node number
 mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_, int nodeId_, int numRootNodes_):graph(graph_), cacheLevelGroup(NULL), startRow(startRow_), endRow(endRow_), levelData(NULL), boundaryRange(boundaryRange_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), cache_violation_cutoff(cache_violation_cutoff_), nodeId(nodeId_), numRootNodes(numRootNodes_)
 {
+
+#if RACE_VERBOSITY > 1
     EXEC_BOUNDARY_STRUCTURE(boundaryRange,
             printf("####### check working rad %d, rad %d, range [%d, %d]\n", _workingRadius_, _radius_, boundaryRange[_workingRadius_][_radius_][_region_].lo, boundaryRange[_workingRadius_][_radius_][_region_].hi);
             UNUSED(_val_);
             );
-
-
+#endif
     traverser = new Traverse(graph, RACE::POWER, startRow, endRow, 0, 1, boundaryRange);
 
 }
@@ -73,7 +76,11 @@ void mtxPower::createLevelPtr()
 
     INIT_BOUNDARY_STRUCTURE(boundaryRange, boundaryLevelPtr, {});
     //find levelPtr corresponding to boundaries
+#if RACE_VERBOSITY > 1
     EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr, printf("workingRadius = %d, radius = %d, region = %d\n", _workingRadius_, _radius_, _region_);boundaryLevelPtr[_workingRadius_][_radius_][_region_] = findLevelPtr(boundaryRange[_workingRadius_][_radius_][_region_].lo, boundaryLevelData[_workingRadius_][_radius_][_region_]));
+#else
+    EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr, boundaryLevelPtr[_workingRadius_][_radius_][_region_] = findLevelPtr(boundaryRange[_workingRadius_][_radius_][_region_].lo, boundaryLevelData[_workingRadius_][_radius_][_region_]));
+#endif
     /*for(int b=0; b<numNegativeBoundary; ++b)
     {
         printf("Consolidated boundary level[%d]\n", b);
@@ -130,7 +137,11 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
     {
         printf("hopelessRegion_flag[%d] = %d\n", i, hopelessRegion_flag[i]);
     }*/
+
+#if RACE_VERBOSITY > 1
     printf("Compressing %d hopeless levels\n", hopelessCtr);
+#endif
+
     int prevFlag = 0;
     //now compress parts that have the same flag set
     for(int i=0; i<(int)hopelessRegion_flag.size(); ++i)
@@ -159,11 +170,14 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
         prevFlag = currFlag;
     }
 
+#if RACE_VERBOSITY > 1
     for(int i=0; i<(int)hopelessRegions.size(); ++i)
     {
         printf("hopelessRegions[%d] = %d\n", i, hopelessRegions[i]);
     }
     printf("merging regions that do not have min. distance\n");
+#endif
+
     //combine hopeless region that do not have a distance of atleast
     //(highestPower-1) between them; Note here distance of atleast totalBoundary
     //is required (and not just workingBoundary)
@@ -202,13 +216,16 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
 
     hopelessNodePtr.resize(numSharedCache+1,0);
 
+#if RACE_VERBOSITY > 1
     for(int i=0; i<(int)hopelessRegions.size(); ++i)
     {
         printf("hopelessRegions[%d] = %d\n", i, hopelessRegions[i]);
     }
 
-    std::vector<int> toDrop;
     printf("split hopeless with node boundaries, and ensure min. distance from node boundaries\n");
+#endif
+
+    std::vector<int> toDrop;
     //make sure hopelessRegions doesn't start from nodeBoundaries,
     //and split if spawning across boundaries
     for(int node=0; node<numSharedCache; ++node)
@@ -304,6 +321,7 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
     n_hopeless =  (int)(hopelessRegions.size()/2.0);
     std::vector<int> new_hopelessNodePtr(numSharedCache+1,0);
 
+#if RACE_VERBOSITY > 1
     for(int i=0; i<(int)hopelessRegions.size(); ++i)
     {
         printf("hopelessRegions[%d] = %d\n", i, hopelessRegions[i]);
@@ -321,6 +339,7 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
     {
         printf("toDrop[%d] = %d\n", i, toDrop[i]);
     }
+#endif
 
     for(int n=0; n<numSharedCache; ++n)
     {
@@ -349,6 +368,7 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
     n_hopeless =  (int)(hopelessRegions.size()/2.0);
     hopelessNodePtr = new_hopelessNodePtr;
 
+#if RACE_VERBOSITY > 1
     for(int i=0; i<(int)hopelessRegions.size(); ++i)
     {
         printf("hopelessRegions[%d] = %d\n", i, hopelessRegions[i]);
@@ -360,8 +380,8 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
         printf("HopelessNodePtr[%d] = %d\n", i, hopelessNodePtr[i]);
     }
 
-
     printf("save boundaries\n");
+#endif
     //save the boundaries of hopeless regions
     //there are 2 kinds of boundaries
     //1) total boundary and 2) working boundary
@@ -384,7 +404,10 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
         std::vector<int> curNegativeBoundary;
         int curHopelessStartLevel, curHopelessEndLevel;
         getHopelessStartEnd(i, &curHopelessStartLevel, &curHopelessEndLevel);
+
+#if RACE_VERBOSITY > 1
         printf("Hopeless = [%d, %d]\n", curHopelessStartLevel, curHopelessEndLevel);
+#endif
         for(int p=0; p<=boundaryLength; ++p)
         {
             int curNegativeLevel = curHopelessStartLevel-p;
@@ -415,6 +438,7 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
         hopelessRegionPositiveBoundary[i] = curPositiveBoundary;
     }
 
+#if RACE_VERBOSITY > 1
     //printing
     printf("Hopeless: Negative Boundary\n");
     for(int i=0; i<n_hopeless; ++i)
@@ -434,12 +458,19 @@ void mtxPower::identifyHopelessRegions(std::vector<int> cacheViolatedLevel)
         }
         printf("\n");
     }
+#endif
 }
 
 
 void mtxPower::findPartition()
 {
+    //START_TIME(bfs);
     traverser->calculateDistance();
+    //STOP_TIME(bfs);
+    //PRINT_TIME(bfs);
+
+    //START_TIME(levelCollection);
+
     levelData = traverser->getLevelData();
     boundaryLevelData = traverser->getBoundaryLevelData();
 
@@ -459,9 +490,14 @@ void mtxPower::findPartition()
     std::vector<int> cacheViolatedFactor;
     //check if there is a level where nnz violates cache
     //so the one where it violates first is detected first
+
+//#pragma omp parallel for schedule(static)
     for(int level=0; level<totalLevel; ++level)
     {
+
+#if RACE_VERBOSITY > 1
         printf("rowStart = %d, NROW[%d] = %d, NNZ[%d] = %d\n", levelPtr[level], level, levelData->levelRow[level], level, levelData->levelNnz[level]);
+#endif
         double currElem = levelData->levelNnz[level];
         //depending on power we have to adapt cache condition
         /*for(int idx=0; idx<highestPower; ++idx)
@@ -483,34 +519,36 @@ void mtxPower::findPartition()
                 cacheViolatedLevel.push_back(level);
                 cacheViolatedFactor.push_back(factor);
             }
+
+#if RACE_VERBOSITY > 1
             printf("Cache Violated at %d level, elem = %f, factor = %d\n", level, currElem, factor);
+#endif
         }
     }
 
-#if 0 //recursion step
-    //try splitting by (factor+1) parts the first level that violates cache
-    //(factor+1) parts since it while again doing BFS it may incur parts in
-    //same level, therefore not able to maintain exactly the factor
-    long int rowsToSplit = levelPtr[cacheViolatedLevel[0]+1] - levelPtr[cacheViolatedLevel[0]];
-    long int subRowSize = static_cast<long int> (rowsToSplit/(double)cacheViolatedFactor[0]);
-    int range_lo = levelPtr[cacheViolatedLevel[0]];
-    int range_hi = graph->NROW; //we check from range_lo to entire range
-    printf("lo = %d, hi = %d\n", range_lo, range_hi);
-    //now traverse within first part
-    Traverse* subTraverser = new Traverse(graph, RACE::ONE, range_lo, range_hi, 0, subRowSize);
-    subTraverser->calculateDistance();
-    LevelData* subLevelData = subTraverser->getLevelData();
+    //STOP_TIME(levelCollection);
+    //PRINT_TIME(levelCollection);
 
-    for(int level=0; level<subLevelData->totalLevel; ++level)
-    {
-        printf("NNZ[%d] = %d\n", level, subLevelData->levelNnz[level]);
-    }
-#endif
+    //START_TIME(split_cache);
     splitSharedCacheDomain();
+    //STOP_TIME(split_cache);
+    //PRINT_TIME(split_cache);
+
+    //START_TIME(identify_hopeless);
     identifyHopelessRegions(cacheViolatedLevel);
+    //STOP_TIME(identify_hopeless);
+    //PRINT_TIME(identify_hopeless);
+
+    //START_TIME(consolidate_lg);
     consolidatePartition();
+    //STOP_TIME(consolidate_lg);
+    //PRINT_TIME(consolidate_lg);
+
+    //START_TIME(p2p_data);
     //TODO: add the partitions to level tree
     findUnlockCtr();
+    //STOP_TIME(p2p_data);
+    //PRINT_TIME(p2p_data);
 
 }
 
@@ -548,10 +586,12 @@ void mtxPower::splitSharedCacheDomain()
         ERROR_PRINT("nodePtr dimensions do not match, nodePtr.size() = %d, numSharedCache = %d", (int)nodePtr.size(), numSharedCache);
     }
 
+#if RACE_VERBOSITY > 1
     for(int i=0; i<len; ++i)
     {
         printf("nodePtr = %d\n", nodePtr[i]);
     }
+#endif
 
     getStatNUMA();
 }
@@ -560,7 +600,10 @@ std::vector<int> mtxPower::findMacroLevelPtr(int* zones)
 {
     std::vector<int> macroLevelPtr;
     int ctr = 0;
+
+#if RACE_VERBOSITY > 1
     printf("levelPtr size = %d\n", (int)levelPtr.size());
+#endif
     for(int i=0; i<(totalLevel+1); ++i)
     {
         if((ctr < (numSharedCache+1)) && (levelPtr[i] == zones[ctr])) //ctr can be greater because of level with 0 rows, so guard it
@@ -627,8 +670,9 @@ void mtxPower::consolidatePartition()
     int currHopelessStart, currHopelessEnd;
     getHopelessStartEnd(hopelessRegionCount, &currHopelessStart, &currHopelessEnd);
 
+#if RACE_VERBOSITY > 1
     printf("check hopeless = [%d, %d]\n", currHopelessStart, currHopelessEnd);
-
+#endif
     for(int node=0; node<numSharedCache; ++node)
     {
         double sumElem = 0;
@@ -700,7 +744,10 @@ void mtxPower::consolidatePartition()
                     //and consolidate
                     hopelessRegionCount++;
                     getHopelessStartEnd(hopelessRegionCount, &currHopelessStart, &currHopelessEnd);
+
+#if RACE_VERBOSITY > 1
                     printf("check hopeless = [%d, %d]\n", currHopelessStart, currHopelessEnd);
+#endif
                     forceUpdate = true;
                 }
                 if(level == currHopelessStart)
@@ -860,11 +907,15 @@ void mtxPower::consolidatePartition()
     //rewrite levelPtr with newLevelPtr
     totalLevel = (int)(newLevelPtr.size()-1);
     levelPtr.resize(totalLevel+1);
+#if RACE_VERBOSITY > 1
     printf("consolidated levels = %d\n", totalLevel);
+#endif
     for(int i=0; i<totalLevel+1; ++i)
     {
         levelPtr[i] = newLevelPtr[i];
+#if RACE_VERBOSITY > 1
         printf("levelPtr[%d] = %d\n", i, levelPtr[i]);
+#endif
     }
 
     boundaryLevelPtr = newBoundaryLevelPtr;
@@ -878,7 +929,9 @@ void mtxPower::consolidatePartition()
     for(int i=0; i<(numSharedCache+1); ++i)
     {
         nodePtr[i] = newNodePtr[i];
+#if RACE_VERBOSITY > 1
         printf("nodePtr_consolidated[%d] = %d, row = %d\n", i, nodePtr[i], levelPtr[nodePtr[i]]);
+#endif
     }
 
 }
