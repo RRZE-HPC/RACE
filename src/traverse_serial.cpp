@@ -421,12 +421,12 @@ void Traverse::permuteGraph()
                         if(( (child>=_val_.lo) && (child<_val_.hi) ))
                         {
                             inNodesIncBoundaries = true;
+                            _numBoundaries_ = -1; //break from regions
+                            _wbl_ = -1; //break from working radius
+                            _mapIter_ = boundaryRange[_workingRadius_].end();//break from radius
+                            --_mapIter_;
+                            break;
                         }
-                        _numBoundaries_ = -1; //break from regions
-                        _wbl_ = -1; //break from working radius
-                        _mapIter_ = boundaryRange[_workingRadius_].end();//break from radius
-                        --_mapIter_;
-                        break;
                     );
             }
             if(inNodesIncBoundaries)

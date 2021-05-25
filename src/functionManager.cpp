@@ -567,11 +567,7 @@ void FuncManager::NUMAInitPower()
                         SPLIT_LEVEL_PER_THREAD_BOUNDARY(powLevel);\
                         if(endRow_tid > startRow_tid) /*there wont be region if this is not true*/\
                         {\
-/*
- * #ifdef RACE_DEBUG
-                            printf("tid = %d, rowPerThread = %d, doing boundary [%d, %d] with pow = %d, powLevel = %d\n", omp_get_thread_num(), _RowPerThread_, startRow_tid, endRow_tid, pow, powLevel);
-#endif
-*/\
+                            /*printf("tid = %d, rowPerThread = %d, doing boundary [%d, %d] with pow = %d, powLevel = %d\n", omp_get_thread_num(), _RowPerThread_, startRow_tid, endRow_tid, pow, powLevel);*/\
                             powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);\
                         }\
                 );\
