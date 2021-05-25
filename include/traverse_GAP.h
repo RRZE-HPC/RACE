@@ -42,6 +42,7 @@ class Traverse{
         //Level Details
         LevelData* levelData;
         std::vector<std::map<int, std::vector<LevelData*>>> boundaryLevelData;
+        int totalThreads;
 
         //std::vector<int> markChildren(int currChild, int currLvl);
         void TDStep(int curLvl);
