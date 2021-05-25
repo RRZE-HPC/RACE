@@ -5,7 +5,7 @@
 LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist dist_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):graph(graph_), dist(dist_), d2Type(d2Type_), lbTarget(lbTarget_), requestNThreads(requestNThreads_), perm(NULL), invPerm(NULL)
 {
     zoneTree = new ZoneTree(dist, d2Type, lbTarget);
-#ifndef PERMUTE_ON_FLY
+#ifndef RACE_PERMUTE_ON_FLY
     int totalRows = graph->NROW+graph->NROW_serial;
     //copy initial permutations
     int* perm = new int[totalRows];
@@ -122,6 +122,7 @@ ZoneTree* LevelRecursion::getZoneTree()
     return toRet;
 }
 
+//better move this to graph
 void LevelRecursion::calculateIdealNthreads(int parentIdx, int parentSubIdx, int currLvl)
 {
     std::vector<int>* children = &(zoneTree->at(parentIdx).children);
@@ -140,7 +141,15 @@ void LevelRecursion::calculateIdealNthreads(int parentIdx, int parentSubIdx, int
 
             for(int row=startRow; row<endRow; ++row)
             {
-                parentNnz += graph->at(row).children.size();
+                int permRow = row;
+#ifdef RACE_PERMUTE_ON_FLY
+                permRow = graph->totalPerm[row];
+#endif
+#ifdef RACE_USE_SOA_GRAPH
+                parentNnz += graph->getChildrenSize(permRow);
+#else
+                parentNnz += graph->at(permRow).children.size();
+#endif
             }
         }
 
@@ -162,7 +171,16 @@ void LevelRecursion::calculateIdealNthreads(int parentIdx, int parentSubIdx, int
                 int totalNnz = 0;
                 for(int row=startSubRow; row<endSubRow; ++row)
                 {
-                    totalNnz += (int)(graph->at(row).children.size());
+                    int permRow = row;
+#ifdef RACE_PERMUTE_ON_FLY
+                    permRow = graph->totalPerm[row];
+#endif
+
+#ifdef RACE_USE_SOA_GRAPH
+                    totalNnz += (int)(graph->getChildrenSize(permRow));
+#else
+                    totalNnz += (int)(graph->at(permRow).children.size());
+#endif
                 }
 
                 myWeight = totalNnz/(static_cast<double>(parentNnz));
@@ -238,7 +256,7 @@ void LevelRecursion::recursivePartition(int parentIdx, int parentSubIdx, int cur
             {
                 Traverse traverse(graph, dist, range[j], range[j+1], currIdx);
                 traverse.calculateDistance();
-#ifndef PERMUTE_ON_FLY
+#ifndef RACE_PERMUTE_ON_FLY
                 int *levelPerm = NULL;
                 int len;
                 traverse.getPerm(&levelPerm, &len);
@@ -283,7 +301,7 @@ void LevelRecursion::levelBalancing()
     //Traverse
     Traverse traverse(graph, dist);
     traverse.calculateDistance();
-#ifndef PERMUTE_ON_FLY
+#ifndef RACE_PERMUTE_ON_FLY
     int *levelPerm = NULL;
     int len;
     traverse.getPerm(&levelPerm, &len);
@@ -313,7 +331,7 @@ void LevelRecursion::levelBalancing()
         WARNING_PRINT("Could not spawn requested threads = %d. Threads limited to %d", requestNThreads, availableNThreads);
     }
 
-#ifndef PERMUTE_ON_FLY
+#ifndef RACE_PERMUTE_ON_FLY
     //update invPerm
     for(int i=0; i<graph->NROW+graph->NROW_serial; ++i)
     {

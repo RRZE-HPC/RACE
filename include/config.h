@@ -4,6 +4,7 @@
 #define RACE_VERBOSITY 1
 #define RACE_KERNEL_THREAD_OMP
 #define RACE_USE_GAP
-#define PERMUTE_ON_FLY
+#define RACE_PERMUTE_ON_FLY
+#define RACE_USE_SOA_GRAPH
 
 #endif

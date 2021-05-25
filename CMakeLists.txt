@@ -43,8 +43,8 @@ set (SOURCES
 
 set (HEADERS
     include/graph.h
-    include/graph_GAP.h
-    include/graph_serial.h
+    include/graph_SoA.h
+    include/graph_AoS.h
     include/traverse.h
     include/traverse_GAP.h
     include/traverse_serial.h
@@ -76,6 +76,9 @@ set (HEADERS
     include/matrixPower.h
     include/matrixPowerRecursive.h
     )
+
+set(RACE_PERMUTE_ON_FLY 1 CACHE BOOL "Experimental. Do permutation on fly wthou actually permuting intermediate graph. It speeds up the pre-processing time.")
+set(RACE_USE_SOA_GRAPH 1 CACHE BOOL "Experimental. Use SoA graph instead of AoS. It speeds up the pre-processing time.")
 
 set(RACE_USE_GAP 1 CACHE BOOL "Use a modified version of GAP for doing BFS")
 if (RACE_USE_GAP)

@@ -248,16 +248,86 @@ void RACE::Interface::resetTime()
     zoneTree->resetTime();
 }
 
-
+//TODO: move to graph
 bool RACE::Interface::detectConflict(std::vector<int> range1, std::vector<int> range2)
 {
+#ifdef RACE_PERMUTE_ON_FLY
+    WARNING_PRINT("Detect conflict experimental with RACE_PERMUTE_ON_FLY");
+#endif
     bool conflict = false;
     for(int i=range1[0]; i<range1[1]; ++i)
     {
-        std::vector<int>* children_i = &(graph->at(i).children);
+        int perm_i = i;
+#ifdef RACE_PERMUTE_ON_FLY
+        perm_i = graph->totalPerm[i];
+#endif
+#ifdef RACE_USE_SOA_GRAPH
+        //TODO:optimise
+        int* children_data = graph->getChildren(perm_i);
+        int childrenSize = graph->getChildrenSize(perm_i);
+        std::vector<int> children_vec_i(childrenSize);
+        for(int c=0; c<childrenSize; ++c)
+        {
+            int permCol = children_data[c];
+#ifdef RACE_PERMUTE_ON_FLY
+            permCol = graph->totalInvPerm[permCol];
+#endif
+            children_vec_i[c] = permCol;
+        }
+        std::vector<int>* children_i = &children_vec_i;
+#else
+#ifdef RACE_PERMUTE_ON_FLY
+        std::vector<int> children_data = graph->at(perm_i).children;
+        int childrenSize = children_data.size();
+        std::vector<int> children_vec_i(childrenSize);
+        for(int c=0; c<childrenSize; ++c)
+        {
+            int permCol = children_data[c];
+            permCol = graph->totalInvPerm[permCol];
+            children_vec_i[c] = permCol;
+        }
+        std::vector<int>* children_i = &children_vec_i;
+#else
+        std::vector<int>* children_i = &(graph->at(perm_i).children);
+#endif
+
+#endif
         for(int j=range2[0]; j<range2[1]; ++j)
         {
-            std::vector<int>* children_j = &(graph->at(j).children);
+            int perm_j =  j;
+#ifdef RACE_PERMUTE_ON_FLY
+            perm_j = graph->totalPerm[j];
+#endif
+#ifdef RACE_USE_SOA_GRAPH
+            //TODO:optimise
+            children_data = graph->getChildren(perm_j);
+            childrenSize = graph->getChildrenSize(perm_j);
+            std::vector<int> children_vec_j(childrenSize);
+            for(int c=0; c<childrenSize; ++c)
+            {
+                int permCol = children_data[c];
+#ifdef RACE_PERMUTE_ON_FLY
+                permCol = graph->totalInvPerm[permCol];
+#endif
+                children_vec_j[c] = permCol;
+            }
+            std::vector<int>* children_j = &children_vec_j;
+#else
+#ifdef RACE_PERMUTE_ON_FLY
+        std::vector<int> children_data = graph->at(perm_j).children;
+        int childrenSize = children_data.size();
+        std::vector<int> children_vec_j(childrenSize);
+        for(int c=0; c<childrenSize; ++c)
+        {
+            int permCol = children_data[c];
+            permCol = graph->totalInvPerm[permCol];
+            children_vec_j[c] = permCol;
+        }
+        std::vector<int>* children_j = &children_vec_j;
+#else
+        std::vector<int>* children_j = &(graph->at(perm_j).children);
+#endif
+#endif
             conflict = (std::find_first_of(children_i->begin(), children_i->end(), children_j->begin(), children_j->end()) != children_i->end());
             if(conflict)
             {

@@ -1,5 +1,5 @@
-#ifndef RACE_GRAPH_SERIAL_H
-#define RACE_GRAPH_SERIAL_H
+#ifndef RACE_GRAPH_AOS_H
+#define RACE_GRAPH_AOS_H
 
 #include "print.h"
 #include "error.h"

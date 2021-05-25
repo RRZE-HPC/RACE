@@ -3,9 +3,13 @@
 #include "config.h"
 
 #ifdef RACE_USE_GAP
-    #include "graph_serial.h"
+    #ifdef RACE_USE_SOA_GRAPH
+        #include "graph_SoA.h"
+    #else
+        #include "graph_AoS.h"
+    #endif
 #else
-    #include "graph_serial.h"
+    #include "graph_AoS.h"
 #endif
 
 #endif

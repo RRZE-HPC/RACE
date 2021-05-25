@@ -1,4 +1,4 @@
-#include "graph.h"
+#include "graph_SoA.h"
 #include "error.h"
 #include <cmath>
 #include <set>
@@ -22,15 +22,17 @@ RACE_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *
         return RACE_ERR_MATRIX_SYMM;
     }*/
 
-    int nodeWithChildren = 0;
 
     std::vector<bool> pure_diag_flag(NROW,false);
+    graphData = col;
+    childrenStart = new int[NROW];
+    childrenSize = new int[NROW];
+    //upperNnz = new int[NROW];
 
-    int nnz = 0;
+    tmpGraphData = NULL;
 
     totalPerm = new int[NROW];
     totalInvPerm = new int[NROW];
-
 #pragma omp parallel for schedule(runtime)
     for(int row=0; row<NROW; ++row)
     {
@@ -46,80 +48,79 @@ RACE_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *
         }
     }
 
-#ifdef PERMUTE_ON_FLY
-        //prohibit permitting now, since it is done on fly
-        initPerm = NULL;
-        initInvPerm = NULL;
-#endif
-
-#pragma omp parallel for schedule(runtime) reduction(+:nodeWithChildren) reduction(+:nnz)
+#ifdef RACE_PERMUTE_ON_FLY
+    //prohibit permitting now, since it is done on fly
+    initPerm = NULL;
+    initInvPerm = NULL;
+#pragma omp parallel for schedule(runtime)
     for(int row=0; row<NROW; ++row)
     {
-        graphData[row].upperNnz=0;
+        //upperNnz[row]=0;
+        int column = graphData[rowPtr[row]];
+        int numChildren = rowPtr[row+1] - rowPtr[row];
+        childrenSize[row] = numChildren;
+        childrenStart[row] = rowPtr[row];
+        if((numChildren == 1) && column == row)
+        {
+#pragma omp critical
+            {
+                pureDiag.push_back(row);
+            }
+        }
+    }
 
+#else
+    tmpGraphData = new int[NNZ];
+    int perm_nnz = 0;
+
+    for(int row=0; row<NROW; ++row)
+    {
         int permRow = row;
         if(initPerm)
         {
             permRow = initPerm[row];
         }
         int permCol = 0;
-        permCol = col[rowPtr[permRow]];
+        permCol = graphData[rowPtr[permRow]];
         if(initInvPerm)
         {
             permCol = initInvPerm[permCol];
         }
 
-        if(((rowPtr[permRow+1] - rowPtr[permRow]) == 1) && permCol == row)
+        int numChildren = (rowPtr[permRow+1]-rowPtr[permRow]);
+        if((numChildren==1) && (permCol == row))
         {
-#pragma omp critical
+//#pragma omp critical
             {
                 pureDiag.push_back(row);
             }
         }
-        //if( (rowPtr[permRow+1] - rowPtr[permRow]) > 1) {
-        int numChildren = (rowPtr[permRow+1]-rowPtr[permRow]);
-        graphData[row].children.resize(numChildren);
-        int childIdx = 0;
+        childrenSize[row] = numChildren;
+        childrenStart[row] = perm_nnz;
         for(int idx=rowPtr[permRow]; idx<rowPtr[permRow+1]; ++idx) {
-            permCol = col[idx];
+            permCol = graphData[idx];
             if(initInvPerm)
             {
-                permCol = initInvPerm[col[idx]];
+                permCol = initInvPerm[graphData[idx]];
             }
-            graphData[row].children[childIdx] = permCol;
-            //                if(permCol >= row)
-            if(permCol >= permRow)
+            tmpGraphData[perm_nnz] = permCol;
+            //                if(permCol >= row) // I think this is correct
+            /*if(permCol >= permRow)
             {
                 ++graphData[row].upperNnz;
-            }
-            ++childIdx;
-            //++nnz;
+            }*/
+            ++perm_nnz;
         }
-        nnz = nnz+childIdx;
-        nodeWithChildren++;
-       /* }
-        else
-        {
-#pragma omp critical
-            {
-                pureDiag.push_back(row);
-            }
-        }*/
     }
 
-    NNZ = nnz;
-    int irr_ctr=0;
-    //resize Graph to the small size
-    if(nodeWithChildren != NROW) {
-        printf("ctr = %d\n", ++irr_ctr);
-        WARNING_PRINT("Graph is not connected or irreducible. For coloring this is necessary, however for matrix power kernels this will work");
-        //return RACE_ERR_NOT_IMPLEMENTED;
-        /*int ctr = 0;
-        for(intIter iter=pureDiag.begin(); iter!=pureDiag.end(); ++iter) {
-            graphData.erase(graphData.begin()+(*iter)-ctr);
-            ++ctr;
-        }*/
+    graphData = tmpGraphData;
+    if(NNZ != perm_nnz)
+    {
+        ERROR_PRINT("NNZ of permuted matrix do not match");
+        exit(-1);
     }
+
+#endif
 
     if(!pureDiag.empty())
     {
@@ -171,6 +172,9 @@ RACE_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *
 //only for debugging puposes
 void Graph::writePattern(char* name)
 {
+#ifdef RACE_PERMUTE_ON_FLY
+    WARNING_PRINT("Writing unpermuted original matrix. Writing permuted matrix not yet implemented with RACE_PERMUTE_ON_FLY");
+#endif
     std::string base_name(name);
     std::stringstream fileName;
     fileName<<base_name <<".mtx";
@@ -182,9 +186,11 @@ void Graph::writePattern(char* name)
 
     file<<NROW<<" "<<NCOL<<" "<<NNZ<<"\n";
 
+    //TODO write permuted file too
     for(int row=0; row<NROW; ++row) {
-        for (unsigned j=0; j<graphData[row].children.size(); ++j) {
-            file<<row+1<<" "<<graphData[row].children[j]+1<<" "<<10<<"\n";
+        int* children = &(graphData[childrenStart[row]]);
+        for (int j=0; j<childrenSize[row]; ++j) {
+            file<<row+1<<" "<<children[j]+1<<" "<<10<<"\n";
         }
     }
 }
@@ -192,9 +198,6 @@ void Graph::writePattern(char* name)
 bool Graph::getStatistics()
 {
 
-#ifdef PERMUTE_ON_FLY
-    ERROR_PRINT("DENSE_ROW not yet implemented with PERMUTE_ON_FLY");
-#endif
     double maxDense = std::numeric_limits<double>::max();//default 8 times mean nnzr
     char *maxDenseEnv = getenv("RACE_MAX_DENSE");
 
@@ -208,9 +211,10 @@ bool Graph::getStatistics()
     std::vector<int> blackList;
     std::map<int,int> rowBucket;
     int MEAN = NNZ/NROW;
+    //TODO to get permuted value if initPerm is there
     for(int row=0; row<NROW; ++row)
     {
-        int rowLen = at(row).children.size();
+        int rowLen = childrenSize[row];
         if(rowLen > maxDense*MEAN)
         {
             blackList.push_back(row);
@@ -232,7 +236,7 @@ bool Graph::getStatistics()
         //contribution of black-listed rows
         for(auto it = blackList.begin(); it!=blackList.end(); ++it)
         {
-            int rowLen = at(*it).children.size();
+            int rowLen = childrenSize[*it];
             nnzCtr += rowLen;
         }
 
@@ -261,8 +265,8 @@ void Graph::permuteAndRemoveSerialPart()
     for(int i=0; i<NROW; ++i) {
         totalInvPerm[totalPerm[i]] = i;
     }
-    WARNING_PRINT("DENSE_ROW removal will not work correctly with PERMUTE_ON_FLY switched on. This is not yet implemented");
-#ifndef PERMUTE_ON_FLY
+    WARNING_PRINT("DENSE_ROW removal will not work correctly with RACE_PERMUTE_ON_FLY switched on. This is not yet implemented");
+#ifndef RACE_PERMUTE_ON_FLY
     //permute only if on fly permuting is disabled
 
     int *invPerm = new int[NROW];
@@ -276,30 +280,31 @@ void Graph::permuteAndRemoveSerialPart()
     Graph permutedGraph(*(this));
 
     //Permute rows
+#pragma omp parallel for schedule(static)
     for(int i=0; i<NROW; ++i)
     {
-        permutedGraph.graphData[i].children = graphData[serialPerm[i]].children;
+        permutedGraph.childrenSize[i] = childrenSize[serialPerm[i]];
     }
 
+    int nnz=0;
     //Permute columns
     for(int i=0; i<NROW; ++i)
     {
-        std::vector<int> *children = &(permutedGraph.graphData[i].children);
-        std::vector<int> newChildren;
-        for(unsigned j=0; j<children->size(); ++j)
+        int *children = &(graphData[serialPerm[i]]);
+        permutedGraph.childrenStart[i] = nnz;
+        for(int j=0; j<permutedGraph.childrenSize[i]; ++j)
         {
-            int child = children->at(j);
+            int child = children[j];
             int invChild = invPerm[child];
 
             if(invChild < (NROW-NROW_serial))
             {
-                newChildren.push_back(invPerm[child]);
+                permutedGraph.graphData[nnz] = invPerm[child];
+                ++nnz;
             }
-
             //remove children in serialPartRow
         }
 
-        permutedGraph.graphData[i].children = newChildren;
     }
 
     permutedGraph.swap(*(this));
@@ -307,13 +312,26 @@ void Graph::permuteAndRemoveSerialPart()
 #endif
 }
 
-Graph::Graph(int nrow, int ncol, int *rowPtr, int *col, int *initPerm, int *initInvPerm):graphData(nrow),NROW(nrow),NCOL(ncol), totalPerm(NULL), totalInvPerm(NULL)
+Graph::Graph(int nrow, int ncol, int *rowPtr, int *col, int *initPerm, int *initInvPerm):graphData(NULL), totalPerm(NULL), totalInvPerm(NULL), NROW(nrow), NCOL(ncol)
 {
+    NNZ = rowPtr[NROW];
     RACE_FN(createGraphFromCRS(rowPtr, col, initPerm, initInvPerm));
 }
 
 Graph::~Graph()
 {
+    if(tmpGraphData)
+    {
+        delete[] tmpGraphData;
+    }
+    if(childrenStart)
+    {
+        delete[] childrenStart;
+    }
+    if(childrenSize)
+    {
+        delete[] childrenSize;
+    }
     if(totalPerm)
     {
         delete[] totalPerm;
@@ -330,16 +348,48 @@ Graph::~Graph()
 
 Graph::Graph(const Graph& srcGraph)
 {
-    graphData = srcGraph.graphData;
+
     pureDiag = srcGraph.pureDiag;
     serialPartRow = srcGraph.serialPartRow;
     serialPerm = srcGraph.serialPerm;
     NROW = srcGraph.NROW;
     NCOL = srcGraph.NCOL;
+    NNZ = srcGraph.NNZ;
     NROW_serial = srcGraph.NROW_serial;
     NNZ_serial = srcGraph.NNZ_serial;
     totalPerm = new int[NROW+NROW_serial];
     totalInvPerm = new int[NROW+NROW_serial];
+    childrenStart = new int[NROW+NROW_serial];
+    childrenSize = new int[NROW+NROW_serial];
+#pragma omp parallel for schedule(static)
+    for(int i=0; i<NROW+NROW_serial; ++i)
+    {
+        childrenSize[i] = srcGraph.childrenSize[i];
+        childrenStart[i] = srcGraph.childrenStart[i];
+    }
+
+    if(srcGraph.tmpGraphData)
+    {
+        tmpGraphData = new int[NNZ+NNZ_serial];
+        graphData = tmpGraphData;
+        int nnz=0;
+#pragma omp parallel for schedule(static) reduction(+:nnz)
+        for(int j=0; j<NNZ+NNZ_serial; ++j)
+        {
+            tmpGraphData[j] = srcGraph.tmpGraphData[j];
+            ++nnz;
+        }
+        if(nnz != NNZ)
+        {
+            ERROR_PRINT("Error in copying");
+        }
+    }
+    else
+    {
+        graphData = srcGraph.graphData;
+    }
+
+#pragma omp parallel for schedule(static)
     for(int i=0; i<NROW+NROW_serial; ++i)
     {
         totalPerm[i] = srcGraph.totalPerm[i];
@@ -350,16 +400,27 @@ Graph::Graph(const Graph& srcGraph)
 
 RACE_error Graph::swap(Graph& other)
 {
-    if( (NROW != other.NROW) || (NCOL != other.NCOL)) {
+    if( ((NROW != other.NROW) || (NCOL != other.NCOL)) || (NNZ != other.NNZ) ) {
         ERROR_PRINT("Incompatible Graphs");
         return RACE_ERR_INCOMPATIBILITY;
     }
 
     //swap graphData
-    graphData.swap(other.graphData);
-    pureDiag.swap(other.pureDiag);
-    serialPartRow.swap(other.serialPartRow);
-    serialPerm.swap(other.serialPerm);
+    int *GraphData_tmp = graphData;
+    graphData = other.graphData;
+    other.graphData = GraphData_tmp;
+
+    int *tmpGraphData_tmp = tmpGraphData;
+    tmpGraphData = other.tmpGraphData;
+    other.tmpGraphData = tmpGraphData_tmp;
+
+    int* tmpChildrenStart = childrenStart;
+    childrenStart = other.childrenStart;
+    other.childrenStart = tmpChildrenStart;
+
+    int* tmpChildrenSize = childrenSize;
+    childrenSize = other.childrenSize;
+    other.childrenSize = tmpChildrenSize;
 
     int* tmpTotalPerm = totalPerm;
     totalPerm = other.totalPerm;
@@ -369,12 +430,11 @@ RACE_error Graph::swap(Graph& other)
     totalInvPerm = other.totalInvPerm;
     other.totalInvPerm = tmpInvTotalPerm;
 
-    return RACE_SUCCESS;
-}
+    pureDiag.swap(other.pureDiag);
+    serialPartRow.swap(other.serialPartRow);
+    serialPerm.swap(other.serialPerm);
 
-Node& Graph::at(unsigned Idx)
-{
-    return graphData[Idx];
+    return RACE_SUCCESS;
 }
 
 //this is permutation by removing serial part, does not
@@ -403,4 +463,14 @@ void Graph::getInvPerm(int **invPerm_, int *len_)
     (*invPerm_) = totalInvPerm;
     (*len_) = NROW + NROW_serial;
     totalInvPerm = NULL;
+}
+
+int Graph::getChildrenSize(int row)
+{
+    return childrenSize[row];
+}
+
+int* Graph::getChildren(int row)
+{
+    return &(graphData[childrenStart[row]]);
 }

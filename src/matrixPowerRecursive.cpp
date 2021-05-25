@@ -23,7 +23,7 @@ mtxPowerRecursive::mtxPowerRecursive(Graph* graph_, int highestPower_, int numSh
     getEnv("RACE_CACHE_VIOLATION_CUTOFF", cache_violation_cutoff);
 
     totalRows = graph->NROW;
-#ifndef PERMUTE_ON_FLY
+#ifndef RACE_PERMUTE_ON_FLY
     perm =  new int[totalRows];
     invPerm =  new int[totalRows];
     //copy initial permutations
@@ -253,7 +253,7 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
         curStage.findPartition();
 
         int *perm_curStage;
-#ifdef PERMUTE_ON_FLY
+#ifdef RACE_PERMUTE_ON_FLY
         READ_STAGE_DATA(curLeaf, curStage, false);
 #else
         READ_STAGE_DATA(curLeaf, curStage, true);
@@ -298,7 +298,7 @@ void mtxPowerRecursive::findPartition()
     curStage.findPartition();
     hopelessNodePtr = curStage.getHopelessNodePtr();
     int* perm_curStage;
-#ifdef PERMUTE_ON_FLY
+#ifdef RACE_PERMUTE_ON_FLY
     READ_STAGE_DATA(curLeaf, curStage, false);
 #else
     READ_STAGE_DATA(curLeaf, curStage, true);
@@ -313,7 +313,7 @@ void mtxPowerRecursive::findPartition()
         recursivePartition(0); //my curId=0
     }
 
-#ifndef PERMUTE_ON_FLY
+#ifndef RACE_PERMUTE_ON_FLY
     UPDATE_INVPERM(invPerm, perm);
 #else
     int len;

@@ -4,6 +4,7 @@
 #define RACE_VERBOSITY ${RACE_VERBOSITY}
 #cmakedefine RACE_KERNEL_THREAD_OMP
 #cmakedefine RACE_USE_GAP
-#define PERMUTE_ON_FLY
+#cmakedefine RACE_PERMUTE_ON_FLY
+#cmakedefine RACE_USE_SOA_GRAPH
 
 #endif

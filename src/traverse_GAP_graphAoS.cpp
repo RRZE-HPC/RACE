@@ -109,14 +109,14 @@ void Traverse::TDStep(int currLvl)
         {
             int u = *q_iter;
             int perm_u = u;
-#ifdef PERMUTE_ON_FLY
+#ifdef RACE_PERMUTE_ON_FLY
             perm_u = graph->totalPerm[u];
 #endif
             std::vector<int> *children = &(graph->graphData[perm_u].children);
             for(auto child_iter=children->begin(); child_iter!=children->end(); ++child_iter)
             {
                 int child = *child_iter;
-#ifdef PERMUTE_ON_FLY
+#ifdef RACE_PERMUTE_ON_FLY
                 child = graph->totalInvPerm[child];
 #endif
 
@@ -282,7 +282,7 @@ RACE_error Traverse::findLevelData(int lower_nrows, int upper_nrows, int totalLe
         }
 
         levelRow_[curr_dist]+=1;
-#ifdef PERMUTE_ON_FLY
+#ifdef RACE_PERMUTE_ON_FLY
         levelNnz_[curr_dist] += graph->graphData[graph->totalPerm[i]].children.size();
 #else
         levelNnz_[curr_dist] += graph->graphData[i].children.size();
@@ -367,7 +367,7 @@ void Traverse::permuteGraph()
     regionRange.push_back(rangeLo);
     regionRange.push_back(rangeHi);
 
-#ifndef PERMUTE_ON_FLY
+#ifndef RACE_PERMUTE_ON_FLY
     Graph permutedGraph(*(graph));
 #endif
 
@@ -389,7 +389,7 @@ void Traverse::permuteGraph()
             invPerm[perm[i]] = i;
         }
 
-#ifndef PERMUTE_ON_FLY
+#ifndef RACE_PERMUTE_ON_FLY
         //Permute rows
 #pragma omp parallel for schedule(static)
         for(int i=targetRangeLo; i<targetRangeHi; ++i)
@@ -399,7 +399,7 @@ void Traverse::permuteGraph()
 #endif
 
     }
-#ifdef PERMUTE_ON_FLY
+#ifdef RACE_PERMUTE_ON_FLY
         updatePerm(&graph->totalPerm, perm, graph->NROW, graph->NROW);
 
 #pragma omp parallel for schedule(static)
@@ -419,7 +419,7 @@ void Traverse::permuteGraph()
     }
     printf("Range = [%d,%d], colRange = [%d, %d]\n", rangeLo, rangeHi, colRangeLo, colRangeHi);
 
-#ifndef PERMUTE_ON_FLY
+#ifndef RACE_PERMUTE_ON_FLY
     //Permute columns
     //TODO only neighbors
     //for(int i=0/*rangeLo*/; i<graph->NROW/*rangeHi*/; ++i)
@@ -475,11 +475,11 @@ void Traverse::permuteGraph()
 //Getter functions
 void Traverse::getPerm(int **perm_, int *len)
 {
-#ifndef PERMUTE_ON_FLY
+#ifndef RACE_PERMUTE_ON_FLY
     (*perm_) = perm;
     perm = NULL;
 #else
-    WARNING_PRINT("Use getPerm from graph directly when PERMUTE_ON_FLY is active");
+    WARNING_PRINT("Use getPerm from graph directly when RACE_PERMUTE_ON_FLY is active");
     (*perm_) = graph->totalPerm;
 #endif
     (*len) = graph->NROW;
@@ -487,11 +487,11 @@ void Traverse::getPerm(int **perm_, int *len)
 
 void Traverse::getInvPerm(int **invPerm_, int *len)
 {
-#ifndef PERMUTE_ON_FLY
+#ifndef RACE_PERMUTE_ON_FLY
     (*invPerm_) = invPerm;
     invPerm = NULL;
 #else
-    WARNING_PRINT("Use getPerm from graph directly when PERMUTE_ON_FLY is active");
+    WARNING_PRINT("Use getPerm from graph directly when RACE_PERMUTE_ON_FLY is active");
     (*invPerm_) = graph->totalInvPerm;
 #endif
     (*len) = graph->NROW;
