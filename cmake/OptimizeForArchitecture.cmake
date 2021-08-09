@@ -117,7 +117,9 @@ macro(AutodetectHostArchitecture)
             set(TARGET_ARCHITECTURE "cannonlake")
          elseif(_cpu_model EQUAL 158)
             set(TARGET_ARCHITECTURE "kabylake")
-         elseif(_cpu_model EQUAL 85) # 55
+         elseif(_cpu_model EQUAL 106) # 106
+            set(TARGET_ARCHITECTURE "ice-lake")
+         elseif(_cpu_model EQUAL 85) # 85
             set(TARGET_ARCHITECTURE "skylake-avx512")
          elseif(_cpu_model EQUAL 78 OR _cpu_model EQUAL 94) # 4E, 5E
             set(TARGET_ARCHITECTURE "skylake")
@@ -158,9 +160,9 @@ macro(AutodetectHostArchitecture)
       endif(_cpu_family EQUAL 6)
    elseif(_vendor_id STREQUAL "AuthenticAMD")
       if(_cpu_family EQUAL 23) # 17h
-         set(TARGET_ARCHITECTURE "AMD 17h")
+         set(TARGET_ARCHITECTURE "amd 17h")
       elseif(_cpu_family EQUAL 22) # 16h
-         set(TARGET_ARCHITECTURE "AMD 16h")
+         set(TARGET_ARCHITECTURE "amd 16h")
       elseif(_cpu_family EQUAL 21) # 15h
          if(_cpu_model LESS 2)
             set(TARGET_ARCHITECTURE "bulldozer")
@@ -168,7 +170,7 @@ macro(AutodetectHostArchitecture)
             set(TARGET_ARCHITECTURE "piledriver")
          endif()
       elseif(_cpu_family EQUAL 20) # 14h
-         set(TARGET_ARCHITECTURE "AMD 14h")
+         set(TARGET_ARCHITECTURE "amd 14h")
       elseif(_cpu_family EQUAL 18) # 12h
       elseif(_cpu_family EQUAL 16) # 10h
          set(TARGET_ARCHITECTURE "barcelona")
@@ -188,7 +190,7 @@ macro(OptimizeForArchitecture)
    #Setting the value to \"auto\" will try to optimize for the architecture where cmake is called. \
    #Other supported values are: \"none\", \"generic\", \"core\", \"merom\" (65nm Core2), \
    #\"penryn\" (45nm Core2), \"nehalem\", \"westmere\", \"sandy-bridge\", \"ivy-bridge\", \
-   #\"haswell\", \"broadwell\", \"skylake\", \"skylake-avx512\", \"cannonlake\", \"silvermont\", \
+   #\"haswell\", \"broadwell\", \"ice-lake\", \"skylake\", \"skylake-avx512\", \"cannonlake\", \"silvermont\", \
    #\"goldmont\", \"knl\" (Knights Landing), \"atom\", \"k8\", \"k8-sse3\", \"barcelona\", \
    #\"istanbul\", \"magny-cours\", \"bulldozer\", \"interlagos\", \"piledriver\", \
    #\"AMD 14h\", \"AMD 16h\".")
@@ -255,6 +257,11 @@ macro(OptimizeForArchitecture)
       _skylake_avx512()
       list(APPEND _available_vector_units_list "avx512ifma" "avx512vbmi")
    endmacro()
+   macro(_icelake)
+      list(APPEND _march_flag_list "icelake-server")
+      _cannonlake()
+      #    list(APPEND _available_vector_units_list "avx512f" "avx512cd" "avx512dq" "avx512bw" "avx512vl")
+   endmacro()
    macro(_knightslanding)
       list(APPEND _march_flag_list "knl")
       _broadwell()
@@ -281,6 +288,8 @@ macro(OptimizeForArchitecture)
       endif()
    elseif(TARGET_ARCHITECTURE STREQUAL "knl")
       _knightslanding()
+   elseif(TARGET_ARCHITECTURE STREQUAL "ice-lake")
+      _icelake()
    elseif(TARGET_ARCHITECTURE STREQUAL "cannonlake")
       _cannonlake()
    elseif(TARGET_ARCHITECTURE STREQUAL "skylake-xeon" OR TARGET_ARCHITECTURE STREQUAL "skylake-avx512")
@@ -312,15 +321,15 @@ macro(OptimizeForArchitecture)
       list(APPEND _march_flag_list "k8-sse3")
       list(APPEND _march_flag_list "k8")
       list(APPEND _available_vector_units_list "sse" "sse2" "sse3")
-   elseif(TARGET_ARCHITECTURE STREQUAL "AMD 17h")
+   elseif(TARGET_ARCHITECTURE STREQUAL "amd 17h")
       list(APPEND _march_flag_list "btver2")
       list(APPEND _march_flag_list "btver1")
       list(APPEND _available_vector_units_list "avx2" "fma" "sse" "sse2" "sse3" "ssse3" "sse4a" "sse4.1" "sse4.2" "avx" "f16c")
-   elseif(TARGET_ARCHITECTURE STREQUAL "AMD 16h")
+   elseif(TARGET_ARCHITECTURE STREQUAL "amd 16h")
       list(APPEND _march_flag_list "btver2")
       list(APPEND _march_flag_list "btver1")
       list(APPEND _available_vector_units_list "sse" "sse2" "sse3" "ssse3" "sse4a" "sse4.1" "sse4.2" "avx" "f16c")
-   elseif(TARGET_ARCHITECTURE STREQUAL "AMD 14h")
+   elseif(TARGET_ARCHITECTURE STREQUAL "amd 14h")
       list(APPEND _march_flag_list "btver1")
       list(APPEND _available_vector_units_list "sse" "sse2" "sse3" "ssse3" "sse4a")
    elseif(TARGET_ARCHITECTURE STREQUAL "piledriver")

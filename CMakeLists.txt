@@ -38,11 +38,16 @@ set (SOURCES
     #src/simdify.cpp
     src/sell_c_sigmize.cpp
     src/matrixPower.cpp
+    src/matrixPowerRecursive.cpp
     )
 
 set (HEADERS
     include/graph.h
+    include/graph_SoA.h
+    include/graph_AoS.h
     include/traverse.h
+    include/traverse_GAP.h
+    include/traverse_serial.h
     include/lb.h
     include/error.h
     include/config.h
@@ -69,7 +74,39 @@ set (HEADERS
     include/simdify.h
     include/sell_c_sigmize.h
     include/matrixPower.h
+    include/matrixPowerRecursive.h
     )
+
+set(RACE_PERMUTE_ON_FLY 1 CACHE BOOL "Experimental. Do permutation on fly wthou actually permuting intermediate graph. It speeds up the pre-processing time.")
+set(RACE_USE_SOA_GRAPH 1 CACHE BOOL "Experimental. Use SoA graph instead of AoS. It speeds up the pre-processing time.")
+
+set(RACE_USE_GAP 1 CACHE BOOL "Use a modified version of GAP for doing BFS")
+if (RACE_USE_GAP)
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+        set(RACE_USE_GAP 1)
+        #set(SPMP_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+        set_property(DIRECTORY PROPERTY EP_STEP_TARGETS build)
+        ExternalProject_Add(GAP
+            PREFIX ${PROJECT_BINARY_DIR}/GAP
+            URL https://github.com/sbeamer/gapbs/archive/refs/heads/master.zip
+            CONFIGURE_COMMAND ""
+            BUILD_COMMAND ""
+            BUILD_IN_SOURCE 1
+            INSTALL_COMMAND ""
+            )
+
+        set(GAP_INCLUDE_DIR "${PROJECT_BINARY_DIR}/GAP/src/GAP/src/")
+
+        set (HEADERS_GAP
+            "${PROJECT_BINARY_DIR}/GAP/src/GAP/src/bitmap.h"
+            "${PROJECT_BINARY_DIR}/GAP/src/GAP/src/platform_atomics.h"
+            "${PROJECT_BINARY_DIR}/GAP/src/GAP/src/sliding_queue.h"
+            )
+    else()
+        message(FATAL_ERROR "GAP BFS not used. Pre-processing will be slow")
+    endif()
+endif()
+
 
 
 set(HWLOC_INCLUDE_DIR HWLOC_INCLUDE_DIR-NOTFOUND CACHE PATH "Location of hwloc.h")
@@ -194,6 +231,8 @@ if(BUILTIN_HWLOC)
 endif()
 
 install(FILES ${HEADERS} DESTINATION include/RACE/)
+install(FILES ${HEADERS_GAP} DESTINATION include/RACE/)
+
 #install(FILES ${PROJECT_BINARY_DIR}/RACE_LFlags.sh DESTINATION lib/RACE PERMISSIONS OWNER_READ OWNER_EXECUTE)
 install(FILES ${PROJECT_BINARY_DIR}/race-config.cmake DESTINATION lib/RACE)
 
@@ -271,6 +310,12 @@ set_target_properties(mtxPower PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINA
 if(PERF_TEST_USE_SPMP)
     set(EXT_LIBRARIES "${PROJECT_BINARY_DIR}/SpMP/src/SpMP/libspmp.a")
 endif()
+
+if(RACE_USE_GAP)
+    include_directories(SYSTEM "${GAP_INCLUDE_DIR}")
+    add_dependencies(RACE GAP)
+endif()
+
 
 if(BUILTIN_HWLOC)
     target_link_libraries(race "${EXT_LIBRARIES}" RACE)

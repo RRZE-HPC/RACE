@@ -11,6 +11,12 @@ include(${PROJECT_SOURCE_DIR}/cmake/OptimizeForArchitecture.cmake)
 AutodetectHostArchitecture()
 OptimizeForArchitecture()
 
+
+#if (NOT BUILD_SHARED_LIBS)
+#    message(STATUS "No library type specified. Setting it to shared.")
+#    set(BUILD_SHARED_LIBS ON CACHE BOOL "Set to ON/OFF for shared/static library build.")
+#endif()
+
 if(USE_AVX512F)
     set(VECTOR_LENGTH 8)
 elseif(USE_AVX OR USE_AVX2)
@@ -44,8 +50,8 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -xCORE-AVX2  -save-temps -fsource-asm")
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -xCORE-AVX2  -save-temps -fsource-asm")
 else()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Ofast -mtune=native -Wno-write-strings")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast -mtune=native -Wno-write-strings")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Ofast -mtune=native -Wno-write-strings")# -fsanitize=address -fno-omit-frame-pointer")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast -mtune=native -Wno-write-strings")# -fsanitize=address -fno-omit-frame-pointer")
 endif()
 
 find_package(OpenMP)
@@ -177,9 +183,13 @@ file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/helpers/*.cpp)
 add_executable(race ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/main.cpp)
 
 add_executable(mtxPower ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/matrixPower.cpp)
+add_executable(mtxPower_highestPower ${SOURCES} ${PROJECT_SOURCE_DIR}/src/matrixPower_highestPower.cpp)
+add_executable(mtxPowerNuma ${SOURCES} ${PROJECT_SOURCE_DIR}/src/matrixPowerNuma.cpp)
 add_executable(param_study ${SOURCES} ${PROJECT_SOURCE_DIR}/src/param_study.cpp)
 add_executable(spmv ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/spmv.cpp)
-add_executable(tradPower ${SOURCES} ${PROJECT_SOURCE_DIR}/src/trad_spmv_power.cpp)
+add_executable(tradPower ${SOURCES} ${PROJECT_SOURCE_DIR}/src/tradPower.cpp)
+add_executable(tradPowerNuma ${SOURCES} ${PROJECT_SOURCE_DIR}/src/tradPowerNuma.cpp)
+add_executable(matStat ${SOURCES} ${PROJECT_SOURCE_DIR}/src/mat_stat.cpp)
 
 set(EXT_LIBRARIES "${BLAS_LIBRARIES}")
 
@@ -189,21 +199,47 @@ endif()
 
 target_link_libraries(race "${EXT_LIBRARIES}")
 target_link_libraries(mtxPower "${EXT_LIBRARIES}")
+target_link_libraries(mtxPower_highestPower "${EXT_LIBRARIES}")
+target_link_libraries(mtxPowerNuma "${EXT_LIBRARIES}")
 target_link_libraries(param_study "${EXT_LIBRARIES}")
 target_link_libraries(spmv "${EXT_LIBRARIES}")
 target_link_libraries(tradPower "${EXT_LIBRARIES}")
+target_link_libraries(tradPowerNuma "${EXT_LIBRARIES}")
+target_link_libraries(matStat "${EXT_LIBRARIES}")
 
 if(RACE_USE_SPMP)
     include_directories(SYSTEM ${PROJECT_BINARY_DIR}/SpMP/src)
     add_dependencies(race SpMP)
     add_dependencies(mtxPower SpMP)
+    add_dependencies(mtxPower_highestPower SpMP)
+    add_dependencies(mtxPowerNuma SpMP)
     add_dependencies(param_study SpMP)
     add_dependencies(spmv SpMP)
     add_dependencies(tradPower SpMP)
+    add_dependencies(tradPowerNuma SpMP)
 endif()
 
 
 file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/perf_script.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
+file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/perf_script_w_likwid.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
+file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/extract_matDetails.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
 file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/check-state.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
 file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/config.txt DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
 file(COPY ${PROJECT_SOURCE_DIR}/matrixPower_perf_test/machine-state.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/matrixPower_perf_test/.)
+
+
+#add_library(RACE_example ${SOURCES})
+
+#file(GLOB HEADERS ${PROJECT_SOURCE_DIR}/include/*.h)
+#install(FILES ${HEADERS} DESTINATION include/RACE_example)
+
+#configure_file(${PROJECT_SOURCE_DIR}/race_example-config.cmake.in ${PROJECT_BINARY_DIR}/race_example-config.cmake @ONLY)
+#install(FILES ${PROJECT_BINARY_DIR}/race_example-config.cmake DESTINATION lib/RACE_example)
+
+#if (${BUILD_SHARED_LIBS})
+#    install(TARGETS RACE_example EXPORT RACE_example-targets LIBRARY DESTINATION lib/RACE_example)
+#else ()
+#    install(TARGETS RACE_example EXPORT RACE_example-targets ARCHIVE DESTINATION lib/RACE_example)
+#endif()
+
+

@@ -19,6 +19,15 @@ densemat::densemat(int nrows_, int ncols_, bool view_):nrows(nrows_), ncols(ncol
     }
 }
 
+//similar to view but can pass value too
+void densemat::initCover(int nrows_, int ncols_, double* val_)
+{
+    nrows = nrows_;
+    ncols = ncols_;
+    val = val_;
+}
+
+
 densemat::~densemat()
 {
     if(val && !viewMat)

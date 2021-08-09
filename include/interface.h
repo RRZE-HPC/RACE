@@ -15,7 +15,7 @@
 #include "type.h"
 #include "level_pool.h"
 #include "config.h"
-#include "matrixPower.h"
+#include "matrixPowerRecursive.h"
 
 /**
  * @brief RACE namespace.
@@ -51,7 +51,7 @@ class RACE::Interface{
         int *invPerm;
 //        int invPermLen;
         ZoneTree* zoneTree;
-        mtxPower* powerCalculator;
+        mtxPowerRecursive* powerCalculator;
         std::vector<FuncManager*> funMan;
         //	FuncManager *funMan;
         bool detectConflict(std::vector<int> range1, std::vector<int> range2);

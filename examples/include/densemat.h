@@ -18,7 +18,7 @@ struct densemat
     densemat* view(int start_col, int end_col);
     densemat(int nrows, int ncols=1, bool view=false);
     ~densemat();
-
+    void initCover(int nrows_, int ncols_, double* val_);
 };
 
 bool checkEqual(const densemat* lhs, const densemat* rhs, double tol=1e-4);

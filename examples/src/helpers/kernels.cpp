@@ -233,15 +233,98 @@ inline void PLAIN_SPMV_KERNEL(int start, int end, int pow, void* args)
         }
   //  }
 }
+void MAT_SPMV_KERNEL(int start, int end, int pow, int numa_domain, void* args);
 
 //plain spmv
 void plain_spmv(sparsemat* mat, densemat* x)
 {
     ENCODE_TO_VOID(mat, NULL, x);
     PLAIN_SPMV_KERNEL(0, mat->nrows, 1, voidArg);
+    //MAT_SPMV_KERNEL(0, mat->nrows, 1, 0, voidArg);
     DELETE_ARG();
 }
 
+inline void PLAIN_SPMV_KERNEL_only_highest(int start, int end, int pow, void* args)
+{
+    DECODE_FROM_VOID(args);
+
+    int parentId = omp_get_thread_num();
+
+//#pragma omp parallel
+//    {
+        //int ctr = 0;
+#pragma omp parallel for schedule(static)
+        for(int row=start; row<end; ++row)
+        {
+            /*
+            if(((sched_getcpu())/10) != parentId)
+            //if(ctr<100)
+            {
+                printf("here inside is cpu: %d thread: %d parent: %d\n", sched_getcpu(), omp_get_thread_num(), parentId);
+                //++ctr;
+            }*/
+            double tmp = 0;
+            const int offset = ((pow-1)%2)*mat->nrows;
+#pragma nounroll
+#pragma simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)
+            for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
+            {
+                tmp += mat->val[idx]*x->val[offset+mat->col[idx]];
+            }
+            x->val[(pow%2)*mat->nrows+row] = tmp;
+        }
+  //  }
+}
+
+//plain spmv
+void plain_spmv_only_highest(sparsemat* mat, densemat* x, int pow)
+{
+    ENCODE_TO_VOID(mat, NULL, x);
+    PLAIN_SPMV_KERNEL_only_highest(0, mat->nrows, pow, voidArg);
+    //MAT_SPMV_KERNEL(0, mat->nrows, 1, 0, voidArg);
+    DELETE_ARG();
+}
+
+
+inline void PLAIN_SPMV_NUMA_KERNEL(int start, int end, int pow, void* args)
+{
+    DECODE_FROM_VOID_NUMA(args);
+
+    int parentId = omp_get_thread_num();
+//#pragma omp parallel
+//    {
+        //int ctr = 0;
+#pragma omp parallel for schedule(static)
+        for(int row_global=start; row_global<end; ++row_global)
+        {
+            int nrows = mat->mat->nrows;
+            int totalThreads = omp_get_num_threads();
+            int threadPerNode = totalThreads/mat->NUMAdomains;
+            int tid = omp_get_thread_num();
+            int numa_domain = tid/threadPerNode;
+
+            const int row_offset = mat->splitRows[numa_domain];
+            int row = row_global - row_offset;
+            const int col_offset = (pow-1)*nrows;
+
+            double tmp = 0;
+#pragma nounroll
+#pragma simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)
+            for(int idx=mat->rowPtr[numa_domain][row]; idx<mat->rowPtr[numa_domain][row+1]; ++idx)
+            {
+                tmp += mat->val[numa_domain][idx]*x->val[col_offset+mat->col[numa_domain][idx]];
+            }
+            x->val[(pow)*nrows+row_global] = tmp;
+        }
+  //  }
+}
+
+void plain_spmv_numa(NUMAmat *mat, densemat *x)
+{
+    ENCODE_TO_VOID_NUMA(mat, NULL, x);
+    PLAIN_SPMV_NUMA_KERNEL(0, mat->mat->nrows, 1, voidArg);
+    DELETE_ARG();
+}
 
 inline void MKL_SPMV_KERNEL(int start, int end, int pow, void* args)
 {
@@ -267,6 +350,49 @@ void mkl_spmv(sparsemat* mat, densemat* x)
     MKL_SPMV_KERNEL(0, mat->nrows, 1, voidArg);
     DELETE_ARG();
 }
+
+inline void MAT_SPMV_KERNEL_only_highest(int start, int end, int pow, int numa_domain, void* args)
+{
+    DECODE_FROM_VOID(args);
+
+    int parentId = omp_get_thread_num();
+//#pragma omp parallel
+//    {
+        //int ctr = 0;
+        for(int row=start; row<end; ++row)
+        {
+            /*
+            if(((sched_getcpu())/10) != parentId)
+            //if(ctr<100)
+            {
+                printf("here inside is cpu: %d thread: %d parent: %d\n", sched_getcpu(), omp_get_thread_num(), parentId);
+                //++ctr;
+            }*/
+            double tmp = 0;
+            const int offset = ((pow-1)%2)*mat->nrows;
+#pragma nounroll
+#pragma simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)
+            for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
+            {
+                tmp += mat->val[idx]*x->val[offset+mat->col[idx]];
+            }
+            x->val[(pow%2)*mat->nrows+row] = tmp;
+        }
+  //  }
+}
+
+void matPower_only_highest(sparsemat *A, int power, densemat *x)
+{
+    RACE::Interface *ce = A->ce;
+    ENCODE_TO_VOID(A, NULL, x);
+    int race_power_id = ce->registerFunction(&MAT_SPMV_KERNEL_only_highest, voidArg, power);
+    {
+        ce->executeFunction(race_power_id);
+    }
+    DELETE_ARG();
+}
+
+
 
 inline void MAT_SPMV_KERNEL(int start, int end, int pow, int numa_domain, void* args)
 {

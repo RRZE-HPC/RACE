@@ -7,11 +7,13 @@
 #include "omp.h"
 #include "level_pool.h"
 #include "timing.h"
-#include "matrixPower.h"
+#include "matrixPowerRecursive.h"
 
 class FuncManager;
 
 void recursiveCall(FuncManager* funMan, int parent);
+
+void recursivePowerCall(FuncManager* funMan, int parent);
 
 class FuncManager
 {
@@ -25,29 +27,45 @@ class FuncManager
         powerFuncType powerFunc;
         void* args;
         int power;
+        int activethreads;
+        int totalNodes;
+        int threadPerNode;
+        int CL_pad;
         ZoneTree* zoneTree;
         LevelPool* pool;
-        mtxPower* matPower;
+        mtxPowerRecursive* matPower;
         std::vector<int> serialPart;
-        volatile int* lockCtr;
-        volatile bool* lockTable;
-        volatile int* lockTableCtr;
-        int* unlockRow;
-        int* dangerRow;
-        int* unlockCtr;
+        volatile int* nodeBarrier;
+        volatile int* barrierCount;
+        std::vector<volatile int*> lockCtr;
+        std::vector<volatile bool*> lockTable;
+        std::vector<volatile int*> lockTableCtr;
+        //int* unlockRow;
+        //int* dangerRow;
+        //int* unlockCtr;
         friend void recursiveCall(FuncManager* funMan, int parent);
+        friend void recursivePowerCall(FuncManager* funMan, int parent);
         std::function<void(int)> recursiveFun;
+
+        void recursivePowerCallSerial(int parent);
+        inline void powerCallGeneral(int startLevel, int endLevel, int boundaryStart, int boundaryEnd, int startSlope, int endSlope, const std::vector<int> *levelPtr, const std::vector<std::map<int, std::vector<std::vector<int>>>>* boundaryLevelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent);
+        inline void powerCallNodeReminder(int startSlope, int endSlope, const std::vector<int> *levelPtr, const std::vector<int> *nodePtr, int numaLocalArg, int offset);
+        inline void powerCallHopelessRightReminder(int leftmostLevel, const std::vector<int> *levelPtr, const std::vector<std::map<int, std::vector<std::vector<int>>>>* boundaryLevelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent);
+        inline void powerCallHopelessLeftReminder(int rightmostLevel, const std::vector<int> *levelPtr, const std::vector<std::map<int, std::vector<std::vector<int>>>>* boundaryLevelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent);
+        inline void powerCallReleaseHopelessRegionLocks(int hopelessStartLevel, int parent);
+        std::function<void(int)> recursivePowerFun;
+
         //double *a, *b, *c, *d;
         //int len;
     public:
         FuncManager(void (*f_) (int,int,void *), void* args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart);
-        FuncManager(void (*f_) (int,int,int,int,void *), void* args_, int power, mtxPower *matPower, bool numaSplit_);
+        FuncManager(void (*f_) (int,int,int,int,void *), void* args_, int power, mtxPowerRecursive *matPower, bool numaSplit_);
         FuncManager(const FuncManager &obj);
         ~FuncManager();
         void SerialPartRun();
-        void initPowerRun();
+        void initPowerRun(int parent);
         void NUMAInitPower();
-        void powerRun();
+       // void powerRun();
         void Run(bool rev_=false);
         bool isNumaSplit();
         //void RunOMP();

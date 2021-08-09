@@ -4,6 +4,7 @@
 #include <RACE/interface.h>
 #include <algorithm>
 #include <iterator>
+#include "densemat.h"
 
 using namespace RACE;
 
@@ -19,7 +20,7 @@ template <typename T> void sort_perm(T *arr, int *perm, int len, bool rev=false)
 
 struct sparsemat
 {
-    int nrows, nnz;
+    int nrows, ncols, nnz;
     //interface to coloring engine
     Interface* ce;
     int *rowPtr, *col;
@@ -31,7 +32,7 @@ struct sparsemat
     int block_size;
 
     int *rcmPerm, *rcmInvPerm;
-
+    int *finalPerm, *finalInvPerm;
     bool readFile(char* filename);
     bool convertToBCSR(int b_r);
     bool writeFile(char* filename);
@@ -54,6 +55,9 @@ struct sparsemat
 
     sparsemat();
     ~sparsemat();
+
+    void initCover(int nrows_, int nnz_, double *val_, int *rowPtr_, int *col_);
+    densemat* permute_densemat(densemat *vec);
 
 };
 

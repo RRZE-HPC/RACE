@@ -10,10 +10,21 @@
     #include "SpMP/CSR.hpp"
     #include "SpMP/reordering/BFSBipartite.hpp"
 #endif
+#include "timer.h"
 
-
-sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL)
+sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), finalPerm(NULL), finalInvPerm(NULL)
 {
+}
+
+//to transfer from a different library the data structure
+//need to be called after contructor
+void sparsemat::initCover(int nrows_, int nnz_, double *val_, int *rowPtr_, int *col_)
+{
+    nrows=nrows_;
+    nnz=nnz_;
+    val=val_;
+    rowPtr=rowPtr_;
+    col=col_;
 }
 
 sparsemat::~sparsemat()
@@ -44,6 +55,12 @@ sparsemat::~sparsemat()
 
     if(rcmInvPerm)
         delete[] rcmInvPerm;
+
+    if(finalPerm)
+        delete[] finalPerm;
+
+    if(finalInvPerm)
+        delete[] finalInvPerm;
 
 /*    if(rowPtr_bcsr)
         delete[] rowPtr_bcsr;
@@ -100,7 +117,7 @@ bool sparsemat::readFile(char* filename)
         exit(0);
     }
 
-    int ncols;
+    //int ncols;
     int *row;
     int *col_unsorted;
     double *val_unsorted;
@@ -112,7 +129,7 @@ bool sparsemat::readFile(char* filename)
     }
     if(nrows != ncols)
     {
-        printf("Currently only Symmetric matrices are supported\n");
+        ERROR_PRINT("Matrix not square. Currently only square matrices are supported\n");
         return false;
     }
 
@@ -189,7 +206,7 @@ bool sparsemat::readFile(char* filename)
 
     delete[] col_unsorted;
     delete[] val_unsorted;
-
+    delete[] perm;
 
     rowPtr = new int[nrows+1];
 
@@ -218,6 +235,7 @@ bool sparsemat::readFile(char* filename)
     }
 
     delete[] row;
+    delete[] nnzPerRow;
 
     numaInit(false);
     //writeFile("beforePerm.mtx");
@@ -557,6 +575,13 @@ void sparsemat::doRCMPermute()
 {
     doRCM();
     permute(rcmPerm, rcmInvPerm);
+    if(finalPerm)
+    {
+        delete [] finalPerm;
+        delete [] finalInvPerm;
+    }
+    finalPerm = rcmPerm;
+    finalInvPerm = rcmInvPerm;
     rcmPerm = NULL;
     rcmInvPerm = NULL;
 }
@@ -566,14 +591,28 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
     //permute(rcmInvPerm, rcmPerm);
     //rcmPerm = NULL;
     //rcmInvPerm = NULL;
+    INIT_TIMER(pre_process_kernel);
+    START_TIMER(pre_process_kernel);
     ce = new Interface(nrows, nthreads, RACE::POWER, rowPtr, col, smt, pinMethod, rcmPerm, rcmInvPerm);
     ce->RACEColor(highestPower, numSharedCache, cacheSize);
+    STOP_TIMER(pre_process_kernel);
+    printf("RACE pre-processing time = %fs\n", GET_TIMER(pre_process_kernel));
 
     int *perm, *invPerm, permLen;
     ce->getPerm(&perm, &permLen);
     ce->getInvPerm(&invPerm, &permLen);
     permute(perm, invPerm, true);
 
+    if(finalPerm)
+    {
+        delete [] finalPerm;
+        delete [] finalInvPerm;
+    }
+
+    finalPerm = perm;
+    finalInvPerm = invPerm;
+    //delete [] invPerm;
+    //delete [] perm;
     //no idea why need it second time w/o perm. 
     //NUMA init work nicely only if this is done; (only for pwtk, others perf
     //degradation))
@@ -601,8 +640,15 @@ int sparsemat::colorAndPermute(dist distance, int nthreads, int smt, PinMethod p
 
     //now permute the matrix according to the permutation vector
     permute(perm, invPerm);
-    delete[] perm;
-    delete[] invPerm;
+
+    if(finalPerm)
+    {
+        delete [] finalPerm;
+        delete [] finalInvPerm;
+    }
+
+    finalPerm = perm;
+    finalInvPerm = invPerm;
 
     //pin omp threads as in RACE for proper NUMA
     pinOMP(nthreads);
@@ -625,6 +671,30 @@ void sparsemat::numaInit(bool RACEalloc)
     permute(NULL, NULL, RACEalloc);
 }
 
+densemat* sparsemat::permute_densemat(densemat *vec)
+{
+    densemat* newVec = new densemat(nrows, vec->ncols);
+    newVec->setVal(0);
+
+    if(nrows != vec->nrows)
+    {
+        ERROR_PRINT("Permutation of densemat not possible, dimension of matrix and vector do not match");
+    }
+    for(int row=0; row<nrows; ++row)
+    {
+        int perm_row = row;
+        if(finalPerm != NULL)
+        {
+            perm_row = finalPerm[row];
+        }
+        for(int col=0; col<vec->ncols; ++col)
+        {
+            newVec->val[col*nrows+row] = vec->val[col*nrows+perm_row];
+        }
+    }
+    return newVec;
+}
+
 //symmetrically permute
 void sparsemat::permute(int *_perm_, int*  _invPerm_, bool RACEalloc)
 {
@@ -643,6 +713,7 @@ void sparsemat::permute(int *_perm_, int*  _invPerm_, bool RACEalloc)
 
     newRowPtr[0] = 0;
 
+    printf("Initing rowPtr\n");
     if(!RACEalloc)
     {
         //NUMA init
@@ -682,11 +753,13 @@ void sparsemat::permute(int *_perm_, int*  _invPerm_, bool RACEalloc)
     }
 
 
+    printf("Initing mtxVec\n");
     if(RACEalloc)
     {
         ce->numaInitMtxVec(newRowPtr, newCol, newVal, NULL);
     }
 
+    printf("Finished inting\n");
     if(_perm_ != NULL)
     {
         //with NUMA init
@@ -775,29 +848,42 @@ NUMAmat::NUMAmat(sparsemat *mat_, bool manual, std::vector<int> splitRows_):mat(
         int currNrows = endRow - startRow;
         rowPtr[domain] = new int[currNrows+1];
     }
-    mat->ce->numaInitRowPtr(rowPtr);
 
-    for(int domain = 0; domain<NUMAdomains; ++domain)
+    if(!manual)
     {
-        int startRow = splitRows[domain];
-        int endRow = splitRows[domain+1];
-        int currNrows = endRow - startRow;
-        //BCSR not yet for NUMAmat
-        nrows[domain] = currNrows;
-        //rowPtr[domain] = new int[currNrows+1];
-        rowPtr[domain][0] = 0;
-        int cur_nnz = 0;
-        for(int row=0; row<currNrows; ++row)
-        {
-            //rowPtr[domain][row+1] = mat->rowPtr[row+1+startRow];
+    //    mat->ce->numaInitRowPtr(rowPtr);
+    }
 
-            for(int idx=mat->rowPtr[row+startRow]; idx<mat->rowPtr[row+1+startRow]; ++idx)
+#pragma omp parallel
+    {
+        int totalThreads = omp_get_num_threads();
+        int tid = omp_get_thread_num();
+        int threadPerNode = totalThreads/NUMAdomains;
+        int domain = tid/threadPerNode;
+        int localTid = tid%threadPerNode;
+
+        if(localTid == 0)
+        {
+            int startRow = splitRows[domain];
+            int endRow = splitRows[domain+1];
+            int currNrows = endRow - startRow;
+            //BCSR not yet for NUMAmat
+            nrows[domain] = currNrows;
+            //rowPtr[domain] = new int[currNrows+1];
+            rowPtr[domain][0] = 0;
+            int cur_nnz = 0;
+            for(int row=0; row<currNrows; ++row)
             {
-                ++cur_nnz;
+                //rowPtr[domain][row+1] = mat->rowPtr[row+1+startRow];
+
+                for(int idx=mat->rowPtr[row+startRow]; idx<mat->rowPtr[row+1+startRow]; ++idx)
+                {
+                    ++cur_nnz;
+                }
+                rowPtr[domain][row+1] = cur_nnz;
             }
-            rowPtr[domain][row+1] = cur_nnz;
+            nnz[domain] = cur_nnz;
         }
-        nnz[domain] = cur_nnz;
     }
     for(int domain = 0; domain<NUMAdomains; ++domain)
     {
@@ -806,23 +892,36 @@ NUMAmat::NUMAmat(sparsemat *mat_, bool manual, std::vector<int> splitRows_):mat(
         val[domain] = new double[cur_nnz];
     }
 
-    mat->ce->numaInitMtxVec(rowPtr, col, val, 1);
-    for(int domain = 0; domain<NUMAdomains; ++domain)
+    if(!manual)
     {
-        int startRow = splitRows[domain];
-        int endRow = splitRows[domain+1];
-        int currNrows = endRow - startRow;
+    //    mat->ce->numaInitMtxVec(rowPtr, col, val, 1);
+    }
 
-        for(int row=0; row<currNrows; ++row)
+#pragma omp parallel
+    {
+        int totalThreads = omp_get_num_threads();
+        int tid = omp_get_thread_num();
+        int threadPerNode = totalThreads/NUMAdomains;
+        int domain = tid/threadPerNode;
+        int localTid = tid%threadPerNode;
+
+        if(localTid == 0)
         {
-            for(int idx=mat->rowPtr[row+startRow], local_idx=rowPtr[domain][row]; idx<mat->rowPtr[row+1+startRow]; ++idx,++local_idx)
+            int startRow = splitRows[domain];
+            int endRow = splitRows[domain+1];
+            int currNrows = endRow - startRow;
+
+            for(int row=0; row<currNrows; ++row)
             {
-                col[domain][local_idx] = mat->col[idx];
-                val[domain][local_idx] = mat->val[idx];
+                for(int idx=mat->rowPtr[row+startRow], local_idx=rowPtr[domain][row]; idx<mat->rowPtr[row+1+startRow]; ++idx,++local_idx)
+                {
+                    col[domain][local_idx] = mat->col[idx];
+                    val[domain][local_idx] = mat->val[idx];
+                }
             }
         }
     }
-/*
+    /*
     printf("Mat = \n");
     for(int row=0; row<mat->nrows; ++row)
     {

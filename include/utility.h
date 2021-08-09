@@ -6,6 +6,9 @@
 #include <vector>
 #include <unistd.h>
 #include <sys/mman.h>
+#include <stdio.h>
+#include <string.h>
+#include <cmath>
 
 template <typename T> inline void sort(T *arr, int range_lo, int range_hi, bool rev=false)
 {
@@ -65,8 +68,47 @@ template <typename T> inline void getEnv(std::string envName, std::vector<T>& va
     }
 }
 
-//updates first prmutation array based on the current permutation
+//updates first permutation array based on the current permutation
 inline void updatePerm(int **mainPerm, int *currPerm, int len, int fullLen)
+{
+    int *totPerm = new int [fullLen];
+
+    if(*mainPerm)
+    {
+#pragma omp parallel for schedule(runtime)
+        for(int i=0; i<len; ++i)
+        {
+            totPerm[i] = (*mainPerm)[currPerm[i]];
+        }
+        for(int i=len; i<fullLen; ++i)
+        {
+            totPerm[i] = (*mainPerm)[i];
+        }
+    }
+    else
+    {
+#pragma omp parallel for schedule(runtime)
+        for(int i=0; i<len; ++i)
+        {
+            totPerm[i] = currPerm[i];
+        }
+        for(int i=len; i<fullLen; ++i)
+        {
+            totPerm[i] = i;
+        }
+    }
+
+    //swap mainPerm and totPerm
+    int *temp = (*mainPerm);
+    (*mainPerm) = totPerm;
+    totPerm = temp;
+
+    delete[] totPerm;
+}
+
+
+//updates first permutation array based on the current permutation
+inline void updatePerm(int **mainPerm, std::vector<int> currPerm, int len, int fullLen)
 {
     int *totPerm = new int [fullLen];
 
@@ -141,6 +183,11 @@ inline int unlock_memory(char   *addr,
     size += page_offset;  /* Adjust size with page_offset */
 
     return ( munlock(addr, size) );  /* Unlock the memory */
+}
+
+inline int workingBoundaryLength_base(int highestPower)
+{
+    return static_cast<int>(ceil(highestPower/2.0))-1;
 }
 
 #endif

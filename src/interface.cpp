@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include "utility.h"
+#include "timing.h"
 
 RACE::Interface::Interface(int nrow_,int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_, RACE::PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):graph(NULL),nrow(nrow_),distance(dist_),d2Type(d2Type_),lbTarget(lbTarget_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL),powerCalculator(NULL)
 {
@@ -35,7 +36,6 @@ RACE::Interface::~Interface()
 
 RACE_error RACE::Interface::RACEColor(int highestPower, int numSharedCache, double cacheSize, double safetyFactor)
 {
-
     if(distance != RACE::POWER)
     {
         ERROR_PRINT("If you need to calculate power set distance to RACE::POWER");
@@ -43,14 +43,22 @@ RACE_error RACE::Interface::RACEColor(int highestPower, int numSharedCache, doub
     }
     else
     {
-        powerCalculator = new mtxPower(graph, highestPower, numSharedCache, cacheSize, safetyFactor);
+        powerCalculator = new mtxPowerRecursive(graph, highestPower, numSharedCache, cacheSize, safetyFactor);
+        //sanity check
+        if(requestedThreads%numSharedCache)
+        {
+            ERROR_PRINT("Threads (=%d) not a multiple of requested nodes (=%d)\n", requestedThreads, numSharedCache);
+            exit(-1);
+        }
         powerCalculator->findPartition();
         int len;
         powerCalculator->getPerm(&perm, &len);
         powerCalculator->getInvPerm(&invPerm, &len);
-        Pin pin(NULL, 1, RACE::FILL);
-        pin.pinPowerThread(numSharedCache);
+        //Pin pin(NULL, 1, RACE::FILL);
+        //pin.pinPowerThread(numSharedCache);
+
         return RACE_SUCCESS;
+
     }
 }
 
@@ -118,6 +126,7 @@ void RACE::Interface::printZoneTree()
 
 void RACE::Interface::getPerm(int **perm_, int *len_)
 {
+#if 0 //now included
     if(initPerm)
     {
         int *totPerm = new int [nrow];
@@ -134,11 +143,16 @@ void RACE::Interface::getPerm(int **perm_, int *len_)
     {
         (*perm_) = perm;
     }
+#else
+    //initPerm included
+    (*perm_) = perm;
+#endif
     (*len_) = nrow;
 }
 
 void RACE::Interface::getInvPerm(int **invPerm_, int *len_)
 {
+#if 0 //now included
     if(initInvPerm)
     {
         int *totInvPerm = new int [nrow];
@@ -156,6 +170,9 @@ void RACE::Interface::getInvPerm(int **invPerm_, int *len_)
     {
         (*invPerm_) = invPerm;
     }
+#else
+    (*invPerm_) = invPerm;
+#endif
     (*len_) = nrow;
 }
 
@@ -224,16 +241,86 @@ void RACE::Interface::resetTime()
     zoneTree->resetTime();
 }
 
-
+//TODO: move to graph
 bool RACE::Interface::detectConflict(std::vector<int> range1, std::vector<int> range2)
 {
+#ifdef RACE_PERMUTE_ON_FLY
+    WARNING_PRINT("Detect conflict experimental with RACE_PERMUTE_ON_FLY");
+#endif
     bool conflict = false;
     for(int i=range1[0]; i<range1[1]; ++i)
     {
-        std::vector<int>* children_i = &(graph->at(i).children);
+        int perm_i = i;
+#ifdef RACE_PERMUTE_ON_FLY
+        perm_i = graph->totalPerm[i];
+#endif
+#ifdef RACE_USE_SOA_GRAPH
+        //TODO:optimise
+        int* children_data = graph->getChildren(perm_i);
+        int childrenSize = graph->getChildrenSize(perm_i);
+        std::vector<int> children_vec_i(childrenSize);
+        for(int c=0; c<childrenSize; ++c)
+        {
+            int permCol = children_data[c];
+#ifdef RACE_PERMUTE_ON_FLY
+            permCol = graph->totalInvPerm[permCol];
+#endif
+            children_vec_i[c] = permCol;
+        }
+        std::vector<int>* children_i = &children_vec_i;
+#else
+#ifdef RACE_PERMUTE_ON_FLY
+        std::vector<int> children_data = graph->at(perm_i).children;
+        int childrenSize = children_data.size();
+        std::vector<int> children_vec_i(childrenSize);
+        for(int c=0; c<childrenSize; ++c)
+        {
+            int permCol = children_data[c];
+            permCol = graph->totalInvPerm[permCol];
+            children_vec_i[c] = permCol;
+        }
+        std::vector<int>* children_i = &children_vec_i;
+#else
+        std::vector<int>* children_i = &(graph->at(perm_i).children);
+#endif
+
+#endif
         for(int j=range2[0]; j<range2[1]; ++j)
         {
-            std::vector<int>* children_j = &(graph->at(j).children);
+            int perm_j =  j;
+#ifdef RACE_PERMUTE_ON_FLY
+            perm_j = graph->totalPerm[j];
+#endif
+#ifdef RACE_USE_SOA_GRAPH
+            //TODO:optimise
+            children_data = graph->getChildren(perm_j);
+            childrenSize = graph->getChildrenSize(perm_j);
+            std::vector<int> children_vec_j(childrenSize);
+            for(int c=0; c<childrenSize; ++c)
+            {
+                int permCol = children_data[c];
+#ifdef RACE_PERMUTE_ON_FLY
+                permCol = graph->totalInvPerm[permCol];
+#endif
+                children_vec_j[c] = permCol;
+            }
+            std::vector<int>* children_j = &children_vec_j;
+#else
+#ifdef RACE_PERMUTE_ON_FLY
+        std::vector<int> children_data = graph->at(perm_j).children;
+        int childrenSize = children_data.size();
+        std::vector<int> children_vec_j(childrenSize);
+        for(int c=0; c<childrenSize; ++c)
+        {
+            int permCol = children_data[c];
+            permCol = graph->totalInvPerm[permCol];
+            children_vec_j[c] = permCol;
+        }
+        std::vector<int>* children_j = &children_vec_j;
+#else
+        std::vector<int>* children_j = &(graph->at(perm_j).children);
+#endif
+#endif
             conflict = (std::find_first_of(children_i->begin(), children_i->end(), children_j->begin(), children_j->end()) != children_i->end());
             if(conflict)
             {
@@ -543,13 +630,12 @@ void RACE::Interface::numaInitMtxVec(int **rowPtr_, int **col_, double **val_, i
 
 void RACE::Interface::getNumaSplitting(int **split, int *splitLen)
 {
-
-    int NUMAdomains = powerCalculator->getTotalLevelGroup();
+    std::vector<int> levelGroupPtr = powerCalculator->tree[0].nodePtr;
+    int NUMAdomains = levelGroupPtr.size()-1;
+    std::vector<int> levelPtr = powerCalculator->tree[0].lp;
     (*split) = (int*) malloc(sizeof(int)*(NUMAdomains+1));
     for(int i=0; i<=NUMAdomains; ++i)
     {
-        int *levelPtr = powerCalculator->getLevelPtrRef();
-        int *levelGroupPtr = powerCalculator->getLevelGroupPtrRef();
         (*split)[i] = levelPtr[levelGroupPtr[i]];
     }
     (*splitLen) = NUMAdomains+1;
