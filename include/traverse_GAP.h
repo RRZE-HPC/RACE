@@ -9,6 +9,7 @@
 #include "macros.h"
 #include "bitmap.h"
 #include "sliding_queue.h"
+#include "string.h"
 
 class Graph;
 
@@ -44,6 +45,8 @@ class Traverse{
         std::vector<std::map<int, std::vector<LevelData*>>> boundaryLevelData;
         int totalThreads;
 
+        std::string mtxType;
+
         //std::vector<int> markChildren(int currChild, int currLvl);
         void TDStep(int curLvl);
         RACE_error findLevelData(int lower_nrows, int upper_nrows, int totalLevel, LevelData* curLevelData);
@@ -51,7 +54,7 @@ class Traverse{
         void permuteGraph();
     public:
         //constructor
-        Traverse(Graph *graph_, RACE::dist dist, int rangeLo_=0, int rangeHi_=-1, int parentIdx=0, int numRoots=1, std::vector<std::map<int, std::vector<Range>>> boundaryRange_={});
+        Traverse(Graph *graph_, RACE::dist dist, int rangeLo_=0, int rangeHi_=-1, int parentIdx=0, int numRoots=1, std::vector<std::map<int, std::vector<Range>>> boundaryRange_={}, std::string mtxType_="N");
         ~Traverse();
         void calculateDistance();
 

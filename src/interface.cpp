@@ -34,7 +34,7 @@ RACE::Interface::~Interface()
     }
 }
 
-RACE_error RACE::Interface::RACEColor(int highestPower, int numSharedCache, double cacheSize, double safetyFactor)
+RACE_error RACE::Interface::RACEColor(int highestPower, int numSharedCache, double cacheSize, double safetyFactor, std::string mtxType)
 {
     if(distance != RACE::POWER)
     {
@@ -43,7 +43,7 @@ RACE_error RACE::Interface::RACEColor(int highestPower, int numSharedCache, doub
     }
     else
     {
-        powerCalculator = new mtxPowerRecursive(graph, highestPower, numSharedCache, cacheSize, safetyFactor);
+        powerCalculator = new mtxPowerRecursive(graph, highestPower, numSharedCache, cacheSize, safetyFactor, mtxType);
         //sanity check
         if(requestedThreads%numSharedCache)
         {

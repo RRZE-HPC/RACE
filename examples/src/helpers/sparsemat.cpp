@@ -595,6 +595,7 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
     START_TIMER(pre_process_kernel);
     ce = new Interface(nrows, nthreads, RACE::POWER, rowPtr, col, smt, pinMethod, rcmPerm, rcmInvPerm);
     ce->RACEColor(highestPower, numSharedCache, cacheSize);
+    //ce->RACEColor(highestPower, numSharedCache, cacheSize, 2, "L");
     STOP_TIMER(pre_process_kernel);
     printf("RACE pre-processing time = %fs\n", GET_TIMER(pre_process_kernel));
 

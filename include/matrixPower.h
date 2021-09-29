@@ -7,6 +7,7 @@
 #include "graph.h"
 #include "traverse.h"
 #include "levelData.h"
+#include "string.h"
 
 //this is per stage
 class mtxPower
@@ -31,6 +32,9 @@ class mtxPower
     std::vector<std::map<int, std::vector<Range>>> boundaryRange;
     std::vector<std::map<int, std::vector<LevelData*>>> boundaryLevelData;
     std::vector<std::map<int, std::vector<std::vector<int>>>> boundaryLevelPtr;
+    std::vector<std::map<int, std::vector<std::vector<int>>>> boundaryUnlockRow;
+    std::vector<std::map<int, std::vector<std::vector<int>>>> boundaryDangerRow;
+    std::vector<std::map<int, std::vector<std::vector<int>>>> boundaryUnlockCtr;
 
     Traverse* traverser;
     int totalLevel;
@@ -50,7 +54,11 @@ class mtxPower
     std::vector<int> findLevelPtr(int startNode, LevelData* curLevelData);
 
     public:
-    mtxPower(Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<std::map<int, std::vector<Range>>> boundaryRange={}, int nodeId_=-1, int numRootNodes_=-1);
+    //mtxType can be:
+    //N: Normal
+    //L: Lower traiangle
+    //U: Upper triangle
+    mtxPower(Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<std::map<int, std::vector<Range>>> boundaryRange={}, int nodeId_=-1, int numRootNodes_=-1, std::string mtxType="N");
     ~mtxPower();
     void findPartition();
     void splitSharedCacheDomain();
@@ -68,6 +76,8 @@ class mtxPower
     int getTotalNodes();
     std::vector<int> getLevelPtr();
     std::vector<std::map<int, std::vector<std::vector<int>>>> getBoundaryLevelPtr();
+    std::vector<std::map<int, std::vector<std::vector<int>>>> getBoundaryUnlockRow();
+    std::vector<std::map<int, std::vector<std::vector<int>>>> getBoundaryDangerRow();
     std::vector<int> getNodePtr();
     std::vector<int> getUnlockRow();
     std::vector<int> getDangerRow();

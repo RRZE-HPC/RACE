@@ -38,16 +38,6 @@
     int dangerRowStart = dangerRow->at(_level_);\
     dangerRowStart -= offset;\
 
-#define SPLIT_LEVEL_PER_THREAD_BOUNDARY(_level_)\
-    int _StartRowBoundary_ = _val_->at(_level_);\
-    int _EndRowBoundary_ = _val_->at(_level_+1);\
-    int _RowPerThreadBoundary_ = (_EndRowBoundary_- _StartRowBoundary_)/threadPerNode;\
-    int startRow_tid = _StartRowBoundary_ + localTid*_RowPerThreadBoundary_;\
-    startRow_tid -= offset;\
-    int endRow_tid = (localTid == (threadPerNode-1)) ? _EndRowBoundary_ : _StartRowBoundary_+(localTid+1)*_RowPerThreadBoundary_;\
-    endRow_tid -= offset;\
-
-
 #define SPLIT_LEVEL_PER_THREAD_P2P_NOREF(_level_)\
     int _startRow_ = levelPtr[_level_];\
     int _endRow_ = levelPtr[_level_+1];\
@@ -60,6 +50,51 @@
     currUnlockRow -= offset;\
     int dangerRowStart = dangerRow[_level_];\
     dangerRowStart -= offset;\
+
+
+#define SPLIT_LEVEL_PER_THREAD_BOUNDARY(_level_)\
+    int _StartRowBoundary_ = _val_->at(_level_);\
+    int _EndRowBoundary_ = _val_->at(_level_+1);\
+    int _RowPerThreadBoundary_ = (_EndRowBoundary_- _StartRowBoundary_)/threadPerNode;\
+    int startRow_tid_b = _StartRowBoundary_ + localTid*_RowPerThreadBoundary_;\
+    startRow_tid_b -= offset;\
+    int endRow_tid_b = (localTid == (threadPerNode-1)) ? _EndRowBoundary_ : _StartRowBoundary_+(localTid+1)*_RowPerThreadBoundary_;\
+    endRow_tid_b -= offset;\
+
+#define SPLIT_LEVEL_PER_THREAD_BOUNDARY_NOREF(_level_)\
+    int _StartRowBoundary_ = _val_.at(_level_);\
+    int _EndRowBoundary_ = _val_.at(_level_+1);\
+    int _RowPerThreadBoundary_ = (_EndRowBoundary_- _StartRowBoundary_)/threadPerNode;\
+    int startRow_tid_b = _StartRowBoundary_ + localTid*_RowPerThreadBoundary_;\
+    startRow_tid_b -= offset;\
+    int endRow_tid_b = (localTid == (threadPerNode-1)) ? _EndRowBoundary_ : _StartRowBoundary_+(localTid+1)*_RowPerThreadBoundary_;\
+    endRow_tid_b -= offset;\
+
+#define SPLIT_LEVEL_PER_THREAD_BOUNDARY_w_UNLOCK_DANGER(_level_)\
+    int _StartRowBoundary_ = _val_->at(_level_);\
+    int _EndRowBoundary_ = _val_->at(_level_+1);\
+    int _RowPerThreadBoundary_ = (_EndRowBoundary_- _StartRowBoundary_)/threadPerNode;\
+    int startRow_tid_b = _StartRowBoundary_ + localTid*_RowPerThreadBoundary_;\
+    startRow_tid_b -= offset;\
+    int endRow_tid_b = (localTid == (threadPerNode-1)) ? _EndRowBoundary_ : _StartRowBoundary_+(localTid+1)*_RowPerThreadBoundary_;\
+    endRow_tid_b -= offset;\
+    int currUnlockRow_b = ((boundaryUnlockRow->at(_workingRadius_)).at(_radius_))[_region_][_level_];\
+    currUnlockRow_b -= offset;\
+    int dangerRowStart_b = ((boundaryDangerRow->at(_workingRadius_)).at(_radius_))[_region_][_level_];\
+    dangerRowStart_b -= offset;
+
+#define SPLIT_LEVEL_PER_THREAD_BOUNDARY_w_UNLOCK_DANGER_NOREF(_level_)\
+    int _StartRowBoundary_ = _val_.at(_level_);\
+    int _EndRowBoundary_ = _val_.at(_level_+1);\
+    int _RowPerThreadBoundary_ = (_EndRowBoundary_- _StartRowBoundary_)/threadPerNode;\
+    int startRow_tid_b = _StartRowBoundary_ + localTid*_RowPerThreadBoundary_;\
+    startRow_tid_b -= offset;\
+    int endRow_tid_b = (localTid == (threadPerNode-1)) ? _EndRowBoundary_ : _StartRowBoundary_+(localTid+1)*_RowPerThreadBoundary_;\
+    endRow_tid_b -= offset;\
+    int currUnlockRow_b = boundaryUnlockRow[_workingRadius_][_radius_][_region_][_level_];\
+    currUnlockRow_b -= offset;\
+    int dangerRowStart_b = boundaryDangerRow[_workingRadius_][_radius_][_region_][_level_];\
+    dangerRowStart_b -= offset;
 
 
 //last argument is the statement that you want to init for each boundary ranges
@@ -120,6 +155,54 @@
             {\
                 auto _val_ = _entity_->at(_region_);\
                 __VA_ARGS__;\
+            }\
+        }\
+    }\
+}
+
+
+#define EXEC_BOUNDARY_STRUCTURE_w_wave_shape_wo_radius(_var_, _pow_,...)\
+{\
+    int _wbl_ = (int)_var_.size();\
+    for(int _workingRadius_=0; _workingRadius_<_wbl_; ++_workingRadius_)\
+    {\
+        if((_pow_ > _workingRadius_) && ( _pow_ < (power-(_workingRadius_+1)) ))\
+        {\
+            for(auto _mapIter_ = _var_[_workingRadius_].begin(); _mapIter_ != _var_[_workingRadius_].end(); ++_mapIter_)\
+            {\
+                auto* _entity_ = &(_mapIter_->second);\
+                int _numBoundaries_ = (int)_entity_->size();\
+                for(int _region_=0; _region_<_numBoundaries_; ++_region_)\
+                {\
+                    auto* _val_ = &(_entity_->at(_region_));\
+                    __VA_ARGS__;\
+                }\
+            }\
+        }\
+    }\
+}
+
+
+#define EXEC_BOUNDARY_STRUCTURE_w_wave_shape(_var_, _pow_,...)\
+{\
+    int _wbl_ = (int)_var_.size();\
+    for(int _workingRadius_=0; _workingRadius_<_wbl_; ++_workingRadius_)\
+    {\
+        if((_pow_ > _workingRadius_) && ( _pow_ < (power-(_workingRadius_+1)) ))\
+        {\
+            for(auto _mapIter_ = _var_[_workingRadius_].begin(); _mapIter_ != _var_[_workingRadius_].end(); ++_mapIter_)\
+            {\
+                int _radius_ = _mapIter_->first;\
+                if( (_pow_ > (_radius_-1)) && (_pow_ < (power-(_radius_))) )\
+                {\
+                    auto* _entity_ = &(_mapIter_->second);\
+                    int _numBoundaries_ = (int)_entity_->size();\
+                    for(int _region_=0; _region_<_numBoundaries_; ++_region_)\
+                    {\
+                        auto* _val_ = &(_entity_->at(_region_));\
+                        __VA_ARGS__;\
+                    }\
+                }\
             }\
         }\
     }\

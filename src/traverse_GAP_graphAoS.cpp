@@ -5,8 +5,16 @@
 #include "timing.h"
 
 std::map<int, LevelData> Traverse::cachedData;
-Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_, int numRoots_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_), numRoots(numRoots_), graphSize(graph_->graphData.size()),distFromRoot(NULL),perm(NULL),invPerm(NULL), boundaryRange(boundaryRange_), boundary_bm(NULL), queue(graphSize), levelData(NULL)
+Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_, int numRoots_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_, str::string mtxType_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_), numRoots(numRoots_), graphSize(graph_->graphData.size()),distFromRoot(NULL),perm(NULL),invPerm(NULL), boundaryRange(boundaryRange_), boundary_bm(NULL), queue(graphSize), levelData(NULL), mtxType(mtxType_)
 {
+    if( (mtxType != "N") && ( (mtxType != "L" && mtxType != "U") ) )
+    {
+
+        ERROR_PRINT("Matrix type %s does not exist. Available options are: N, L, or U", mtxType.c_str());
+        return;
+    }
+
+
     colRangeLo = rangeLo;
     colRangeHi = rangeHi;
 
@@ -187,14 +195,15 @@ void Counter::reset()
 
 void Traverse::calculateDistance()
 {
-    //traverse only if level has not been cached
-    /*    if(cachedData.find(parentIdx) != cachedData.end())	
-          {
-          printf("Retrieving from cache\n");
-          (*levelData) = cachedData[parentIdx];
-          }
-          else*/
+    if(mtxType == "N")
     {
+        //traverse only if level has not been cached
+        /*    if(cachedData.find(parentIdx) != cachedData.end())	
+              {
+              printf("Retrieving from cache\n");
+              (*levelData) = cachedData[parentIdx];
+              }
+              else*/
         //bool marked_all = false;
         int root = rangeLo;
         colRangeLo = rangeLo;
@@ -251,13 +260,34 @@ void Traverse::calculateDistance()
         }
 
         levelData->totalLevel = currLvl;
-        printf("Total Level = %d\n",levelData->totalLevel);
-
-        createLevelData();
-        printf("created Level Data\n");
-        permuteGraph();
-        printf("permuted graph\n");
     }
+    else
+    {
+        if(mtxType == "L")
+        {
+            //forward
+            for(int i=0; i<graph->NROW; ++i)
+            {
+                distFromRoot[i] = i;
+            }
+        }
+        else if(mtxType == "U")
+        {
+            //backward
+            for(int i=0; i<graph->NROW; ++i)
+            {
+                distFromRoot[i] = graph->NROW-i;
+            }
+        }
+        levelData->totalLevel = graph->NROW;
+    }
+
+
+    printf("Total Level = %d\n",levelData->totalLevel);
+    createLevelData();
+    printf("created Level Data\n");
+    permuteGraph();
+    printf("permuted graph\n");
 
 }
 

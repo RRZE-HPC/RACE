@@ -57,6 +57,18 @@ void densemat::setVal(double value)
     }
 }
 
+void densemat::copyVal(densemat* src)
+{
+    for(int j=0; j<ncols; ++j)
+    {
+#pragma omp parallel for
+        for(int i=0; i<nrows; ++i)
+        {
+            val[j*nrows+i] = src->val[j*nrows+i];
+        }
+    }
+}
+
 void densemat::setFn(std::function<double(int)> fn)
 {
     for(int j=0; j<ncols; ++j)

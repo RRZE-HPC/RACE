@@ -11,6 +11,7 @@ struct densemat
     double *val;
 
     void setVal(double value);
+    void copyVal(densemat *src);
     void setRand();
     void setFn(std::function<double(int)> fn);
     void setFn(std::function<double(void)> fn);

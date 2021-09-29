@@ -7,6 +7,7 @@
 #include "graph.h"
 #include "levelData.h"
 #include "macros.h"
+#include "string.h"
 
 class Graph;
 
@@ -36,13 +37,15 @@ class Traverse{
         LevelData* levelData;
         std::vector<std::map<int, std::vector<LevelData*>>> boundaryLevelData;
 
+        std::string mtxType;
+
         std::vector<int> markChildren(int currChild, int currLvl);
         RACE_error findLevelData(int lower_nrows, int upper_nrows, int totalLevel, LevelData* curLevelData);
         RACE_error createLevelData();
         void permuteGraph();
     public:
         //constructor
-        Traverse(Graph *graph_, RACE::dist dist, int rangeLo_=0, int rangeHi_=-1, int parentIdx=0, int numRoots=1, std::vector<std::map<int, std::vector<Range>>> boundaryRange_={});
+        Traverse(Graph *graph_, RACE::dist dist, int rangeLo_=0, int rangeHi_=-1, int parentIdx=0, int numRoots=1, std::vector<std::map<int, std::vector<Range>>> boundaryRange_={}, std::string mtxType_="N");
         ~Traverse();
         void calculateDistance();
 

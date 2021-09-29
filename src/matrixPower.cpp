@@ -11,7 +11,7 @@
 //nodeId tells which node is responsible for the current leaf
 //-1(default): all,
 //else the node number
-mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_, int nodeId_, int numRootNodes_):graph(graph_), cacheLevelGroup(NULL), startRow(startRow_), endRow(endRow_), levelData(NULL), boundaryRange(boundaryRange_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), cache_violation_cutoff(cache_violation_cutoff_), nodeId(nodeId_), numRootNodes(numRootNodes_)
+mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_, int nodeId_, int numRootNodes_, std::string mtxType):graph(graph_), cacheLevelGroup(NULL), startRow(startRow_), endRow(endRow_), levelData(NULL), boundaryRange(boundaryRange_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), cache_violation_cutoff(cache_violation_cutoff_), nodeId(nodeId_), numRootNodes(numRootNodes_)
 {
 
 #if RACE_VERBOSITY > 1
@@ -20,7 +20,15 @@ mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double
             UNUSED(_val_);
             );
 #endif
-    traverser = new Traverse(graph, RACE::POWER, startRow, endRow, 0, 1, boundaryRange);
+
+    if( (mtxType == "N") || ( (mtxType == "L" || mtxType == "U") ) )
+    {
+        traverser = new Traverse(graph, RACE::POWER, startRow, endRow, 0, 1, boundaryRange, mtxType);
+    }
+    else
+    {
+        ERROR_PRINT("Matrix type %s does not exist. Available options are: N, L, or U", mtxType.c_str());
+    }
 
 }
 
@@ -30,7 +38,10 @@ mtxPower::~mtxPower()
     {
         delete[] cacheLevelGroup;
     }
-    delete traverser;
+    if(traverser)
+    {
+        delete traverser;
+    }
     if(levelData)
     {
         delete levelData;
@@ -641,8 +652,13 @@ void mtxPower::consolidatePartition()
 
     std::vector<std::map<int, std::vector<std::vector<int>>>> newBoundaryLevelPtr;
     INIT_BOUNDARY_STRUCTURE(boundaryRange, newBoundaryLevelPtr, {boundaryLevelPtr[_workingRadius_][_radius_][_region_][0]});
+
     int consolidated_ctr = 0; //startRow;
     unlockRow[0] = levelPtr[1];
+    //boundary unlock row
+    INIT_BOUNDARY_STRUCTURE(boundaryRange, boundaryUnlockRow, {boundaryLevelPtr[_workingRadius_][_radius_][_region_][1]});
+
+    INIT_BOUNDARY_STRUCTURE(boundaryRange, boundaryDangerRow, {});
 
 #ifdef LB_REMINDER
     //find max start and end boundary levels
@@ -803,78 +819,19 @@ void mtxPower::consolidatePartition()
                         sumElem = currElem;
                         sumNNZ = curNNZ;
                         newLevelPtr.push_back(levelPtr[level]);
-
-                        int maxUnlockNRows_boundaries = 0;
-                        int maxDangerNRows_boundaries = 0;
-
                         EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr,
                                 newBoundaryLevelPtr[_workingRadius_][_radius_][_region_].push_back(_val_[level]);
-                                if((level+1) <= totalLevel)
-                                {
-                                    maxUnlockNRows_boundaries = std::max(maxUnlockNRows_boundaries, (_val_[level+1]-_val_[level]));
-                                    maxDangerNRows_boundaries = std::max(maxDangerNRows_boundaries, (_val_[level]-_val_[level-1]));
-                                }
                                 );
 
-                        //see the note below to know why this is done; its to
-                        //prevent overshoooting of unlockRow
-                        if(unlockRow[consolidated_ctr] > newLevelPtr[newLevelPtr.size()-1])
-                        {
-                            unlockRow[consolidated_ctr] = newLevelPtr[newLevelPtr.size()-1];
-                        }
-
-                        int dangerNRows_main = levelPtr[level] - levelPtr[level-1];
                         dangerRow[consolidated_ctr] = levelPtr[level-1];
-                        if(dangerNRows_main < maxDangerNRows_boundaries)
-                        {
-                            //int prevDangerRow = dangerRow[consolidated_ctr];
-                            //find a level within current consolidated levelPtr,
-                            //i.e., lower or equal to levelPtr[level] - maxDangerNRows_boundaries
-                            int rowToFind = levelPtr[level] - maxDangerNRows_boundaries;
-                            int prevConsolidatedLevelPtr =  newLevelPtr[newLevelPtr.size()-2];
-                            if(rowToFind < prevConsolidatedLevelPtr)
-                            {
-                                dangerRow[consolidated_ctr] = prevConsolidatedLevelPtr;
-                            }
-                            else
-                            {
-                                int levelInc = 1;
-                                int curNrows = levelPtr[level] - levelPtr[level-levelInc];
-                                //now search to find
-                                while((curNrows < maxDangerNRows_boundaries)&&((level-levelInc)>=0))
-                                {
-                                    ++levelInc;
-                                    curNrows = levelPtr[level] - levelPtr[level-levelInc];
-                                }
-                                dangerRow[consolidated_ctr] = levelPtr[level-levelInc];
-                            }
-                            //Not printing the warning since at start and end levels
-                            //this can happen frequently, since the main levels
-                            //are small at this region
-                            //WARNING_PRINT("There are bulky/irregular boundaries");// changing dangerRow[%d] from %d to %d", consolidated_ctr, prevDangerRow, dangerRow[consolidated_ctr]);
-                        }
+                        EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr, boundaryDangerRow[_workingRadius_][_radius_][_region_].push_back(_val_[level-1]);
+                                );
+
                         if((level+1) <= totalLevel)
                         {
-                            int unlockNRows_main = levelPtr[level+1] - levelPtr[level];
                             unlockRow[consolidated_ctr + 1] = levelPtr[level+1];
-
-                            if(unlockNRows_main < maxUnlockNRows_boundaries)
-                            {
-                                //printf("unlockNrows_main = %d, maxUnlockNRows_boundaries = %d\n", unlockNRows_main, maxUnlockNRows_boundaries);
-                                //int prevUnlockRow = unlockRow[consolidated_ctr + 1];
-                                int levelInc = 1;
-                                int curNrows = levelPtr[level+levelInc] - levelPtr[level];
-                                while((curNrows < maxUnlockNRows_boundaries) && ((level+levelInc)<totalLevel))
-                                {
-                                    ++levelInc;
-                                    curNrows = levelPtr[level+levelInc] - levelPtr[level];
-                                }
-                                unlockRow[consolidated_ctr + 1] = levelPtr[level+levelInc];
-                                //WARNING_PRINT("There are bulky/irregular boundaries");// changing unlockRow[%d] from %d to %d", consolidated_ctr + 1, prevUnlockRow, unlockRow[consolidated_ctr + 1]);
-                            }
-                            //NOTE: it might happen unlockRow shoots the next consolidatedLevelPtr (newLevelPtr) boundary,
-                            //which cannot be checked without knowing next consolidatedLevelPtr boundary. 
-                            //Therefore once next one is known we have to check for this.
+                            EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr, boundaryUnlockRow[_workingRadius_][_radius_][_region_].push_back(_val_[level+1]);
+                                    );
                         }
                         consolidated_ctr += 1;
                         consolidated_curLevelCtr += 1;
@@ -889,9 +846,14 @@ void mtxPower::consolidatePartition()
         EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr, newBoundaryLevelPtr[_workingRadius_][_radius_][_region_].push_back(_val_.back()););
 
         dangerRow[consolidated_ctr] = levelPtr[lastLevel-1];
+        EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr,boundaryDangerRow[_workingRadius_][_radius_][_region_].push_back(_val_[lastLevel-1]);
+                );
+
         if((lastLevel+1) <= totalLevel)
         {
             unlockRow[consolidated_ctr + 1] = levelPtr[lastLevel+1];
+            EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr,boundaryUnlockRow[_workingRadius_][_radius_][_region_].push_back(_val_[lastLevel+1]);
+            );
         }
 
         consolidated_ctr += 1;
@@ -958,6 +920,7 @@ void mtxPower::findUnlockCtr()
     if(unlockCtr.empty())
     {
         unlockCtr = std::vector<int>(totalLevel, 0);
+        INIT_BOUNDARY_STRUCTURE(boundaryRange, boundaryUnlockCtr, std::vector<int>(totalLevel, 0));
 
 #pragma omp parallel
         {
@@ -984,19 +947,55 @@ void mtxPower::findUnlockCtr()
             {
                 for(int l=startLevel; l<endLevel; ++l)
                 {
-                    SPLIT_LEVEL_PER_THREAD_P2P_NOREF(l);
-                    if(currUnlockRow > startRow_tid)
                     {
+                        SPLIT_LEVEL_PER_THREAD_P2P_NOREF(l);
+                        if(currUnlockRow > startRow_tid)
+                        {
 #pragma omp atomic
-                        ++unlockCtr[l];
+                            ++unlockCtr[l];
+                        }
+                        if(0)
+                        {
+                            ERROR_PRINT("Should never be here");
+                            //Suppress unused warning
+                            printf("%d, %d\n", endRow_tid, dangerRowStart);
+                        }
                     }
-                    if(0)
+
+
+                    EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr,
+                            //Replace barrier with node local sync, if more than
+                            //one node
+                            SPLIT_LEVEL_PER_THREAD_BOUNDARY_w_UNLOCK_DANGER_NOREF(l);
+                            if(currUnlockRow_b > startRow_tid_b)
+                            {
+#pragma omp critical
+                            {
+                            ++boundaryUnlockCtr[_workingRadius_][_radius_][_region_][l];
+                            }
+                            }
+                       );
+
+                }
+
+#pragma omp barrier
+
+                //Take max threads for unlock
+#pragma omp single
+                {
+
+                    for(int l=startLevel; l<endLevel; ++l)
                     {
-                        ERROR_PRINT("Should never be here");
-                        //Suppress unused warning
-                        printf("%d, %d\n", endRow_tid, dangerRowStart);
+                        EXEC_BOUNDARY_STRUCTURE_wo_radius(boundaryUnlockCtr,
+                                if(_val_[l] > unlockCtr[l])
+                                {
+                                //printf("Changing unlock threads from %d to %d\n", unlockCtr[l], _val_[l]);
+                                unlockCtr[l] = _val_[l];
+                                }
+                                );
                     }
                 }
+
             }
         }
 
@@ -1031,6 +1030,16 @@ std::vector<int> mtxPower::getLevelPtr()
 std::vector<std::map<int, std::vector<std::vector<int>>>> mtxPower::getBoundaryLevelPtr()
 {
     return boundaryLevelPtr;
+}
+
+std::vector<std::map<int, std::vector<std::vector<int>>>> mtxPower::getBoundaryUnlockRow()
+{
+    return boundaryUnlockRow;
+}
+
+std::vector<std::map<int, std::vector<std::vector<int>>>> mtxPower::getBoundaryDangerRow()
+{
+    return boundaryDangerRow;
 }
 
 int mtxPower::getTotalNodes()

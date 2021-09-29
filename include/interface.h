@@ -16,7 +16,7 @@
 #include "level_pool.h"
 #include "config.h"
 #include "matrixPowerRecursive.h"
-
+#include "string.h"
 /**
  * @brief RACE namespace.
  */
@@ -97,8 +97,8 @@ class RACE::Interface{
          */
         Interface(int nrow_, int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_=1, RACE::PinMethod method_=RACE::SCATTER, int *initPerm_=NULL, int *initInvPerm_=NULL, RACE::d2Method d2Type_=RACE::TWO_BLOCK, RACE::LBTarget lbTarget_=RACE::NNZ);
         ~Interface();
-        RACE_error RACEColor(int highestPower, int numSharedCache, double cacheSize, double safetyFactor=2);
         //Pre-processing
+        RACE_error RACEColor(int highestPower, int numSharedCache, double cacheSize, double safetyFactor=2, std::string mtxType="N");
         RACE_error RACEColor();
         double getEfficiency();
         int getMaxStageDepth();

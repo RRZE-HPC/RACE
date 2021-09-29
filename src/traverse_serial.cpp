@@ -4,8 +4,15 @@
 #include <omp.h>
 
 std::map<int, LevelData> Traverse::cachedData;
-Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_, int numRoots_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_), numRoots(numRoots_), graphSize(graph_->graphData.size()),distFromRoot(NULL),perm(NULL),invPerm(NULL), boundaryRange(boundaryRange_), levelData(NULL)
+Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_, int numRoots_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_, std::string mtxType_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_), numRoots(numRoots_), graphSize(graph_->graphData.size()),distFromRoot(NULL),perm(NULL),invPerm(NULL), boundaryRange(boundaryRange_), levelData(NULL), mtxType(mtxType_)
 {
+    if( (mtxType != "N") && ( (mtxType != "L" && mtxType != "U") ) )
+    {
+
+        ERROR_PRINT("Matrix type %s does not exist. Available options are: N, L, or U", mtxType.c_str());
+        return;
+    }
+
     if(rangeHi == -1)
     {
         rangeHi = graph->NROW;
@@ -146,14 +153,16 @@ void Counter::reset()
 
 void Traverse::calculateDistance()
 {
-    //traverse only if level has not been cached
-    /*    if(cachedData.find(parentIdx) != cachedData.end())	
-          {
-          printf("Retrieving from cache\n");
-          (*levelData) = cachedData[parentIdx];
-          }
-          else*/
+
+    if(mtxType == "N")
     {
+        //traverse only if level has not been cached
+        /*    if(cachedData.find(parentIdx) != cachedData.end())	
+              {
+              printf("Retrieving from cache\n");
+              (*levelData) = cachedData[parentIdx];
+              }
+              else*/
         bool marked_all = false;
         int root = rangeLo;
 
@@ -196,40 +205,40 @@ void Traverse::calculateDistance()
             currLvl += 1;
 
             /*if(dist==RACE::POWER)
+              {
+              if( marked_all==true && (Counter::val != totalNodesIncBoundary) ) {
+              printf("Not yet full nodes: counter=%d, totalNodesIncBoundary = %d\n", Counter::val, totalNodesIncBoundary);
+
+              for(int i=rangeLo; i<rangeHi; ++i) {
+              if(distFromRoot[i] == -1) {
+            //Found him, mark him as distance 2 apart
+            currLvl += 1;
+            currChildren.push_back(i);
+            marked_all = false;
+            break;
+            }
+            }
+
+            //if still missing
+            if(marked_all == true)
             {
-                if( marked_all==true && (Counter::val != totalNodesIncBoundary) ) {
-                    printf("Not yet full nodes: counter=%d, totalNodesIncBoundary = %d\n", Counter::val, totalNodesIncBoundary);
-
-                    for(int i=rangeLo; i<rangeHi; ++i) {
-                        if(distFromRoot[i] == -1) {
-                            //Found him, mark him as distance 2 apart
-                            currLvl += 1;
-                            currChildren.push_back(i);
-                            marked_all = false;
-                            break;
-                        }
-                    }
-
-                    //if still missing
-                    if(marked_all == true)
-                    {
-                        EXEC_BOUNDARY_STRUCTURE_wo_radius(boundaryRange,
-                                for(int i=_val_.lo; i<_val_.hi; ++i) {
-                                if(distFromRoot[i] == -1) {
-                                printf("I am at island stuff for region [%d, %d]\n", _val_.lo, _val_.hi);
-                                currLvl += 1;
-                                currChildren.push_back(i);
-                                marked_all = false;
-                                _numBoundaries_ = -1; //break from region loop
-                                _wbl_ = -1; //break from workingRadius loop
-                                break; //this breaks from current radius loop
-                                }
-                                }
-                                );
-                    }
-                }
+            EXEC_BOUNDARY_STRUCTURE_wo_radius(boundaryRange,
+            for(int i=_val_.lo; i<_val_.hi; ++i) {
+            if(distFromRoot[i] == -1) {
+            printf("I am at island stuff for region [%d, %d]\n", _val_.lo, _val_.hi);
+            currLvl += 1;
+            currChildren.push_back(i);
+            marked_all = false;
+            _numBoundaries_ = -1; //break from region loop
+            _wbl_ = -1; //break from workingRadius loop
+            break; //this breaks from current radius loop
+            }
+            }
+            );
+            }
+            }
             }*/
-           // else
+            // else
             {
                 if( marked_all==true && (Counter::val != (rangeHi-rangeLo)) ) {
                     //now process islands
@@ -258,13 +267,36 @@ void Traverse::calculateDistance()
 
         printf("Range = [%d, %d], ColRange = [%d, %d]\n", rangeLo, rangeHi, colRangeLo, colRangeHi);
         levelData->totalLevel = currLvl;
-        printf("Total Level = %d\n",levelData->totalLevel);
-
-        createLevelData();
-        printf("created Level Data\n");
-        permuteGraph();
-        printf("permuted graph\n");
     }
+    else
+    {
+        if(mtxType == "L")
+        {
+            //forward
+            for(int i=0; i<graph->NROW; ++i)
+            {
+                distFromRoot[i] = i;
+            }
+        }
+        else if(mtxType == "U")
+        {
+            //backward
+            for(int i=0; i<graph->NROW; ++i)
+            {
+                distFromRoot[i] = graph->NROW-i;
+            }
+        }
+        levelData->totalLevel = graph->NROW;
+    }
+
+
+
+    printf("Total Level = %d\n",levelData->totalLevel);
+
+    createLevelData();
+    printf("created Level Data\n");
+    permuteGraph();
+    printf("permuted graph\n");
 }
 
 RACE_error Traverse::findLevelData(int lower_nrows, int upper_nrows, int totalLevel, LevelData* curLevelData)

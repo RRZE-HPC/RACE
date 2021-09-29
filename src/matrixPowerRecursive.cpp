@@ -11,7 +11,7 @@
     }\
 }\
 
-mtxPowerRecursive::mtxPowerRecursive(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_):graph(graph_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), perm(NULL), invPerm(NULL)
+mtxPowerRecursive::mtxPowerRecursive(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, std::string mtxType_):graph(graph_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), perm(NULL), invPerm(NULL), mtxType(mtxType_)
 {
     std::vector<int> default_cutoff;
     getEnv("RACE_CACHE_VIOLATION_CUTOFF_DEFAULT", default_cutoff);
@@ -68,8 +68,10 @@ int mtxPowerRecursive::get_cache_violation_cutoff(int stage)
     _leaf_.lp = _stage_mtxPower_.getLevelPtr();\
     _leaf_.blp = _stage_mtxPower_.getBoundaryLevelPtr();\
     _leaf_.unlockRow = _stage_mtxPower_.getUnlockRow();\
+    _leaf_.boundaryUnlockRow = _stage_mtxPower_.getBoundaryUnlockRow();\
     _leaf_.unlockCtr = _stage_mtxPower_.getUnlockCtr();\
     _leaf_.dangerRow = _stage_mtxPower_.getDangerRow();\
+    _leaf_.boundaryDangerRow = _stage_mtxPower_.getBoundaryDangerRow();\
     if(_readPermute_)\
     {\
         _stage_mtxPower_.getPerm(&perm_curStage, &_leaf_.nrows);\
@@ -194,10 +196,13 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
                             if(curRange.hi > curRange.lo)
                             {
                                 //check if this is continuous to some previous
-                                //range, if yes then merge
-                                int prevRegionSize = (int)curLeaf.boundaryRange[wr][r].size();
+                                //range, if yes then merge 
+                                bool merge= false; //needed, even if merge is switched on or off
 
-                                bool merge= false;
+                                //switch off merging, as it is causing problem
+                                //if there is only one level
+                               /* int prevRegionSize = (int)curLeaf.boundaryRange[wr][r].size();
+
                                 for(int prevReg=0; prevReg<prevRegionSize; ++prevReg)
                                 {
                                     Range prevRange = curLeaf.boundaryRange[wr][r][prevReg];
@@ -213,7 +218,7 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
                                         curLeaf.boundaryRange[wr][r][prevReg].lo = curRange.lo;
                                         merge = true;
                                     }
-                                }
+                                }*/
 
                                 if(!merge)
                                 {
@@ -294,7 +299,7 @@ void mtxPowerRecursive::findPartition()
     curLeaf.range.hi = graph->NROW;
     curLeaf.stage = 0;
     //partition for first stage
-    mtxPower curStage(graph, highestPower, numSharedCache, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range.lo, curLeaf.range.hi);
+    mtxPower curStage(graph, highestPower, numSharedCache, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range.lo, curLeaf.range.hi, {}, -1, -1, mtxType);
     curStage.findPartition();
     hopelessNodePtr = curStage.getHopelessNodePtr();
     int* perm_curStage;
@@ -308,9 +313,12 @@ void mtxPowerRecursive::findPartition()
 
     tree.push_back(curLeaf);
 
-    if(!curLeaf.hid.empty())
+    if(mtxType == "N")
     {
-        recursivePartition(0); //my curId=0
+        if(!curLeaf.hid.empty())
+        {
+            recursivePartition(0); //my curId=0
+        }
     }
 
 #ifndef RACE_PERMUTE_ON_FLY

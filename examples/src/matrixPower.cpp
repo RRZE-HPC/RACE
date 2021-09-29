@@ -125,7 +125,14 @@ int main(const int argc, char * argv[])
     }
 
     int NROWS = mat->nrows;
-    double initVal = 1; ///(double)NROWS;
+    bool randInit = false;
+    double initVal = 1; //(double)NROWS;
+    densemat *xRAND;
+    if(randInit)
+    {
+        xRAND = new densemat(NROWS);
+        xRAND->setRand();
+    }
     int power = param.iter;
     printf("power = %d\n", power);
 
@@ -136,7 +143,14 @@ int main(const int argc, char * argv[])
         xTRAD=new densemat(NROWS, power+1);
         densemat* xTRAD_0 = xTRAD->view(0,0);
 
-        xTRAD_0->setVal(initVal);
+        if(randInit)
+        {
+            xTRAD_0->copyVal(xRAND);
+        }
+        else
+        {
+            xTRAD_0->setVal(initVal);
+        }
 
         //now calculate xTRAD in traditional way
         for(int pow=0; pow<power; ++pow)
@@ -203,7 +217,14 @@ int main(const int argc, char * argv[])
     // AAx[0], AAx[1], ...., AAx[nrows-1]
     densemat* xRACE=new densemat(NROWS, power+1);
     densemat* xRACE_0 = xRACE->view(0,0);
-    xRACE_0->setVal(initVal);
+    if(randInit)
+    {
+        xRACE_0->copyVal(xRAND);
+    }
+    else
+    {
+        xRACE_0->setVal(initVal);
+    }
 
     printf("calculation started\n");
 
@@ -216,8 +237,8 @@ int main(const int argc, char * argv[])
     }
     STOP_TIMER(matPower_init);
     double initTime = GET_TIMER(matPower_init);
-    int iterations = std::max(1, (int) (1.2*10/initTime));
-    //int iterations = 1; //for correctness checking
+    //int iterations = std::max(1, (int) (1.2*10/initTime));
+    int iterations = 1; //for correctness checking
     printf("Num iterations =  %d\n", iterations);
 
     double flops = 2.0*power*iterations*(double)mat->nnz*1e-9;
@@ -230,9 +251,16 @@ int main(const int argc, char * argv[])
 #endif
         densemat* xTRAD_0 = xTRAD_perf->view(0,0);
 
-        xTRAD_0->setVal(initVal);
+       if(randInit)
+       {
+           xTRAD_0->copyVal(xRAND);
+       }
+       else
+       {
+           xTRAD_0->setVal(initVal);
+       }
 
-        INIT_TIMER(spmvPower);
+       INIT_TIMER(spmvPower);
 #ifdef LIKWID_PERFMON
 #pragma omp parallel
         {
@@ -263,6 +291,15 @@ int main(const int argc, char * argv[])
 #endif
     }
 
+    xRACE->setVal(0);
+    if(randInit)
+    {
+        xRACE_0->copyVal(xRAND);
+    }
+    else
+    {
+        xRACE_0->setVal(initVal);
+    }
 
     INIT_TIMER(matPower);
 #ifdef LIKWID_PERFMON
@@ -302,6 +339,15 @@ int main(const int argc, char * argv[])
         densemat* xTRAD_permuted = xTRAD;
 #endif
 
+/*        for(int i=0; i<10; ++i)
+        {
+            for(int j=0; j<xRACE->ncols; ++j)
+            {
+                printf("(%.8f, %.8f) ", xRACE->val[j*xRACE->nrows+i], xTRAD_permuted->val[j*xRACE->nrows+i]);
+            }
+            printf("\n");
+        }*/
+
         bool flag = checkEqual(xTRAD_permuted, xRACE, param.tol);
         if(!flag)
         {
@@ -319,6 +365,10 @@ int main(const int argc, char * argv[])
 
     delete mat;
     delete xRACE;
+    if(randInit)
+    {
+        delete xRAND;
+    }
 #ifdef LIKWID_PERFMON
     LIKWID_MARKER_CLOSE;
 #endif

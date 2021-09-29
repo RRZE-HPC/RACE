@@ -2,6 +2,7 @@
 #define _MATRIX_POWER_RECURSIVE_H
 
 #include "matrixPower.h"
+#include "string.h"
 
 struct MPLeaf
 {
@@ -25,6 +26,8 @@ struct MPLeaf
     std::vector<int> lp;//levelPtr; //only of main
     //same structure as boundaryRange
     std::vector<std::map<int, std::vector<std::vector<int>>>> blp;
+    std::vector<std::map<int, std::vector<std::vector<int>>>> boundaryUnlockRow;
+    std::vector<std::map<int, std::vector<std::vector<int>>>> boundaryDangerRow;
 
     //std::vector<int> hopelessRegions;//I think this should be same as hid
     std::vector<int> unlockCtr;
@@ -62,12 +65,14 @@ class mtxPowerRecursive
     int* perm;
     int* invPerm;
 
+    std::string mtxType;
+
     std::vector<int> cache_violation_cutoff;
     int get_cache_violation_cutoff(int stage);
 
 
     public:
-    mtxPowerRecursive(Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_);
+    mtxPowerRecursive(Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_, std::string mtxType_="N");
     ~mtxPowerRecursive();
 
     //give public access
