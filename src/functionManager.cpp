@@ -1092,7 +1092,10 @@ void FuncManager::recursivePowerCallSerial(int parent)
                             }
 #endif
                         }
+                        if(power > 1)
+                        {
 #pragma omp barrier
+                        }
                         //for correctness it has to be here, but its rarely that this conflict happens
                         //to detect this run for example FDM-512 with p=80
                         //I think we need this actually, but this actually
@@ -1130,7 +1133,11 @@ void FuncManager::recursivePowerCallSerial(int parent)
                 }
 
             }
+
+            if(power > 1)
+            {
 #pragma omp barrier
+            }
         }
     }
 }
@@ -1200,6 +1207,18 @@ void FuncManager::Run(bool rev_)
         //set nested parallelism
         //printf("setting nested\n");
         omp_set_nested(0);
+
+#ifdef POWER_WITH_FLUSH_LOCK
+#pragma omp parallel
+        {
+            int tid = omp_get_thread_num();
+            int nodeGroup = tid / threadPerNode;
+            int localTid = tid % threadPerNode;
+
+            NODE_BARRIER_RESET(nodeGroup, localTid);
+        }
+#endif
+
         recursivePowerFun(0);
 
         //reset states

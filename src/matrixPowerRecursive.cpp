@@ -19,9 +19,9 @@ mtxPowerRecursive::mtxPowerRecursive(Graph* graph_, int highestPower_, int numSh
     {
         default_cutoff.push_back(50);//make 50 factor so not much cut-off happens by default
     }
+    cache_violation_cutoff.clear();
     cache_violation_cutoff.push_back(default_cutoff[0]); //default
     getEnv("RACE_CACHE_VIOLATION_CUTOFF", cache_violation_cutoff);
-
     totalRows = graph->NROW;
 #ifndef RACE_PERMUTE_ON_FLY
     perm =  new int[totalRows];

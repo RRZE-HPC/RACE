@@ -541,6 +541,77 @@ bool sparsemat::computeSymmData()
     return true;
 }
 
+
+void sparsemat::splitMatrixToLU(sparsemat **L_ptr, sparsemat **U_ptr)
+{
+
+    int* L_rowPtr = new int[nrows+1];
+    int* U_rowPtr = new int[nrows+1];
+
+    L_rowPtr[0] = 0;
+    U_rowPtr[0] = 0;
+
+    //NUMA init
+#pragma omp parallel for schedule(static)
+    for(int row=0; row<nrows; ++row)
+    {
+        L_rowPtr[row+1] = 0;
+        U_rowPtr[row+1] = 0;
+    }
+
+    int L_nnz = 0;
+    int U_nnz = 0;
+    for(int row=0; row<nrows; ++row)
+    {
+        for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
+        {
+            if(col[idx] > row)
+            {
+                ++U_nnz;
+            }
+            else
+            {
+                ++L_nnz;
+            }
+        }
+        L_rowPtr[row+1] = L_nnz;
+        U_rowPtr[row+1] = U_nnz;
+    }
+
+    double* L_val = new double[L_nnz];
+    int* L_col = new int[L_nnz];
+    double* U_val = new double[U_nnz];
+    int* U_col = new int[U_nnz];
+
+    //with NUMA init
+#pragma omp parallel for schedule(static)
+    for(int row=0; row<nrows; ++row)
+    {
+        int L_ctr = L_rowPtr[row];
+        int U_ctr = U_rowPtr[row];
+        for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
+        {
+            if(col[idx]>row)
+            {
+                U_col[U_ctr] = col[idx];
+                U_val[U_ctr] = val[idx];
+                ++U_ctr;
+            }
+            else
+            {
+                L_col[L_ctr] = col[idx];
+                L_val[L_ctr] = val[idx];
+                ++L_ctr;
+            }
+        }
+    }
+
+    (*L_ptr)->initCover(nrows, L_nnz, L_val, L_rowPtr, L_col);
+    (*U_ptr)->initCover(nrows, U_nnz, U_val, U_rowPtr, U_col);
+
+}
+
+
 void sparsemat::doRCM()
 {
 #ifdef RACE_USE_SPMP
@@ -586,7 +657,7 @@ void sparsemat::doRCMPermute()
     rcmInvPerm = NULL;
 }
 
-int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cacheSize, int nthreads, int smt, PinMethod pinMethod)
+int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cacheSize, int nthreads, int smt, PinMethod pinMethod, std::string mtxType)
 {
     //permute(rcmInvPerm, rcmPerm);
     //rcmPerm = NULL;
@@ -594,8 +665,8 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
     INIT_TIMER(pre_process_kernel);
     START_TIMER(pre_process_kernel);
     ce = new Interface(nrows, nthreads, RACE::POWER, rowPtr, col, smt, pinMethod, rcmPerm, rcmInvPerm);
-    ce->RACEColor(highestPower, numSharedCache, cacheSize);
-    //ce->RACEColor(highestPower, numSharedCache, cacheSize, 2, "L");
+    //ce->RACEColor(highestPower, numSharedCache, cacheSize);
+    ce->RACEColor(highestPower, numSharedCache, cacheSize, 2, mtxType);
     STOP_TIMER(pre_process_kernel);
     printf("RACE pre-processing time = %fs\n", GET_TIMER(pre_process_kernel));
 

@@ -140,7 +140,8 @@ int main(const int argc, char * argv[])
 #ifdef VALIDATE_wo_PERM
     if(param.validate)
     {
-        xTRAD=new densemat(NROWS, power+1);
+        xTRAD=new densemat(NROWS, 1);
+        densemat* yTRAD = new densemat(NROWS, 1);
         densemat* xTRAD_0 = xTRAD->view(0,0);
 
         if(randInit)
@@ -155,14 +156,14 @@ int main(const int argc, char * argv[])
         //now calculate xTRAD in traditional way
         for(int pow=0; pow<power; ++pow)
         {
-            densemat *x = xTRAD->view(pow,pow);
-            plain_spmv(mat, x);
+            plain_spmv(yTRAD, mat, xTRAD);
+            double* tmp = yTRAD->val;
+            yTRAD->val = xTRAD->val;
+            xTRAD->val = tmp;
         }
-
+        delete yTRAD;
     }
 #endif
-
-    printf("Preparing matrix for power calculation\n");
 
     //mat->writeFile("matrixBeforeProcessing.mtx");
 /*
@@ -178,7 +179,16 @@ int main(const int argc, char * argv[])
     {
         mat->doRCM();
     }
-    mat->prepareForPower(power, param.nodes, param.cache_size*1024*1024, param.cores, param.smt, param.pin);
+
+    sparsemat *L = new sparsemat;
+    sparsemat *U = new sparsemat;
+    mat->splitMatrixToLU(&L, &U);
+
+    printf("Preparing L matrix for power calculation\n");
+    L->prepareForPower(2, param.nodes, param.cache_size*1024*1024, param.cores, param.smt, param.pin, "L");
+    printf("Preparing U matrix for power calculation\n");
+    U->prepareForPower(3, param.nodes, param.cache_size*1024*1024, param.cores, param.smt, param.pin, "U");
+
     STOP_TIMER(pre_process);
     /*printf("perm = \n");
     for(int i=0; i<NROWS; ++i)
@@ -215,7 +225,7 @@ int main(const int argc, char * argv[])
     //   x[0],   x[1], ....,   x[nrows-1]
     //  Ax[0],  Ax[1], ....,  Ax[nrows-1]
     // AAx[0], AAx[1], ...., AAx[nrows-1]
-    densemat* xRACE=new densemat(NROWS, power+1);
+    densemat* xRACE=new densemat(NROWS, 1);
     densemat* xRACE_0 = xRACE->view(0,0);
     if(randInit)
     {
@@ -233,19 +243,20 @@ int main(const int argc, char * argv[])
     START_TIMER(matPower_init);
     for(int iter=0; iter<10; ++iter)
     {
-       matPower(mat, power, xRACE);
+       matPower_split(L, U, power, xRACE);
     }
     STOP_TIMER(matPower_init);
     double initTime = GET_TIMER(matPower_init);
     int iterations = std::max(1, (int) (1.2*10/initTime));
-   // int iterations = 1; //for correctness checking
+    //int iterations = 1; //for correctness checking
     printf("Num iterations =  %d\n", iterations);
 
     double flops = 2.0*power*iterations*(double)mat->nnz*1e-9;
 
     if(param.validate)
     {
-        densemat* xTRAD_perf=new densemat(NROWS, power+1);
+        densemat* xTRAD_perf=new densemat(NROWS, 1);
+        densemat* yTRAD = new densemat(NROWS, 1);
 #ifndef VALIDATE_wo_PERM
         xTRAD=xTRAD_perf;
 #endif
@@ -273,8 +284,11 @@ int main(const int argc, char * argv[])
         {
             for(int pow=0; pow<power; ++pow)
             {
-                densemat *x = xTRAD_perf->view(pow,pow);
-                plain_spmv(mat, x);
+                plain_spmv(yTRAD, mat, xTRAD);
+                double* tmp = yTRAD->val;
+                yTRAD->val = xTRAD->val;
+                xTRAD->val = tmp;
+
             }
         }
         STOP_TIMER(spmvPower);
@@ -289,6 +303,7 @@ int main(const int argc, char * argv[])
 #ifdef VALIDATE_wo_PERM
         delete xTRAD_perf;
 #endif
+        delete yTRAD;
     }
 
     xRACE->setVal(0);
@@ -311,7 +326,7 @@ int main(const int argc, char * argv[])
     START_TIMER(matPower);
     for(int iter=0; iter<iterations; ++iter)
     {
-        matPower(mat, power, xRACE);
+        matPower_split(L, U, power, xRACE);
     }
     /*for(int pow=0; pow<power; ++pow)
       {
@@ -364,6 +379,8 @@ int main(const int argc, char * argv[])
     }
 
     delete mat;
+    delete L;
+    delete U;
     delete xRACE;
     if(randInit)
     {

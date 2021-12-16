@@ -56,15 +56,19 @@ template <typename T> inline T maxArr(T *arr, int len)
 template <typename T> inline void getEnv(std::string envName, std::vector<T>& val_vec)
 {
     char *envVal = getenv(envName.c_str());
-
     if(envVal != NULL)
     {
-        char* token = strtok(envVal, ",");
+        char *copyEnvVal = (char*) malloc(strlen(envVal) + 1);
+        strcpy(copyEnvVal, envVal);
+
+        char* token = strtok(copyEnvVal, ",");
         while(token != NULL)
         {
             val_vec.push_back(atoi(token));
             token = strtok(NULL, ",");
         }
+
+        free(copyEnvVal);
     }
 }
 
