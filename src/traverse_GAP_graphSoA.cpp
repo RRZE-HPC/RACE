@@ -277,7 +277,7 @@ void Traverse::calculateDistance()
             //backward
             for(int i=0; i<graph->NROW; ++i)
             {
-                distFromRoot[i] = graph->NROW-i;
+                distFromRoot[i] = (graph->NROW-1)-i;
             }
         }
         levelData->totalLevel = graph->NROW;
@@ -409,7 +409,12 @@ void Traverse::permuteGraph()
     {
         int targetRangeLo = regionRange[2*regionIdx];
         int targetRangeHi = regionRange[2*regionIdx+1];
-
+/*
+        printf("Permuting in range [%d, %d]\n", targetRangeLo, targetRangeHi);
+        for(int i=0; i<10; ++i)
+        {
+            printf("distFromRoot[%d] = %d, perm[%d] = %d\n", i, distFromRoot[i], i, perm[i]);
+        }*/
         //create permutation vector First
         sortPerm(distFromRoot, perm, targetRangeLo, targetRangeHi);
        //create invPerm

@@ -39,7 +39,7 @@ struct sparsemat
     void makeDiagFirst();
     void doRCM();
     void doRCMPermute();
-    int prepareForPower(int highestPower, int numSharedCache, double cacheSize, int nthreads, int smt=1, PinMethod pinMethod=FILL);
+    int prepareForPower(int highestPower, int numSharedCache, double cacheSize, int nthreads, int smt=1, PinMethod pinMethod=FILL, std::string mtxType="N");
     int colorAndPermute(dist d, int nthreads, int smt=1, PinMethod pinMethod=FILL);
     double colorEff();
     int maxStageDepth();
@@ -52,6 +52,8 @@ struct sparsemat
     int *rowPtr_symm, *col_symm;
     double *val_symm;
     bool computeSymmData();
+    //diag with L
+    void splitMatrixToLU(sparsemat **L, sparsemat **U);
 
     sparsemat();
     ~sparsemat();

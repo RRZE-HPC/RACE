@@ -54,6 +54,24 @@ void plain_spmv(densemat* b, sparsemat* mat, densemat* x, int iterations)
 }
 
 
+void plain_spmv(densemat* b, sparsemat* mat, densemat* x)
+{
+
+#pragma omp parallel for schedule(static)
+        for(int row=0; row<mat->nrows; ++row)
+        {
+            double tmp = 0;
+#pragma nounroll
+#pragma simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)
+            for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
+            {
+                tmp += mat->val[idx]*x->val[mat->col[idx]];
+            }
+            b->val[row] = tmp;
+        }
+}
+
+
 inline void SPMTV_KERNEL(int start, int end, void* args)
 {
     DECODE_FROM_VOID(args);
@@ -528,3 +546,234 @@ void matPowerBCSR(sparsemat *A, int power, densemat *x)
     DELETE_ARG();
 }
 
+
+
+inline void MAT_SPMV_SPLIT_U_PRE_KERNEL(int start, int end, int pow, int numa_domain, void* args)
+{
+    DECODE_FROM_VOID_SPLIT(args, U_PRE_FN);
+
+    int parentId = omp_get_thread_num();
+
+    int revOffset = mat->nrows-1;
+    if(pow == 1)
+    {
+        for(int row=start; row<end; ++row)
+        {
+            double tmp = 0;
+#pragma nounroll
+#pragma simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)
+            for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
+            {
+                tmp += mat->val[idx]*x->val[revOffset-(mat->col[idx])];
+            }
+            a->val[row] = tmp;
+        }
+    }
+    else if(pow == 2)
+    {
+        for(int row=start; row<end; ++row)
+        {
+            double tmp = 0;
+#pragma nounroll
+#pragma simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)
+            for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
+            {
+                tmp += mat->val[idx]*a->val[mat->col[idx]];
+            }
+            a->val[mat->nrows+row] = tmp;
+        }
+    }
+    else
+    {
+        printf("Error: order 2 only applicable now\n");
+    }
+}
+
+inline void MAT_SPMV_SPLIT_U_KERNEL(int start, int end, int pow, int numa_domain, void* args)
+{
+    DECODE_FROM_VOID_SPLIT(args, U_FN);
+
+    int parentId = omp_get_thread_num();
+
+    int revOffset = mat->nrows-1;
+    if(pow == 1)
+    {
+        for(int row=start; row<end; ++row)
+        {
+            double tmp = 0;
+#pragma nounroll
+#pragma simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)
+            for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
+            {
+                tmp += mat->val[idx]*b->val[revOffset-(mat->col[idx])];
+            }
+            int revRow = revOffset-row;
+            //new x = U^2x + ULx + LUx + L^2x
+            x->val[revRow] = a->val[x->nrows+row] + tmp + b->val[2*x->nrows+(revRow)] + b->val[x->nrows+(revRow)]; //reverse to take the permuation of U into account
+        }
+    }
+    else if(pow == 2)
+    {
+        for(int row=start; row<end; ++row)
+        {
+            double tmp = 0;
+#pragma nounroll
+#pragma simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)
+            for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
+            {
+                tmp += mat->val[idx]*x->val[revOffset-(mat->col[idx])];
+            }
+            a->val[row] = tmp;
+        }
+    }
+    else if(pow == 3)
+    {
+        for(int row=start; row<end; ++row)
+        {
+            double tmp = 0;
+#pragma nounroll
+#pragma simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)
+            for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
+            {
+                tmp += mat->val[idx]*a->val[mat->col[idx]];
+            }
+            a->val[mat->nrows+row] = tmp;
+        }
+    }
+    else
+    {
+        printf("Error: order 2 only applicable now\n");
+    }
+}
+
+inline void MAT_SPMV_SPLIT_U_POST_KERNEL(int start, int end, int pow, int numa_domain, void* args)
+{
+    DECODE_FROM_VOID_SPLIT(args, U_FN);
+
+    int parentId = omp_get_thread_num();
+
+    int revOffset = mat->nrows-1;
+    if(pow == 1)
+    {
+        for(int row=start; row<end; ++row)
+        {
+            double tmp = 0;
+#pragma nounroll
+#pragma simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)
+            for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
+            {
+                tmp += mat->val[idx]*b->val[revOffset-(mat->col[idx])];
+            }
+            int revRow = revOffset-row;
+            //new x = U^2x + ULx + LUx + L^2x
+            x->val[revRow] = a->val[x->nrows+row] + tmp + b->val[2*x->nrows+(revRow)] + b->val[x->nrows+(revRow)]; //reverse to take the permuation of U into account
+        }
+    }
+    else
+    {
+        printf("Error: order 2 only applicable now\n");
+    }
+}
+
+
+inline void MAT_SPMV_SPLIT_L_KERNEL(int start, int end, int pow, int numa_domain, void* args)
+{
+    DECODE_FROM_VOID_SPLIT(args, L_FN);
+
+    int parentId = omp_get_thread_num();
+
+    int revOffset = mat->nrows-1;
+    //printf("start = %d, end = %d, pow = %d\n", start, end, pow);
+    if(pow == 1)
+    {
+        for(int row=start; row<end; ++row)
+        {
+            double lux = 0;
+            double lx = 0;
+#pragma nounroll
+#pragma simd vectorlength(VECTOR_LENGTH) reduction(+:lux,lx)
+            for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
+            {
+                lux += mat->val[idx]*b->val[revOffset-(mat->col[idx])];//reverse to take the permuation of U into account
+                lx += mat->val[idx]*x->val[mat->col[idx]];
+            }
+            a->val[row] = lx;
+            a->val[2*mat->nrows+row] = lux;
+        }
+    }
+    else if(pow == 2)
+    {
+        for(int row=start; row<end; ++row)
+        {
+            double tmp = 0;
+#pragma nounroll
+#pragma simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)
+            for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
+            {
+                tmp += mat->val[idx]*a->val[mat->col[idx]];
+            }
+            a->val[mat->nrows+row] = tmp;
+        }
+    }
+    else
+    {
+        printf("Error: order 2 only applicable now\n");
+    }
+}
+
+
+
+void matPower_split(sparsemat *L, sparsemat *U, int power, densemat *x)
+{
+    if( (power % 2) != 0 )
+    {
+        printf("Error: power not a multiple of 2\n");
+    }
+    //stores Ux, U^2x
+    densemat* Un_x = new densemat(U->nrows, 2);
+    //stores Lx, L^2x, and LUx
+    densemat* Ln_x = new densemat(L->nrows, 3);
+
+    RACE::Interface *ce_L = L->ce;
+    RACE::Interface *ce_U = U->ce;
+
+    ENCODE_TO_VOID_SPLIT(U, Un_x, NULL, x, U_PRE_FN);
+    int u_pre_fn = ce_U->registerFunction(&MAT_SPMV_SPLIT_U_PRE_KERNEL, voidArg_U_PRE_FN, 2);
+
+    ENCODE_TO_VOID_SPLIT(L, Ln_x, Un_x, x, L_FN);
+    int l_fn = ce_L->registerFunction(&MAT_SPMV_SPLIT_L_KERNEL, voidArg_L_FN, 2);
+
+    int u_fn = -1;
+    ENCODE_TO_VOID_SPLIT(U, Un_x, Ln_x, x, U_FN);
+    if(power > 2)
+    {
+        u_fn = ce_U->registerFunction(&MAT_SPMV_SPLIT_U_KERNEL, voidArg_U_FN, 3);
+    }
+
+    ENCODE_TO_VOID_SPLIT(U, Un_x, Ln_x, x, U_POST_FN);
+    int u_post_fn = ce_U->registerFunction(&MAT_SPMV_SPLIT_U_POST_KERNEL, voidArg_U_POST_FN, 1);
+
+    //pre-operation
+    ce_U->executeFunction(u_pre_fn);
+
+    for(int p=0; p<(power-2); p=p+2)
+    {
+        ce_L->executeFunction(l_fn);
+        ce_U->executeFunction(u_fn);
+    }
+
+    //post operation
+    ce_L->executeFunction(l_fn);
+    ce_U->executeFunction(u_post_fn);
+
+    DELETE_ARG_SPLIT(U_PRE_FN);
+    DELETE_ARG_SPLIT(L_FN);
+    if(power > 2)
+    {
+        DELETE_ARG_SPLIT(U_FN);
+    }
+    DELETE_ARG_SPLIT(U_POST_FN);
+
+    delete Un_x;
+    delete Ln_x;
+}

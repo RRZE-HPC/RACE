@@ -4,6 +4,7 @@
 #include "sparsemat.h"
 #include "densemat.h"
 #include <complex>
+
 struct kernelArg
 {
     sparsemat* mat;
@@ -19,10 +20,19 @@ struct kernelNumaArg
     densemat* x;
 };
 
+struct kernelArg_split
+{
+    sparsemat* mat;
+    densemat* a;
+    densemat* b;
+    densemat* x;
+};
+
 
 void spmv(sparsemat* mat, densemat* x);
 void spmv(densemat* b, sparsemat* mat, densemat* x, int iter);
 void plain_spmv(densemat* b, sparsemat* mat, densemat* x, int iter);
+void plain_spmv(densemat* b, sparsemat* mat, densemat* x);
 void spmtv(densemat* b, sparsemat* mat, densemat* x, int iter);
 void gs(densemat* b, sparsemat* mat, densemat* x, int iter);
 void kacz(densemat* b, sparsemat* mat, densemat* x, int iter);
@@ -36,6 +46,8 @@ void matPower(sparsemat* A, int power, densemat *x);
 void matPower_only_highest(sparsemat* A, int power, densemat *x);
 void matPowerNuma(NUMAmat* A, int power, densemat *x);
 void matPowerBCSR(sparsemat* A, int power, densemat *x);
+
+void matPower_split(sparsemat *L, sparsemat *U, int power, densemat *x);
 
 //convenience macros
 #define ENCODE_TO_VOID(mat_en, b_en, x_en)\
@@ -69,6 +81,26 @@ void matPowerBCSR(sparsemat* A, int power, densemat *x);
     NUMAmat* mat = arg_decode->mat;\
     densemat* b = arg_decode->b;\
     densemat* x = arg_decode->x;\
+
+//convenience macros
+#define ENCODE_TO_VOID_SPLIT(mat_en, a_en, b_en, x_en, _NAME_)\
+    kernelArg_split *arg_encode_##_NAME_ = new kernelArg_split;\
+    arg_encode_##_NAME_->mat = mat_en;\
+    arg_encode_##_NAME_->a = a_en;\
+    arg_encode_##_NAME_->b = b_en;\
+    arg_encode_##_NAME_->x = x_en;\
+    void* voidArg_##_NAME_ = (void*) arg_encode_##_NAME_;\
+
+#define DELETE_ARG_SPLIT(_NAME_)\
+    delete arg_encode_##_NAME_;\
+
+
+#define DECODE_FROM_VOID_SPLIT(voidArg, _NAME_)\
+    kernelArg_split* arg_decode_##_NAME_ = (kernelArg_split*) voidArg;\
+    sparsemat* mat = arg_decode_##_NAME_->mat;\
+    densemat* a = arg_decode_##_NAME_->a;\
+    densemat* b = arg_decode_##_NAME_->b;\
+    densemat* x = arg_decode_##_NAME_->x;\
 
 
 #endif

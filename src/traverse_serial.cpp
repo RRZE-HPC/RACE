@@ -283,7 +283,7 @@ void Traverse::calculateDistance()
             //backward
             for(int i=0; i<graph->NROW; ++i)
             {
-                distFromRoot[i] = graph->NROW-i;
+                distFromRoot[i] = (graph->NROW-1)-i;
             }
         }
         levelData->totalLevel = graph->NROW;
