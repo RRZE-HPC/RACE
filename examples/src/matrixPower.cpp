@@ -14,7 +14,7 @@
 #include "timer.h"
 #include <iostream>
 
-//#define VALIDATE_wo_PERM
+#define VALIDATE_wo_PERM
 
 void capitalize(char* beg)
 {
@@ -126,7 +126,7 @@ int main(const int argc, char * argv[])
 
     int NROWS = mat->nrows;
     bool randInit = false;
-    double initVal = 1; //(double)NROWS;
+    double initVal = 1/(double)NROWS;
     densemat *xRAND;
     if(randInit)
     {
@@ -238,7 +238,7 @@ int main(const int argc, char * argv[])
     STOP_TIMER(matPower_init);
     double initTime = GET_TIMER(matPower_init);
     int iterations = std::max(1, (int) (1.2*10/initTime));
-   // int iterations = 1; //for correctness checking
+    //int iterations = 1; //for correctness checking
     printf("Num iterations =  %d\n", iterations);
 
     double flops = 2.0*power*iterations*(double)mat->nnz*1e-9;
@@ -339,7 +339,26 @@ int main(const int argc, char * argv[])
         densemat* xTRAD_permuted = xTRAD;
 #endif
 
-/*        for(int i=0; i<10; ++i)
+
+        xRACE->setVal(0);
+        if(randInit)
+        {
+            xRACE_0->copyVal(xRAND);
+        }
+        else
+        {
+            xRACE_0->setVal(initVal);
+        }
+
+#ifdef VALIDATE_wo_PERM
+        densemat* xRACE_permuted = mat->permute_densemat(xRACE);
+#else
+        densemat* xRACE_permuted = xRACE;
+#endif
+
+        //only one iterations
+        matPower(mat, power, xRACE_permuted);
+        /*        for(int i=0; i<10; ++i)
         {
             for(int j=0; j<xRACE->ncols; ++j)
             {
@@ -348,7 +367,7 @@ int main(const int argc, char * argv[])
             printf("\n");
         }*/
 
-        bool flag = checkEqual(xTRAD_permuted, xRACE, param.tol);
+        bool flag = checkEqual(xTRAD_permuted, xRACE_permuted, param.tol);
         if(!flag)
         {
             printf("Power calculation failed\n");
