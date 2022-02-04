@@ -11,6 +11,8 @@
     #include "SpMP/reordering/BFSBipartite.hpp"
 #endif
 #include "timer.h"
+#include "kernels.h"
+#include "densemat.h"
 
 sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), finalPerm(NULL), finalInvPerm(NULL)
 {
@@ -683,6 +685,8 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
 
     finalPerm = perm;
     finalInvPerm = invPerm;
+
+    checkNumVecAccesses(highestPower);
     //delete [] invPerm;
     //delete [] perm;
     //no idea why need it second time w/o perm. 
@@ -1058,4 +1062,31 @@ NUMAmat::~NUMAmat()
     delete[] col;
     delete[] val;
 }
+
+inline void MAT_NUM_VEC_ACCESSES(int start, int end, int pow, int numa_domain, void* args)
+{
+    DECODE_FROM_VOID(args);
+
+    int nrows=mat->nrows;
+    for(int row=start; row<end; ++row)
+    {
+        x->val[row]++;
+        if(x->val[row] != pow)
+        {
+            ERROR_PRINT("Oh oh we have duplicate computations, error at pow=%d, for row=%d. Value I got at x is %f, expected %d. Level start =%d, Level end=%d", pow, row, x->val[row], pow, start, end);
+        }
+    }
+}
+
+void sparsemat::checkNumVecAccesses(int power)
+{
+    densemat* x = new densemat(this->nrows);
+    ENCODE_TO_VOID(this, NULL, x);
+    int race_power_id = ce->registerFunction(&MAT_NUM_VEC_ACCESSES, voidArg, power);
+    {
+        ce->executeFunction(race_power_id);
+    }
+    DELETE_ARG();
+}
+
 
