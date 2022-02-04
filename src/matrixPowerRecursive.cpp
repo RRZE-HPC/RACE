@@ -159,7 +159,7 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
         curLeaf.boundaryRange.resize(wbl);
         if(!parentLeaf.blp.empty())
         {
-            for(int wr=0; wr<wbl; ++wr)//working radius
+            for(int wr=0; wr<wbl; ++wr)//working radius will store the max radius parent has attained, so to limit the powers computed
             {
                 //std::map<int, std::vector<std::vector<int>>> *curParentBLP = curParentBLP = &(parentLeaf.blp[wr]);
                 std::map<int, std::vector<std::vector<int>>> *curParentBLP = &(parentLeaf.blp[wr]);
@@ -167,6 +167,7 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
                 {
                     //int radius = mapIter->first;
                     std::vector<std::vector<int>> *entity = &(mapIter->second);
+                    int parentRadius = (mapIter->first);
 
                     int numBoundaries = (int)entity->size();//external (ancestoral boundaries)
                     for(int i=0; i<(int)numBoundaries; ++i)
@@ -222,7 +223,8 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
 
                                 if(!merge)
                                 {
-                                    curLeaf.boundaryRange[wr][r].push_back(curRange);
+                                    int cur_wr = std::max(wr, std::abs(parentRadius)-1);
+                                    curLeaf.boundaryRange[cur_wr][r].push_back(curRange);
                                 }
                             }
                             else

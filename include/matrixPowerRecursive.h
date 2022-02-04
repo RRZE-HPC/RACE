@@ -13,8 +13,8 @@ struct MPLeaf
     int nrows;
     Range range;
     //boundaryRange structure
-    //  ->workingBoundaryRadius (tells me what was its radius when generated
-    //  initially from pure main region, this is necessary to limit the max power on
+    //  ->workingBoundaryRadius (tells me what was the max radius parent has
+    //  attained, this is necessary to limit the max power on
     //  these regions)
     //      ->radius (current radius) made a map, so can be empty too
     //          -> ranges

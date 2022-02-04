@@ -193,7 +193,8 @@
             for(auto _mapIter_ = _var_[_workingRadius_].begin(); _mapIter_ != _var_[_workingRadius_].end(); ++_mapIter_)\
             {\
                 int _radius_ = _mapIter_->first;\
-                if( (_pow_ > (_radius_-1)) && (_pow_ < (power-(_radius_))) )\
+                int _absRadius_ = std::abs(_radius_);\
+                if( (_pow_ > (_absRadius_-1)) && (_pow_ < (power-(_absRadius_))) )\
                 {\
                     auto* _entity_ = &(_mapIter_->second);\
                     int _numBoundaries_ = (int)_entity_->size();\
