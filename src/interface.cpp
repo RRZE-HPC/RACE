@@ -4,8 +4,9 @@
 #include <iostream>
 #include "utility.h"
 #include "timing.h"
+#include <algorithm>
 
-RACE::Interface::Interface(int nrow_,int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_, RACE::PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):graph(NULL),nrow(nrow_),distance(dist_),d2Type(d2Type_),lbTarget(lbTarget_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL),powerCalculator(NULL)
+RACE::Interface::Interface(int nrow_,int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_, RACE::PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):graph(NULL),nrow(nrow_),distance(dist_),d2Type(d2Type_),lbTarget(lbTarget_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL),powerCalculator(NULL), highestPower(1)
 {
     graph = new Graph(nrow, nrow, rowPtr, col, initPerm, initInvPerm);
 }
@@ -34,8 +35,9 @@ RACE::Interface::~Interface()
     }
 }
 
-RACE_error RACE::Interface::RACEColor(int highestPower, int numSharedCache, double cacheSize, double safetyFactor, std::string mtxType)
+RACE_error RACE::Interface::RACEColor(int highestPower_, int numSharedCache, double cacheSize, double safetyFactor, std::string mtxType)
 {
+    highestPower = highestPower_;
     if(distance != RACE::POWER)
     {
         ERROR_PRINT("If you need to calculate power set distance to RACE::POWER");
@@ -208,7 +210,7 @@ int RACE::Interface::registerFunction(void (*f) (int,int,void *), void *args)
     }
     else
     {
-        ERROR_PRINT("To calcaulte power call back function prototype is void (*f) (int,int,int,int,void *)\n");
+        ERROR_PRINT("To calcaulte power call back function prototype is void (*f) (int,int,int,int,void *)");
         return RACE_ERR_INVALID_ARG;
     }
 }
@@ -217,11 +219,15 @@ int RACE::Interface::registerFunction(void (*f) (int,int,int,int,void *), void *
 {
     if(distance != RACE::POWER)
     {
-        ERROR_PRINT("To parallel execution of dependent kernels callback  function prototype is void (*f) (int,int,void *)\n");
+        ERROR_PRINT("To parallel execution of dependent kernels callback  function prototype is void (*f) (int,int,void *)");
         return RACE_ERR_INVALID_ARG;
     }
     else
     {
+        if(power > highestPower)
+        {
+            ERROR_PRINT("Specified power greater than highestPower passed during the pre-processing phase (call to RACEColor function). Performance might not be optimal and in some cases might cause segfaults.");
+        }
         FuncManager* currFun = new FuncManager(f, args, power, powerCalculator, numaSplit);
         funMan.push_back(currFun);
         return (funMan.size()-1);
@@ -235,6 +241,59 @@ void RACE::Interface::executeFunction(int funcId, bool rev)
     //  funMan->Run();
 }
 
+void RACE::Interface::setPower(int funcId, int pow)
+{
+    funMan[funcId]->setPower(pow);
+}
+
+int RACE::Interface::getPower(int funcId)
+{
+    return funMan[funcId]->getPower();
+}
+
+int RACE::Interface::tuneFunction(int funcId, bool rev)
+{
+    int bestPow;
+    if(tunedPowMap.find(funcId) == tunedPowMap.end())
+    {
+        std::vector<double> time_vec(highestPower, 0);
+        //int origPower = funMan[funcId]->getPower();
+        for(int pow=1; pow<=highestPower; ++pow)
+        {
+            setPower(funcId, pow);
+
+            timeval start, end;
+            double start_tym, end_tym;
+            gettimeofday(&start, NULL);
+            start_tym = start.tv_sec + start.tv_usec*1e-6;
+            double time = 0;
+            int iter=0;
+            while(time < 0.2)
+            {
+                funMan[funcId]->Run(rev);
+
+                gettimeofday(&end, NULL);
+                end_tym = end.tv_sec + end.tv_usec*1e-6;
+
+                time = end_tym-start_tym;
+                ++iter;
+            }
+            time_vec[pow-1] = time/static_cast<double>(iter*pow);
+        }
+        int minIndex = std::distance(time_vec.begin(), std::min_element(time_vec.begin(), time_vec.end()));
+
+        bestPow = minIndex + 1;
+        tunedPowMap[funcId] = bestPow;
+        INFO_PRINT("Best tuned power for function with id %d is %d", funcId, bestPow);
+    }
+    else
+    {
+        bestPow = tunedPowMap[funcId];
+    }
+
+    setPower(funcId, bestPow);
+    return bestPow;
+}
 
 void RACE::Interface::resetTime()
 {
@@ -624,6 +683,7 @@ void RACE::Interface::numaInitMtxVec(int **rowPtr_, int **col_, double **val_, i
     {
         ERROR_PRINT("NUMA not implemented for coloring")
     }
+    UNUSED(power_);
 }
 
 
@@ -639,4 +699,9 @@ void RACE::Interface::getNumaSplitting(int **split, int *splitLen)
         (*split)[i] = levelPtr[levelGroupPtr[i]];
     }
     (*splitLen) = NUMAdomains+1;
+}
+
+int RACE::Interface::getHighestPower()
+{
+    return highestPower;
 }

@@ -53,10 +53,12 @@ class RACE::Interface{
         ZoneTree* zoneTree;
         mtxPowerRecursive* powerCalculator;
         std::vector<FuncManager*> funMan;
+        int highestPower;
         //	FuncManager *funMan;
         bool detectConflict(std::vector<int> range1, std::vector<int> range2);
         bool recursiveChecker(int parent);
         bool D2Checker();
+        std::map<int, int> tunedPowMap;
     public:
         /**
          * @brief Constructor to Interface class.
@@ -115,6 +117,9 @@ class RACE::Interface{
         int registerFunction(void (*f) (int,int,void *), void* args);
         int registerFunction(void (*f) (int,int,int,int,void *), void* args, int power=1, int numaSplit=false);
         void executeFunction(int funcId, bool rev=false);
+        void setPower(int funcId, int pow);
+        int getPower(int funcId);
+        int tuneFunction(int funcId, bool rev=false);
         //RACE_error powerRun(int power, int *rowPtr, int *col, double *A, double *x);
 
         void resetTime();
@@ -142,6 +147,7 @@ class RACE::Interface{
 
         //NUMA with actual splitting
         void getNumaSplitting(int **split, int *splitLen);
+        int getHighestPower();
 };
 
 void powerInitRowPtrFunc(int start, int end, int pow, int numa_domain, void* arg);

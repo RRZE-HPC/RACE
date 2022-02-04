@@ -67,6 +67,8 @@ class FuncManager
         void NUMAInitPower();
        // void powerRun();
         void Run(bool rev_=false);
+        void setPower(int power);
+        int getPower();
         bool isNumaSplit();
         //void RunOMP();
         //	double barrierTime;
