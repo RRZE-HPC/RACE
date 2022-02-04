@@ -52,7 +52,7 @@ struct thread{
 };
 
 template<typename arg_t>
-void run(thread<arg_t>* thread);
+void* run(void* thread);
 
 /* Threadpool */
 template<typename arg_t>

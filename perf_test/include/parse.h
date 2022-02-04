@@ -10,8 +10,8 @@ using namespace RACE;
 struct my_option
 {
     option gnu_opt;
-    char* desc;
-    my_option(const char*name, int has_arg, int *flag, int val, char* desc);
+    char const* desc;
+    my_option(const char*name, int has_arg, int *flag, int val, char const* desc);
     my_option();
 };
 
@@ -25,7 +25,7 @@ struct parser
         PinMethod pin;
         bool validate;
         double tol;
-        char *prgname;
+        char const* prgname;
         int numOptions;
         my_option *long_options;
         option *gnuOptions;

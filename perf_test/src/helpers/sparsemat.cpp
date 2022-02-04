@@ -331,7 +331,7 @@ bool sparsemat::writeFile(char* filename)
         }
     }
 
-    mm_write_mtx_crd(filename, nrows, nrows, nnz, row_1_based, col_1_based, val, "MCRG");
+    mm_write_mtx_crd(filename, nrows, nrows, nnz, row_1_based, col_1_based, val, (char*)"MCRG");
 
     delete[] row_1_based;
     delete[] col_1_based;
@@ -585,6 +585,7 @@ void sparsemat::pinOMP(int nthreads)
         int pinOrder = omp_get_thread_num();
         ce->pinThread(pinOrder);
     }
+    UNUSED(nthreads);
 }
 
 
