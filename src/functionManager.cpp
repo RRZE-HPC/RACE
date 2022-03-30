@@ -1096,6 +1096,7 @@ void FuncManager::recursivePowerCallSerial(int parent)
 #else
 
 //Very old branch: No support for split NUMA nodes and stuff with this branch
+//also no recursion
 void FuncManager::recursivePowerCallSerial(int parent)
 {
     std::vector<MPLeaf>* tree = &(matPower->tree);
