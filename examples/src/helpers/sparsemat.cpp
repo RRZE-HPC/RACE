@@ -13,8 +13,9 @@
 #include "timer.h"
 #include "kernels.h"
 #include "densemat.h"
+#include "multicoloring.h"
 
-sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), finalPerm(NULL), finalInvPerm(NULL)
+sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), colorType("RACE"), colorBlockSize(64), colorDist(-1), ncolors(-1), colorPtr(NULL), partPtr(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), finalPerm(NULL), finalInvPerm(NULL)
 {
 }
 
@@ -698,39 +699,80 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
 }
 
 
-int sparsemat::colorAndPermute(dist distance, int nthreads, int smt, PinMethod pinMethod)
+int sparsemat::colorAndPermute(dist distance, std::string colorType_, int nthreads, int smt, PinMethod pinMethod)
 {
-    ce = new Interface(nrows, nthreads, distance, rowPtr, col, smt, pinMethod, rcmPerm, rcmInvPerm);
-    RACE_error ret = ce->RACEColor();
-
-    if(ret != RACE_SUCCESS)
+    colorType = colorType_;
+    if(colorType == "RACE")
     {
-        printf("Pinning failure\n");
-        return 0;
+        ce = new Interface(nrows, nthreads, distance, rowPtr, col, smt, pinMethod, rcmPerm, rcmInvPerm);
+        RACE_error ret = ce->RACEColor();
+
+        if(ret != RACE_SUCCESS)
+        {
+            printf("Pinning failure\n");
+            return 0;
+        }
+
+        int *perm, *invPerm, permLen;
+
+        ce->getPerm(&perm, &permLen);
+        ce->getInvPerm(&invPerm, &permLen);
+
+        //now permute the matrix according to the permutation vector
+        permute(perm, invPerm);
+
+        if(finalPerm)
+        {
+            delete [] finalPerm;
+            delete [] finalInvPerm;
+        }
+
+        finalPerm = perm;
+        finalInvPerm = invPerm;
+
+        //pin omp threads as in RACE for proper NUMA
+        pinOMP(nthreads);
     }
-
-    int *perm, *invPerm, permLen;
-
-    ce->getPerm(&perm, &permLen);
-    ce->getInvPerm(&invPerm, &permLen);
-
-    //now permute the matrix according to the permutation vector
-    permute(perm, invPerm);
-
-    if(finalPerm)
+    else
     {
-        delete [] finalPerm;
-        delete [] finalInvPerm;
+        int dist_int = 1;
+        if(distance == RACE::ONE)
+        {
+            dist_int = 1;
+        }
+        else
+        {
+            dist_int = 2;
+        }
+        multicoloring mc(this, dist_int, rcmPerm, rcmInvPerm);
+
+        if(colorType == "MC")
+        {
+            mc.doMC();
+        }
+        else
+        {
+            mc.doABMC();
+            partPtr = mc.partPtr_out;
+        }
+
+        ncolors = mc.ncolors_out;
+        colorPtr = mc.colorPtr_out;
+
+        permute(mc.perm_out, mc.invPerm_out);
+
+        if(finalPerm)
+        {
+            delete[] finalPerm;
+            delete[] finalInvPerm;
+        }
+
+        finalPerm = mc.perm_out;
+        finalInvPerm = mc.invPerm_out;
     }
-
-    finalPerm = perm;
-    finalInvPerm = invPerm;
-
-    //pin omp threads as in RACE for proper NUMA
-    pinOMP(nthreads);
-
     return 1;
 }
+
 
 double sparsemat::colorEff()
 {

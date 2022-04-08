@@ -2,11 +2,80 @@
 #include <mkl.h>
 #include "config_eg.h"
 
+#define SPMV_KERNEL_BODY()\
+{\
+    double tmp = 0;\
+_Pragma("nounroll")\
+_Pragma("simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)")\
+    for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)\
+    {\
+        tmp += mat->val[idx]*x->val[mat->col[idx]];\
+    }\
+    b->val[row] = tmp;\
+}\
+
 inline void SPMV_KERNEL(int start, int end, void* args)
 {
     DECODE_FROM_VOID(args);
 
     for(int row=start; row<end; ++row)
+    {
+        SPMV_KERNEL_BODY();
+    }
+}
+
+
+//b=A*x
+void spmv(densemat* b, sparsemat* mat, densemat* x)
+{
+    if(mat->colorType == "RACE")
+    {
+        RACE::Interface *ce = mat->ce;
+
+        ENCODE_TO_VOID(mat,b,x);
+
+        int spmvId = ce->registerFunction(&SPMV_KERNEL, voidArg);
+
+        ce->executeFunction(spmvId);
+
+        DELETE_ARG();
+    }
+    else if(mat->colorType == "ABMC")
+    {
+        for(int color=0; color<mat->ncolors; ++color)
+        {
+#pragma omp parallel for schedule(static)
+            for(int part=mat->colorPtr[color]; part<mat->colorPtr[color+1]; ++part)
+            {
+                for(int row=mat->partPtr[part]; row<mat->partPtr[part+1]; ++row)
+                {
+                    SPMV_KERNEL_BODY();
+                }
+            }
+        }
+    }
+    else if(mat->colorType == "MC")
+    {
+        for(int color=0; color<mat->ncolors; ++color)
+        {
+#pragma omp parallel for schedule(static)
+            for(int row=mat->colorPtr[color]; row<mat->colorPtr[color+1]; ++row)
+            {
+                SPMV_KERNEL_BODY();
+            }
+        }
+    }
+    else
+    {
+        printf("Didn't recognize the coloring type. Available options: RACE, ABMC, MC\n");
+    }
+}
+
+/*
+void plain_spmv(densemat* b, sparsemat* mat, densemat* x)
+{
+#pragma omp parallel for schedule(static)
+    for(int row=0; row<mat->nrows; ++row)
     {
         double tmp = 0;
         for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
@@ -16,43 +85,7 @@ inline void SPMV_KERNEL(int start, int end, void* args)
         b->val[row] = tmp;
     }
 }
-
-
-//b=A*x
-void spmv(densemat* b, sparsemat* mat, densemat* x, int iterations)
-{
-    RACE::Interface *ce = mat->ce;
-
-    ENCODE_TO_VOID(mat,b,x);
-
-    int spmvId = ce->registerFunction(&SPMV_KERNEL, voidArg);
-
-    for(int i=0; i<iterations; ++i)
-    {
-        ce->executeFunction(spmvId);
-    }
-
-    DELETE_ARG();
-}
-
-void plain_spmv(densemat* b, sparsemat* mat, densemat* x, int iterations)
-{
-
-    for(int i=0; i<iterations; ++i)
-    {
-#pragma omp parallel for schedule(static)
-        for(int row=0; row<mat->nrows; ++row)
-        {
-            double tmp = 0;
-            for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
-            {
-                tmp += mat->val[idx]*x->val[mat->col[idx]];
-            }
-            b->val[row] = tmp;
-        }
-    }
-}
-
+*/
 
 void plain_spmv(densemat* b, sparsemat* mat, densemat* x)
 {
@@ -71,6 +104,15 @@ void plain_spmv(densemat* b, sparsemat* mat, densemat* x)
         }
 }
 
+#define SPMTV_KERNEL_BODY()\
+{\
+    double x_row = x->val[row];\
+    _Pragma("simd")\
+    for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)\
+    {\
+        b->val[mat->col[idx]] += mat->val[idx]*x_row;\
+    }\
+}\
 
 inline void SPMTV_KERNEL(int start, int end, void* args)
 {
@@ -78,32 +120,69 @@ inline void SPMTV_KERNEL(int start, int end, void* args)
 
     for(int row=start; row<end; ++row)
     {
-        double x_row = x->val[row];
-#pragma simd
-        for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
-        {
-            b->val[mat->col[idx]] += mat->val[idx]*x_row;
-        }
+        SPMTV_KERNEL_BODY();
     }
 }
 
 
 //b=A'*x
-void spmtv(densemat* b, sparsemat* mat, densemat* x, int iterations)
+void spmtv(densemat* b, sparsemat* mat, densemat* x)
 {
-    RACE::Interface *ce = mat->ce;
-
-    ENCODE_TO_VOID(mat,b,x);
-
-    int spmtvId = ce->registerFunction(&SPMTV_KERNEL, voidArg);
-
-    for(int i=0; i<iterations; ++i)
+    if(mat->colorType == "RACE")
     {
-        ce->executeFunction(spmtvId);
-    }
+        RACE::Interface *ce = mat->ce;
 
-    DELETE_ARG();
+        ENCODE_TO_VOID(mat,b,x);
+
+        int spmtvId = ce->registerFunction(&SPMTV_KERNEL, voidArg);
+
+        ce->executeFunction(spmtvId);
+
+        DELETE_ARG();
+    }
+    else if(mat->colorType == "ABMC")
+    {
+        for(int color=0; color<mat->ncolors; ++color)
+        {
+#pragma omp parallel for schedule(static)
+            for(int part=mat->colorPtr[color]; part<mat->colorPtr[color+1]; ++part)
+            {
+                for(int row=mat->partPtr[part]; row<mat->partPtr[part+1]; ++row)
+                {
+                    SPMTV_KERNEL_BODY();
+                }
+            }
+        }
+    }
+    else if(mat->colorType == "MC")
+    {
+        for(int color=0; color<mat->ncolors; ++color)
+        {
+#pragma omp parallel for schedule(static)
+            for(int row=mat->colorPtr[color]; row<mat->colorPtr[color+1]; ++row)
+            {
+                SPMTV_KERNEL_BODY();
+            }
+        }
+    }
+    else
+    {
+        printf("Didn't recognize the coloring type. Available options: RACE, ABMC, MC\n");
+    }
 }
+
+#define GS_KERNEL_BODY()\
+{\
+    x->val[row] = b->val[row];\
+    double x_row = x->val[row];\
+    int diag_idx = mat->rowPtr[row];\
+_Pragma("simd")\
+    for(int idx=mat->rowPtr[row]+1; idx<mat->rowPtr[row+1]; ++idx)\
+    {\
+        x->val[row] -= mat->val[idx]*x->val[mat->col[idx]];\
+    }\
+    x->val[row] /= mat->val[diag_idx];\
+}\
 
 inline void GS_KERNEL(int start, int end, void* args)
 {
@@ -111,34 +190,74 @@ inline void GS_KERNEL(int start, int end, void* args)
 
     for(int row=start; row<end; ++row)
     {
-        x->val[row] = b->val[row];
-        double x_row = x->val[row];
-        int diag_idx = mat->rowPtr[row];
-#pragma simd
-        for(int idx=mat->rowPtr[row]+1; idx<mat->rowPtr[row+1]; ++idx)
-        {
-            x->val[row] -= mat->val[idx]*x->val[mat->col[idx]];
-        }
-        x->val[row] /= mat->val[diag_idx];
+        GS_KERNEL_BODY();
     }
 }
 
 //Solve for x : A*x=b
-void gs(densemat* b, sparsemat* mat, densemat* x, int iterations)
+void gs(densemat* b, sparsemat* mat, densemat* x)
 {
-    RACE::Interface *ce = mat->ce;
-
-    ENCODE_TO_VOID(mat,b,x);
-
-    int gsId = ce->registerFunction(&GS_KERNEL, voidArg);
-
-    for(int i=0; i<iterations; ++i)
+    if(mat->colorType == "RACE")
     {
-        ce->executeFunction(gsId);
-    }
+        RACE::Interface *ce = mat->ce;
 
-    DELETE_ARG();
+        ENCODE_TO_VOID(mat,b,x);
+
+        int gsId = ce->registerFunction(&GS_KERNEL, voidArg);
+
+        ce->executeFunction(gsId);
+
+        DELETE_ARG();
+    }
+    else if(mat->colorType == "ABMC")
+    {
+        for(int color=0; color<mat->ncolors; ++color)
+        {
+#pragma omp parallel for schedule(static)
+            for(int part=mat->colorPtr[color]; part<mat->colorPtr[color+1]; ++part)
+            {
+                for(int row=mat->partPtr[part]; row<mat->partPtr[part+1]; ++row)
+                {
+                    GS_KERNEL_BODY();
+                }
+            }
+        }
+    }
+    else if(mat->colorType == "MC")
+    {
+        for(int color=0; color<mat->ncolors; ++color)
+        {
+#pragma omp parallel for schedule(static)
+            for(int row=mat->colorPtr[color]; row<mat->colorPtr[color+1]; ++row)
+            {
+                GS_KERNEL_BODY();
+            }
+        }
+    }
+    else
+    {
+        printf("Didn't recognize the coloring type. Available options: RACE, ABMC, MC\n");
+    }
 }
+
+#define KACZ_KERNEL_BODY()\
+{\
+    double rowNorm = 0.0;\
+    double scale = 0.0;\
+    scale = -b->val[row];\
+    for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)\
+    {\
+        double mval = mat->val[idx];\
+        scale += mval * x->val[mat->col[idx]];\
+        rowNorm += mval*mval;\
+    }\
+    scale /= rowNorm; /*omega considered 1*/\
+_Pragma("simd")\
+    for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)\
+    {\
+        x->val[mat->col[idx]] = x->val[mat->col[idx]] - scale*mat->val[idx];\
+    }\
+}\
 
 inline void KACZ_KERNEL(int start, int end, void* args)
 {
@@ -146,42 +265,72 @@ inline void KACZ_KERNEL(int start, int end, void* args)
 
     for(int row=start; row<end; ++row)
     {
-        double rowNorm = 0.0;
-        double scale = 0.0;
-
-        scale = -b->val[row];
-        for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
-        {
-            double mval = mat->val[idx];
-            scale += mval * x->val[mat->col[idx]];
-            rowNorm += mval*mval;
-        }
-        scale /= rowNorm; //omega considered 1
-
-#pragma simd
-        for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
-        {
-            x->val[mat->col[idx]] = x->val[mat->col[idx]] - scale*mat->val[idx];
-        }
+        KACZ_KERNEL_BODY();
     }
 }
+
 
 //Solve for x : A*x=b
-void kacz(densemat* b, sparsemat* mat, densemat* x, int iterations)
+void kacz(densemat* b, sparsemat* mat, densemat* x)
 {
-    RACE::Interface *ce = mat->ce;
-
-    ENCODE_TO_VOID(mat,b,x);
-
-    int kaczId = ce->registerFunction(&KACZ_KERNEL, voidArg);
-
-    for(int i=0; i<iterations; ++i)
+    if(mat->colorType == "RACE")
     {
-        ce->executeFunction(kaczId);
-    }
+        RACE::Interface *ce = mat->ce;
 
-    DELETE_ARG();
+        ENCODE_TO_VOID(mat,b,x);
+
+        int kaczId = ce->registerFunction(&KACZ_KERNEL, voidArg);
+
+        ce->executeFunction(kaczId);
+
+        DELETE_ARG();
+    }
+    else if(mat->colorType == "ABMC")
+    {
+        for(int color=0; color<mat->ncolors; ++color)
+        {
+#pragma omp parallel for schedule(static)
+            for(int part=mat->colorPtr[color]; part<mat->colorPtr[color+1]; ++part)
+            {
+                for(int row=mat->partPtr[part]; row<mat->partPtr[part+1]; ++row)
+                {
+                    KACZ_KERNEL_BODY();
+                }
+            }
+        }
+    }
+    else if(mat->colorType == "MC")
+    {
+        for(int color=0; color<mat->ncolors; ++color)
+        {
+#pragma omp parallel for schedule(static)
+            for(int row=mat->colorPtr[color]; row<mat->colorPtr[color+1]; ++row)
+            {
+                KACZ_KERNEL_BODY();
+            }
+        }
+    }
+    else
+    {
+        printf("Didn't recognize the coloring type. Available options: RACE, ABMC, MC\n");
+    }
 }
+
+#define SYMM_SPMV_KERNEL_BODY()\
+{\
+    double x_row = x->val[row];\
+    b->val[row] += mat->val_symm[mat->rowPtr_symm[row]]*x_row;\
+    double temp = 0;\
+_Pragma("simd reduction(+:temp)")\
+    for(int idx=mat->rowPtr_symm[row]+1; idx<mat->rowPtr_symm[row+1]; ++idx)\
+    {\
+        double mval = mat->val_symm[idx];\
+        int colIdx = mat->col_symm[idx];\
+        temp += mval*x->val[colIdx];\
+        b->val[colIdx] += mval*x_row;\
+    }\
+    b->val[row]+=temp;\
+}\
 
 inline void SYMM_SPMV_KERNEL(int start, int end, void* args)
 {
@@ -189,36 +338,55 @@ inline void SYMM_SPMV_KERNEL(int start, int end, void* args)
 
     for(int row=start; row<end; ++row)
     {
-        double x_row = x->val[row];
-        b->val[row] += mat->val_symm[mat->rowPtr_symm[row]]*x_row;
-        double temp = 0;
-#pragma simd reduction(+:temp)
-        for(int idx=mat->rowPtr_symm[row]+1; idx<mat->rowPtr_symm[row+1]; ++idx)
-        {
-            double mval = mat->val_symm[idx];
-            int colIdx = mat->col_symm[idx];
-            temp += mval*x->val[colIdx];
-            b->val[colIdx] += mval*x_row;
-        }
-        b->val[row]+=temp;
-   }
+        SYMM_SPMV_KERNEL_BODY();
+    }
 }
 
 //A*x=b; A is symmetric
-void symm_spmv(densemat* b, sparsemat* mat, densemat* x, int iterations)
+void symm_spmv(densemat* b, sparsemat* mat, densemat* x)
 {
-    RACE::Interface *ce = mat->ce;
 
-    ENCODE_TO_VOID(mat,b,x);
-
-    int symm_spmv_Id = ce->registerFunction(&SYMM_SPMV_KERNEL, voidArg);
-
-    for(int i=0; i<iterations; ++i)
+    if(mat->colorType == "RACE")
     {
-        ce->executeFunction(symm_spmv_Id);
-    }
+        RACE::Interface *ce = mat->ce;
 
-    DELETE_ARG();
+        ENCODE_TO_VOID(mat,b,x);
+
+        int symm_spmv_Id = ce->registerFunction(&SYMM_SPMV_KERNEL, voidArg);
+
+        ce->executeFunction(symm_spmv_Id);
+
+        DELETE_ARG();
+    }
+    else if(mat->colorType == "ABMC")
+    {
+        for(int color=0; color<mat->ncolors; ++color)
+        {
+#pragma omp parallel for schedule(static)
+            for(int part=mat->colorPtr[color]; part<mat->colorPtr[color+1]; ++part)
+            {
+                for(int row=mat->partPtr[part]; row<mat->partPtr[part+1]; ++row)
+                {
+                    SYMM_SPMV_KERNEL_BODY();
+                }
+            }
+        }
+    }
+    else if(mat->colorType == "MC")
+    {
+        for(int color=0; color<mat->ncolors; ++color)
+        {
+#pragma omp parallel for schedule(static)
+            for(int row=mat->colorPtr[color]; row<mat->colorPtr[color+1]; ++row)
+            {
+                SYMM_SPMV_KERNEL_BODY();
+            }
+        }
+    }
+    else
+    {
+        printf("Didn't recognize the coloring type. Available options: RACE, ABMC, MC\n");
+    }
 }
 
 inline void PLAIN_SPMV_KERNEL(int start, int end, int pow, void* args)

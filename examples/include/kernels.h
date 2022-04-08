@@ -30,13 +30,12 @@ struct kernelArg_split
 
 
 void spmv(sparsemat* mat, densemat* x);
-void spmv(densemat* b, sparsemat* mat, densemat* x, int iter);
-void plain_spmv(densemat* b, sparsemat* mat, densemat* x, int iter);
+void spmv(densemat* b, sparsemat* mat, densemat* x);
 void plain_spmv(densemat* b, sparsemat* mat, densemat* x);
-void spmtv(densemat* b, sparsemat* mat, densemat* x, int iter);
-void gs(densemat* b, sparsemat* mat, densemat* x, int iter);
-void kacz(densemat* b, sparsemat* mat, densemat* x, int iter);
-void symm_spmv(densemat* b, sparsemat* mat, densemat* x, int iter);
+void spmtv(densemat* b, sparsemat* mat, densemat* x);
+void gs(densemat* b, sparsemat* mat, densemat* x);
+void kacz(densemat* b, sparsemat* mat, densemat* x);
+void symm_spmv(densemat* b, sparsemat* mat, densemat* x);
 void plain_spmv(sparsemat* mat, densemat* x);
 void plain_spmv_only_highest(sparsemat* mat, densemat* x, int power);
 void plain_spmv_numa(NUMAmat* mat, densemat* x);
