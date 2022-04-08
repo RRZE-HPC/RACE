@@ -35,7 +35,7 @@ int main(const int argc, char * argv[])
     INIT_TIMER(kernel);
     START_TIMER(kernel);
 
-    mat->colorAndPermute(TWO, param.cores, param.smt, param.pin);
+    mat->colorAndPermute(TWO, "RACE", param.cores, param.smt, param.pin);
 
     STOP_TIMER(kernel);
     double time=GET_TIMER(kernel);

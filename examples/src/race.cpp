@@ -25,13 +25,14 @@ void capitalize(char* beg)
 
 #define PERF_RUN(kernel, flopPerNnz)\
 {\
-    int iter = param.iter;\
     double time = 0;\
-    double nnz_update = ((double)mat->nnz)*iter*1e-9;\
-    sleep(1);\
+    double nnz_update = ((double)mat->nnz)*iterations*1e-9;\
     INIT_TIMER(kernel);\
     START_TIMER(kernel);\
-    kernel(b, mat, x, iter);\
+    for(int iter=0; iter<iterations; ++iter)\
+    {\
+        kernel(b, mat, x);\
+    }\
     STOP_TIMER(kernel);\
     time = GET_TIMER(kernel);\
     char* capsKernel;\
@@ -58,32 +59,82 @@ int main(const int argc, char * argv[])
     {
         printf("Error in reading sparse matrix file\n");
     }
+
+    INIT_TIMER(pre_process);
+    START_TIMER(pre_process);
+    if(param.RCM_flag)
+    {
+        mat->doRCM();
+    }
+
+    dist distance=TWO;
+
+    char *dist_env = (getenv("COLOR_DISTANCE"));
+    if(dist_env)
+    {
+        int dist_numerical = atoi(dist_env);
+        if(dist_numerical == 1)
+        {
+            distance=ONE;
+        }
+    }
     printf("Coloring matrix\n");
-
-    mat->colorAndPermute(TWO, param.cores, param.smt, param.pin);
-
+    mat->colorAndPermute(distance, std::string(param.colorType), param.cores, param.smt, param.pin);
     printf("Finished coloring\n\n");
+    STOP_TIMER(pre_process);
+    double pre_process_time = GET_TIMER(pre_process);
+    printf("Total pre-processing time = %f s\n", pre_process_time);
+
 
     int NROWS = mat->nrows;
+    int randInit = false;
+    double initVal = 1/(double)NROWS;
 
     densemat *x, *b;
     x=new densemat(NROWS);
     b=new densemat(NROWS);
 
-    x->setRand();
-    b->setRand();
+    densemat *xRAND;
+    if(randInit)
+    {
+        xRAND = new densemat(NROWS);
+        xRAND->setRand();
+    }
+
+    b->setVal(0);
+    if(randInit)
+    {
+        x->copyVal(xRAND);
+    }
+    else
+    {
+        x->setVal(initVal);
+    }
+
+    //determine iterations
+    INIT_TIMER(init_iter);
+    START_TIMER(init_iter);
+    for(int iter=0; iter<10; ++iter)
+    {
+       plain_spmv(b, mat, x);
+    }
+    STOP_TIMER(init_iter);
+    double initTime = GET_TIMER(init_iter);
+    int iterations = std::max(1, (int) (2*10/initTime));
+    //int iterations = 1; //for correctness checking
+    printf("Num iterations =  %d\n", iterations);
 
     //This macro times and reports performance
+    PERF_RUN(plain_spmv,2);
     PERF_RUN(spmv,2);
     PERF_RUN(spmtv,2);
     PERF_RUN(kacz,4);
     //diag entry first required for GS
     mat->makeDiagFirst();
     PERF_RUN(gs,2);
-
+    //symm SpMV
     mat->computeSymmData();
     PERF_RUN(symm_spmv,2);
-
 
     if(param.validate)
     {
@@ -92,13 +143,25 @@ int main(const int argc, char * argv[])
         bSPMV = new densemat(NROWS);
         bSPMV->setVal(0);
         b->setVal(0);
-        x->setRand();
+        if(randInit)
+        {
+            x->copyVal(xRAND);
+        }
+        else
+        {
+            x->setVal(initVal);
+        }
         //Assuming symmetric matrix provided.
         //Do one SPMV and SPMTV; compare results
-        spmv(bSPMV, mat, x, 1);
-        spmtv(b, mat, x, 1);
+        plain_spmv(bSPMV, mat, x);
+        spmtv(b, mat, x);
 
-        bool spmtv_flag = checkEqual(bSPMV,b, param.tol);
+        bool relativeCheck = false;
+        if(randInit)
+        {
+            relativeCheck = true; //for random normally you got very big numbers, so check relative error
+        }
+        bool spmtv_flag = checkEqual(bSPMV,b, param.tol, relativeCheck);
         if(!spmtv_flag)
         {
             printf("SPMTV failed\n");
@@ -108,8 +171,8 @@ int main(const int argc, char * argv[])
         //Do one SPMV and symmSPMV; compare results
         b->setVal(0);
         mat->computeSymmData();
-        symm_spmv(b, mat, x, 1);
-        bool symm_spmv_flag = checkEqual(bSPMV,b, param.tol);
+        symm_spmv(b, mat, x);
+        bool symm_spmv_flag = checkEqual(bSPMV,b, param.tol, relativeCheck);
         if(!symm_spmv_flag)
         {
             printf("SYMM SPMV failed\n");
