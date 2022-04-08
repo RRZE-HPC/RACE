@@ -256,5 +256,6 @@ void Pin::pinPowerThread(int nodes)
     omp_set_nested(resetNestedState);
     omp_set_dynamic(resetDynamicState);
     */
+    UNUSED(nodes);
 }
 

@@ -1,4 +1,4 @@
-/* 
+/*
 *   Matrix Market I/O library for ANSI C
 *
 *   See http://math.nist.gov/MatrixMarket for details.
@@ -27,7 +27,7 @@ int mm_write_banner(FILE *f, MM_typecode matcode);
 int mm_write_mtx_crd_size(FILE *f, int M, int N, int nz);
 int mm_write_mtx_array_size(FILE *f, int M, int N);
 
-int mm_read_mtx_crd(char *fname, int *M, int *N, int *nz, int **I_, int **J, 
+int mm_read_mtx_crd(char *fname, int *M, int *N, int *nz, int **I_, int **J,
         double **val, MM_typecode *matcode);
 
 /********************* MM_typecode query fucntions ***************************/
@@ -93,7 +93,7 @@ int mm_is_valid(MM_typecode matcode);		/* too complex for a macro */
 
    MM_matrix_typecode: 4-character sequence
 
-				    ojbect 		sparse/   	data        storage 
+				    ojbect 		sparse/   	data        storage
 						  		dense     	type        scheme
 
    string position:	 [0]        [1]			[2]         [3]
@@ -105,19 +105,19 @@ int mm_is_valid(MM_typecode matcode);		/* too complex for a macro */
 
  ***********************************************************************/
 
-#define MM_MTX_STR		"matrix"
-#define MM_ARRAY_STR	"array"
-#define MM_DENSE_STR	"array"
-#define MM_COORDINATE_STR "coordinate" 
-#define MM_SPARSE_STR	"coordinate"
-#define MM_COMPLEX_STR	"complex"
-#define MM_REAL_STR		"real"
-#define MM_INT_STR		"integer"
-#define MM_GENERAL_STR  "general"
-#define MM_SYMM_STR		"symmetric"
-#define MM_HERM_STR		"hermitian"
-#define MM_SKEW_STR		"skew-symmetric"
-#define MM_PATTERN_STR  "pattern"
+#define MM_MTX_STR		(char*)"matrix"
+#define MM_ARRAY_STR	(char*)"array"
+#define MM_DENSE_STR	(char*)"array"
+#define MM_COORDINATE_STR (char*)"coordinate"
+#define MM_SPARSE_STR	(char*)"coordinate"
+#define MM_COMPLEX_STR	(char*)"complex"
+#define MM_REAL_STR		(char*)"real"
+#define MM_INT_STR		(char*)"integer"
+#define MM_GENERAL_STR  (char*)"general"
+#define MM_SYMM_STR		(char*)"symmetric"
+#define MM_HERM_STR		(char*)"hermitian"
+#define MM_SKEW_STR		(char*)"skew-symmetric"
+#define MM_PATTERN_STR  (char*)"pattern"
 
 
 /*  high level routines */

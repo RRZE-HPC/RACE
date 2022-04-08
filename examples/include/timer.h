@@ -25,6 +25,9 @@ printf("%s : Time = %\nf", #region, GET_TIMER(region));\
 
 
 #else
+
+#define INIT_TIMER(region)\
+
 #define START_TIMER(region)\
 
 #define STOP_TIMER(region)\

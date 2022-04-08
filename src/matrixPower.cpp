@@ -592,7 +592,7 @@ void mtxPower::splitSharedCacheDomain()
 
    // nodePtr = std::vector<int>(len);
     nodePtr = findMacroLevelPtr(cacheLevelGroup);
-    if(nodePtr.size() != numSharedCache+1)
+    if((int)nodePtr.size() != numSharedCache+1)
     {
         ERROR_PRINT("nodePtr dimensions do not match, nodePtr.size() = %d, numSharedCache = %d", (int)nodePtr.size(), numSharedCache);
     }
@@ -882,7 +882,7 @@ void mtxPower::consolidatePartition()
 
     boundaryLevelPtr = newBoundaryLevelPtr;
     std::vector<int> newNodePtr = findMacroLevelPtr(cacheLevelGroup);
-    if(nodePtr.size() != numSharedCache+1)
+    if((int)nodePtr.size() != numSharedCache+1)
     {
         ERROR_PRINT("nodePtr dimensions do not match");
     }

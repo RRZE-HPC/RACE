@@ -98,7 +98,7 @@ void densemat::setRand()
     setFn(rand);
 }
 
-bool checkEqual(const densemat* lhs, const densemat* rhs, double tol)
+bool checkEqual(const densemat* lhs, const densemat* rhs, double tol, bool relative)
 {
     if((lhs->nrows != rhs->nrows) || (lhs->ncols != rhs->ncols))
     {
@@ -113,10 +113,20 @@ bool checkEqual(const densemat* lhs, const densemat* rhs, double tol)
     {
         for(int row=0; row<nrows; ++row)
         {
-            double dev = fabs((lhs->val[col*nrows+row]-rhs->val[col*nrows+row]));//lhs->val[col*nrows+row]);
+            double denom = 1;
+            if(relative)
+            {
+                denom=lhs->val[col*nrows+row];
+            }
+            double dev = fabs((lhs->val[col*nrows+row]-rhs->val[col*nrows+row])/denom);
             if( dev > tol )
             {
-                printf("Densemat deviation @ idx (%d, %d) lhs = %.18f, rhs = %.18f, dev = %.18f\n", row, col, lhs->val[col*nrows+row], rhs->val[col*nrows+row], dev);
+                char* errType = "absolute";
+                if(relative)
+                {
+                    errType = "relative";
+                }
+                printf("Densemat %s deviation @ idx (%d, %d) lhs = %.18f, rhs = %.18f, dev = %.18f\n", errType, row, col, lhs->val[col*nrows+row], rhs->val[col*nrows+row], dev);
                 return false;
             }
         }

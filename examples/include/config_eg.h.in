@@ -3,5 +3,7 @@
 
 #cmakedefine RACE_USE_SPMP
 #define VECTOR_LENGTH ${VECTOR_LENGTH}
+#cmakedefine RACE_HAVE_COLPACK
+#cmakedefine RACE_HAVE_METIS
 
 #endif

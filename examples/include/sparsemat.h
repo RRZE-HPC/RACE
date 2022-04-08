@@ -40,7 +40,8 @@ struct sparsemat
     void doRCM();
     void doRCMPermute();
     int prepareForPower(int highestPower, int numSharedCache, double cacheSize, int nthreads, int smt=1, PinMethod pinMethod=FILL, std::string mtxType="N");
-    int colorAndPermute(dist d, int nthreads, int smt=1, PinMethod pinMethod=FILL);
+    //colorType: RACE, MC, ABMC
+    int colorAndPermute(dist d, std::string colorType_, int nthreads, int smt=1, PinMethod pinMethod=FILL);
     double colorEff();
     int maxStageDepth();
     void permute(int* perm, int* invPerm, bool RACEalloc=false);
@@ -54,6 +55,14 @@ struct sparsemat
     bool computeSymmData();
     //diag with L
     void splitMatrixToLU(sparsemat **L, sparsemat **U);
+    std::string colorType;
+
+    //for multicoloring variants
+    int colorBlockSize;
+    int colorDist;
+    int ncolors;
+    int* colorPtr;
+    int* partPtr;
 
     sparsemat();
     ~sparsemat();
@@ -61,6 +70,7 @@ struct sparsemat
     void initCover(int nrows_, int nnz_, double *val_, int *rowPtr_, int *col_);
     densemat* permute_densemat(densemat *vec);
 
+    void checkNumVecAccesses(int power);
 };
 
 //Used for NUMA aware allocation, sometimes just

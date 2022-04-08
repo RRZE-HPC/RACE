@@ -4,7 +4,7 @@
 #include <string.h>
 #include "parse.h"
 
-my_option::my_option(const char* name_, int has_arg_, int* flag_, int val_, char*desc_): desc(desc_)
+my_option::my_option(const char* name_, int has_arg_, int* flag_, int val_, char const* desc_): desc(desc_)
 {
     gnu_opt = {name_, has_arg_, flag_, val_};
 }
@@ -140,7 +140,7 @@ void parser::help()
 {
     printf("Usage: %s [OPTION]...\n",prgname);
     printf("Valid options are:\n\n");
-    char* HLINE = "────────────────────────────────────────────────────────────────────────────────────────────";
+    char const* HLINE = "────────────────────────────────────────────────────────────────────────────────────────────";
     printf("%s\n",HLINE);
     printf("\t%s\t\t\t%s\n", "options", "description");
     printf("%s\n",HLINE);

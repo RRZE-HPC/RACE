@@ -11,7 +11,7 @@
 //#define RACE_DEBUG
 
 //coloring
-FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),power_fn(false), numaSplit(false), func(f_),args(args_),zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_), nodeBarrier(NULL), barrierCount(NULL)
+void FuncManager::initFuncColor()
 {
     //    func = std::bind(f_,*this,std::placeholders::_1,std::placeholders::_2,args);
     /*len = 72*72*72;
@@ -27,19 +27,35 @@ FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zone
     {
         activethreads = omp_get_num_threads();
     }
+    origthreads = activethreads;
 }
+
+/*FuncManager::FuncManager(void (*f_) (int,int,void*), void *args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),power_fn(false), numaSplit(false), func(f_),args(args_),zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_), nodeBarrier(NULL), barrierCount(NULL)
+{
+    initFuncColor();
+}
+*/
+
+FuncManager::FuncManager(funcType f_, void *args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),power_fn(false), numaSplit(false), func(f_),args(args_),zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_), nodeBarrier(NULL), barrierCount(NULL)
+{
+    initFuncColor();
+}
+
 
 int privateBarrierCount;
 #pragma omp threadprivate(privateBarrierCount)
 
 
 //power = true, NUMA = false
-FuncManager::FuncManager(void (*f_) (int,int,int,int,void*), void *args_, int power_, mtxPowerRecursive *matPower_, bool numaSplit_):power_fn(true), numaSplit(numaSplit_), powerFunc(f_), args(args_), power(power_), matPower(matPower_), nodeBarrier(NULL), barrierCount(NULL)
+void FuncManager::initFuncPower()
 {
+    totPower = power*subPower;
+
 #pragma omp parallel
     {
         activethreads = omp_get_num_threads();
     }
+    origthreads = activethreads;
 
     totalNodes = matPower->tree[0].nodePtr.size()-1;
     threadPerNode = activethreads/totalNodes;
@@ -69,6 +85,18 @@ FuncManager::FuncManager(void (*f_) (int,int,int,int,void*), void *args_, int po
     recursivePowerFun = std::bind(recursivePowerCall, this, std::placeholders::_1);
 }
 
+/*FuncManager::FuncManager(void (*f_) (int,int,int,int,int,void*), void *args_, int power_, int subPower_, mtxPowerRecursive *matPower_, bool numaSplit_):power_fn(true), numaSplit(numaSplit_), powerFunc(f_), args(args_), power(power_), subPower(subPower_), matPower(matPower_), nodeBarrier(NULL), barrierCount(NULL)
+{
+    initFuncPower();
+}
+*/
+
+FuncManager::FuncManager(powerFuncType f_, void *args_, int power_, int subPower_, mtxPowerRecursive *matPower_, bool numaSplit_):power_fn(true), numaSplit(numaSplit_), powerFunc(f_), args(args_), power(power_), subPower(subPower_), matPower(matPower_), nodeBarrier(NULL), barrierCount(NULL)
+{
+    initFuncPower();
+}
+
+
 FuncManager::FuncManager(const FuncManager &obj)
 {
     rev = obj.rev;
@@ -76,7 +104,9 @@ FuncManager::FuncManager(const FuncManager &obj)
     func = obj.func;
     powerFunc = obj.powerFunc;
     args = obj.args;
+    totPower = obj.totPower;
     power = obj.power;
+    subPower = obj.subPower;
     zoneTree = obj.zoneTree;
     pool = obj.pool;
     serialPart = obj.serialPart;
@@ -126,7 +156,11 @@ FuncManager::~FuncManager()
     }
     if(nodeBarrier)
     {
-        delete[] nodeBarrier;
+        free((void*)nodeBarrier);
+    }
+    if(barrierCount)
+    {
+        free((void*)barrierCount);
     }
 }
 
@@ -275,7 +309,7 @@ void FuncManager::powerRun()
                 int endLevel = nodePtr[nodeGroup+1];
                 for(int level=startLevel; level<(endLevel); ++level)
                 {
-                    for(int pow=0; pow<power; ++pow)
+                    for(int pow=0; pow<totPower; ++pow)
                     {
                         int powLevel = (level-pow);
 
@@ -302,7 +336,7 @@ void FuncManager::powerRun()
         }
 #pragma omp barrier
         //reminder
-        for(int pow=1; pow<power; ++pow)
+        for(int pow=1; pow<totPower; ++pow)
         {
             //reminder-head
             {
@@ -408,7 +442,7 @@ void FuncManager::initPowerRun(int parent)
         {
             free((void*)lockTableCtr[parent]);
         }
-        lockTableCtr[parent] = (volatile int*)malloc(sizeof(volatile int)*power*totalLevels);
+        lockTableCtr[parent] = (volatile int*)malloc(sizeof(volatile int)*totPower*totalLevels);
     }
 
     if(parent==0)
@@ -433,9 +467,9 @@ void FuncManager::initPowerRun(int parent)
         }
         for(int l=startLevel; l<endLevel; ++l)
         {
-            for(int p=0; p<power; ++p)
+            for(int p=0; p<totPower; ++p)
             {
-                lockTableCtr[parent][l*power+p] = 0;
+                lockTableCtr[parent][l*totPower+p] = 0;
             }
         }
     }
@@ -456,7 +490,7 @@ void FuncManager::NUMAInitPower()
         //only first thread in each nodeGroup works
         if(tid == nodeGroup*threadPerNode)
         {
-            powerFunc(levelPtr->at(nodePtr->at(nodeGroup)), levelPtr->at(nodePtr->at(nodeGroup+1)), 1, numaLocalArg, args);
+            powerFunc(levelPtr->at(nodePtr->at(nodeGroup)), levelPtr->at(nodePtr->at(nodeGroup+1)), 1, 1, numaLocalArg, args);
             /*for(int row=nodePtr[nodeGroup]; row<nodePtr[nodeGroup+1]; ++row)
               {
               for(int idx=rowPtr_[row]; idx<rowPtr_[row+1]; ++idx)
@@ -476,10 +510,10 @@ void FuncManager::NUMAInitPower()
 {\
     if(localTid < unlockCtr->at(_level_+1))\
     {\
-        if((_level_ >= 0) && (_pow_ <= power-1))\
+        if((_level_ >= 0) && (_pow_ <= totPower-1))\
         {\
             _Pragma("omp atomic")\
-            lockTableCtr[parent][_level_*power+_pow_]++;\
+            lockTableCtr[parent][_level_*totPower+_pow_]++;\
         }\
     }\
 }
@@ -488,13 +522,13 @@ void FuncManager::NUMAInitPower()
 
 #define WAIT(_level_, _pow_)\
 {\
-    if((_pow_ != 0) && (_level_!=(endLevel-1)))\
+    if(((activethreads>1) && (_pow_ != 0)) && (_level_!=(endLevel-1)))\
     {\
-        while(lockTableCtr[parent][_level_*power+_pow_] != unlockCtr->at(_level_+1))\
+        while(lockTableCtr[parent][_level_*totPower+_pow_] != unlockCtr->at(_level_+1))\
         {\
             _mm_pause();\
-            printf("Parent = %d, Tid = %d, Waiting on %d, need to reach %d, pow = %d, level = %d\n", parent, tid, lockTableCtr[parent][_level_*power+_pow_], unlockCtr->at(_level_+1), _pow_, _level_);\
-            /*printf("Tid = %d, Waiting on %d, need to reach %d, pow = %d, level = %d, startRow_tid = %d, unlock = %d, danger = %d, endRow_tid = %d\n", tid, lockTableCtr[parent][_level_*power+_pow_], unlockCtr->at(_level_), _pow_, _level_, startRow_tid, currUnlockRow, dangerRowStart, endRow_tid);*/\
+            printf("Parent = %d, Tid = %d, Waiting on %d, need to reach %d, pow = %d, level = %d\n", parent, tid, lockTableCtr[parent][_level_*totPower+_pow_], unlockCtr->at(_level_+1), _pow_, _level_);\
+            /*printf("Tid = %d, Waiting on %d, need to reach %d, pow = %d, level = %d, startRow_tid = %d, unlock = %d, danger = %d, endRow_tid = %d\n", tid, lockTableCtr[parent][_level_*totPower+_pow_], unlockCtr->at(_level_), _pow_, _level_, startRow_tid, currUnlockRow, dangerRowStart, endRow_tid);*/\
         }\
     }\
 }\
@@ -503,9 +537,9 @@ void FuncManager::NUMAInitPower()
 
 #define WAIT(_level_, _pow_)\
 {\
-    if((_pow_ != 0) && (_level_!=(endLevel-1)))\
+    if(((activethreads>1) && (_pow_ != 0)) && (_level_!=(endLevel-1)))\
     {\
-        while(lockTableCtr[parent][_level_*power+_pow_] != unlockCtr->at(_level_+1))\
+        while(lockTableCtr[parent][_level_*totPower+_pow_] != unlockCtr->at(_level_+1))\
         {\
             _mm_pause();\
         }\
@@ -516,14 +550,14 @@ void FuncManager::NUMAInitPower()
 #endif
 
 #define BOUNDARY_WORK\
-    if((pow > 0) && (pow < (power-1)))\
+    if((pow > 0) && (pow < (totPower-1)))\
     {\
         EXEC_BOUNDARY_STRUCTURE_w_wave_shape((*boundaryLevelPtr), pow, \
                         SPLIT_LEVEL_PER_THREAD_BOUNDARY(powLevel);\
                         if(endRow_tid_b > startRow_tid_b) /*there wont be region if this is not true*/\
                         {\
                             /*printf("tid = %d, rowPerThread = %d, doing boundary [%d, %d] with pow = %d, powLevel = %d\n", omp_get_thread_num(), _RowPerThreadBoundary_, startRow_tid_b, endRow_tid_b, pow, powLevel);*/\
-                            powerFunc(startRow_tid_b, endRow_tid_b, pow+1, numaLocalArg, args);\
+                            powerFunc(startRow_tid_b, endRow_tid_b, curMainPow+1, curSubPow+1, numaLocalArg, args);\
                         }\
                 );\
     }
@@ -533,7 +567,8 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
 {
     int tid = omp_get_thread_num();
     int localTid = tid % threadPerNode;
-    //printf("here is %d\n", sched_getcpu());
+
+     //printf("here is %d\n", sched_getcpu());
     /* int maxLevelCount = 0;
        for(int i=0; i<totalNodes; ++i)
        {
@@ -541,13 +576,15 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
        }
        int maxEndLevel = startLevel + maxLevelCount; //needed so that everyone calls barrier
        */
-    //int workingBoundaryLength = static_cast<int>(ceil(power/2.0))-1;
-    for(int level=startLevel; level<(endLevel+power-1); ++level)
+    //int workingBoundaryLength = static_cast<int>(ceil(totPower/2.0))-1;
+    for(int level=startLevel; level<(endLevel+totPower-1); ++level)
     {
         //printf("Level = %d\n", level);
         //tid responsible for (level-1) lock, locks the level
-        for(int pow=0; pow<power; ++pow)
+        for(int pow=0; pow<totPower; ++pow)
         {
+            int curMainPow = static_cast<int>(pow/subPower);
+            int curSubPow = static_cast<int>(pow%subPower);
             int powLevel = (level-pow);
 
             int boundaryLeft = boundaryStart + startSlope*pow;
@@ -566,12 +603,12 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
 
                 SPLIT_LEVEL_PER_THREAD_P2P(powLevel);
 #ifdef RACE_DEBUG
-                printf("power = %d, pow = %d, level = %d, tid = %d, start row = %d, unlock row = %d, danger row = %d, end_row = %d\n", power, pow, powLevel, omp_get_thread_num(), startRow_tid, currUnlockRow, dangerRowStart, endRow_tid);
+                printf("totPower = %d, pow = %d, level = %d, tid = %d, start row = %d, unlock row = %d, danger row = %d, end_row = %d\n", totPower, pow, powLevel, omp_get_thread_num(), startRow_tid, currUnlockRow, dangerRowStart, endRow_tid);
 #endif
 
 
                 //int z = (pow) + (powLevel);
-                //int cons_term = std::max(0,z-power); //the term for having consequtive numbers
+                //int cons_term = std::max(0,z-totPower); //the term for having consequtive numbers
                 //int powLevel_to_unlock = ((z*(z+1))>>1) + (pow+1) - (cons_term*(cons_term+1)>>1);
                 if(dangerRowStart <= startRow_tid)
                 {
@@ -579,7 +616,7 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
                     WAIT(powLevel, pow);
                     BOUNDARY_WORK;
 
-                    powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);
+                    powerFunc(startRow_tid, endRow_tid, curMainPow+1, curSubPow+1, numaLocalArg, args);
 #ifdef RACE_DEBUG
                     printf("5. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), startRow_tid, endRow_tid, pow, powLevel);
 #endif
@@ -599,7 +636,7 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
                     WAIT(powLevel, pow);
                     BOUNDARY_WORK;
 
-                    powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);
+                    powerFunc(startRow_tid, endRow_tid, curMainPow+1, curSubPow+1, numaLocalArg, args);
 #ifdef RACE_DEBUG
                     printf("6. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), startRow_tid, endRow_tid, pow, powLevel);
 #endif
@@ -620,7 +657,7 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
                     //NOTE: we have to expect any ordering of danger and unlock
                     //for boundary. And not assume it is same as main body
                     bool can_i_delay_wait = true;
-                    if((pow > 0) && (pow < (power-1)))
+                    if((pow > 0) && (pow < (totPower-1)))
                     {
                         EXEC_BOUNDARY_STRUCTURE_w_wave_shape((*boundaryLevelPtr), pow,
                                 SPLIT_LEVEL_PER_THREAD_BOUNDARY_w_UNLOCK_DANGER(powLevel);
@@ -635,8 +672,11 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
 
                                 if(till_row_b > startRow_tid_b) /*there wont be region if this is not true*/
                                 {
-                                    powerFunc(startRow_tid_b, till_row_b, pow+1, numaLocalArg, args);
+                                    powerFunc(startRow_tid_b, till_row_b, curMainPow+1, curSubPow+1, numaLocalArg, args);
                                 }
+#ifdef RACE_DEBUG
+                                printf("7. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), startRow_tid_b, till_row_b, pow, powLevel);
+#endif
                                )
                             ;
                     }
@@ -644,7 +684,7 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
                     if(!can_i_delay_wait)
                     {
                         WAIT(powLevel, pow);
-                        if((pow > 0) && (pow < (power-1)))
+                        if((pow > 0) && (pow < (totPower-1)))
                         {
                             EXEC_BOUNDARY_STRUCTURE_w_wave_shape((*boundaryLevelPtr), pow,
                                     SPLIT_LEVEL_PER_THREAD_BOUNDARY_w_UNLOCK_DANGER(powLevel);
@@ -655,10 +695,15 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
 
                                     if(endRow_tid_b > till_row_b) /*there wont be region if this is not true*/
                                     {
-                                        powerFunc(till_row_b, endRow_tid_b, pow+1, numaLocalArg, args);
+                                        powerFunc(till_row_b, endRow_tid_b, curMainPow+1, curSubPow+1, numaLocalArg, args);
                                     }
-                                    )
+#ifdef RACE_DEBUG
+                                printf("8. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), startRow_tid_b, endRow_tid_b, pow, powLevel);
+#endif
+
+                                )
                                 ;
+
                         }
                     }
 
@@ -667,7 +712,7 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
                     {
                         till_row = std::min(currUnlockRow, endRow_tid);
                     }
-                    powerFunc(startRow_tid, till_row, pow+1, numaLocalArg, args);
+                    powerFunc(startRow_tid, till_row, curMainPow+1, curSubPow+1, numaLocalArg, args);
 #ifdef RACE_DEBUG
                     printf("1. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), startRow_tid, currUnlockRow, pow, powLevel);
 #endif
@@ -682,7 +727,7 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
                     {
                         next_till_row = std::min(dangerRowStart, endRow_tid);
                     }
-                    powerFunc(till_row, next_till_row, pow+1, numaLocalArg, args);
+                    powerFunc(till_row, next_till_row, curMainPow+1, curSubPow+1, numaLocalArg, args);
 #ifdef RACE_DEBUG
                     printf("3. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), till_row, dangerRowStart, pow, powLevel);
 #endif
@@ -691,7 +736,7 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
                     {
                         WAIT(powLevel, pow);
                         //Remaining BOUNDARY_WORK;
-                        if((pow > 0) && (pow < (power-1)))
+                        if((pow > 0) && (pow < (totPower-1)))
                         {
                             EXEC_BOUNDARY_STRUCTURE_w_wave_shape((*boundaryLevelPtr), pow,
                                     SPLIT_LEVEL_PER_THREAD_BOUNDARY_w_UNLOCK_DANGER(powLevel);
@@ -701,14 +746,13 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
                                     till_row_b = std::max(startRow_tid_b, till_row_b);
                                     if(endRow_tid_b > till_row_b) /*there wont be region if this is not true*/
                                     {
-                                        powerFunc(till_row_b, endRow_tid_b, pow+1, numaLocalArg, args);
+                                        powerFunc(till_row_b, endRow_tid_b, curMainPow+1, curSubPow+1, numaLocalArg, args);
                                     }
                                     )
                                 ;
                         }
- 
                     }
-                    powerFunc(next_till_row, endRow_tid, pow+1, numaLocalArg, args);
+                    powerFunc(next_till_row, endRow_tid, curMainPow+1, curSubPow+1, numaLocalArg, args);
 #ifdef RACE_DEBUG
                     printf("4. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), dangerRowStart, endRow_tid, pow, powLevel);
 #endif
@@ -728,13 +772,16 @@ inline void FuncManager::powerCallHopelessRightReminder(int leftmostLevel, const
     int tid = omp_get_thread_num();
     int localTid = tid % threadPerNode;
 
-    int endLevel = leftmostLevel + 1 + (power-1);
+    int endLevel = leftmostLevel + 1 + (totPower-1);
     int totPow = 1;
-    for(int l=0; l<(power-1); ++l)
+    for(int l=0; l<(totPower-1); ++l)
     {
         int curLevel = leftmostLevel+l;
         for(int p=0; p<totPow; ++p)
         {
+            int curMainPow = static_cast<int>(p/subPower);
+            int curSubPow = static_cast<int>(p%subPower);
+
             int powLevel = curLevel-p;
             while(lockCtr[parent][powLevel] < threadPerNode*p)
             {
@@ -751,21 +798,22 @@ inline void FuncManager::powerCallHopelessRightReminder(int leftmostLevel, const
 
             if(p > 0)
             {
-                EXEC_BOUNDARY_STRUCTURE_w_wave_shape_wo_radius((*boundaryLevelPtr), p,
+    //            EXEC_BOUNDARY_STRUCTURE_w_wave_shape_wo_radius((*boundaryLevelPtr), p,
+                EXEC_BOUNDARY_STRUCTURE_w_wave_shape((*boundaryLevelPtr), p,
                         SPLIT_LEVEL_PER_THREAD_BOUNDARY(powLevel);
                             if(endRow_tid_b > startRow_tid_b) //there wont be region if this is not true
                             {
 #ifdef RACE_DEBUG
-                                printf("tid = %d, rowPerThread = %d, doing boundary [%d, %d] with pow = %d, powLevel = %d\n", omp_get_thread_num(), _RowPerThreadBoundary_, startRow_tid_b, endRow_tid_b, p, powLevel);
+                                printf("RR. tid = %d, rowPerThread = %d, doing boundary [%d, %d] with pow = %d, powLevel = %d\n", omp_get_thread_num(), _RowPerThreadBoundary_, startRow_tid_b, endRow_tid_b, p, powLevel);
 #endif
 
-                                powerFunc(startRow_tid_b, endRow_tid_b, p+1, numaLocalArg, args);
+                                powerFunc(startRow_tid_b, endRow_tid_b, curMainPow+1, curSubPow+1, numaLocalArg, args);
                             }
                     );
             }
 
             SPLIT_LEVEL_PER_THREAD_P2P(powLevel);
-            powerFunc(startRow_tid, endRow_tid, p+1, numaLocalArg, args);
+            powerFunc(startRow_tid, endRow_tid, curMainPow+1, curSubPow+1, numaLocalArg, args);
 
             //printf("right-rem. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), dangerRowStart, endRow_tid, p, powLevel);
             //if(startRow_tid < currUnlockRow)
@@ -777,7 +825,7 @@ inline void FuncManager::powerCallHopelessRightReminder(int leftmostLevel, const
 
         }
 
-        //repeat the same power for 2 iterations
+        //repeat the same totPower for 2 iterations
         if((l&1) != 0) //equivalent to (l%2 != 0)
         {
             totPow+=1;
@@ -793,15 +841,18 @@ inline void FuncManager::powerCallHopelessLeftReminder(int rightmostLevel, const
     int localTid = tid % threadPerNode;
 
     int endLevel = rightmostLevel+1;
-    int incPow = (int)(power/2); //for 5->2, 6->3, 7->3
-    int startPow = (power - incPow);
+    int incPow = (int)(totPower/2); //for 5->2, 6->3, 7->3
+    int startPow = (totPower - incPow);
 
-    for(int l=(power-2); l>=0; --l)
+    for(int l=(totPower-2); l>=0; --l)
     {
         int curLevel = rightmostLevel-l;
-        for(int p=startPow; p<power; ++p)
+        for(int p=startPow; p<totPower; ++p)
         {
-            int powLevel = curLevel+((power-1)-p);
+            int curMainPow = static_cast<int>(p/subPower);
+            int curSubPow = static_cast<int>(p%subPower);
+
+            int powLevel = curLevel+((totPower-1)-p);
 
             while(lockCtr[parent][powLevel] < threadPerNode*p)
             {
@@ -814,23 +865,24 @@ inline void FuncManager::powerCallHopelessLeftReminder(int rightmostLevel, const
             {
                 WAIT(powLevel, p);
             }
-            if(p < (power-1))
+            if(p < (totPower-1))
             {
-                EXEC_BOUNDARY_STRUCTURE_w_wave_shape_wo_radius((*boundaryLevelPtr), p,
+                //EXEC_BOUNDARY_STRUCTURE_w_wave_shape_wo_radius((*boundaryLevelPtr), p,
+                EXEC_BOUNDARY_STRUCTURE_w_wave_shape((*boundaryLevelPtr), p,
                             SPLIT_LEVEL_PER_THREAD_BOUNDARY(powLevel);
                             if(endRow_tid_b > startRow_tid_b) //there wont be region if this is not true
                             {
 #ifdef RACE_DEBUG
-                                printf("tid = %d, rowPerThread = %d, doing boundary [%d, %d] with pow = %d, powLevel = %d\n", omp_get_thread_num(), _RowPerThreadBoundary_, startRow_tid_b, endRow_tid_b, p, powLevel);
+                                printf("LR. tid = %d, rowPerThread = %d, doing boundary [%d, %d] with pow = %d, powLevel = %d\n", omp_get_thread_num(), _RowPerThreadBoundary_, startRow_tid_b, endRow_tid_b, p, powLevel);
 #endif
 
-                                powerFunc(startRow_tid_b, endRow_tid_b, p+1, numaLocalArg, args);
+                                powerFunc(startRow_tid_b, endRow_tid_b, curMainPow+1, curSubPow+1, numaLocalArg, args);
                             }
                     );
             }
 
             SPLIT_LEVEL_PER_THREAD_P2P(powLevel);
-            powerFunc(startRow_tid, endRow_tid, p+1, numaLocalArg, args);
+            powerFunc(startRow_tid, endRow_tid, curMainPow+1, curSubPow+1, numaLocalArg, args);
 
             //if(startRow_tid < currUnlockRow)
             {
@@ -841,7 +893,7 @@ inline void FuncManager::powerCallHopelessLeftReminder(int rightmostLevel, const
 
         }
 
-        //repeat the same power for 2 iterations
+        //repeat the same totPower for 2 iterations
         if((l&1) == 0) //equivalent to (l%2 == 0)
         {
             startPow+=1;
@@ -856,14 +908,14 @@ inline void FuncManager::powerCallReleaseHopelessRegionLocks(int hopelessStartLe
     int localTid = tid % threadPerNode;
     int nodeId = (int)(tid/threadPerNode);
 
-    int incPow = (int)(power/2); //for 5->2, 6->3, 7->3
+    int incPow = (int)(totPower/2); //for 5->2, 6->3, 7->3
     //   printf("Before syncing in node = %d\n, nodeBarrier (lhs) = %d, barrierCount = %d, threadPerNode = %d\n", nodeId, nodeBarrier[nodeId*CL_pad], barrierCount[nodeId*CL_pad], threadPerNode);
 
     //wait till hopeless is completely done
     NODE_BARRIER_INIT(nodeId, localTid);
     if(localTid==0)
     {
-        int completedPow = power-1;
+        int completedPow = totPower-1;
         for(int l=0; l<incPow; ++l)
         {
             int leftPowLevel = (hopelessStartLevel-1) - l;
@@ -886,8 +938,11 @@ inline void FuncManager::powerCallNodeReminder(int startSlope, int endSlope, con
     int localTid = tid % threadPerNode;
     int nodeGroup = tid / threadPerNode;
 
-    for(int pow=1; pow<power; ++pow)
+    for(int pow=1; pow<totPower; ++pow)
     {
+        int curMainPow = static_cast<int>(pow/subPower);
+        int curSubPow = static_cast<int>(pow%subPower);
+
 #pragma omp barrier
         //reminder-head
         if(startSlope!=0)
@@ -898,7 +953,7 @@ inline void FuncManager::powerCallNodeReminder(int startSlope, int endSlope, con
             {
                 SPLIT_LEVEL_PER_THREAD(level);
                 //can be a function ptr
-                powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);
+                powerFunc(startRow_tid, endRow_tid, curMainPow+1, curSubPow+1, numaLocalArg, args);
             }
         }
         //reminder-tail
@@ -910,7 +965,7 @@ inline void FuncManager::powerCallNodeReminder(int startSlope, int endSlope, con
             {
                 SPLIT_LEVEL_PER_THREAD(level);
                 //can be a function ptr
-                powerFunc(startRow_tid, endRow_tid, pow+1, numaLocalArg, args);
+                powerFunc(startRow_tid, endRow_tid, curMainPow+1, curSubPow+1, numaLocalArg, args);
             }
         }
     }
@@ -918,13 +973,12 @@ inline void FuncManager::powerCallNodeReminder(int startSlope, int endSlope, con
 
 void FuncManager::recursivePowerCallSerial(int parent)
 {
-//#pragma omp parallel
+    //#pragma omp parallel
     {
         //printf("parent = %d\n", parent);
         initPowerRun(parent);
-
         //*nodePtr - for NUMA
-        //**levelPtr - for power
+        //**levelPtr - for totPower
         //int totalLevel = matPower->getTotalLevel();
         //do pointers to avoid copying expense; since tree is now stabe (size fixed)
         //this shouldn't be a problem
@@ -944,7 +998,7 @@ void FuncManager::recursivePowerCallSerial(int parent)
         std::vector<int>* childrenNodeStart = &(tree->at(parent).childrenNodeStart);
 
         //all delete after putting reminder with general
-        //int power = power;
+        //int totPower = totPower;
         //printf("####### nthreads = %d\n", omp_get_num_threads());
         int tid = omp_get_thread_num();
         //int localTid = tid % threadPerNode;
@@ -980,7 +1034,7 @@ void FuncManager::recursivePowerCallSerial(int parent)
         while(unitCtr < endNode)
         {
             int startSlope=-1, endSlope=-1;
-            int startSkew = (power-1);
+            int startSkew = (totPower-1);
             //find start and end slope
             if(unitCtr == startNode)
             {
@@ -992,7 +1046,7 @@ void FuncManager::recursivePowerCallSerial(int parent)
                 endSlope = nodeEndSlope;
             }
 
-            int startLevel = unitPtr->at(unitCtr)+startSkew;
+            int startLevel = unitPtr->at(unitCtr)+startSkew; //skewing to account for boundary work which is done by boundary
             int endLevel = unitPtr->at(unitCtr+1);
             //printf("tid = %d: threadPerNode = %d, unitCtr = %d, startSlope = %d, endSlope = %d, startLevel = %d, endLevel = %d, startRow = %d, endRow = %d\n", tid, threadPerNode, unitCtr, startSlope, endSlope, startLevel, endLevel, levelPtr->at(startLevel), levelPtr->at(endLevel));
             //main-body
@@ -1013,9 +1067,9 @@ void FuncManager::recursivePowerCallSerial(int parent)
                 ++childCount;
 
                 powerCallReleaseHopelessRegionLocks(endLevel, parent);
-                //need left reminder only if it is more than (power-1) away from
+                //need left reminder only if it is more than (totPower-1) away from
                 //start, in case when startSlope==1
-                if((startSlope != 1) || ((endLevel-startLevel) > (power-1)))
+                if((startSlope != 1) || ((endLevel-startLevel) > (totPower-1)))
                 {
                     //left-reminder of Hopeless
                     powerCallHopelessLeftReminder(endLevel-1, levelPtr, boundaryLevelPtr, unlockRow, unlockCtr, dangerRow, numaLocalArg, offset, parent);
@@ -1042,6 +1096,7 @@ void FuncManager::recursivePowerCallSerial(int parent)
 #else
 
 //Very old branch: No support for split NUMA nodes and stuff with this branch
+//also no recursion
 void FuncManager::recursivePowerCallSerial(int parent)
 {
     std::vector<MPLeaf>* tree = &(matPower->tree);
@@ -1069,15 +1124,18 @@ void FuncManager::recursivePowerCallSerial(int parent)
             {
                 if(level < endLevel)
                 {
-                    for(int pow=0; pow<power; ++pow)
+                    for(int pow=0; pow<totPower; ++pow)
                     {
+                        int curMainPow = static_cast<int>(pow/subPower);
+                        int curSubPow = static_cast<int>(pow%subPower);
+
                         int powLevel = (level-pow);
 
                         if( (powLevel >= (startLevel+pow)) && (powLevel < (endLevel-pow)) )
                         {
                             SPLIT_LEVEL_PER_THREAD(powLevel);
                             //can be a function ptr
-                            powerFunc(startRow_tid, endRow_tid, pow+1, 0, args);
+                            powerFunc(startRow_tid, endRow_tid, curMainPow+1, curSubPow+1, 0, args);
 
 #if 0
 #pragma omp parallel for schedule(static)
@@ -1092,7 +1150,7 @@ void FuncManager::recursivePowerCallSerial(int parent)
                             }
 #endif
                         }
-                        if(power > 1)
+                        if(totPower > 1)
                         {
 #pragma omp barrier
                         }
@@ -1108,8 +1166,11 @@ void FuncManager::recursivePowerCallSerial(int parent)
         }
         //#pragma omp barrier
         //reminder
-        for(int pow=1; pow<power; ++pow)
+        for(int pow=1; pow<totPower; ++pow)
         {
+            int curMainPow = static_cast<int>(pow/subPower);
+            int curSubPow = static_cast<int>(pow%subPower);
+
             //reminder-head
             {
                 int startLevel = nodePtr->at(nodeGroup);
@@ -1118,7 +1179,7 @@ void FuncManager::recursivePowerCallSerial(int parent)
                 {
                     SPLIT_LEVEL_PER_THREAD(level);
                     //can be a function ptr
-                    powerFunc(startRow_tid, endRow_tid, pow+1, 0, args);
+                    powerFunc(startRow_tid, endRow_tid, curMainPow+1, curSubPow+1, 0, args);
                 }
             }
             //reminder-tail
@@ -1129,12 +1190,12 @@ void FuncManager::recursivePowerCallSerial(int parent)
                 {
                     SPLIT_LEVEL_PER_THREAD(level);
                     //can be a function ptr
-                    powerFunc(startRow_tid, endRow_tid, pow+1, 0, args);
+                    powerFunc(startRow_tid, endRow_tid, curMainPow+1, curSubPow+1, 0, args);
                 }
 
             }
 
-            if(power > 1)
+            if(totPower > 1)
             {
 #pragma omp barrier
             }
@@ -1148,6 +1209,7 @@ void recursivePowerCall(FuncManager* funMan, int parent)
 {
 #pragma omp parallel
     {
+        //printf("parent = %d\n", parent);
         funMan->recursivePowerCallSerial(parent);
     }
 }
@@ -1232,6 +1294,51 @@ void FuncManager::Run(bool rev_)
   {
 //test_omp(a,b,c,d,0,len,1);
 }*/
+
+int FuncManager::getPower()
+{
+    return power;
+}
+
+int FuncManager::getSubPower()
+{
+    return subPower;
+}
+
+void FuncManager::setPower(int power_)
+{
+    power = power_;
+    //update total power
+    totPower = power*subPower;
+}
+
+void FuncManager::setSubPower(int subPower_)
+{
+    subPower = subPower_;
+    //update total power
+    totPower = power*subPower;
+}
+
+void FuncManager::setSerial()
+{
+    if(power_fn)
+    {
+        omp_set_num_threads(1);
+        activethreads = 1;
+        threadPerNode = activethreads/totalNodes;
+    }
+    else
+    {
+        ERROR_PRINT("Serial execution cannot be set for coloring problems using RACE. In this case the number of threads has to be set at the pre-processing phase");
+    }
+}
+
+void FuncManager::unsetSerial()
+{
+    omp_set_num_threads(origthreads);
+    activethreads = origthreads;
+    threadPerNode = activethreads/totalNodes;
+}
 
 bool FuncManager::isNumaSplit()
 {

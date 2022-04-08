@@ -27,11 +27,14 @@ void capitalize(char* beg)
 {\
     int iter = param.iter;\
     double time = 0;\
-    double nnz_update = ((double)mat->nnz)*iter*1e-9;\
+    double nnz_update = ((double)mat->nnz)*iterations*1e-9;\
     sleep(1);\
     INIT_TIMER(kernel);\
     START_TIMER(kernel);\
-    kernel(b, mat, x, iter);\
+    for(int iter=0; iter<iterations; ++iter)\
+    {\
+        kernel(b, mat, x);\
+    }\
     STOP_TIMER(kernel);\
     time = GET_TIMER(kernel);\
     char* capsKernel;\
@@ -58,16 +61,51 @@ int main(const int argc, char * argv[])
         printf("Error in reading sparse matrix file\n");
     }
 
-    mat->doRCMPermute();
+    if(param.RCM_flag)
+    {
+        mat->doRCMPermute();
+    }
+
     //mat->numaInit();
     int NROWS = mat->nrows;
+    int randInit = false;
+    double initVal = 1/(double)NROWS;
 
     densemat *x, *b;
     x=new densemat(NROWS);
     b=new densemat(NROWS);
 
-    x->setRand();
-    b->setRand();
+    densemat *xRAND;
+    if(randInit)
+    {
+        xRAND = new densemat(NROWS);
+        xRAND->setRand();
+    }
+
+    b->setVal(0);
+    if(randInit)
+    {
+        x->copyVal(xRAND);
+    }
+    else
+    {
+        x->setVal(initVal);
+    }
+
+
+    //determine iterations
+    INIT_TIMER(init_iter);
+    START_TIMER(init_iter);
+    for(int iter=0; iter<10; ++iter)
+    {
+       plain_spmv(b, mat, x);
+    }
+    STOP_TIMER(init_iter);
+    double initTime = GET_TIMER(init_iter);
+    int iterations = std::max(1, (int) (2*10/initTime));
+    //int iterations = 1; //for correctness checking
+    printf("Num iterations =  %d\n", iterations);
+
 
     //This macro times and reports performance
     PERF_RUN(plain_spmv,2);

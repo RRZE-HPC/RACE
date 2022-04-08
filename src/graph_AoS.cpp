@@ -156,7 +156,12 @@ RACE_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *
         serialPart[0] = NROW;
         serialPart[1] = NROW+NROW_serial;
     }
-
+    else
+    {
+        serialPart.resize(2);
+        serialPart[0] = NROW;
+        serialPart[1] = NROW;
+    }
     /*
     totalInvPerm = new int[NROW+NROW_serial];
 #pragma omp parallel for schedule(static)

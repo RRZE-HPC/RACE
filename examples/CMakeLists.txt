@@ -165,6 +165,34 @@ else () #generic BLAS
     message(STATUS "Generic BLAS. BLAS_LIBRARIES has to be set manually before linking.")
 endif()
 
+set(RACE_USE_COLPACK 0 CACHE BOOL "Use ColPack for MC and ABMC")
+set(RACE_USE_METIS 0 CACHE BOOL "Use METIS for ABMC")
+
+if (RACE_USE_COLPACK)
+    set(RACE_HAVE_COLPACK 1)
+    set(COLPACK_INCLUDE_DIR "${COLPACK_INCLUDE_DIR}" CACHE PATH "Location of ColPack headers")
+    include_directories(SYSTEM ${COLPACK_INCLUDE_DIR})
+    get_filename_component(COLPACK_LIBDIR ${COLPACK_INCLUDE_DIR}/../../lib/shared_library REALPATH)
+
+    find_library(COLPACK_LIBRARIES ColPack ${COLPACK_LIBDIR})
+    if (NOT COLPACK_LIBRARIES)
+        message(FATAL_ERROR "COLPACK_INCLUDE_DIR not set correctly!")
+    endif()
+endif()
+
+if (RACE_USE_METIS)
+    set(RACE_HAVE_METIS 1)
+    set(METIS_INCLUDE_DIR "${METIS_INCLUDE_DIR}" CACHE PATH "Location of METIS headers")
+    include_directories(${METIS_INCLUDE_DIR})
+    get_filename_component(METIS_LIBDIR ${METIS_INCLUDE_DIR}/../lib/ REALPATH)
+
+    find_library(METIS_LIBRARIES NAMES metis PATHS ${METIS_LIBDIR})
+    if (NOT METIS_LIBRARIES)
+        message(FATAL_ERROR "METIS_INCLUDE_DIR not set correctly!")
+    endif()
+endif()
+
+
 
 configure_file (
     "${PROJECT_SOURCE_DIR}/include/config_eg.h.in"
@@ -180,7 +208,7 @@ include_directories(${RACE_INCLUDE_DIRS})
 include_directories(${PROJECT_BINARY_DIR}/include)
 
 file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/helpers/*.cpp)
-add_executable(race ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/main.cpp)
+add_executable(race ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/race.cpp)
 
 add_executable(mtxPower ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/matrixPower.cpp)
 add_executable(mtxPowerSplitting ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/matrixPowerSplitting.cpp)
@@ -195,7 +223,17 @@ add_executable(matStat ${SOURCES} ${PROJECT_SOURCE_DIR}/src/mat_stat.cpp)
 set(EXT_LIBRARIES "${BLAS_LIBRARIES}")
 
 if(RACE_USE_SPMP)
-    set(EXT_LIBRARIES "${PROJECT_BINARY_DIR}/SpMP/src/SpMP/libspmp.a" "${BLAS_LIBRARIES}")
+    #set(EXT_LIBRARIES "${PROJECT_BINARY_DIR}/SpMP/src/SpMP/libspmp.a" "${BLAS_LIBRARIES}")
+    list(APPEND EXT_LIBRARIES "${PROJECT_BINARY_DIR}/SpMP/src/SpMP/libspmp.a")
+endif()
+
+if(RACE_HAVE_COLPACK)
+    list(APPEND EXT_LIBRARIES "${COLPACK_LIBRARIES}")
+endif()
+
+if(RACE_HAVE_METIS)
+    list(APPEND EXT_LIBRARIES "${METIS_LIBRARIES}")
+    #set(EXT_LIBRARIES "${METIS_LIBRARIES}")
 endif()
 
 target_link_libraries(race "${EXT_LIBRARIES}")

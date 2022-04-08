@@ -4,8 +4,9 @@
 #include <iostream>
 #include "utility.h"
 #include "timing.h"
+#include <algorithm>
 
-RACE::Interface::Interface(int nrow_,int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_, RACE::PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):graph(NULL),nrow(nrow_),distance(dist_),d2Type(d2Type_),lbTarget(lbTarget_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL),powerCalculator(NULL)
+RACE::Interface::Interface(int nrow_,int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_, RACE::PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):graph(NULL),nrow(nrow_),distance(dist_),d2Type(d2Type_),lbTarget(lbTarget_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL),powerCalculator(NULL), highestPower(1), highestSubPower(1)
 {
     graph = new Graph(nrow, nrow, rowPtr, col, initPerm, initInvPerm);
 }
@@ -34,8 +35,15 @@ RACE::Interface::~Interface()
     }
 }
 
-RACE_error RACE::Interface::RACEColor(int highestPower, int numSharedCache, double cacheSize, double safetyFactor, std::string mtxType)
+RACE_error RACE::Interface::RACEColor(int highestPower_, int numSharedCache, double cacheSize, double safetyFactor, std::string mtxType, int highestSubPower_)
 {
+    highestPower = highestPower_;
+    highestSubPower = highestSubPower_;
+    if(highestSubPower < 1)
+    {
+        ERROR_PRINT("Highest sub power is less than one. Expected a value greater than one");
+        return RACE_ERR_INVALID_ARG;
+    }
     if(distance != RACE::POWER)
     {
         ERROR_PRINT("If you need to calculate power set distance to RACE::POWER");
@@ -43,7 +51,7 @@ RACE_error RACE::Interface::RACEColor(int highestPower, int numSharedCache, doub
     }
     else
     {
-        powerCalculator = new mtxPowerRecursive(graph, highestPower, numSharedCache, cacheSize, safetyFactor, mtxType);
+        powerCalculator = new mtxPowerRecursive(graph, highestPower*highestSubPower, numSharedCache, cacheSize, safetyFactor, mtxType);
         //sanity check
         if(requestedThreads%numSharedCache)
         {
@@ -184,6 +192,12 @@ int RACE::Interface::getNumThreads()
 
 int RACE::Interface::registerFunction(void (*f) (int,int,void *), void *args)
 {
+    std::function<void (int,int,void *)> f_func = f;
+    return registerFunction(f_func, args);
+}
+
+int RACE::Interface::registerFunction(std::function<void (int,int,void *)> f, void *args)
+{
     if(distance != RACE::POWER)
     {
         //    pool->pin.pinApplication();
@@ -208,25 +222,71 @@ int RACE::Interface::registerFunction(void (*f) (int,int,void *), void *args)
     }
     else
     {
-        ERROR_PRINT("To calcaulte power call back function prototype is void (*f) (int,int,int,int,void *)\n");
+        if(highestSubPower == 1)
+        {
+            ERROR_PRINT("To calcaulte power call back function prototype is void (*f) (int,int,int,int,void *)");
+        }
+        else
+        {
+            ERROR_PRINT("To calcaulte power call back function prototype is void (*f) (int,int,int,int,int,void *)");
+        }
         return RACE_ERR_INVALID_ARG;
     }
 }
 
-int RACE::Interface::registerFunction(void (*f) (int,int,int,int,void *), void *args, int power, int numaSplit)
+int RACE::Interface::registerFunction(void (*f) (int,int,int,int,int,void *), void *args, int power, int subPower, int numaSplit)
 {
-    if(distance != RACE::POWER)
+    std::function<void (int,int,int,int,int,void *)> f_function = f;
+    return registerFunction(f_function, args, power, subPower, numaSplit);
+}
+
+int RACE::Interface::registerFunction(std::function<void (int,int,int,int,int,void *)> f, void *args, int power, int subPower, int numaSplit)
+{
+if(distance != RACE::POWER)
     {
-        ERROR_PRINT("To parallel execution of dependent kernels callback  function prototype is void (*f) (int,int,void *)\n");
+        ERROR_PRINT("To parallel execution of dependent kernels callback  function prototype is void (*f) (int,int,void *)");
         return RACE_ERR_INVALID_ARG;
     }
     else
     {
-        FuncManager* currFun = new FuncManager(f, args, power, powerCalculator, numaSplit);
+        if(power*subPower > highestPower*highestSubPower)
+        {
+            ERROR_PRINT("Specified power*subPower (%d) greater than highestPower*highestSubPower passed (%d) during the pre-processing phase (call to RACEColor function). Performance might not be optimal and in some cases might cause segfaults.", power*subPower, highestPower*highestSubPower);
+        }
+        FuncManager* currFun = new FuncManager(f, args, power, subPower, powerCalculator, numaSplit);
         funMan.push_back(currFun);
         return (funMan.size()-1);
     }
 }
+
+void RACE::wrappedPowerFunc(std::function<void(int,int,int,int,void *)> f, int start, int end, int pow, int subPow, int numaLocal, void* args)
+{
+    f(start, end, pow, numaLocal, args);
+    UNUSED(subPow);
+}
+
+
+int RACE::Interface::registerFunction(void (*f) (int,int,int,int,void *), void *args, int power, int numaSplit)
+{
+    std::function<void (int,int,int,int,void *)> f_function = f;
+    return registerFunction(f_function, args, power, numaSplit);
+}
+
+int RACE::Interface::registerFunction(std::function<void (int,int,int,int,void *)> f, void *args, int power, int numaSplit)
+{
+    if(highestSubPower == 1)
+    {
+        using namespace std::placeholders;
+        std::function<void (int,int,int,int,int,void *)> bindedFunc = std::bind(RACE::wrappedPowerFunc, f, _1, _2, _3, _4, _5, _6);
+        return registerFunction(bindedFunc, args, power, 1, numaSplit);
+    }
+    else
+    {
+        ERROR_PRINT("Sub power value is higher than one. This means you have to supply a kernel that takes subPow into account. The funtion prototype is (*f) (int,int,int,int,void *)");
+        return RACE_ERR_INVALID_ARG;
+    }
+}
+
 
 
 void RACE::Interface::executeFunction(int funcId, bool rev)
@@ -235,6 +295,80 @@ void RACE::Interface::executeFunction(int funcId, bool rev)
     //  funMan->Run();
 }
 
+void RACE::Interface::setPower(int funcId, int pow)
+{
+    funMan[funcId]->setPower(pow);
+}
+
+void RACE::Interface::setSubPower(int funcId, int subPow)
+{
+    funMan[funcId]->setSubPower(subPow);
+}
+
+int RACE::Interface::getPower(int funcId)
+{
+    return funMan[funcId]->getPower();
+}
+
+int RACE::Interface::getSubPower(int funcId)
+{
+    return funMan[funcId]->getSubPower();
+}
+
+void RACE::Interface::setSerial(int funcId)
+{
+    funMan[funcId]->setSerial();
+}
+
+void RACE::Interface::unsetSerial(int funcId)
+{
+    funMan[funcId]->unsetSerial();
+}
+
+
+int RACE::Interface::tuneFunction(int funcId, bool rev)
+{
+    int bestPow;
+    if(tunedPowMap.find(funcId) == tunedPowMap.end())
+    {
+        std::vector<double> time_vec(highestPower, 0);
+        //int origPower = funMan[funcId]->getPower();
+        for(int pow=1; pow<=highestPower; ++pow)
+        {
+            setPower(funcId, pow);
+
+            timeval start, end;
+            double start_tym, end_tym;
+            gettimeofday(&start, NULL);
+            start_tym = start.tv_sec + start.tv_usec*1e-6;
+            double time = 0;
+            int iter=0;
+            while(time < 0.2)
+            {
+                funMan[funcId]->Run(rev);
+
+                gettimeofday(&end, NULL);
+                end_tym = end.tv_sec + end.tv_usec*1e-6;
+
+                time = end_tym-start_tym;
+                ++iter;
+            }
+            time_vec[pow-1] = time/static_cast<double>(iter*pow);
+        }
+        int minIndex = std::distance(time_vec.begin(), std::min_element(time_vec.begin(), time_vec.end()));
+
+        bestPow = minIndex + 1;
+        tunedPowMap[funcId] = bestPow;
+        INFO_PRINT("Best tuned power for function with id %d is %d", funcId, bestPow);
+    }
+    else
+    {
+        bestPow = tunedPowMap[funcId];
+    }
+
+    setPower(funcId, bestPow);
+    return bestPow;
+}
 
 void RACE::Interface::resetTime()
 {
@@ -437,7 +571,7 @@ void RACE::Interface::pinThread(int threadId)
     pool->pin.pinThread(threadId);
 }
 
-void powerInitRowPtrFunc(int start, int end, int pow, int numa_domain, void* arg)
+void RACE::powerInitRowPtrFunc(int start, int end, int pow, int subPow, int numa_domain, void* arg)
 {
      DECODE_ARG(arg);
      if((col != NULL && val != NULL) && x != NULL)
@@ -454,7 +588,7 @@ void powerInitRowPtrFunc(int start, int end, int pow, int numa_domain, void* arg
 
 //#pragma omp parallel for schedule(static)
 
-     if(pow == 1)
+     if((pow == 1) && (subPow == 1))
      {
          for(int row=start; row<end; ++row)
          {
@@ -470,7 +604,7 @@ void RACE::Interface::numaInitRowPtr(int *rowPtr_)
     if(distance == RACE::POWER)
     {
         ENCODE_ARG(nrow, rowPtr_, NULL, NULL, NULL);
-        int fn_id = registerFunction(powerInitRowPtrFunc, voidArg, 1);
+        int fn_id = registerFunction(RACE::powerInitRowPtrFunc, voidArg, 1);
         executeFunction(fn_id);
     }
     else
@@ -480,7 +614,7 @@ void RACE::Interface::numaInitRowPtr(int *rowPtr_)
 }
 
 
-void powerInitRowPtrNumaLocalFunc(int start, int end, int pow, int numa_domain, void* arg)
+void RACE::powerInitRowPtrNumaLocalFunc(int start, int end, int pow, int subPow, int numa_domain, void* arg)
 {
      DECODE_NUMA_LOCAL_ARG(arg);
      if((col != NULL && val != NULL) && x != NULL)
@@ -497,7 +631,7 @@ void powerInitRowPtrNumaLocalFunc(int start, int end, int pow, int numa_domain, 
 
 //#pragma omp parallel for schedule(static)
 
-     if(pow == 1)
+     if((pow == 1) && (subPow == 1))
      {
          for(int row=start; row<end; ++row)
          {
@@ -513,7 +647,7 @@ void RACE::Interface::numaInitRowPtr(int **rowPtr_)
     if(distance == RACE::POWER)
     {
         ENCODE_NUMA_LOCAL_ARG(nrow, rowPtr_, NULL, NULL, NULL);
-        int fn_id = registerFunction(powerInitRowPtrNumaLocalFunc, voidArg, 1, true);
+        int fn_id = registerFunction(RACE::powerInitRowPtrNumaLocalFunc, voidArg, 1, true);
         executeFunction(fn_id);
     }
     else
@@ -523,7 +657,7 @@ void RACE::Interface::numaInitRowPtr(int **rowPtr_)
 }
 
 //without NUMA split to local parts
-void powerInitMtxVecFunc(int start, int end, int pow, int numa_domain, void* arg)
+void RACE::powerInitMtxVecFunc(int start, int end, int pow, int subPow, int numa_domain, void* arg)
 {
     DECODE_ARG(arg);
 
@@ -552,7 +686,7 @@ void powerInitMtxVecFunc(int start, int end, int pow, int numa_domain, void* arg
 //#pragma omp parallel for schedule(static)
     for(int row=start; row<end; ++row)
     {
-        if(pow==1)
+        if((pow==1) && (subPow==1))
         {
             for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
             {
@@ -575,7 +709,7 @@ void RACE::Interface::numaInitMtxVec(int *rowPtr_, int *col_, double *val_, doub
     if(distance == RACE::POWER)
     {
         ENCODE_ARG(nrow, rowPtr_, col_, val_, x_);
-        int fn_id = registerFunction(powerInitMtxVecFunc, voidArg, 1);
+        int fn_id = registerFunction(RACE::powerInitMtxVecFunc, voidArg, 1);
         executeFunction(fn_id);
         //funMan[fn_id]->NUMAInitPower();
 
@@ -589,14 +723,14 @@ void RACE::Interface::numaInitMtxVec(int *rowPtr_, int *col_, double *val_, doub
 
 
 //NUMA local sparse matrix
-void powerInitMtxVecNumaLocalFunc(int start, int end, int pow, int numa_domain, void* arg)
+void RACE::powerInitMtxVecNumaLocalFunc(int start, int end, int pow, int subPow, int numa_domain, void* arg)
 {
     DECODE_NUMA_LOCAL_ARG(arg);
 
 //#pragma omp parallel for schedule(static)
     for(int row=start; row<end; ++row)
     {
-        if(pow==1)
+        if((pow==1) && (subPow==1))
         {
             for(int idx=rowPtr[numa_domain][row]; idx<rowPtr[numa_domain][row+1]; ++idx)
             {
@@ -615,7 +749,7 @@ void RACE::Interface::numaInitMtxVec(int **rowPtr_, int **col_, double **val_, i
     if(distance == RACE::POWER)
     {
         ENCODE_NUMA_LOCAL_ARG(nrow, rowPtr_, col_, val_, NULL);
-        int fn_id = registerFunction(powerInitMtxVecNumaLocalFunc, voidArg, 1, true);
+        int fn_id = registerFunction(RACE::powerInitMtxVecNumaLocalFunc, voidArg, 1, true);
         executeFunction(fn_id);
         //funMan[fn_id]->NUMAInitPower();
 
@@ -624,6 +758,7 @@ void RACE::Interface::numaInitMtxVec(int **rowPtr_, int **col_, double **val_, i
     {
         ERROR_PRINT("NUMA not implemented for coloring")
     }
+    UNUSED(power_);
 }
 
 
@@ -639,4 +774,9 @@ void RACE::Interface::getNumaSplitting(int **split, int *splitLen)
         (*split)[i] = levelPtr[levelGroupPtr[i]];
     }
     (*splitLen) = NUMAdomains+1;
+}
+
+int RACE::Interface::getHighestPower()
+{
+    return highestPower;
 }

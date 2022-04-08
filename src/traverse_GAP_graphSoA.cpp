@@ -134,6 +134,7 @@ void Traverse::TDStep(int currLvl)
                 localColRangeLo = std::min(localColRangeLo, child);
                 localColRangeHi = std::max(localColRangeHi, child);
 
+                //printf("local Col Range = %d, %d\n", localColRangeLo, localColRangeHi);
                 int curr_val = parent[child];
                 if(curr_val == -1)
                 {

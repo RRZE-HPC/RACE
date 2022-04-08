@@ -10,7 +10,8 @@
 #define DEFAULT_RACE_BLOCKCTR 200000
 
 #define DEBUG 0
-    template< typename arg_t>
+
+template< typename arg_t>
 thread<arg_t>::thread():pthread(NULL),workerTeam(NULL),jobPresent(false)
 {
     pthread = new pthread_t;
@@ -53,9 +54,10 @@ void thread<arg_t>::init (int gid_, thpool<arg_t>* pool_)
 }
 
     template<typename arg_t>
-void run(thread<arg_t> * thread)
+void* run(void* thread_void)
 {
-    thpool<arg_t>* pool = thread->pool;
+    thread<arg_t>* curThread = static_cast<thread<arg_t> *>(thread_void);
+    thpool<arg_t>* pool = curThread->pool;
     pthread_mutex_lock(pool->thcount_lock);
     pool->num_threads_alive++;
     pthread_mutex_unlock(pool->thcount_lock);
@@ -63,26 +65,28 @@ void run(thread<arg_t> * thread)
     while(!(__sync_fetch_and_add(&(pool->interrupt),0)))
     {
         //wait till jobPresent becomes true
-        waitSignal(thread->signal, thread->jobPresent, true);
+        waitSignal(curThread->signal, curThread->jobPresent, true);
         //do RECV if master of the team is in different proc
 
-        if(thread->jobPresent && (!pool->interrupt))
+        if(curThread->jobPresent && (!pool->interrupt))
         {
 #if DEBUG
-            printf("tid = %u doing job\n",(unsigned) (* (thread->pthread)));
+            printf("tid = %u doing job\n",(unsigned) (* (curThread->pthread)));
 #endif
             //do current job
             //START_TIME(work);
-            thread->myJob.function(thread->myJob.arg);
+            curThread->myJob.function(curThread->myJob.arg);
             //STOP_TIME(work);
             //finish job
-            thread->finishJob();
+            curThread->finishJob();
         }
     }
 
     pthread_mutex_lock(pool->thcount_lock);
     pool->num_threads_alive--;
     pthread_mutex_unlock(pool->thcount_lock);
+
+    return NULL;
 }
 
     template<typename arg_t>
