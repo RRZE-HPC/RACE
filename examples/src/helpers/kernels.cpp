@@ -518,14 +518,14 @@ inline void MKL_SPMV_KERNEL(int start, int end, int pow, void* args)
     double *x_ = x->val;
     double *b_ = &(x->val[mat->nrows]);
     int nrows= end-start;
-
+/*
     int nthreads;
 #pragma omp parallel
     {
         nthreads = omp_get_num_threads();
     }
 
-    mkl_set_num_threads(nthreads);
+    mkl_set_num_threads(nthreads);*/
     mkl_cspblas_dcsrgemv("N", &nrows, ((double*)mat->val), ((MKL_INT*)mat->rowPtr), ((MKL_INT*) mat->col), ((double*)x_), ((double*)b_));
 }
 
@@ -535,6 +535,34 @@ void mkl_spmv(sparsemat* mat, densemat* x)
     ENCODE_TO_VOID(mat, NULL, x);
     MKL_SPMV_KERNEL(0, mat->nrows, 1, voidArg);
     DELETE_ARG();
+}
+
+sparse_matrix_t* mkl_ie_setup(sparsemat* mat, int niter)
+{
+    sparse_matrix_t* A_mkl = new sparse_matrix_t;
+    int nrows = mat->nrows;
+    mkl_sparse_d_create_csr(A_mkl, SPARSE_INDEX_BASE_ZERO, nrows, nrows, &(((int*)mat->rowPtr)[0]), &(((int*)mat->rowPtr)[1]), ((int*)mat->col), ((double*)mat->val));
+    struct matrix_descr descr;
+    descr.type = SPARSE_MATRIX_TYPE_GENERAL;
+    sparse_status_t status;
+    status = mkl_sparse_set_mv_hint(*A_mkl, SPARSE_OPERATION_NON_TRANSPOSE, descr, niter);
+    status = mkl_sparse_optimize(*A_mkl);
+    return A_mkl;
+}
+
+void mkl_ie_spmv(sparse_matrix_t* A, densemat* x)
+{
+    double *x_ = x->val;
+    double *b_ = &(x->val[x->nrows]);
+    struct matrix_descr descr;
+    descr.type = SPARSE_MATRIX_TYPE_GENERAL;
+
+    mkl_sparse_d_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1, *A, descr, ((double*)x_), 0, ((double*)b_));
+}
+
+void mkl_ie_free(sparse_matrix_t* A)
+{
+    delete A;
 }
 
 inline void MAT_SPMV_KERNEL_only_highest(int start, int end, int pow, int numa_domain, void* args)

@@ -4,6 +4,7 @@
 #include "sparsemat.h"
 #include "densemat.h"
 #include <complex>
+#include <mkl.h>
 
 struct kernelArg
 {
@@ -41,6 +42,9 @@ void plain_spmv_only_highest(sparsemat* mat, densemat* x, int power);
 void plain_spmv_numa(NUMAmat* mat, densemat* x);
 
 void mkl_spmv(sparsemat* mat, densemat* x);
+sparse_matrix_t* mkl_ie_setup(sparsemat* mat, int niter);
+void mkl_ie_spmv(sparse_matrix_t* mat, densemat* x);
+void mkl_ie_free(sparse_matrix_t* A);
 void matPower(sparsemat* A, int power, densemat *x);
 void matPower_only_highest(sparsemat* A, int power, densemat *x);
 void matPowerNuma(NUMAmat* A, int power, densemat *x);
