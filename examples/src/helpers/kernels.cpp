@@ -512,50 +512,105 @@ void plain_spmv_numa(NUMAmat *mat, densemat *x)
     DELETE_ARG();
 }
 
-inline void MKL_SPMV_KERNEL(int start, int end, int pow, void* args)
+//MKL spmv
+void mkl_spmv(densemat* b, sparsemat* mat, densemat* x, bool symm)
 {
-    DECODE_FROM_VOID(args);
+    int nrows=mat->nrows;
+    if(!symm)
+    {
+        mkl_cspblas_dcsrgemv("N", &nrows, ((double*)mat->val), ((MKL_INT*)mat->rowPtr), ((MKL_INT*) mat->col), ((double*)x->val), ((double*)b->val));
+    }
+    else
+    {
+        mkl_cspblas_dcsrsymv("U", &nrows, ((double*)mat->val_symm), ((MKL_INT*)mat->rowPtr_symm), ((MKL_INT*) mat->col_symm), ((double*)x->val), ((double*)b->val));
+    }
+}
+
+void mkl_spmv(sparsemat* mat, densemat* x, bool symm)
+{
+    int nrows=mat->nrows;
     double *x_ = x->val;
     double *b_ = &(x->val[mat->nrows]);
-    int nrows= end-start;
-/*
-    int nthreads;
-#pragma omp parallel
+    if(!symm)
     {
-        nthreads = omp_get_num_threads();
+        mkl_cspblas_dcsrgemv("N", &nrows, ((double*)mat->val), ((MKL_INT*)mat->rowPtr), ((MKL_INT*) mat->col), ((double*)x_), ((double*)b_));
     }
-
-    mkl_set_num_threads(nthreads);*/
-    mkl_cspblas_dcsrgemv("N", &nrows, ((double*)mat->val), ((MKL_INT*)mat->rowPtr), ((MKL_INT*) mat->col), ((double*)x_), ((double*)b_));
+    else
+    {
+        mkl_cspblas_dcsrsymv("U", &nrows, ((double*)mat->val_symm), ((MKL_INT*)mat->rowPtr_symm), ((MKL_INT*) mat->col_symm), ((double*)x_), ((double*)b_));
+    }
 }
 
-//MKL spmv
-void mkl_spmv(sparsemat* mat, densemat* x)
-{
-    ENCODE_TO_VOID(mat, NULL, x);
-    MKL_SPMV_KERNEL(0, mat->nrows, 1, voidArg);
-    DELETE_ARG();
-}
-
-sparse_matrix_t* mkl_ie_setup(sparsemat* mat, int niter)
+sparse_matrix_t* mkl_ie_setup(sparsemat* mat, int niter, bool symm)
 {
     sparse_matrix_t* A_mkl = new sparse_matrix_t;
     int nrows = mat->nrows;
-    mkl_sparse_d_create_csr(A_mkl, SPARSE_INDEX_BASE_ZERO, nrows, nrows, &(((int*)mat->rowPtr)[0]), &(((int*)mat->rowPtr)[1]), ((int*)mat->col), ((double*)mat->val));
     struct matrix_descr descr;
-    descr.type = SPARSE_MATRIX_TYPE_GENERAL;
+
     sparse_status_t status;
+    if(!symm)
+    {
+        status = mkl_sparse_d_create_csr(A_mkl, SPARSE_INDEX_BASE_ZERO, nrows, nrows, &(((int*)mat->rowPtr)[0]), &(((int*)mat->rowPtr)[1]), ((int*)mat->col), ((double*)mat->val));
+        descr.type = SPARSE_MATRIX_TYPE_GENERAL;
+    }
+    else
+    {
+        mat->computeSymmData();
+        status = mkl_sparse_d_create_csr(A_mkl, SPARSE_INDEX_BASE_ZERO, nrows, nrows, &(((int*)mat->rowPtr_symm)[0]), &(((int*)mat->rowPtr_symm)[1]), ((int*)mat->col_symm), ((double*)mat->val_symm));
+        descr.type = SPARSE_MATRIX_TYPE_SYMMETRIC;
+        descr.mode = SPARSE_FILL_MODE_UPPER;
+        descr.diag = SPARSE_DIAG_NON_UNIT;
+    }
+    if(status!=SPARSE_STATUS_SUCCESS)
+    {
+        printf("Error ocured in CSR creation of MKL-IE\n");
+    }
     status = mkl_sparse_set_mv_hint(*A_mkl, SPARSE_OPERATION_NON_TRANSPOSE, descr, niter);
+    if(status!=SPARSE_STATUS_SUCCESS)
+    {
+        printf("Error ocured in setting hint of MKL-IE\n");
+    }
     status = mkl_sparse_optimize(*A_mkl);
+    if(status!=SPARSE_STATUS_SUCCESS)
+    {
+        printf("Error ocured in optimizing phase of MKL-IE\n");
+    }
     return A_mkl;
 }
 
-void mkl_ie_spmv(sparse_matrix_t* A, densemat* x)
+void mkl_ie_spmv(densemat* b, sparse_matrix_t* A, densemat* x, bool symm)
+{
+    struct matrix_descr descr;
+    if(!symm)
+    {
+        descr.type = SPARSE_MATRIX_TYPE_GENERAL;
+    }
+    else
+    {
+        descr.type = SPARSE_MATRIX_TYPE_SYMMETRIC;
+        descr.mode = SPARSE_FILL_MODE_UPPER;
+        descr.diag = SPARSE_DIAG_NON_UNIT;
+    }
+
+
+    mkl_sparse_d_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1, *A, descr, ((double*)x->val), 0, ((double*)b->val));
+}
+
+void mkl_ie_spmv(sparse_matrix_t* A, densemat* x, bool symm)
 {
     double *x_ = x->val;
     double *b_ = &(x->val[x->nrows]);
     struct matrix_descr descr;
-    descr.type = SPARSE_MATRIX_TYPE_GENERAL;
+    if(!symm)
+    {
+        descr.type = SPARSE_MATRIX_TYPE_GENERAL;
+    }
+    else
+    {
+        descr.type = SPARSE_MATRIX_TYPE_SYMMETRIC;
+        descr.mode = SPARSE_FILL_MODE_UPPER;
+        descr.diag = SPARSE_DIAG_NON_UNIT;
+    }
 
     mkl_sparse_d_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1, *A, descr, ((double*)x_), 0, ((double*)b_));
 }

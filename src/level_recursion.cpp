@@ -342,6 +342,7 @@ void LevelRecursion::levelBalancing()
     graph->getPerm(&perm, &len);
     graph->getInvPerm(&invPerm, &len);
 #endif
+    zoneTree->findMaxStage();
 }
 
 //Getter functions

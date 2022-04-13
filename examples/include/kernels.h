@@ -41,9 +41,12 @@ void plain_spmv(sparsemat* mat, densemat* x);
 void plain_spmv_only_highest(sparsemat* mat, densemat* x, int power);
 void plain_spmv_numa(NUMAmat* mat, densemat* x);
 
-void mkl_spmv(sparsemat* mat, densemat* x);
-sparse_matrix_t* mkl_ie_setup(sparsemat* mat, int niter);
-void mkl_ie_spmv(sparse_matrix_t* mat, densemat* x);
+
+void mkl_spmv(densemat* b, sparsemat* mat, densemat* x, bool symm=false);
+void mkl_spmv(sparsemat* mat, densemat* x, bool symm=false);
+sparse_matrix_t* mkl_ie_setup(sparsemat* mat, int niter, bool symm=false);
+void mkl_ie_spmv(densemat* b, sparse_matrix_t* mat, densemat* x, bool symm=false);
+void mkl_ie_spmv(sparse_matrix_t* mat, densemat* x, bool symm=false);
 void mkl_ie_free(sparse_matrix_t* A);
 void matPower(sparsemat* A, int power, densemat *x);
 void matPower_only_highest(sparsemat* A, int power, densemat *x);
