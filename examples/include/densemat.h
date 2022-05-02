@@ -2,6 +2,7 @@
 #define RACE_DENSEMAT_H
 
 #include <functional>
+#include <vector>
 
 struct densemat
 {
@@ -15,6 +16,8 @@ struct densemat
     void setRand();
     void setFn(std::function<double(int)> fn);
     void setFn(std::function<double(void)> fn);
+    void axpby(densemat* x, densemat* y, double a, double b);
+    std::vector<double> dot(densemat* x);
     void print();
     densemat* view(int start_col, int end_col);
     densemat(int nrows, int ncols=1, bool view=false);

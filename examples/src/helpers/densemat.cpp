@@ -93,6 +93,36 @@ void densemat::setFn(std::function<double(void)> fn)
     }
 }
 
+//this = a*x[] + b*y[]
+void densemat::axpby(densemat* x, densemat* y, double a, double b)
+{
+    for(int j=0; j<ncols; ++j)
+    {
+#pragma omp parallel for schedule(static)
+        for(int i=0; i<nrows; ++i)
+        {
+            val[j*nrows+i] = a*x->val[j*nrows+i] + b*y->val[j*nrows+i];
+        }
+    }
+}
+
+//res = dot(this, x)
+std::vector<double> densemat::dot(densemat* x)
+{
+    std::vector<double> dots(ncols);
+    for(int j=0; j<ncols; ++j)
+    {
+        double curDot = 0;
+#pragma omp parallel for schedule(static) reduction(+:curDot)
+        for(int i=0; i<nrows; ++i)
+        {
+            curDot += val[j*nrows+i]*x->val[j*nrows+i];
+        }
+        dots[j] = curDot;
+    }
+    return dots;
+}
+
 void densemat::setRand()
 {
     setFn(rand);

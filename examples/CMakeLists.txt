@@ -222,6 +222,8 @@ add_executable(tradPowerNuma ${SOURCES} ${PROJECT_SOURCE_DIR}/src/tradPowerNuma.
 add_executable(matStat ${SOURCES} ${PROJECT_SOURCE_DIR}/src/mat_stat.cpp)
 add_executable(mklSymmSpMV ${SOURCES} ${PROJECT_SOURCE_DIR}/src/mklSymmSpMV.cpp)
 add_executable(colorSymmSpMV ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/colorSymmSpMV.cpp)
+add_executable(colorKACZ ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/colorKACZ.cpp)
+add_executable(colorGS ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/colorGS.cpp)
 
 set(EXT_LIBRARIES "${BLAS_LIBRARIES}")
 
@@ -253,6 +255,8 @@ target_link_libraries(tradPowerNuma "${EXT_LIBRARIES}")
 target_link_libraries(matStat "${EXT_LIBRARIES}")
 target_link_libraries(mklSymmSpMV "${EXT_LIBRARIES}")
 target_link_libraries(colorSymmSpMV "${EXT_LIBRARIES}")
+target_link_libraries(colorKACZ "${EXT_LIBRARIES}")
+target_link_libraries(colorGS "${EXT_LIBRARIES}")
 
 if(RACE_USE_SPMP)
     include_directories(SYSTEM ${PROJECT_BINARY_DIR}/SpMP/src)
@@ -269,6 +273,8 @@ if(RACE_USE_SPMP)
     add_dependencies(tradPowerNuma SpMP)
     add_dependencies(mklSymmSpMV SpMP)
     add_dependencies(colorSymmSpMV SpMP)
+    add_dependencies(colorKACZ SpMP)
+    add_dependencies(colorGS SpMP)
 endif()
 
 

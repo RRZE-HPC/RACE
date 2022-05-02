@@ -26,6 +26,7 @@ struct parser
         PinMethod pin;
         bool validate;
         double tol;
+        double convTol;
         bool RCM_flag;
         char *colorType;
         char *prgname;

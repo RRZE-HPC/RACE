@@ -13,7 +13,7 @@ my_option::my_option()
 {
 }
 
-parser::parser():mat_file(NULL), iter(100), cores(1), smt(1), nodes(1), cache_size(2), pin(FILL), validate(false), tol(1e-4), RCM_flag(false), colorType("RACE"), prgname("a.out"), numOptions(12)
+parser::parser():mat_file(NULL), iter(-1), cores(1), smt(1), nodes(1), cache_size(2), pin(FILL), validate(false), tol(1e-4), convTol(1e-16), RCM_flag(false), colorType("RACE"), prgname("a.out"), numOptions(13)
 {
     long_options = new my_option[numOptions+1];
 
@@ -26,10 +26,11 @@ parser::parser():mat_file(NULL), iter(100), cores(1), smt(1), nodes(1), cache_si
     long_options[6] = {"pin",     required_argument, 0,  'p', "Pinning strategy to be used; availablle options FILL or SCATTER" };
     long_options[7] = {"validate",no_argument,       0,  'v', "Validate coloring" };
     long_options[8] = {"tol",     required_argument, 0,  'T', "Tolerance for validation" };
-    long_options[9] = {"RCM",     no_argument, 0,  'R', "Do RCM pre-permutation" };
-    long_options[10] = {"color_type",     no_argument, 0,  'C', "Coloring type: RACE (default), ABMC, MC" };
-    long_options[11] = {"help",    no_argument,       0,  'h', "Prints this help informations" };
-    long_options[12] = {0,         0,                 0,   0,  0 };
+    long_options[9] = {"convTol",     required_argument, 0,  'e', "Tolerance for convergence check" };
+    long_options[10] = {"RCM",     no_argument, 0,  'R', "Do RCM pre-permutation" };
+    long_options[11] = {"color_type",     no_argument, 0,  'C', "Coloring type: RACE (default), ABMC, MC" };
+    long_options[12] = {"help",    no_argument,       0,  'h', "Prints this help informations" };
+    long_options[13] = {0,         0,                 0,   0,  0 };
 
     gnuOptions = new option[numOptions+1];
 
@@ -50,7 +51,7 @@ bool parser::parse_arg(int argc, char **argv)
     prgname = argv[0];
     while (1) {
         int option_index = 0, c;
-        c = getopt_long(argc, argv, "0:m:i:c:t:n:s:p:T:C:vRh",
+        c = getopt_long(argc, argv, "0:m:i:c:t:n:s:p:T:e:C:vRh",
                 gnuOptions, &option_index);
 
         if (c == -1)
@@ -121,6 +122,11 @@ bool parser::parse_arg(int argc, char **argv)
             case 'T':
                 {
                     tol = atof(optarg);
+                    break;
+                }
+            case 'e':
+                {
+                    convTol = atof(optarg);
                     break;
                 }
             case 'R':

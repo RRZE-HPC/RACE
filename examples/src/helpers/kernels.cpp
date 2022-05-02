@@ -107,7 +107,7 @@ void plain_spmv(densemat* b, sparsemat* mat, densemat* x)
 #define SPMTV_KERNEL_BODY()\
 {\
     double x_row = x->val[row];\
-    _Pragma("simd")\
+    _Pragma("simd vectorlength(VECTOR_LENGTH)")\
     for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)\
     {\
         b->val[mat->col[idx]] += mat->val[idx]*x_row;\
@@ -173,15 +173,15 @@ void spmtv(densemat* b, sparsemat* mat, densemat* x)
 
 #define GS_KERNEL_BODY()\
 {\
-    x->val[row] = b->val[row];\
     double x_row = x->val[row];\
     int diag_idx = mat->rowPtr[row];\
-_Pragma("simd")\
+    double tmp=b->val[row];\
+_Pragma("simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)")\
     for(int idx=mat->rowPtr[row]+1; idx<mat->rowPtr[row+1]; ++idx)\
     {\
-        x->val[row] -= mat->val[idx]*x->val[mat->col[idx]];\
+        tmp += (-mat->val[idx])*x->val[mat->col[idx]];\
     }\
-    x->val[row] /= mat->val[diag_idx];\
+    x->val[row] = tmp/mat->val[diag_idx];\
 }\
 
 inline void GS_KERNEL(int start, int end, void* args)
@@ -252,7 +252,7 @@ void gs(densemat* b, sparsemat* mat, densemat* x)
         rowNorm += mval*mval;\
     }\
     scale /= rowNorm; /*omega considered 1*/\
-_Pragma("simd")\
+_Pragma("simd vectorlength(VECTOR_LENGTH)")\
     for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)\
     {\
         x->val[mat->col[idx]] = x->val[mat->col[idx]] - scale*mat->val[idx];\
@@ -321,7 +321,7 @@ void kacz(densemat* b, sparsemat* mat, densemat* x)
     double x_row = x->val[row];\
     b->val[row] += mat->val_symm[mat->rowPtr_symm[row]]*x_row;\
     double temp = 0;\
-_Pragma("simd reduction(+:temp)")\
+_Pragma("simd reduction(+:temp)") /*Not doiing here for vector length because nnzr can be very small, lat compiler decide*/\
     for(int idx=mat->rowPtr_symm[row]+1; idx<mat->rowPtr_symm[row+1]; ++idx)\
     {\
         double mval = mat->val_symm[idx];\

@@ -11,7 +11,7 @@
 #include "densemat.h"
 #include "kernels.h"
 #include "timer.h"
-
+#include "quantile.hpp"
 
 void capitalize(char* beg)
 {
@@ -25,21 +25,31 @@ void capitalize(char* beg)
 
 #define PERF_RUN(kernel, flopPerNnz, ...)\
 {\
-    double time = 0;\
+    int num_trials=10;\
+    std::vector<double> time(num_trials, 0);\
     double nnz_update = ((double)mat->nnz)*iterations*1e-9;\
     INIT_TIMER(kernel);\
-    START_TIMER(kernel);\
-    for(int iter=0; iter<iterations; ++iter)\
+    for(int trial=0; trial<num_trials; ++trial)\
     {\
-        __VA_ARGS__;\
-        /*kernel(b, mat, x, symm);*/\
+        START_TIMER(kernel);\
+        for(int iter=0; iter<iterations; ++iter)\
+        {\
+            __VA_ARGS__;\
+            /*kernel(b, mat, x, symm);*/\
+        }\
+        STOP_TIMER(kernel);\
+        time[trial] = GET_TIMER(kernel);\
     }\
-    STOP_TIMER(kernel);\
-    time = GET_TIMER(kernel);\
+    std::vector<double> time_quantiles = Quantile(time, {0, 0.25, 0.5, 0.75, 1});\
     char* capsKernel;\
     asprintf(&capsKernel, "%s", #kernel);\
     capitalize(capsKernel);\
-    printf("%s : %8.4f GFlop/s ; Time = %8.5f s\n", capsKernel, flopPerNnz*nnz_update/(time), time);\
+    /*printf("Obtained Perf of %s : %8.4f GFlop/s ; Time = %8.5f s\n", capsKernel, flopPerNnz*nnz_update/(time), time);*/\
+    printf("Obtained Perf of %s : ", capsKernel);\
+    Quantile_print(time_quantiles, flopPerNnz*nnz_update, true);\
+    printf(" GFlop/s; Time : ");\
+    Quantile_print(time_quantiles);\
+    printf(" sec\n");\
     free(capsKernel);\
 }\
 
@@ -122,7 +132,7 @@ int main(const int argc, char * argv[])
     }
     STOP_TIMER(init_iter);
     double initTime = GET_TIMER(init_iter);
-    int iterations = std::max(1, (int) (2*10/initTime));
+    int iterations = std::max(1, (int) (0.1*2*10/initTime));
     //int iterations = 1; //for correctness checking
     printf("Num iterations =  %d\n", iterations);
 
