@@ -126,7 +126,7 @@ int main(const int argc, char * argv[])
 
     int NROWS = mat->nrows;
     bool randInit = false;
-    double initVal = 1; //(double)NROWS;
+    double initVal = 1/(double)NROWS;
     densemat *xRAND;
     if(randInit)
     {
@@ -140,8 +140,7 @@ int main(const int argc, char * argv[])
 #ifdef VALIDATE_wo_PERM
     if(param.validate)
     {
-        xTRAD=new densemat(NROWS, 1);
-        densemat* yTRAD = new densemat(NROWS, 1);
+        xTRAD=new densemat(NROWS, power+1);
         densemat* xTRAD_0 = xTRAD->view(0,0);
 
         if(randInit)
@@ -156,14 +155,14 @@ int main(const int argc, char * argv[])
         //now calculate xTRAD in traditional way
         for(int pow=0; pow<power; ++pow)
         {
-            plain_spmv(yTRAD, mat, xTRAD);
-            double* tmp = yTRAD->val;
-            yTRAD->val = xTRAD->val;
-            xTRAD->val = tmp;
+            densemat *x = xTRAD->view(pow,pow);
+            plain_spmv(mat, x);
         }
-        delete yTRAD;
+
     }
 #endif
+
+    printf("Preparing matrix for power calculation\n");
 
     //mat->writeFile("matrixBeforeProcessing.mtx");
 /*
@@ -177,9 +176,10 @@ int main(const int argc, char * argv[])
     START_TIMER(pre_process);
     if(param.RCM_flag)
     {
-        mat->doRCM();
+        mat->doRCMPermute();
     }
 
+    mat->writeFile("matrixAfterRCM.mtx");
     sparsemat *L = new sparsemat;
     sparsemat *U = new sparsemat;
     mat->splitMatrixToLU(&L, &U);
@@ -188,6 +188,9 @@ int main(const int argc, char * argv[])
     L->prepareForPower(2, param.nodes, param.cache_size*1024*1024, param.cores, param.smt, param.pin, "L");
     printf("Preparing U matrix for power calculation\n");
     U->prepareForPower(3, param.nodes, param.cache_size*1024*1024, param.cores, param.smt, param.pin, "U");
+
+    //create workspace
+    splitHandle* handle = matPower_split_init(L, U);
 
     STOP_TIMER(pre_process);
     /*printf("perm = \n");
@@ -225,7 +228,7 @@ int main(const int argc, char * argv[])
     //   x[0],   x[1], ....,   x[nrows-1]
     //  Ax[0],  Ax[1], ....,  Ax[nrows-1]
     // AAx[0], AAx[1], ...., AAx[nrows-1]
-    densemat* xRACE=new densemat(NROWS, 1);
+    densemat* xRACE=new densemat(NROWS, power+1);
     densemat* xRACE_0 = xRACE->view(0,0);
     if(randInit)
     {
@@ -243,7 +246,7 @@ int main(const int argc, char * argv[])
     START_TIMER(matPower_init);
     for(int iter=0; iter<10; ++iter)
     {
-       matPower_split(L, U, power, xRACE);
+       matPower_split(handle, power, xRACE);
     }
     STOP_TIMER(matPower_init);
     double initTime = GET_TIMER(matPower_init);
@@ -255,8 +258,7 @@ int main(const int argc, char * argv[])
 
     if(param.validate)
     {
-        densemat* xTRAD_perf=new densemat(NROWS, 1);
-        densemat* yTRAD = new densemat(NROWS, 1);
+        densemat* xTRAD_perf=new densemat(NROWS, power+1);
 #ifndef VALIDATE_wo_PERM
         xTRAD=xTRAD_perf;
 #endif
@@ -284,11 +286,8 @@ int main(const int argc, char * argv[])
         {
             for(int pow=0; pow<power; ++pow)
             {
-                plain_spmv(yTRAD, mat, xTRAD);
-                double* tmp = yTRAD->val;
-                yTRAD->val = xTRAD->val;
-                xTRAD->val = tmp;
-
+                densemat *x = xTRAD_perf->view(pow,pow);
+                plain_spmv(mat, x);
             }
         }
         STOP_TIMER(spmvPower);
@@ -303,7 +302,6 @@ int main(const int argc, char * argv[])
 #ifdef VALIDATE_wo_PERM
         delete xTRAD_perf;
 #endif
-        delete yTRAD;
     }
 
     xRACE->setVal(0);
@@ -326,7 +324,7 @@ int main(const int argc, char * argv[])
     START_TIMER(matPower);
     for(int iter=0; iter<iterations; ++iter)
     {
-        matPower_split(L, U, power, xRACE);
+        matPower_split(handle, power, xRACE);
     }
     /*for(int pow=0; pow<power; ++pow)
       {
@@ -354,7 +352,26 @@ int main(const int argc, char * argv[])
         densemat* xTRAD_permuted = xTRAD;
 #endif
 
-/*        for(int i=0; i<10; ++i)
+
+        xRACE->setVal(0);
+        if(randInit)
+        {
+            xRACE_0->copyVal(xRAND);
+        }
+        else
+        {
+            xRACE_0->setVal(initVal);
+        }
+
+#ifdef VALIDATE_wo_PERM
+        densemat* xRACE_permuted = mat->permute_densemat(xRACE);
+#else
+        densemat* xRACE_permuted = xRACE;
+#endif
+
+        //only one iterations
+        matPower_split(handle, power, xRACE_permuted);
+        /*        for(int i=0; i<10; ++i)
         {
             for(int j=0; j<xRACE->ncols; ++j)
             {
@@ -363,7 +380,7 @@ int main(const int argc, char * argv[])
             printf("\n");
         }*/
 
-        bool flag = checkEqual(xTRAD_permuted, xRACE, param.tol);
+        bool flag = checkEqual(xTRAD_permuted, xRACE_permuted, param.tol);
         if(!flag)
         {
             printf("Power calculation failed\n");
@@ -378,6 +395,7 @@ int main(const int argc, char * argv[])
         delete xTRAD;
     }
 
+    matPower_split_destroy(handle);
     delete mat;
     delete L;
     delete U;

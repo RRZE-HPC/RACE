@@ -11,7 +11,9 @@
 #include "densemat.h"
 #include "kernels.h"
 #include "timer.h"
-
+#ifdef GPROFNG_PROFILE
+    #include "collectorAPI.h"
+#endif
 
 void capitalize(char* beg)
 {
@@ -25,10 +27,13 @@ void capitalize(char* beg)
 
 int main(const int argc, char * argv[])
 {
+
+#ifdef GPROFNG_PROFILE
+    collector_pause();
+#endif
 #ifdef LIKWID_PERFMON
     LIKWID_MARKER_INIT;
 #endif
-
     int err;
     parser param;
     if(!param.parse_arg(argc, argv))
@@ -101,7 +106,10 @@ int main(const int argc, char * argv[])
             LIKWID_MARKER_START("MKL_power");
         }
 #endif
- 
+
+#ifdef GPROFNG_PROFILE
+    collector_resume();
+#endif
     START_TIMER(spmv);
     for(int iter=0; iter<iterations; ++iter)
     {
@@ -112,13 +120,17 @@ int main(const int argc, char * argv[])
         }
     }
     STOP_TIMER(spmv);
+
+#ifdef GPROFNG_PROFILE
+    collector_pause();
+#endif
 #ifdef LIKWID_PERFMON
 #pragma omp parallel
         {
             LIKWID_MARKER_STOP("MKL_power");
         }
 #endif
- 
+
     double spmvPowerTime = GET_TIMER(spmv);
     double flops = 2.0*iterations*power*(double)mat->nnz*1e-9;
 
