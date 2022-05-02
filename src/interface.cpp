@@ -124,7 +124,7 @@ double RACE::Interface::getEfficiency()
 
 int RACE::Interface::getMaxStageDepth()
 {
-    return zoneTree->findMaxStage();
+    return zoneTree->maxStages();
 }
 
 void RACE::Interface::printZoneTree()

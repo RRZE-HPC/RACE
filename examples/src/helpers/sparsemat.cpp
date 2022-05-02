@@ -15,7 +15,7 @@
 #include "densemat.h"
 #include "multicoloring.h"
 
-sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), colorType("RACE"), colorBlockSize(64), colorDist(-1), ncolors(-1), colorPtr(NULL), partPtr(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), finalPerm(NULL), finalInvPerm(NULL)
+sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), diagFirst(false), colorType("RACE"), colorBlockSize(64), colorDist(-1), ncolors(-1), colorPtr(NULL), partPtr(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), finalPerm(NULL), finalInvPerm(NULL)
 {
 }
 
@@ -373,102 +373,105 @@ bool sparsemat::convertToBCSR(int b_r)
 //necessary for GS like kernels
 void sparsemat::makeDiagFirst()
 {
-    //check whether a new allocation is necessary
-    int extra_nnz=0;
-    std::vector<double>* val_with_diag = new std::vector<double>();
-    std::vector<int>* col_with_diag = new std::vector<int>();
-    std::vector<int>* rowPtr_with_diag = new std::vector<int>(rowPtr, rowPtr+nrows+1);
-
-    for(int row=0; row<nrows; ++row)
+    if(!diagFirst)
     {
-        bool diagHit = false;
-        for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
-        {
-            val_with_diag->push_back(val[idx]);
-            col_with_diag->push_back(col[idx]);
+        //check whether a new allocation is necessary
+        int extra_nnz=0;
+        std::vector<double>* val_with_diag = new std::vector<double>();
+        std::vector<int>* col_with_diag = new std::vector<int>();
+        std::vector<int>* rowPtr_with_diag = new std::vector<int>(rowPtr, rowPtr+nrows+1);
 
-            if(col[idx] == row)
+        for(int row=0; row<nrows; ++row)
+        {
+            bool diagHit = false;
+            for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
             {
-                diagHit = true;
+                val_with_diag->push_back(val[idx]);
+                col_with_diag->push_back(col[idx]);
+
+                if(col[idx] == row)
+                {
+                    diagHit = true;
+                }
             }
+            if(!diagHit)
+            {
+                val_with_diag->push_back(0.0);
+                col_with_diag->push_back(row);
+                ++extra_nnz;
+            }
+            rowPtr_with_diag->at(row+1) = rowPtr_with_diag->at(row+1) + extra_nnz;
         }
-        if(!diagHit)
+
+        //allocate new matrix if necessary
+        if(extra_nnz)
         {
-            val_with_diag->push_back(0.0);
-            col_with_diag->push_back(row);
-            ++extra_nnz;
+            delete[] val;
+            delete[] col;
+            delete[] rowPtr;
+
+            nnz += extra_nnz;
+            val = new double[nnz];
+            col = new int[nnz];
+            rowPtr = new int[nrows+1];
+
+            rowPtr[0] = rowPtr_with_diag->at(0);
+#pragma omp parallel for schedule(static)
+            for(int row=0; row<nrows; ++row)
+            {
+                rowPtr[row+1] = rowPtr_with_diag->at(row+1);
+                for(int idx=rowPtr_with_diag->at(row); idx<rowPtr_with_diag->at(row+1); ++idx)
+                {
+                    val[idx] = val_with_diag->at(idx);
+                    col[idx] = col_with_diag->at(idx);
+                }
+            }
+            printf("Explicit 0 in diagonal entries added\n");
         }
-        rowPtr_with_diag->at(row+1) = rowPtr_with_diag->at(row+1) + extra_nnz;
-    }
 
-    //allocate new matrix if necessary
-    if(extra_nnz)
-    {
-        delete[] val;
-        delete[] col;
-        delete[] rowPtr;
+        delete val_with_diag;
+        delete col_with_diag;
+        delete rowPtr_with_diag;
 
-        nnz += extra_nnz;
-        val = new double[nnz];
-        col = new int[nnz];
-        rowPtr = new int[nrows+1];
-
-        rowPtr[0] = rowPtr_with_diag->at(0);
 #pragma omp parallel for schedule(static)
         for(int row=0; row<nrows; ++row)
         {
-            rowPtr[row+1] = rowPtr_with_diag->at(row+1);
-            for(int idx=rowPtr_with_diag->at(row); idx<rowPtr_with_diag->at(row+1); ++idx)
+            bool diag_hit = false;
+
+            double* newVal = new double[rowPtr[row+1]-rowPtr[row]];
+            int* newCol = new int[rowPtr[row+1]-rowPtr[row]];
+            for(int idx=rowPtr[row], locIdx=0; idx<rowPtr[row+1]; ++idx, ++locIdx)
             {
-                val[idx] = val_with_diag->at(idx);
-                col[idx] = col_with_diag->at(idx);
+                //shift all elements+1 until diag entry
+                if(col[idx] == row)
+                {
+                    newVal[0] = val[idx];
+                    newCol[0] = col[idx];
+                    diag_hit = true;
+                }
+                else if(!diag_hit)
+                {
+                    newVal[locIdx+1] = val[idx];
+                    newCol[locIdx+1] = col[idx];
+                }
+                else
+                {
+                    newVal[locIdx] = val[idx];
+                    newCol[locIdx] = col[idx];
+                }
             }
+            //assign new Val
+            for(int idx = rowPtr[row], locIdx=0; idx<rowPtr[row+1]; ++idx, ++locIdx)
+            {
+                val[idx] = newVal[locIdx];
+                col[idx] = newCol[locIdx];
+            }
+
+            delete[] newVal;
+            delete[] newCol;
         }
-        printf("Explicit 0 in diagonal entries added\n");
+        diagFirst = true;
     }
-
-    delete val_with_diag;
-    delete col_with_diag;
-    delete rowPtr_with_diag;
-
-#pragma omp parallel for schedule(static)
-    for(int row=0; row<nrows; ++row)
-    {
-        bool diag_hit = false;
-
-        double* newVal = new double[rowPtr[row+1]-rowPtr[row]];
-        int* newCol = new int[rowPtr[row+1]-rowPtr[row]];
-        for(int idx=rowPtr[row], locIdx=0; idx<rowPtr[row+1]; ++idx, ++locIdx)
-        {
-            //shift all elements+1 until diag entry
-            if(col[idx] == row)
-            {
-                newVal[0] = val[idx];
-                newCol[0] = col[idx];
-                diag_hit = true;
-            }
-            else if(!diag_hit)
-            {
-                newVal[locIdx+1] = val[idx];
-                newCol[locIdx+1] = col[idx];
-            }
-            else
-            {
-                newVal[locIdx] = val[idx];
-                newCol[locIdx] = col[idx];
-            }
-        }
-        //assign new Val
-        for(int idx = rowPtr[row], locIdx=0; idx<rowPtr[row+1]; ++idx, ++locIdx)
-        {
-            val[idx] = newVal[locIdx];
-            col[idx] = newCol[locIdx];
-        }
-
-        delete[] newVal;
-        delete[] newCol;
-    }
-
 }
 
 //write matrix market file
@@ -497,6 +500,9 @@ bool sparsemat::writeFile(char* filename)
 
 bool sparsemat::computeSymmData()
 {
+    //this is assumed by SymmSpMV kernel and GS
+    makeDiagFirst();
+
     //compute only if previously not computed
     if(nnz_symm == 0)
     {
@@ -642,6 +648,8 @@ void sparsemat::doRCM()
     }
     omp_set_num_threads(orig_threads);
     delete csr;
+#else
+    printf("Please link with SpMP library to enable RCM permutation\n");
 #endif
 }
 

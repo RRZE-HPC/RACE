@@ -42,6 +42,7 @@ class ZoneTree{
         void updateTreeEffRow(int parentIdx);
         void updateTreeNThreads(int parentIdx);
         void updateTimeRecursive(int parentIdx);
+        int maxStages_store;//calculate once and store, don't recalculate everytime
 
     public:
         RACE::dist dist;
@@ -70,7 +71,10 @@ class ZoneTree{
         bool spawnChild(int parentIdx, int parentSubIdx, int requestNthreads, LevelData* levelData, double eff=0);
         KeyChild findKeyChild(int parentIdx);
         void printTree();
-        int findMaxStage();
+        //calculates maxStages, done internally only once
+        void findMaxStage();
+        //returns the calculated maxStages value
+        int maxStages();
         void resetTime();
         void updateTime();
 };

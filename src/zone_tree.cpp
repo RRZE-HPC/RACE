@@ -14,7 +14,7 @@ ZoneLeaf::ZoneLeaf(int rangeLo_, int rangeHi_, int parent_):valueZ(2),nthreadsZ(
     valueZ[1] = rangeHi_;
 }
 
-ZoneTree::ZoneTree(RACE::dist dist_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):cachedTree(NULL),dist(dist_),d2Type(d2Type_),lbTarget(lbTarget_),tree(NULL)
+ZoneTree::ZoneTree(RACE::dist dist_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):cachedTree(NULL),dist(dist_),d2Type(d2Type_),lbTarget(lbTarget_),tree(NULL), maxStages_store(1)
 {
     tree = new tree_t;
     cachedTree = new tree_t;
@@ -305,7 +305,7 @@ void ZoneTree::printTree()
     }
 }
 
-int ZoneTree::findMaxStage()
+void ZoneTree::findMaxStage()
 {
     int maxStage = 0;
     for(unsigned i=0; i<tree->size(); ++i)
@@ -314,7 +314,13 @@ int ZoneTree::findMaxStage()
         maxStage = std::max(maxStage, currLeaf->stage);
     }
 
-    return maxStage;
+    //store it
+    maxStages_store = maxStage;
+}
+
+int ZoneTree::maxStages()
+{
+    return maxStages_store;
 }
 
 void ZoneTree::resetTime()

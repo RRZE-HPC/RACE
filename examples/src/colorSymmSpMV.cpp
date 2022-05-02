@@ -23,7 +23,7 @@ void capitalize(char* beg)
     }
 }
 
-#define PERF_RUN(kernel, flopPerNnz)\
+#define PERF_RUN(kernel, flopPerNnz, ...)\
 {\
     double time = 0;\
     double nnz_update = ((double)mat->nnz)*iterations*1e-9;\
@@ -31,14 +31,15 @@ void capitalize(char* beg)
     START_TIMER(kernel);\
     for(int iter=0; iter<iterations; ++iter)\
     {\
-        kernel(b, mat, x);\
+        __VA_ARGS__;\
+        /*kernel(b, mat, x, symm);*/\
     }\
     STOP_TIMER(kernel);\
     time = GET_TIMER(kernel);\
     char* capsKernel;\
     asprintf(&capsKernel, "%s", #kernel);\
     capitalize(capsKernel);\
-    printf("%10s : %8.4f GFlop/s ; Time = %8.5f s\n", capsKernel, flopPerNnz*nnz_update/(time), time);\
+    printf("%s : %8.4f GFlop/s ; Time = %8.5f s\n", capsKernel, flopPerNnz*nnz_update/(time), time);\
     free(capsKernel);\
 }\
 
@@ -81,6 +82,7 @@ int main(const int argc, char * argv[])
     printf("Coloring matrix\n");
     mat->colorAndPermute(distance, std::string(param.colorType), param.cores, param.smt, param.pin);
     printf("Finished coloring\n\n");
+
     STOP_TIMER(pre_process);
     double pre_process_time = GET_TIMER(pre_process);
     printf("Total pre-processing time = %f s\n", pre_process_time);
@@ -94,14 +96,13 @@ int main(const int argc, char * argv[])
     x=new densemat(NROWS);
     b=new densemat(NROWS);
 
-    densemat *xRAND;
+    densemat *xRAND=NULL;
     if(randInit)
     {
         xRAND = new densemat(NROWS);
         xRAND->setRand();
     }
 
-    b->setVal(0);
     if(randInit)
     {
         x->copyVal(xRAND);
@@ -111,6 +112,7 @@ int main(const int argc, char * argv[])
         x->setVal(initVal);
     }
 
+    b->setVal(0);
     //determine iterations
     INIT_TIMER(init_iter);
     START_TIMER(init_iter);
@@ -125,16 +127,13 @@ int main(const int argc, char * argv[])
     printf("Num iterations =  %d\n", iterations);
 
     //This macro times and reports performance
-    PERF_RUN(plain_spmv,2);
-    PERF_RUN(spmv,2);
-    PERF_RUN(spmtv,2);
-    PERF_RUN(kacz,4);
-    //diag entry first required for GS
-    mat->makeDiagFirst();
-    PERF_RUN(gs,2);
-    //symm SpMV
+    b->setVal(0);
+    PERF_RUN(omp_spmv,2, plain_spmv(b, mat, x););
+    b->setVal(0);
+    PERF_RUN(color_spmv,2, spmv(b, mat, x););
+
     mat->computeSymmData();
-    PERF_RUN(symm_spmv,2);
+    PERF_RUN(color_symm_spmv,2, symm_spmv(b, mat, x););
 
     if(param.validate)
     {
@@ -142,7 +141,6 @@ int main(const int argc, char * argv[])
         densemat* bSPMV;
         bSPMV = new densemat(NROWS);
         bSPMV->setVal(0);
-        b->setVal(0);
         if(randInit)
         {
             x->copyVal(xRAND);
@@ -151,34 +149,33 @@ int main(const int argc, char * argv[])
         {
             x->setVal(initVal);
         }
-        //Assuming symmetric matrix provided.
-        //Do one SPMV and SPMTV; compare results
-        plain_spmv(bSPMV, mat, x);
-        spmtv(b, mat, x);
 
         bool relativeCheck = false;
         if(randInit)
         {
             relativeCheck = true; //for random normally you got very big numbers, so check relative error
         }
-        bool spmtv_flag = checkEqual(bSPMV,b, param.tol, relativeCheck);
-        if(!spmtv_flag)
-        {
-            printf("SPMTV failed\n");
-        }
 
-        //check symmetric variant also
         //Do one SPMV and symmSPMV; compare results
+        plain_spmv(bSPMV, mat, x);
+
+        b->setVal(0);
+        spmv(b, mat, x);
+        bool spmv_flag = checkEqual(bSPMV, b, param.tol, relativeCheck);
+        if(!spmv_flag)
+        {
+            printf("Color SPMV failed\n");
+        }
         b->setVal(0);
         mat->computeSymmData();
         symm_spmv(b, mat, x);
-        bool symm_spmv_flag = checkEqual(bSPMV,b, param.tol, relativeCheck);
+        bool symm_spmv_flag = checkEqual(bSPMV, b, param.tol, relativeCheck);
         if(!symm_spmv_flag)
         {
-            printf("SYMM SPMV failed\n");
+            printf("Color SYMM SPMV failed\n");
         }
 
-        if(spmtv_flag &&  symm_spmv_flag)
+        if(spmv_flag && symm_spmv_flag)
         {
             printf("Validated coloring\n");
         }
@@ -189,5 +186,15 @@ int main(const int argc, char * argv[])
             printf("2. Matrix not symmetric (right now validation works only for symmetric matrices)\n");
             printf("3. Coloring failed\n\n");
         }
+        delete bSPMV;
    }
+
+    delete mat;
+    delete x;
+    delete b;
+    if(xRAND)
+    {
+        delete xRAND;
+    }
+
 }

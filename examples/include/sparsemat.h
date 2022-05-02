@@ -52,6 +52,7 @@ struct sparsemat
     int nnz_symm;
     int *rowPtr_symm, *col_symm;
     double *val_symm;
+    bool diagFirst;
     bool computeSymmData();
     //diag with L
     void splitMatrixToLU(sparsemat **L, sparsemat **U);

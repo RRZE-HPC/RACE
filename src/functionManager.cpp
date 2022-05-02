@@ -1233,15 +1233,16 @@ void FuncManager::Run(bool rev_)
                   */
         int root = 0;
 #ifdef RACE_KERNEL_THREAD_OMP
-        int resetNestedState = omp_get_nested();
+        int resetNestedState = omp_get_max_active_levels();
         int resetDynamicState = omp_get_dynamic();
         //set nested parallelism
-        omp_set_nested(1);
+        omp_set_max_active_levels(zoneTree->maxStages()+2);//+2 for safety
+        //omp_set_nested(1);
         omp_set_dynamic(0);
         recursiveFun(root);
 
         //reset states
-        omp_set_nested(resetNestedState);
+        omp_set_max_active_levels(resetNestedState);
         omp_set_dynamic(resetDynamicState);
 #else
 
@@ -1265,10 +1266,10 @@ void FuncManager::Run(bool rev_)
     else
     {
 #ifdef RACE_KERNEL_THREAD_OMP
-        int resetNestedState = omp_get_nested();
+        int resetNestedState = omp_get_max_active_levels();
         //set nested parallelism
         //printf("setting nested\n");
-        omp_set_nested(0);
+        omp_set_max_active_levels(1);
 
 #ifdef POWER_WITH_FLUSH_LOCK
 #pragma omp parallel
@@ -1284,7 +1285,7 @@ void FuncManager::Run(bool rev_)
         recursivePowerFun(0);
 
         //reset states
-        omp_set_nested(resetNestedState);
+        omp_set_max_active_levels(resetNestedState);
 #endif
 
     }
