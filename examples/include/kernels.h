@@ -50,7 +50,19 @@ void matPower_only_highest(sparsemat* A, int power, densemat *x);
 void matPowerNuma(NUMAmat* A, int power, densemat *x);
 void matPowerBCSR(sparsemat* A, int power, densemat *x);
 
-void matPower_split(sparsemat *L, sparsemat *U, int power, densemat *x);
+struct splitHandle
+{
+    sparsemat* U;
+    sparsemat* L;
+    densemat* Un_x; //tmp workspace
+    densemat* Ln_x; //tmp workspace
+
+    splitHandle();
+};
+
+splitHandle* matPower_split_init(sparsemat* L, sparsemat *U);
+void matPower_split_destroy(splitHandle* handle);
+void matPower_split(splitHandle *handle, int power, densemat *x);
 
 //convenience macros
 #define ENCODE_TO_VOID(mat_en, b_en, x_en)\
@@ -93,6 +105,9 @@ void matPower_split(sparsemat *L, sparsemat *U, int power, densemat *x);
     arg_encode_##_NAME_->b = b_en;\
     arg_encode_##_NAME_->x = x_en;\
     void* voidArg_##_NAME_ = (void*) arg_encode_##_NAME_;\
+
+#define UPDATE_X_SPLIT(x_en, _NAME_)\
+    arg_encode_##_NAME_->x = x_en;\
 
 #define DELETE_ARG_SPLIT(_NAME_)\
     delete arg_encode_##_NAME_;\
