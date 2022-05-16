@@ -9,7 +9,7 @@
 #include "macros.h"
 #include "bitmap.h"
 #include "sliding_queue.h"
-#include "string.h"
+#include <string>
 
 class Graph;
 
