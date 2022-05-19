@@ -1,7 +1,7 @@
 # README #
 
 RACE-Recursive Algebraic Coloring Engine is a graph coloring library that helps in parallelization of sparse matrix kernels having distance-k (k>=1)
-dependencies. RACE uses a recursive level based method for coloring.
+dependencies.RACE uses a recursive level based method for coloring.
 
 ### FEATURES ###
 
@@ -36,9 +36,9 @@ Please see the [example folder](https://bitbucket.org/essex/race/src/master/exam
 
 If you are using RACE please use the following reference:
 
-* C. L. Alappat, A. Basermann, A. R. Bishop,  H. Fehske, G. Hager, O. Schenk, J. Thies, and G. Wellein: 
-  A Recursive Algebraic Coloring Technique for Hardware-Efficient Symmetric Sparse Matrix-Vector Multiplication. ACM Trans. Parallel Comput., 2020, [https://doi.org/10.1145/3399732](https://doi.org/10.1145/3399732)
-
+* C. L. Alappat, G. Hager, O. Schenk, J. Thies, A. Basermann, A. R. Bishop, H. Fehske, and G. Wellein: 
+  A Recursive Algebraic Coloring Technique for Hardware-Efficient Symmetric Sparse Matrix-Vector Multiplication. Accepted for publication in ACM TOPC. Preprint: [arXiv:1907.06487](https://arxiv.org/abs/1907.06487)
+  
 ### Further Reading ###
 
 * A poster on RACE was presented at SC'18. The poster and abstract can be found [here](https://sc18.supercomputing.org/proceedings/src_poster/src_poster_pages/spost109.html).

@@ -1,20 +1,52 @@
+/*
+ * =======================================================================================
+ *
+ *   RACE: Recursicve Algebraic Coloring Engine
+ *   Copyright (C) 2019, RRZE, Friedrich-Alexander-Universität Erlangen-Nürnberg
+ *   Author: Christie Alappat
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Affero General Public License as
+ *   published by the Free Software Foundation, either version 3 of the
+ *   License, or (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Affero General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Affero General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * =======================================================================================
+ */
+
 #include "level_recursion.h"
 #include "utility.h"
+#include "config.h"
 
-LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist dist_, RACE::d2Method d2Type_):graph(graph_), dist(dist_), d2Type(d2Type_), requestNThreads(requestNThreads_), perm(NULL), invPerm(NULL)
+LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist dist_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):graph(graph_), dist(dist_), d2Type(d2Type_), lbTarget(lbTarget_), requestNThreads(requestNThreads_), perm(NULL), invPerm(NULL)
 {
-    zoneTree = new ZoneTree(dist, d2Type);
-    int totalRows;
-    graph->getInitialPerm(&perm, &totalRows);
-    invPerm = new int[totalRows];
-
+    zoneTree = new ZoneTree(dist, d2Type, lbTarget);
+#ifndef RACE_PERMUTE_ON_FLY
+    int totalRows = graph->NROW+graph->NROW_serial;
+    //copy initial permutations
+    int* perm = new int[totalRows];
+    int* invPerm = new int[totalRows];
+    for(int i=0; i<totalRows; ++i)
+    {
+        perm[i] = graph->totalPerm[i]; //Includes both serial and initPerm
+        invPerm[i] = graph->totalInvPerm[i]; //Includes both serial and initPerm
+    }
+#endif
+    /*invPerm = new int[totalRows];
     for(int i=0; i<totalRows; ++i)
     {
         invPerm[perm[i]] = i;
-    }
+    }*/
 
     double default_eff = 40;
-    char *lvlEff = getenv("RACE_EFFICIENCY");
+/*    char *lvlEff = getenv("RACE_EFFICIENCY");
     char *lvlThreads = getenv("RACE_THREADS");
 
     if(lvlThreads != NULL)
@@ -26,14 +58,18 @@ LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist d
             token = strtok(NULL, ",");
         }
     }
-
-    //printf("RACE_THREADS = \n");
+*/
+    getEnv("RACE_THREADS", lvl_threads);
+    printf("RACE_THREADS = \n");
     for(unsigned i=0; i<lvl_threads.size(); ++i)
     {
         printf("%d\n",lvl_threads[i]);
     }
 
+    eff_vec.push_back(default_eff);
+    getEnv("RACE_EFFICIENCY", eff_vec);
 
+    /*
     if(lvlEff == NULL)
     {
         eff_vec.push_back(default_eff);
@@ -45,7 +81,7 @@ LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist d
             eff_vec.push_back(atof(token));
             token = strtok(NULL, ",");
         }
-    }
+    }*/
 
     printf("Efficiency Vector = \n");
     for(unsigned i=0; i<eff_vec.size(); ++i)
@@ -109,6 +145,7 @@ ZoneTree* LevelRecursion::getZoneTree()
     return toRet;
 }
 
+//better move this to graph
 void LevelRecursion::calculateIdealNthreads(int parentIdx, int parentSubIdx, int currLvl)
 {
     std::vector<int>* children = &(zoneTree->at(parentIdx).children);
@@ -118,7 +155,27 @@ void LevelRecursion::calculateIdealNthreads(int parentIdx, int parentSubIdx, int
     if(lvlThreads(currLvl)==-1)
     {
         int parentThreads = zoneTree->at(parentIdx).idealNthreadsZ;
-        int parentRow = zoneTree->at(parentIdx).valueZ[parentSubIdx+1] - zoneTree->at(parentIdx).valueZ[parentSubIdx];
+        int startRow = zoneTree->at(parentIdx).valueZ[parentSubIdx];
+        int endRow = zoneTree->at(parentIdx).valueZ[parentSubIdx+1];
+        int parentRow = endRow - startRow;
+        int parentNnz = 0;
+        if(lbTarget == RACE::NNZ)
+        {
+
+            for(int row=startRow; row<endRow; ++row)
+            {
+                int permRow = row;
+#ifdef RACE_PERMUTE_ON_FLY
+                permRow = graph->totalPerm[row];
+#endif
+#ifdef RACE_USE_SOA_GRAPH
+                parentNnz += graph->getChildrenSize(permRow);
+#else
+                parentNnz += graph->at(permRow).children.size();
+#endif
+            }
+        }
+
         double* remainder = new double[nThreads];
         int remainingThreads = parentThreads;
         //One could individually treat red and black, but this would lead to less locality
@@ -127,8 +184,31 @@ void LevelRecursion::calculateIdealNthreads(int parentIdx, int parentSubIdx, int
         {
             std::vector<int>* firstRange = &(zoneTree->at(children->at(2*parentSubIdx)+i*blockPerThread).valueZ);
             std::vector<int>* lastRange = &(zoneTree->at(children->at(2*parentSubIdx)+blockPerThread*(i+1)-1).valueZ);
-            int totalRow = lastRange->back()-firstRange->front();
+            int startSubRow = firstRange->front();
+            int endSubRow = lastRange->back();
+            int totalRow = endSubRow - startSubRow;
+
             double myWeight = totalRow/(static_cast<double>(parentRow));
+            if(lbTarget == RACE::NNZ)
+            {
+                int totalNnz = 0;
+                for(int row=startSubRow; row<endSubRow; ++row)
+                {
+                    int permRow = row;
+#ifdef RACE_PERMUTE_ON_FLY
+                    permRow = graph->totalPerm[row];
+#endif
+
+#ifdef RACE_USE_SOA_GRAPH
+                    totalNnz += (int)(graph->getChildrenSize(permRow));
+#else
+                    totalNnz += (int)(graph->at(permRow).children.size());
+#endif
+                }
+
+                myWeight = totalNnz/(static_cast<double>(parentNnz));
+            }
+
             double myThreads_d = myWeight*parentThreads;
             //atleast 1 thread, but not greater than remainingThreads
             int myThreads = static_cast<int>(myThreads_d);
@@ -199,12 +279,13 @@ void LevelRecursion::recursivePartition(int parentIdx, int parentSubIdx, int cur
             {
                 Traverse traverse(graph, dist, range[j], range[j+1], currIdx);
                 traverse.calculateDistance();
+#ifndef RACE_PERMUTE_ON_FLY
                 int *levelPerm = NULL;
                 int len;
                 traverse.getPerm(&levelPerm, &len);
                 updatePerm(&perm, levelPerm, len, len+graph->NROW_serial);
                 delete[] levelPerm;
-
+#endif
                 LevelData* levelData = traverse.getLevelData();
                 //Try to spawn all the threads required
                 bool locFlag = zoneTree->spawnChild(currIdx, j, currIdxNThreads, levelData, efficiency(currLevel));
@@ -243,11 +324,13 @@ void LevelRecursion::levelBalancing()
     //Traverse
     Traverse traverse(graph, dist);
     traverse.calculateDistance();
+#ifndef RACE_PERMUTE_ON_FLY
     int *levelPerm = NULL;
     int len;
     traverse.getPerm(&levelPerm, &len);
     updatePerm(&perm, levelPerm, len, len+graph->NROW_serial);
     delete[] levelPerm;
+#endif
     LevelData* levelData = traverse.getLevelData();
     int currLevel = 1;
     int lvlOneThreads = requestNThreads;
@@ -271,11 +354,18 @@ void LevelRecursion::levelBalancing()
         WARNING_PRINT("Could not spawn requested threads = %d. Threads limited to %d", requestNThreads, availableNThreads);
     }
 
+#ifndef RACE_PERMUTE_ON_FLY
     //update invPerm
     for(int i=0; i<graph->NROW+graph->NROW_serial; ++i)
     {
         invPerm[perm[i]] = i;
     }
+#else
+    int len;
+    graph->getPerm(&perm, &len);
+    graph->getInvPerm(&invPerm, &len);
+#endif
+    zoneTree->findMaxStage();
 }
 
 //Getter functions

@@ -13,7 +13,7 @@ my_option::my_option()
 {
 }
 
-parser::parser():mat_file(NULL), iter(100), cores(1), smt(1), pin(FILL), validate(false), tol(1e-4), prgname("a.out"), numOptions(8)
+parser::parser():mat_file(NULL), iter(-1), cores(1), smt(1), nodes(1), cache_size(2), pin(FILL), validate(false), tol(1e-4), convTol(1e-16), RCM_flag(false), colorType("RACE"), prgname("a.out"), numOptions(13)
 {
     long_options = new my_option[numOptions+1];
 
@@ -21,11 +21,16 @@ parser::parser():mat_file(NULL), iter(100), cores(1), smt(1), pin(FILL), validat
     long_options[1] = {"iter",    required_argument, 0,  'i', "Iterations to be carried out" };
     long_options[2] = {"cores",   required_argument, 0,  'c', "Number of cores to be used" };
     long_options[3] = {"smt",     required_argument, 0,  't', "Number of threads per core to be used (recommended 1)" };
-    long_options[4] = {"pin",     required_argument, 0,  'p', "Pinning strategy to be used; availablle options FILL or SCATTER" };
-    long_options[5] = {"validate",no_argument,       0,  'v', "Validate coloring" };
-    long_options[6] = {"tol",     required_argument, 0,  'T', "Tolerance for validation" };
-    long_options[7] = {"help",    no_argument,       0,  'h', "Prints this help informations" };
-    long_options[8] = {0,         0,                 0,   0,  0 };
+    long_options[4] = {"nodes",   required_argument, 0,  'n', "Number of NUMA domains" };
+    long_options[5] = {"cache_size",     required_argument, 0,  's', "Size of cache for blocking (in MB)" };
+    long_options[6] = {"pin",     required_argument, 0,  'p', "Pinning strategy to be used; availablle options FILL or SCATTER" };
+    long_options[7] = {"validate",no_argument,       0,  'v', "Validate coloring" };
+    long_options[8] = {"tol",     required_argument, 0,  'T', "Tolerance for validation" };
+    long_options[9] = {"convTol",     required_argument, 0,  'e', "Tolerance for convergence check" };
+    long_options[10] = {"RCM",     no_argument, 0,  'R', "Do RCM pre-permutation" };
+    long_options[11] = {"color_type",     no_argument, 0,  'C', "Coloring type: RACE (default), ABMC, MC" };
+    long_options[12] = {"help",    no_argument,       0,  'h', "Prints this help informations" };
+    long_options[13] = {0,         0,                 0,   0,  0 };
 
     gnuOptions = new option[numOptions+1];
 
@@ -46,7 +51,7 @@ bool parser::parse_arg(int argc, char **argv)
     prgname = argv[0];
     while (1) {
         int option_index = 0, c;
-        c = getopt_long(argc, argv, "0:m:i:c:t:p:T:vh",
+        c = getopt_long(argc, argv, "0:m:i:c:t:n:s:p:T:e:C:vRh",
                 gnuOptions, &option_index);
 
         if (c == -1)
@@ -55,7 +60,7 @@ bool parser::parse_arg(int argc, char **argv)
         switch (c) {
             case 0:
                 {
-                    printf("No parameters specified.\n Usage: %s -m [MATRIX] -i [ITERATIONS] -c [CORES] -t [SMT] -p [FILL/SCATTER]\n", prgname);
+                    printf("No parameters specified.\n Usage: %s -m [MATRIX] -i [ITERATIONS] -c [CORES] -t [SMT] -n [numa domain] -s [cache size for blocking] -p [FILL/SCATTER]\n", prgname);
                     return false;
                     break;
                 }
@@ -78,6 +83,16 @@ bool parser::parse_arg(int argc, char **argv)
             case 't':
                 {
                     smt = atoi(optarg);
+                    break;
+                }
+            case 'n':
+                {
+                    nodes = atoi(optarg);
+                    break;
+                }
+            case 's':
+                {
+                    cache_size = atof(optarg);
                     break;
                 }
             case 'p':
@@ -107,6 +122,21 @@ bool parser::parse_arg(int argc, char **argv)
             case 'T':
                 {
                     tol = atof(optarg);
+                    break;
+                }
+            case 'e':
+                {
+                    convTol = atof(optarg);
+                    break;
+                }
+            case 'R':
+                {
+                    RCM_flag = true;
+                    break;
+                }
+            case 'C':
+                {
+                    colorType = optarg;
                     break;
                 }
             case 'h':

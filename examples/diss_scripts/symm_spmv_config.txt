@@ -1,0 +1,10 @@
+matrixFolder=/home/hk-project-benchfau/hd0705/matrices_diss
+folder=symm_spmv_results
+threads=38
+nodes=1
+RCMs=0 1
+mkl=off
+colorTypes=ABMC MC
+race_efficiencies=80,80 40
+race_dists=1 2
+execFolder=/home/hk-project-benchfau/hd0705/MatrixPower/examples/build_intel22

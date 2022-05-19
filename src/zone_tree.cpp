@@ -1,3 +1,26 @@
+/*
+ * =======================================================================================
+ *
+ *   RACE: Recursicve Algebraic Coloring Engine
+ *   Copyright (C) 2019, RRZE, Friedrich-Alexander-Universität Erlangen-Nürnberg
+ *   Author: Christie Alappat
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Affero General Public License as
+ *   published by the Free Software Foundation, either version 3 of the
+ *   License, or (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Affero General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Affero General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * =======================================================================================
+ */
+
 #include "zone_tree.h"
 #include "levelData.h"
 #include "lb.h"
@@ -14,7 +37,7 @@ ZoneLeaf::ZoneLeaf(int rangeLo_, int rangeHi_, int parent_):valueZ(2),nthreadsZ(
     valueZ[1] = rangeHi_;
 }
 
-ZoneTree::ZoneTree(RACE::dist dist_, RACE::d2Method d2Type_):cachedTree(NULL),dist(dist_),d2Type(d2Type_),tree(NULL)
+ZoneTree::ZoneTree(RACE::dist dist_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):cachedTree(NULL),dist(dist_),d2Type(d2Type_),lbTarget(lbTarget_),tree(NULL), maxStages_store(1)
 {
     tree = new tree_t;
     cachedTree = new tree_t;
@@ -223,7 +246,7 @@ bool ZoneTree::spawnChild(int parentIdx, int parentSubIdx, int requestNthreads, 
 //    int minEffRow = std::numeric_limits<int>::max();
     //TODO for three block
 //    int maxThreads = 1;
-    LB lb(requestNthreads, eff, levelData, dist, d2Type);
+    LB lb(requestNthreads, eff, levelData, dist, d2Type, lbTarget);
     lb.balance();
 
     int baseLen = tree->size();
@@ -294,7 +317,7 @@ void ZoneTree::printTree()
             printf("%d, ",currLeaf->valueZ[j]);
         }
 
-        printf("] Childre:[");
+        printf("] Children:[");
 
         for(unsigned j=0; j<currLeaf->children.size(); ++j)
         {
@@ -305,7 +328,7 @@ void ZoneTree::printTree()
     }
 }
 
-int ZoneTree::findMaxStage()
+void ZoneTree::findMaxStage()
 {
     int maxStage = 0;
     for(unsigned i=0; i<tree->size(); ++i)
@@ -314,7 +337,13 @@ int ZoneTree::findMaxStage()
         maxStage = std::max(maxStage, currLeaf->stage);
     }
 
-    return maxStage;
+    //store it
+    maxStages_store = maxStage;
+}
+
+int ZoneTree::maxStages()
+{
+    return maxStages_store;
 }
 
 void ZoneTree::resetTime()

@@ -21,9 +21,14 @@ struct parser
         int iter;
         int cores;
         int smt;
+        int nodes;
+        double cache_size;
         PinMethod pin;
         bool validate;
         double tol;
+        double convTol;
+        bool RCM_flag;
+        char *colorType;
         char *prgname;
         int numOptions;
         my_option *long_options;

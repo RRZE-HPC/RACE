@@ -1,0 +1,9 @@
+#ifndef RACE_EG_CONFIG_H
+#define RACE_EG_CONFIG_H
+
+#cmakedefine RACE_USE_SPMP
+#define VECTOR_LENGTH ${VECTOR_LENGTH}
+#cmakedefine RACE_HAVE_COLPACK
+#cmakedefine RACE_HAVE_METIS
+
+#endif

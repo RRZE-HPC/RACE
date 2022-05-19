@@ -1,3 +1,26 @@
+/*
+ * =======================================================================================
+ *
+ *   RACE: Recursicve Algebraic Coloring Engine
+ *   Copyright (C) 2019, RRZE, Friedrich-Alexander-Universität Erlangen-Nürnberg
+ *   Author: Christie Alappat
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Affero General Public License as
+ *   published by the Free Software Foundation, either version 3 of the
+ *   License, or (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Affero General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Affero General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * =======================================================================================
+ */
+
 #include "pin.h"
 #include "zone_tree.h"
 #include "macros.h"
@@ -218,16 +241,44 @@ RACE_error Pin::pinApplicationRecursive(int parent)
 RACE_error Pin::pinApplication()
 {
     calcPinOrder();
-    int resetNestedState = omp_get_nested();
+    int resetNestedState = omp_get_max_active_levels();
     int resetDynamicState = omp_get_dynamic();
     //set nested parallelism
-    omp_set_nested(1);
+    omp_set_max_active_levels(zoneTree->maxStages()+2); //+2 for safety
     omp_set_dynamic(0);
 
     RACE_error ret = pinApplicationRecursive(0);
 
-    omp_set_nested(resetNestedState);
+    omp_set_max_active_levels(resetNestedState);
     omp_set_dynamic(resetDynamicState);
 
     return ret;
 }
+
+void Pin::pinPowerThread(int nodes)
+{
+/*    int resetNestedState = omp_get_max_active_levels();
+    int resetDynamicState = omp_get_dynamic();
+    //set nested parallelism
+    //printf("setting nested\n");
+    omp_set_max_active_levels(zoneTree->maxStages()+2);
+    omp_set_dynamic(0);
+    Machine* mc = (Machine*) machine;
+    //body
+#pragma omp parallel num_threads(nodes)
+    {
+        int parentId = omp_get_thread_num();
+        mc->pinThread(0, parentId);
+#pragma omp parallel
+        {
+            mc->pinThread(omp_get_thread_num(), parentId);
+        }
+    }
+
+    //reset states
+    omp_set_max_active_levels(resetNestedState);
+    omp_set_dynamic(resetDynamicState);
+    */
+    UNUSED(nodes);
+}
+
