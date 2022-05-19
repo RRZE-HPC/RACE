@@ -50,7 +50,7 @@ set (HEADERS
     include/traverse_serial.h
     include/lb.h
     include/error.h
-    include/config.h
+    # include/config.h
     include/print.h
     include/type.h
     include/utility.h
@@ -208,11 +208,12 @@ endif()
 
 configure_file (
     "${PROJECT_SOURCE_DIR}/include/config.h.in"
-    "${PROJECT_SOURCE_DIR}/include/config.h"
+    "${PROJECT_BINARY_DIR}/include/config.h"
 )
 configure_file(${PROJECT_SOURCE_DIR}/race-config.cmake.in ${PROJECT_BINARY_DIR}/race-config.cmake @ONLY)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_BINARY_DIR}/include)
 add_library(RACE ${SOURCES})
 
 #get_filename_component(HWLOC_LIB_PATH ${LIBHWLOC} DIRECTORY)
