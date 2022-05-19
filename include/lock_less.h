@@ -1,3 +1,5 @@
+//Modified from https://locklessinc.com/articles/barriers/
+//
 #ifndef RACE_LOCK_LESS_H
 #define RACE_LOCK_LESS_H
 
@@ -15,7 +17,6 @@
 #include <sys/syscall.h>
 #include <sys/time.h>
 
-//Modified from https://locklessinc.com/articles/barriers/
 
 /* Compile Barrier */
 //#define barrier() asm volatile("": : :"memory")
