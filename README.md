@@ -34,10 +34,14 @@ Please see the [example folder](https://bitbucket.org/essex/race/src/master/exam
 
 ### Citing RACE ###
 
-If you are using RACE please use the following reference:
+If you are using RACE for coloring please use the following reference:
 
 * C. L. Alappat, G. Hager, O. Schenk, J. Thies, A. Basermann, A. R. Bishop, H. Fehske, and G. Wellein: 
-  A Recursive Algebraic Coloring Technique for Hardware-Efficient Symmetric Sparse Matrix-Vector Multiplication. Accepted for publication in ACM TOPC. Preprint: [arXiv:1907.06487](https://arxiv.org/abs/1907.06487)
+  A Recursive Algebraic Coloring Technique for Hardware-Efficient Symmetric Sparse Matrix-Vector Multiplication. Accepted for publication in ACM TOPC.  [doi:10.1145/3399732](https://doi.org/10.1145/3399732)
+  
+If you are using RACE for matrix power or temporal blocking of sparse matrices please use the following reference:
+* C. L. Alappat, G. Hager, O. Schenk, and G. Wellein: 
+  Level-based Blocking for Sparse Matrices: Sparse Matrix-Power-Vector Multiplication. Submitted for review. Preprint: [arXiv:2205.01598](https://arxiv.org/abs/2205.01598)
   
 ### Further Reading ###
 
