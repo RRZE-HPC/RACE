@@ -69,6 +69,7 @@ struct sparsemat
     ~sparsemat();
 
     void initCover(int nrows_, int nnz_, double *val_, int *rowPtr_, int *col_);
+    void basicDeepCopy(sparsemat *mat);
     densemat* permute_densemat(densemat *vec);
 
     void checkNumVecAccesses(int power);

@@ -30,6 +30,30 @@ void sparsemat::initCover(int nrows_, int nnz_, double *val_, int *rowPtr_, int 
     col=col_;
 }
 
+//performs deep copy of basic data structure
+void sparsemat::basicDeepCopy(sparsemat *otherMat)
+{
+    nrows=otherMat->nrows;
+    nnz=otherMat->nnz;
+
+    rowPtr = new int[nrows+1];
+    col = new int[nnz];
+    val = new double[nnz];
+
+    rowPtr[0] = otherMat->rowPtr[0];
+#pragma omp parallel for schedule(static)
+    for(int row=0; row<nrows; ++row)
+    {
+        rowPtr[row+1] = otherMat->rowPtr[row+1];
+        for(int idx=otherMat->rowPtr[row]; idx<otherMat->rowPtr[row+1]; ++idx)
+        {
+            val[idx] = otherMat->val[idx];
+            col[idx] = otherMat->col[idx];
+        }
+    }
+}
+
+
 sparsemat::~sparsemat()
 {
     if(val)

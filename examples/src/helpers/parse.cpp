@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <string>
 #include "parse.h"
 
 my_option::my_option(const char* name_, int has_arg_, int* flag_, int val_, char*desc_): desc(desc_)
@@ -46,6 +47,32 @@ parser::~parser()
     delete[] gnuOptions;
 }
 
+std::vector<int> splitString(char* string, char* split_char)
+{
+    std::vector<int> val_vec;
+    char* token = strtok(string, split_char);
+    while(token != NULL)
+    {
+        val_vec.push_back(atoi(token));
+        token = strtok(NULL, split_char);
+    }
+    return val_vec;
+}
+
+bool isString(char *string, char *delim)
+{
+    std::string cpp_string(string);
+    std::string cpp_delim(delim);
+    if(cpp_string.find(cpp_delim) != std::string::npos)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 bool parser::parse_arg(int argc, char **argv)
 {
     prgname = argv[0];
@@ -71,7 +98,14 @@ bool parser::parse_arg(int argc, char **argv)
                 }
             case 'i':
                 {
-                    iter = atoi(optarg);
+                    if(isString(optarg, ","))
+                    {
+                        iter_vec = splitString(optarg, ",");
+                    }
+                    else
+                    {
+                        iter = atoi(optarg);
+                    }
                     break;
                 }
             case 'c':
@@ -92,7 +126,15 @@ bool parser::parse_arg(int argc, char **argv)
                 }
             case 's':
                 {
-                    cache_size = atof(optarg);
+                    if(isString(optarg, ","))
+                    {
+                        cache_size_vec = splitString(optarg, ",");
+                    }
+                    else
+                    {
+                        cache_size = atof(optarg);
+                    }
+
                     break;
                 }
             case 'p':

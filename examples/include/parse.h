@@ -19,10 +19,12 @@ struct parser
 {
         char *mat_file;
         int iter;
+        std::vector<int> iter_vec;
         int cores;
         int smt;
         int nodes;
         double cache_size;
+        std::vector<int> cache_size_vec;
         PinMethod pin;
         bool validate;
         double tol;
