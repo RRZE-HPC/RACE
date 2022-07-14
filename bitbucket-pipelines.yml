@@ -1,0 +1,17 @@
+# This is a sample build configuration for C++ – Make.
+# Check our guides at https://confluence.atlassian.com/x/5Q4SMw for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: gcc:6.1
+options:
+  max-time: 20
+pipelines:
+  default:
+    - step:
+        script: # Modify the commands below to build your repository.
+          - echo "Building and testing RACE..."
+          - wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_8.0.44-1_amd64.deb
+          - dpkg -i cuda-repo-ubuntu1404_8.0.44-1_amd64.deb
+          - apt-get update
+          - apt-get install -y libopenmpi-dev libgsl0-dev cmake openmpi-bin
