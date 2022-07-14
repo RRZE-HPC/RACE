@@ -185,9 +185,9 @@ int main(const int argc, char * argv[])
     mat->splitMatrixToLU(&L, &U);
 
     printf("Preparing L matrix for power calculation\n");
-    L->prepareForPower(2, param.nodes, param.cache_size*1024*1024, param.cores, param.smt, param.pin, "L");
+    L->prepareForPower(2, param.nodes, param.cache_size, param.cores, param.smt, param.pin, "L");
     printf("Preparing U matrix for power calculation\n");
-    U->prepareForPower(3, param.nodes, param.cache_size*1024*1024, param.cores, param.smt, param.pin, "U");
+    U->prepareForPower(3, param.nodes, param.cache_size, param.cores, param.smt, param.pin, "U");
 
     //create workspace
     splitHandle* handle = matPower_split_init(L, U);

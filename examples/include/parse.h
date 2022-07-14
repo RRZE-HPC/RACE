@@ -7,6 +7,19 @@
 
 using namespace RACE;
 
+template <typename T>
+std::vector<T> splitString(char* string, char* split_char)
+{
+    std::vector<T> val_vec;
+    char* token = strtok(string, split_char);
+    while(token != NULL)
+    {
+        val_vec.push_back(atoi(token));
+        token = strtok(NULL, split_char);
+    }
+    return val_vec;
+}
+
 struct my_option
 {
     option gnu_opt;
@@ -24,7 +37,7 @@ struct parser
         int smt;
         int nodes;
         double cache_size;
-        std::vector<int> cache_size_vec;
+        std::vector<double> cache_size_vec;
         PinMethod pin;
         bool validate;
         double tol;

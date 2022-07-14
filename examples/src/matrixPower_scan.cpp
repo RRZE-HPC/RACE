@@ -125,16 +125,15 @@ int main(const int argc, char * argv[])
     }
 
     std::vector<int> powers = param.iter_vec; //{1,2,3,4,5,6};
-    std::vector<int> cacheSizes = param.cache_size_vec; //{1,2,3,4,5,6};
+    std::vector<double> cacheSizes = param.cache_size_vec; //{1,2,3,4,5,6};
     for(auto cacheIt=cacheSizes.begin(); cacheIt!=cacheSizes.end(); ++cacheIt)
     {
         double cacheSize = (*cacheIt);
         for(auto powIt=powers.begin(); powIt!=powers.end(); ++powIt)
         {
-
+            int power=(*powIt);
             sparsemat* mat = new sparsemat;
             mat->basicDeepCopy(origMat);
-            int power=(*powIt);
             int NROWS = mat->nrows;
             bool randInit = false;
             double initVal = 1/(double)NROWS;
@@ -182,7 +181,7 @@ int main(const int argc, char * argv[])
             {
                 mat->doRCM();
             }
-            mat->prepareForPower(power, param.nodes, cacheSize*1024*1024, param.cores, param.smt, param.pin);
+            mat->prepareForPower(power, param.nodes, cacheSize, param.cores, param.smt, param.pin);
             STOP_TIMER(pre_process);
             /*printf("perm = \n");
               for(int i=0; i<NROWS; ++i)
@@ -198,8 +197,7 @@ int main(const int argc, char * argv[])
               printf("\n");
               */
             double pre_process_time = GET_TIMER(pre_process);
-            printf("Total pre-processing time = %f s\n", pre_process_time);
-
+            printf("Pre-processing time: cache size = %f, power = %d, Total pre-processing time = %f s\n", cacheSize, power, pre_process_time);
 
             //mat->writeFile("matrixAfterProcessing.mtx");
 

@@ -47,19 +47,7 @@ parser::~parser()
     delete[] gnuOptions;
 }
 
-std::vector<int> splitString(char* string, char* split_char)
-{
-    std::vector<int> val_vec;
-    char* token = strtok(string, split_char);
-    while(token != NULL)
-    {
-        val_vec.push_back(atoi(token));
-        token = strtok(NULL, split_char);
-    }
-    return val_vec;
-}
-
-bool isString(char *string, char *delim)
+bool containsString(char *string, char *delim)
 {
     std::string cpp_string(string);
     std::string cpp_delim(delim);
@@ -98,13 +86,15 @@ bool parser::parse_arg(int argc, char **argv)
                 }
             case 'i':
                 {
-                    if(isString(optarg, ","))
+                    if(containsString(optarg, ","))
                     {
-                        iter_vec = splitString(optarg, ",");
+                        iter_vec = splitString<int>(optarg, ",");
+                        iter = iter_vec[0]; //for backward compatibility
                     }
                     else
                     {
                         iter = atoi(optarg);
+                        iter_vec = {iter};
                     }
                     break;
                 }
@@ -126,9 +116,10 @@ bool parser::parse_arg(int argc, char **argv)
                 }
             case 's':
                 {
-                    if(isString(optarg, ","))
+                    if(containsString(optarg, ","))
                     {
-                        cache_size_vec = splitString(optarg, ",");
+                        cache_size_vec = splitString<double>(optarg, ",");
+                        cache_size = cache_size_vec[0]; //for backward compatibility
                     }
                     else
                     {

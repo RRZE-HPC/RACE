@@ -59,7 +59,7 @@ int main(const int argc, char * argv[])
 
 
     //mat->writeFile("after_RCM.mtx");
-    //mat->prepareForPower(power, param.nodes, param.cache_size*1024*1024, param.cores, param.smt, param.pin);
+    //mat->prepareForPower(power, param.nodes, param.cache_size, param.cores, param.smt, param.pin);
     //mat->numaInit();
 
     INFO_PRINT("Matrix statistics");
@@ -84,7 +84,7 @@ int main(const int argc, char * argv[])
     }
     STOP_TIMER(matPower_init);
     double initTime = GET_TIMER(matPower_init);
-    int iterations = (int) (1.2*10/initTime);
+    int iterations = std::max(1, (int) (1.2*10/initTime));
     //int iterations = 1; //for correctness checking
     printf("Num iterations =  %d\n", iterations);
 

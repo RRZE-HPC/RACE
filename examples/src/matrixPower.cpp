@@ -178,7 +178,7 @@ int main(const int argc, char * argv[])
     {
         mat->doRCM();
     }
-    mat->prepareForPower(power, param.nodes, param.cache_size*1024*1024, param.cores, param.smt, param.pin);
+    mat->prepareForPower(power, param.nodes, param.cache_size, param.cores, param.smt, param.pin);
     STOP_TIMER(pre_process);
     /*printf("perm = \n");
     for(int i=0; i<NROWS; ++i)
