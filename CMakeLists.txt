@@ -50,7 +50,7 @@ set (HEADERS
     include/traverse_serial.h
     include/lb.h
     include/error.h
-    # include/config.h
+    #include/config.h
     include/print.h
     include/type.h
     include/utility.h
@@ -232,6 +232,7 @@ if(BUILTIN_HWLOC)
 endif()
 
 install(FILES ${HEADERS} DESTINATION include/RACE/)
+install(FILES ${PROJECT_BINARY_DIR}/include/config.h DESTINATION include/RACE/)
 install(FILES ${HEADERS_GAP} DESTINATION include/RACE/)
 
 #install(FILES ${PROJECT_BINARY_DIR}/RACE_LFlags.sh DESTINATION lib/RACE PERMISSIONS OWNER_READ OWNER_EXECUTE)
