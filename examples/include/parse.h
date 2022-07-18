@@ -14,7 +14,7 @@ std::vector<T> splitString(char* string, char* split_char)
     char* token = strtok(string, split_char);
     while(token != NULL)
     {
-        val_vec.push_back(atoi(token));
+        val_vec.push_back((T)atof(token));
         token = strtok(NULL, split_char);
     }
     return val_vec;

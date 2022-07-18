@@ -124,6 +124,7 @@ bool parser::parse_arg(int argc, char **argv)
                     else
                     {
                         cache_size = atof(optarg);
+                        cache_size_vec = {cache_size};
                     }
 
                     break;
