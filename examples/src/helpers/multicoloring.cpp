@@ -10,7 +10,7 @@
 #ifdef RACE_HAVE_COLPACK
     #include "ColPackHeaders.h"
 #else
-    #error "Coloring needs COLPACK. Please compile and link with COLPACK"
+//    #warning "Coloring needs COLPACK. Please compile and link with COLPACK if you use coloring"
 #endif
 #include <limits>
 #include "timer.h"
