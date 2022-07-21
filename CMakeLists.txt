@@ -154,8 +154,12 @@ set(HWLOC_LIBRARIES ${LIBHWLOC})
 
 set(RACE_THREAD_METHOD OpenMP CACHE STRING "Which threading method should be used for the kernel: options are OpenMP or PThread")
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -std=c99 -Wall -Wextra -Werror") # -pedantic")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -std=c++0x -Wall -Wextra -Werror")# -pedantic")
+#AutodetectHostArchitecture()
+OptimizeForArchitecture()
+
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -std=c99 -Wall -Wextra") # -Werror") # -pedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -std=c++0x -Wall -Wextra") # -Werror")# -pedantic")
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     set(CMAKE_INCLUDE_SYSTEM_FLAG_C "-isystem ") # Not present in Cmake 2.8.11.2
     set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ") # Not present in Cmake 2.8.11.2
@@ -164,6 +168,10 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-alias")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-alias")
+    endif()
+    if (TARGET_ARCHITECTURE MATCHES "amd")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=core-avx2 -mtune=core-avx2") #add generic vectorization flags
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=core-avx2 -mtune=core-avx2") #add generic vectorization flags
     endif()
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unknown-pragmas")
@@ -247,9 +255,6 @@ endif()
 
 ## BUILD perf_tests ##
 
-#AutodetectHostArchitecture()
-OptimizeForArchitecture()
-
 #Set Vector length
 if(USE_AVX512F)
     set(VECTOR_LENGTH 8)
@@ -271,7 +276,8 @@ if (PERF_TEST_USE_SPMP)
         if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
             ExternalProject_Add(SpMP
                 PREFIX ${PROJECT_BINARY_DIR}/SpMP
-                URL https://github.com/IntelLabs/SpMP/archive/master.zip
+                URL https://github.com/christiealappatt/SpMP/archive/master.zip
+                #URL https://github.com/IntelLabs/SpMP/archive/master.zip
                 CONFIGURE_COMMAND ""
                 BUILD_COMMAND make 
                 BUILD_IN_SOURCE 1
@@ -280,7 +286,8 @@ if (PERF_TEST_USE_SPMP)
         else() # GNU or Clang: Set CUSTOM_CXX variable in SpMP make
             ExternalProject_Add(SpMP
                 PREFIX ${PROJECT_BINARY_DIR}/SpMP
-                URL https://github.com/IntelLabs/SpMP/archive/master.zip
+                URL https://github.com/christiealappatt/SpMP/archive/master.zip
+                #URL https://github.com/IntelLabs/SpMP/archive/master.zip
                 CONFIGURE_COMMAND ""
                 BUILD_COMMAND make CUSTOM_CXX=${CMAKE_CXX_COMPILER} 
                 BUILD_IN_SOURCE 1

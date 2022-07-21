@@ -45,10 +45,15 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${RACE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} ${RACE_CXX_FLAGS}")
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -xHOST -save-temps -fsource-asm")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -xHOST -save-temps -fsource-asm")
-    #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -xCORE-AVX2  -save-temps -fsource-asm")
-    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -xCORE-AVX2  -save-temps -fsource-asm")
+    if (TARGET_ARCHITECTURE MATCHES "amd")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=core-avx2 -mtune=core-avx2 -save-temps -fsource-asm")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=core-avx2 -mtune=core-avx2 -save-temps -fsource-asm")
+    else ()
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -xHOST -save-temps -fsource-asm")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -xHOST -save-temps -fsource-asm")
+        #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -xCORE-AVX2  -save-temps -fsource-asm")
+        #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -xCORE-AVX2  -save-temps -fsource-asm")
+    endif()
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Ofast -mtune=native -Wno-write-strings")# -fsanitize=address -fno-omit-frame-pointer")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast -mtune=native -Wno-write-strings")# -fsanitize=address -fno-omit-frame-pointer")
@@ -71,7 +76,8 @@ if (RACE_USE_SPMP)
         if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
             ExternalProject_Add(SpMP
                 PREFIX ${PROJECT_BINARY_DIR}/SpMP
-                URL https://github.com/IntelLabs/SpMP/archive/master.zip
+                URL https://github.com/christiealappatt/SpMP/archive/master.zip
+                #URL https://github.com/IntelLabs/SpMP/archive/master.zip
                 CONFIGURE_COMMAND ""
                 BUILD_COMMAND make 
                 BUILD_IN_SOURCE 1
