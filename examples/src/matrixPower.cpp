@@ -378,6 +378,7 @@ int main(const int argc, char * argv[])
         }
 #ifdef VALIDATE_wo_PERM
         delete xTRAD_permuted;
+        delete xRACE_permuted;
 #endif
         delete xTRAD;
     }
