@@ -1161,6 +1161,7 @@ void sparsemat::checkNumVecAccesses(int power)
         ce->executeFunction(race_power_id);
     }
     DELETE_ARG();
+    delete x;
 }
 
 
