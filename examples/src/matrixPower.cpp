@@ -289,6 +289,8 @@ int main(const int argc, char * argv[])
 #ifdef VALIDATE_wo_PERM
         delete xTRAD_perf;
 #endif
+        //sleep before going to benchmark
+        sleep(1);
     }
 
     xRACE->setVal(0);

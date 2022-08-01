@@ -89,6 +89,8 @@ int main(const int argc, char * argv[])
     printf("Num iterations =  %d\n", iterations);
 
 
+    //sleep before going to benchmark
+    sleep(1);
     xTRAD_0->setVal(initVal);
     //xTRAD->setRand();
 
