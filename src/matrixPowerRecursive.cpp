@@ -34,7 +34,7 @@
     }\
 }\
 
-mtxPowerRecursive::mtxPowerRecursive(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, std::string mtxType_):graph(graph_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), perm(NULL), invPerm(NULL), mtxType(mtxType_)
+mtxPowerRecursive::mtxPowerRecursive(RACE::Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, std::string mtxType_):graph(graph_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), perm(NULL), invPerm(NULL), mtxType(mtxType_)
 {
     std::vector<int> default_cutoff;
     getEnv("RACE_CACHE_VIOLATION_CUTOFF_DEFAULT", default_cutoff);

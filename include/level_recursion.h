@@ -31,7 +31,7 @@
 class LevelRecursion
 {
     private:
-        Graph* graph;
+        RACE::Graph* graph;
         RACE::dist dist;
         RACE::d2Method d2Type;
         RACE::LBTarget lbTarget;
@@ -48,7 +48,7 @@ class LevelRecursion
         double efficiency(unsigned levelNum);
         int lvlThreads(unsigned levelNum);
     public:
-        LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist dist_, RACE::d2Method d2Type_=RACE::TWO_BLOCK, RACE::LBTarget lbTarget_=RACE::NNZ);
+        LevelRecursion(RACE::Graph* graph_, int requestNThreads_, RACE::dist dist_, RACE::d2Method d2Type_=RACE::TWO_BLOCK, RACE::LBTarget lbTarget_=RACE::NNZ);
         ~LevelRecursion();
         void levelBalancing();
         void getPerm(int **perm_, int *len_);

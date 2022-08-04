@@ -25,7 +25,7 @@
 #include "utility.h"
 #include "config.h"
 
-LevelRecursion::LevelRecursion(Graph* graph_, int requestNThreads_, RACE::dist dist_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):graph(graph_), dist(dist_), d2Type(d2Type_), lbTarget(lbTarget_), requestNThreads(requestNThreads_), perm(NULL), invPerm(NULL)
+LevelRecursion::LevelRecursion(RACE::Graph* graph_, int requestNThreads_, RACE::dist dist_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):graph(graph_), dist(dist_), d2Type(d2Type_), lbTarget(lbTarget_), requestNThreads(requestNThreads_), perm(NULL), invPerm(NULL)
 {
     zoneTree = new ZoneTree(dist, d2Type, lbTarget);
 #ifndef RACE_PERMUTE_ON_FLY
@@ -277,7 +277,7 @@ void LevelRecursion::recursivePartition(int parentIdx, int parentSubIdx, int cur
         {
             for(unsigned j=0; j<range.size()-1; ++j)
             {
-                Traverse traverse(graph, dist, range[j], range[j+1], currIdx);
+                RACE::Traverse traverse(graph, dist, range[j], range[j+1], currIdx);
                 traverse.calculateDistance();
 #ifndef RACE_PERMUTE_ON_FLY
                 int *levelPerm = NULL;
@@ -322,7 +322,7 @@ void LevelRecursion::levelBalancing()
 
     //Step 2: Construct level 1
     //Traverse
-    Traverse traverse(graph, dist);
+    RACE::Traverse traverse(graph, dist);
     traverse.calculateDistance();
 #ifndef RACE_PERMUTE_ON_FLY
     int *levelPerm = NULL;

@@ -38,7 +38,7 @@
 #include "config.h"
 
 //TODO no need to put only diagonal elements in Graph
-RACE_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *initInvPerm)
+RACE_error RACE::Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *initInvPerm)
 {
     /*if(NROW != NCOL) {
         ERROR_PRINT("NROW!=NCOL : Currently Graph BMC supports only undirected Graph");
@@ -197,7 +197,7 @@ RACE_error Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *
 }
 
 //only for debugging puposes
-void Graph::writePattern(char* name)
+void RACE::Graph::writePattern(char* name)
 {
     std::string base_name(name);
     std::stringstream fileName;
@@ -217,7 +217,7 @@ void Graph::writePattern(char* name)
     }
 }
 
-bool Graph::getStatistics()
+bool RACE::Graph::getStatistics()
 {
 
 #ifdef RACE_PERMUTE_ON_FLY
@@ -282,7 +282,7 @@ bool Graph::getStatistics()
 }
 
 
-void Graph::permuteAndRemoveSerialPart()
+void RACE::Graph::permuteAndRemoveSerialPart()
 {
     updatePerm(&totalPerm, serialPerm, NROW, NROW);
 #pragma omp parallel for schedule(static)
@@ -301,7 +301,7 @@ void Graph::permuteAndRemoveSerialPart()
     }
 
 
-    Graph permutedGraph(*(this));
+    RACE::Graph permutedGraph(*(this));
 
     //Permute rows
     for(int i=0; i<NROW; ++i)
@@ -335,12 +335,12 @@ void Graph::permuteAndRemoveSerialPart()
 #endif
 }
 
-Graph::Graph(int nrow, int ncol, int *rowPtr, int *col, int *initPerm, int *initInvPerm):graphData(nrow),NROW(nrow),NCOL(ncol), totalPerm(NULL), totalInvPerm(NULL)
+RACE::Graph::Graph(int nrow, int ncol, int *rowPtr, int *col, int *initPerm, int *initInvPerm):graphData(nrow),NROW(nrow),NCOL(ncol), totalPerm(NULL), totalInvPerm(NULL)
 {
     RACE_FN(createGraphFromCRS(rowPtr, col, initPerm, initInvPerm));
 }
 
-Graph::~Graph()
+RACE::Graph::~Graph()
 {
     if(totalPerm)
     {
@@ -352,11 +352,11 @@ Graph::~Graph()
     }
 }
 
-/*Graph::Graph(const Graph& srcGraph):graphData(srcGraph.graphData),pureDiag(srcGraph.pureDiag),serialPartRow(srcGraph.serialPartRow),perm(srcGraph.perm),NROW(srcGraph.NROW),NCOL(srcGraph.NCOL), NROW_serial(srcGraph.NROW_serial), NNZ_serial(srcGraph.NNZ_serial)
+/*RACE::Graph::Graph(const Graph& srcGraph):graphData(srcGraph.graphData),pureDiag(srcGraph.pureDiag),serialPartRow(srcGraph.serialPartRow),perm(srcGraph.perm),NROW(srcGraph.NROW),NCOL(srcGraph.NCOL), NROW_serial(srcGraph.NROW_serial), NNZ_serial(srcGraph.NNZ_serial)
 {
 }*/
 
-Graph::Graph(const Graph& srcGraph)
+RACE::Graph::Graph(const Graph& srcGraph)
 {
     graphData = srcGraph.graphData;
     pureDiag = srcGraph.pureDiag;
@@ -376,7 +376,7 @@ Graph::Graph(const Graph& srcGraph)
 }
 
 
-RACE_error Graph::swap(Graph& other)
+RACE_error RACE::Graph::swap(Graph& other)
 {
     if( (NROW != other.NROW) || (NCOL != other.NCOL)) {
         ERROR_PRINT("Incompatible Graphs");
@@ -400,14 +400,14 @@ RACE_error Graph::swap(Graph& other)
     return RACE_SUCCESS;
 }
 
-Node& Graph::at(unsigned Idx)
+Node& RACE::Graph::at(unsigned Idx)
 {
     return graphData[Idx];
 }
 
 //this is permutation by removing serial part, does not
 //include the initPerm passed to graph
-void Graph::getSerialPerm(int **perm_, int *len_)
+void RACE::Graph::getSerialPerm(int **perm_, int *len_)
 {
     (*perm_) = new int[NROW+NROW_serial];
 
@@ -419,14 +419,14 @@ void Graph::getSerialPerm(int **perm_, int *len_)
     (*len_) = NROW + NROW_serial;
 }
 
-void Graph::getPerm(int **perm_, int *len_)
+void RACE::Graph::getPerm(int **perm_, int *len_)
 {
     (*perm_) = totalPerm;
     (*len_) = NROW + NROW_serial;
     totalPerm = NULL;
 }
 
-void Graph::getInvPerm(int **invPerm_, int *len_)
+void RACE::Graph::getInvPerm(int **invPerm_, int *len_)
 {
     (*invPerm_) = totalInvPerm;
     (*len_) = NROW + NROW_serial;

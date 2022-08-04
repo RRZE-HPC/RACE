@@ -53,7 +53,7 @@
  */
 class RACE::Interface{
     private:
-        Graph* graph;
+        RACE::Graph* graph;
         int nrow;
         RACE::dist distance;
         RACE::d2Method d2Type;

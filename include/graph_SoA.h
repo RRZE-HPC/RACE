@@ -29,7 +29,16 @@
 #include <vector>
 
 
-class Graph{
+/**
+ * @brief RACE namespace.
+ */
+ namespace RACE
+{
+    class Graph;
+}
+
+
+class RACE::Graph{
     private:
        /**
          * @brief Graph of the matrix.
