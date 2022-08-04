@@ -1,5 +1,6 @@
 #include "densemat.h"
 #include <cmath>
+#include <stdio.h>
 
 //currently in column major order
 densemat::densemat(int nrows_, int ncols_, bool view_):nrows(nrows_), ncols(ncols_), viewMat(view_)
