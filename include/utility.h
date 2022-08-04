@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <cmath>
+#include <execution>
 
 template <typename T> inline void sort(T *arr, int range_lo, int range_hi, bool rev=false)
 {
@@ -51,6 +52,16 @@ template <typename T> inline void sortPerm(T *arr, int *perm, int range_lo, int 
         std::stable_sort(perm+range_lo, perm+range_hi, [&](const int& a, const int& b) {return (arr[a] > arr[b]); });
     }
 }
+
+template <typename T> inline void sortPerm_parallel(T *arr, int *perm, int range_lo, int range_hi, bool rev=false)
+{
+    if(rev == false) {
+        std::stable_sort(std::execution::par_unseq, perm+range_lo, perm+range_hi, [&](const int& a, const int& b) {return (arr[a] < arr[b]); });
+    } else {
+        std::stable_sort(std::execution::par_unseq, perm+range_lo, perm+range_hi, [&](const int& a, const int& b) {return (arr[a] > arr[b]); });
+    }
+}
+
 
 template <typename T> inline T sumArr(T *arr, int len)
 {

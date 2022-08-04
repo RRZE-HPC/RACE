@@ -106,7 +106,6 @@ void finalize_likwid()
 
 int main(const int argc, char * argv[])
 {
-    INFO_PRINT("Note this method of storing only 2 vectors work only if there is no convex shapes, i.e., no recursion\n");
 //    init_likwid();
 #ifdef LIKWID_PERFMON
     LIKWID_MARKER_INIT;
@@ -126,7 +125,14 @@ int main(const int argc, char * argv[])
     }
 
     int NROWS = mat->nrows;
-    double initVal = 1; ///(double)NROWS;
+    bool randInit = false;
+    double initVal = 1/(double)NROWS;
+    densemat *xRAND;
+    if(randInit)
+    {
+        xRAND = new densemat(NROWS);
+        xRAND->setRand();
+    }
     int power = param.iter;
     printf("power = %d\n", power);
 
@@ -134,16 +140,23 @@ int main(const int argc, char * argv[])
 #ifdef VALIDATE_wo_PERM
     if(param.validate)
     {
-        xTRAD=new densemat(NROWS, power+1);
+        xTRAD=new densemat(NROWS, 2);
         densemat* xTRAD_0 = xTRAD->view(0,0);
 
-        xTRAD_0->setVal(initVal);
+        if(randInit)
+        {
+            xTRAD_0->copyVal(xRAND);
+        }
+        else
+        {
+            xTRAD_0->setVal(initVal);
+        }
 
         //now calculate xTRAD in traditional way
-        for(int pow=1; pow<=power; ++pow)
+        for(int pow=0; pow<power; ++pow)
         {
-            //densemat *x = xTRAD->view((pow-1)%2,(pow-1)%2);
-            plain_spmv_only_highest(mat, xTRAD, pow);
+            //densemat *x = xTRAD->view(pow,pow);
+            plain_spmv_only_highest(mat, xTRAD, pow+1);
         }
 
     }
@@ -167,8 +180,21 @@ int main(const int argc, char * argv[])
     }
     mat->prepareForPower(power, param.nodes, param.cache_size, param.cores, param.smt, param.pin);
     STOP_TIMER(pre_process);
+    /*printf("perm = \n");
+    for(int i=0; i<NROWS; ++i)
+    {
+        printf("%d ", mat->finalPerm[i]);
+    }
+    printf("\n");
+    printf("invPerm\n");
+    for(int i=0; i<NROWS; ++i)
+    {
+        printf("%d ", mat->finalInvPerm[i]);
+    }
+    printf("\n");
+*/
     double pre_process_time = GET_TIMER(pre_process);
-    printf("Pre-processing time = %f s\n", pre_process_time);
+    printf("Total pre-processing time = %f s\n", pre_process_time);
 
 /*#ifdef LIKWID_PERFMON
 #pragma omp parallel
@@ -189,9 +215,16 @@ int main(const int argc, char * argv[])
     //   x[0],   x[1], ....,   x[nrows-1]
     //  Ax[0],  Ax[1], ....,  Ax[nrows-1]
     // AAx[0], AAx[1], ...., AAx[nrows-1]
-    densemat* xRACE=new densemat(NROWS, power+1);
+    densemat* xRACE=new densemat(NROWS, 2);
     densemat* xRACE_0 = xRACE->view(0,0);
-    xRACE_0->setVal(initVal);
+    if(randInit)
+    {
+        xRACE_0->copyVal(xRAND);
+    }
+    else
+    {
+        xRACE_0->setVal(initVal);
+    }
 
     printf("calculation started\n");
 
@@ -200,8 +233,7 @@ int main(const int argc, char * argv[])
     START_TIMER(matPower_init);
     for(int iter=0; iter<10; ++iter)
     {
-        xRACE_0->setVal(initVal);
-        matPower_only_highest(mat, power, xRACE);
+       matPower_only_highest(mat, power, xRACE);
     }
     STOP_TIMER(matPower_init);
     double initTime = GET_TIMER(matPower_init);
@@ -213,15 +245,22 @@ int main(const int argc, char * argv[])
 
     if(param.validate)
     {
-        densemat* xTRAD_perf=new densemat(NROWS, power+1);
+        densemat* xTRAD_perf=new densemat(NROWS, 2);
 #ifndef VALIDATE_wo_PERM
         xTRAD=xTRAD_perf;
 #endif
         densemat* xTRAD_0 = xTRAD_perf->view(0,0);
 
-        xTRAD_0->setVal(initVal);
+       if(randInit)
+       {
+           xTRAD_0->copyVal(xRAND);
+       }
+       else
+       {
+           xTRAD_0->setVal(initVal);
+       }
 
-        INIT_TIMER(spmvPower);
+       INIT_TIMER(spmvPower);
 #ifdef LIKWID_PERFMON
 #pragma omp parallel
         {
@@ -232,11 +271,22 @@ int main(const int argc, char * argv[])
         //now calculate xTRAD in traditional way
         for(int iter=0; iter<iterations; ++iter)
         {
-            xTRAD_0->setVal(initVal);
-            for(int pow=1; pow<=power; ++pow)
+
+            PAUSE_TIMER(spmvPower);
+            if(randInit)
             {
-                //densemat *x = xTRAD_perf->view((pow-1)%2,(pow-1)%2);
-                plain_spmv_only_highest(mat, xTRAD, pow);
+                xTRAD_0->copyVal(xRAND);
+            }
+            else
+            {
+                xTRAD_0->setVal(initVal);
+            }
+            START_TIMER(spmvPower);
+
+            for(int pow=0; pow<power; ++pow)
+            {
+                //densemat *x = xTRAD_perf->view(pow,pow);
+                plain_spmv_only_highest(mat, xTRAD_perf, pow+1);
             }
         }
         STOP_TIMER(spmvPower);
@@ -248,11 +298,23 @@ int main(const int argc, char * argv[])
 #endif
         double spmvPowerTime = GET_TIMER(spmvPower);
         printf("SpMV power perf. = %f GFlop/s, time = %f\n", flops/spmvPowerTime, spmvPowerTime);
+
 #ifdef VALIDATE_wo_PERM
         delete xTRAD_perf;
 #endif
+        //sleep before going to benchmark
+        sleep(1);
     }
 
+    xRACE->setVal(0);
+    if(randInit)
+    {
+        xRACE_0->copyVal(xRAND);
+    }
+    else
+    {
+        xRACE_0->setVal(initVal);
+    }
 
     INIT_TIMER(matPower);
 #ifdef LIKWID_PERFMON
@@ -264,15 +326,18 @@ int main(const int argc, char * argv[])
     START_TIMER(matPower);
     for(int iter=0; iter<iterations; ++iter)
     {
-        xRACE_0->setVal(initVal);
+        PAUSE_TIMER(matPower);
+        if(randInit)
+        {
+            xRACE_0->copyVal(xRAND);
+        }
+        else
+        {
+            xRACE_0->setVal(initVal);
+        }
+        START_TIMER(matPower);
         matPower_only_highest(mat, power, xRACE);
     }
-    /*for(int pow=0; pow<power; ++pow)
-      {
-      densemat *b = xRACE->view(pow+1,pow+1);
-        densemat *x = xRACE->view(pow,pow);
-        plain_spmv_only_highest(b, mat, x, 1);
-    }*/
     STOP_TIMER(matPower);
 #ifdef LIKWID_PERFMON
 #pragma omp parallel
@@ -293,7 +358,35 @@ int main(const int argc, char * argv[])
         densemat* xTRAD_permuted = xTRAD;
 #endif
 
-        bool flag = checkEqual(xTRAD_permuted, xRACE, param.tol);
+
+        xRACE->setVal(0);
+        if(randInit)
+        {
+            xRACE_0->copyVal(xRAND);
+        }
+        else
+        {
+            xRACE_0->setVal(initVal);
+        }
+
+#ifdef VALIDATE_wo_PERM
+        densemat* xRACE_permuted = mat->permute_densemat(xRACE);
+#else
+        densemat* xRACE_permuted = xRACE;
+#endif
+
+        //only one iterations
+        matPower_only_highest(mat, power, xRACE_permuted);
+        /*        for(int i=0; i<10; ++i)
+        {
+            for(int j=0; j<xRACE->ncols; ++j)
+            {
+                printf("(%.8f, %.8f) ", xRACE->val[j*xRACE->nrows+i], xTRAD_permuted->val[j*xRACE->nrows+i]);
+            }
+            printf("\n");
+        }*/
+
+        bool flag = checkEqual(xTRAD_permuted, xRACE_permuted, param.tol);
         if(!flag)
         {
             printf("Power calculation failed\n");
@@ -304,12 +397,17 @@ int main(const int argc, char * argv[])
         }
 #ifdef VALIDATE_wo_PERM
         delete xTRAD_permuted;
+        delete xRACE_permuted;
 #endif
         delete xTRAD;
     }
 
     delete mat;
     delete xRACE;
+    if(randInit)
+    {
+        delete xRAND;
+    }
 #ifdef LIKWID_PERFMON
     LIKWID_MARKER_CLOSE;
 #endif
