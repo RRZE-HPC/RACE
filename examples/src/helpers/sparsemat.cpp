@@ -702,6 +702,7 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
     ce = new Interface(nrows, nthreads, RACE::POWER, rowPtr, col, smt, pinMethod, rcmPerm, rcmInvPerm);
     //ce->RACEColor(highestPower, numSharedCache, cacheSize);
     ce->RACEColor(highestPower, numSharedCache, cacheSize*1024*1024, 2, mtxType);
+    //ce->RACEColor(highestPower, numSharedCache, cacheSize*1024*1024, 2, mtxType, 3);
     STOP_TIMER(pre_process_kernel);
     printf("Pre-processing time: cache size = %f, power = %d, RACE pre-processing time = %fs\n", cacheSize, highestPower, GET_TIMER(pre_process_kernel));
 
@@ -1152,11 +1153,27 @@ inline void MAT_NUM_VEC_ACCESSES(int start, int end, int pow, int numa_domain, v
     }
 }
 
+inline void MAT_NUM_VEC_ACCESSES_w_subPower(int start, int end, int pow, int subPow, int numa_domain, void* args)
+{
+    DECODE_FROM_VOID(args);
+
+    int nrows=mat->nrows;
+    for(int row=start; row<end; ++row)
+    {
+        x->val[row]++;
+        if(x->val[row] != (pow-1)*3+subPow)
+        {
+            ERROR_PRINT("Oh oh we have duplicate computations, error at pow=%d, subPow=%d, for row=%d. Value I got at x is %f, expected %d. Level start =%d, Level end=%d", pow, subPow, row, x->val[row], (pow-1)*3+subPow, start, end);
+        }
+    }
+}
+
 void sparsemat::checkNumVecAccesses(int power)
 {
     densemat* x = new densemat(this->nrows);
     ENCODE_TO_VOID(this, NULL, x);
     int race_power_id = ce->registerFunction(&MAT_NUM_VEC_ACCESSES, voidArg, power);
+    //int race_power_id = ce->registerFunction(&MAT_NUM_VEC_ACCESSES_w_subPower, voidArg, power, 3);
     {
         ce->executeFunction(race_power_id);
     }
