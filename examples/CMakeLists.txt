@@ -49,7 +49,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=core-avx2 -mtune=core-avx2 -save-temps -fsource-asm")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=core-avx2 -mtune=core-avx2 -save-temps -fsource-asm")
     else ()
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -xHOST -save-temps -fsource-asm")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -xHOST -save-temps -fsource-asm") #CORE-AVX2
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -xHOST -save-temps -fsource-asm")
         #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -xCORE-AVX2  -save-temps -fsource-asm")
         #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -xCORE-AVX2  -save-temps -fsource-asm")
@@ -86,7 +86,8 @@ if (RACE_USE_SPMP)
         else() # GNU or Clang: Set CUSTOM_CXX variable in SpMP make
             ExternalProject_Add(SpMP
                 PREFIX ${PROJECT_BINARY_DIR}/SpMP
-                URL https://github.com/IntelLabs/SpMP/archive/master.zip
+                URL https://github.com/christiealappatt/SpMP/archive/master.zip
+                #URL https://github.com/IntelLabs/SpMP/archive/master.zip
                 CONFIGURE_COMMAND ""
                 BUILD_COMMAND make CUSTOM_CXX=${CMAKE_CXX_COMPILER} 
                 BUILD_IN_SOURCE 1
@@ -223,6 +224,7 @@ add_executable(mtxPowerNuma ${SOURCES} ${PROJECT_SOURCE_DIR}/src/matrixPowerNuma
 add_executable(param_study ${SOURCES} ${PROJECT_SOURCE_DIR}/src/param_study.cpp)
 add_executable(spmv ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/spmv.cpp)
 add_executable(tradPower ${SOURCES} ${PROJECT_SOURCE_DIR}/src/tradPower.cpp)
+add_executable(tradPower_highestPower ${SOURCES} ${PROJECT_SOURCE_DIR}/src/tradPower_highestPower.cpp)
 add_executable(tradPower_scan ${SOURCES} ${PROJECT_SOURCE_DIR}/src/tradPower_scan.cpp)
 add_executable(mklPower ${SOURCES} ${PROJECT_SOURCE_DIR}/src/mklPower.cpp)
 add_executable(mklIEPower ${SOURCES} ${PROJECT_SOURCE_DIR}/src/mklIEPower.cpp)
@@ -258,6 +260,7 @@ target_link_libraries(mtxPowerNuma "${EXT_LIBRARIES}")
 target_link_libraries(param_study "${EXT_LIBRARIES}")
 target_link_libraries(spmv "${EXT_LIBRARIES}")
 target_link_libraries(tradPower "${EXT_LIBRARIES}")
+target_link_libraries(tradPower_highestPower "${EXT_LIBRARIES}")
 target_link_libraries(tradPower_scan "${EXT_LIBRARIES}")
 target_link_libraries(mklPower "${EXT_LIBRARIES}")
 target_link_libraries(mklIEPower "${EXT_LIBRARIES}")
@@ -279,6 +282,7 @@ if(RACE_USE_SPMP)
     add_dependencies(param_study SpMP)
     add_dependencies(spmv SpMP)
     add_dependencies(tradPower SpMP)
+    add_dependencies(tradPower_highestPower SpMP)
     add_dependencies(tradPower_scan SpMP)
     add_dependencies(mklPower SpMP)
     add_dependencies(mklIEPower SpMP)
