@@ -129,6 +129,7 @@ void densemat::setRand()
     setFn(rand);
 }
 
+//this stops once a deviation higher than tol found
 bool checkEqual(const densemat* lhs, const densemat* rhs, double tol, bool relative)
 {
     if((lhs->nrows != rhs->nrows) || (lhs->ncols != rhs->ncols))
@@ -162,7 +163,50 @@ bool checkEqual(const densemat* lhs, const densemat* rhs, double tol, bool relat
             }
         }
     }
+    return true;
+}
 
+
+bool findMaxDeviations(const densemat* lhs, const densemat* rhs)
+{
+    if((lhs->nrows != rhs->nrows) || (lhs->ncols != rhs->ncols))
+    {
+        printf("Densemat dimension differs\n");
+        return false;
+    }
+
+    int nrows = lhs->nrows;
+    int ncols = lhs->ncols;
+
+    double max_dev = 0;
+    double max_rel_dev = 0;
+
+    int row_max_dev=0, col_max_dev=0;
+    int row_max_rel_dev=0, col_max_rel_dev=0;
+
+    for(int col=0; col<ncols; ++col)
+    {
+        for(int row=0; row<nrows; ++row)
+        {
+            double denom=lhs->val[col*nrows+row];
+            double dev = fabs((lhs->val[col*nrows+row]-rhs->val[col*nrows+row]));
+            double rel_dev = fabs((lhs->val[col*nrows+row]-rhs->val[col*nrows+row])/denom);
+            if(dev > max_dev)
+            {
+                max_dev = dev;
+                row_max_dev = row;
+                col_max_dev = col;
+            }
+            if(rel_dev > max_rel_dev)
+            {
+                max_rel_dev = rel_dev;
+                row_max_rel_dev = row;
+                col_max_rel_dev = col;
+            }
+        }
+    }
+    printf("Max. densemat deviation @ idx (%d, %d) lhs = %.18f, rhs = %.18f, dev = %.18f\n", row_max_dev, col_max_dev, lhs->val[col_max_dev*nrows+row_max_dev], rhs->val[col_max_dev*nrows+row_max_dev], max_dev);
+    printf("Max. relative densemat deviation @ idx (%d, %d) lhs = %.18f, rhs = %.18f, relative dev = %.18f\n", row_max_rel_dev, col_max_rel_dev, lhs->val[col_max_rel_dev*nrows+row_max_rel_dev], rhs->val[col_max_rel_dev*nrows+row_max_rel_dev], max_rel_dev);
     return true;
 }
 

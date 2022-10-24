@@ -25,6 +25,7 @@ struct densemat
     void initCover(int nrows_, int ncols_, double* val_);
 };
 
+bool findMaxDeviations(const densemat* lhs, const densemat* rhs);
 bool checkEqual(const densemat* lhs, const densemat* rhs, double tol=1e-4, bool relative=false);
 
 #endif
