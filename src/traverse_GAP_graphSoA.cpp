@@ -471,6 +471,7 @@ void RACE::Traverse::permuteGraph()
             printf("distFromRoot[%d] = %d, perm[%d] = %d\n", i, distFromRoot[i], i, perm[i]);
         }*/
         //create permutation vector First
+        //sortPerm(distFromRoot, perm, targetRangeLo, targetRangeHi);
         sortPerm_parallel(distFromRoot, perm, targetRangeLo, targetRangeHi);
        //create invPerm
 #pragma omp parallel for schedule(static)

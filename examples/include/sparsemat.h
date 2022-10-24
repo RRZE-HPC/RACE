@@ -34,6 +34,7 @@ struct sparsemat
     int *rcmPerm, *rcmInvPerm;
     int *finalPerm, *finalInvPerm;
     bool readFile(char* filename);
+    bool symm_hint;
     bool convertToBCSR(int b_r);
     bool writeFile(char* filename);
     void makeDiagFirst();

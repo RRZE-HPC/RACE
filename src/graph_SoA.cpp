@@ -21,7 +21,8 @@
  * =======================================================================================
  */
 
-#include "graph_SoA.h"
+//#include "graph_SoA.h"
+#include "graph.h"
 #include "error.h"
 #include <cmath>
 #include <set>
@@ -36,6 +37,7 @@
 #include <limits>
 #include "utility.h"
 #include "config.h"
+#include "type.h"
 
 //TODO no need to put only diagonal elements in Graph
 RACE_error RACE::Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *initInvPerm)
@@ -72,7 +74,7 @@ RACE_error RACE::Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm,
     }
 
 #ifdef RACE_PERMUTE_ON_FLY
-    //prohibit permitting now, since it is done on fly
+    //prohibit permuting now, since it is done on fly
     initPerm = NULL;
     initInvPerm = NULL;
 #pragma omp parallel for schedule(runtime)
@@ -332,7 +334,6 @@ void RACE::Graph::permuteAndRemoveSerialPart()
             }
             //remove children in serialPartRow
         }
-
     }
 
     permutedGraph.swap(*(this));
@@ -340,10 +341,46 @@ void RACE::Graph::permuteAndRemoveSerialPart()
 #endif
 }
 
-RACE::Graph::Graph(int nrow, int ncol, int *rowPtr, int *col, int *initPerm, int *initInvPerm):graphData(NULL), totalPerm(NULL), totalInvPerm(NULL), NROW(nrow), NCOL(ncol)
+RACE::Graph::Graph(int nrow, int ncol, int *rowPtr, int *col, RACE::dist distance, bool symm_hint, int *initPerm, int *initInvPerm):graphData(NULL), totalPerm(NULL), totalInvPerm(NULL), NROW(nrow), NCOL(ncol)
 {
     NNZ = rowPtr[NROW];
-    RACE_FN(createGraphFromCRS(rowPtr, col, initPerm, initInvPerm));
+    int *outRowPtr=NULL;
+    int *outCol=NULL;
+
+    //check if a rec stage is there when performing MPK
+    //if not then we can avoid creating a symmetric matrix
+    //as there is only a forward dependencies.
+    //TODO: might need to tweak for MPI, depending on the implementation
+    std::vector<int> maxRecStagesVec;
+    getEnv("RACE_MAX_RECURSION_STAGES", maxRecStagesVec);
+    int maxRecStages = 10; //some value
+    if(distance == RACE::POWER)
+    {
+        if(!maxRecStagesVec.empty())
+        {
+            maxRecStages = maxRecStagesVec[0];
+        }
+    }
+    if((maxRecStages > 0) && (!symm_hint))
+    {
+        RACE::makeSymmetricGraph(nrow, ncol, rowPtr, col, &outRowPtr, &outCol);
+    }
+
+    if(outRowPtr) //made the graph symmetric, new structure ==> read the new graph
+    {
+        RACE_FN(createGraphFromCRS(outRowPtr, outCol, initPerm, initInvPerm));
+    }
+    else
+    {
+        RACE_FN(createGraphFromCRS(rowPtr, col, initPerm, initInvPerm));
+    }
+
+    manageGraphData = false;
+    if(outRowPtr)
+    {
+        delete[] outRowPtr;
+        manageGraphData = true;
+    }
 }
 
 RACE::Graph::~Graph()
@@ -367,6 +404,10 @@ RACE::Graph::~Graph()
     if(totalInvPerm)
     {
         delete[] totalInvPerm;
+    }
+    if(manageGraphData)
+    {
+        delete[] graphData;
     }
 }
 

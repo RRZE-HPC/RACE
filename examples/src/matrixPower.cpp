@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <omp.h>
 #include "mmio.h"
@@ -14,7 +13,7 @@
 #include "timer.h"
 #include <iostream>
 
-#define VALIDATE_wo_PERM
+//#define VALIDATE_wo_PERM
 
 void capitalize(char* beg)
 {
@@ -369,6 +368,8 @@ int main(const int argc, char * argv[])
             printf("\n");
         }*/
 
+
+        findMaxDeviations(xTRAD_permuted, xRACE_permuted);
         bool flag = checkEqual(xTRAD_permuted, xRACE_permuted, param.tol);
         if(!flag)
         {

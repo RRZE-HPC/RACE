@@ -92,7 +92,7 @@ class mtxPowerRecursive
 
     std::vector<int> cache_violation_cutoff;
     int get_cache_violation_cutoff(int stage);
-
+    int maxRecStages; //0 => no recursion
 
     public:
     mtxPowerRecursive(RACE::Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_, std::string mtxType_="N");

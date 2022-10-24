@@ -15,7 +15,7 @@
 #include "densemat.h"
 #include "multicoloring.h"
 
-sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), diagFirst(false), colorType("RACE"), colorBlockSize(64), colorDist(-1), ncolors(-1), colorPtr(NULL), partPtr(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), finalPerm(NULL), finalInvPerm(NULL)
+sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), diagFirst(false), colorType("RACE"), colorBlockSize(64), colorDist(-1), ncolors(-1), colorPtr(NULL), partPtr(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), finalPerm(NULL), finalInvPerm(NULL), symm_hint(false)
 {
 }
 
@@ -164,6 +164,7 @@ bool sparsemat::readFile(char* filename)
     if(symm_flag)
     {
         printf("Creating a general matrix out of a symmetric one\n");
+        symm_hint = true;
 
         int ctr = 0;
 
@@ -699,7 +700,7 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
     //rcmInvPerm = NULL;
     INIT_TIMER(pre_process_kernel);
     START_TIMER(pre_process_kernel);
-    ce = new Interface(nrows, nthreads, RACE::POWER, rowPtr, col, smt, pinMethod, rcmPerm, rcmInvPerm);
+    ce = new Interface(nrows, nthreads, RACE::POWER, rowPtr, col, symm_hint, smt, pinMethod, rcmPerm, rcmInvPerm);
     //ce->RACEColor(highestPower, numSharedCache, cacheSize);
     ce->RACEColor(highestPower, numSharedCache, cacheSize*1024*1024, 2, mtxType);
     //ce->RACEColor(highestPower, numSharedCache, cacheSize*1024*1024, 2, mtxType, 3);
@@ -734,10 +735,11 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
 
 int sparsemat::colorAndPermute(dist distance, std::string colorType_, int nthreads, int smt, PinMethod pinMethod)
 {
+
     colorType = colorType_;
     if(colorType == "RACE")
     {
-        ce = new Interface(nrows, nthreads, distance, rowPtr, col, smt, pinMethod, rcmPerm, rcmInvPerm);
+        ce = new Interface(nrows, nthreads, distance, rowPtr, col, symm_hint, smt, pinMethod, rcmPerm, rcmInvPerm);
         RACE_error ret = ce->RACEColor();
 
         if(ret != RACE_SUCCESS)
