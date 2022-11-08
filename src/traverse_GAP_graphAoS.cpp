@@ -457,7 +457,11 @@ void RACE::Traverse::permuteGraph()
         int targetRangeHi = regionRange[2*regionIdx+1];
 
         //create permutation vector First
+#ifdef CPP_17
         sortPerm_parallel(distFromRoot, perm, targetRangeLo, targetRangeHi);
+#else
+        sortPerm(distFromRoot, perm, targetRangeLo, targetRangeHi);
+#endif
        //create invPerm
 #pragma omp parallel for schedule(static)
         for(int i=targetRangeLo; i<targetRangeHi; ++i) {
