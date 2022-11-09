@@ -472,7 +472,7 @@ void RACE::Traverse::permuteGraph()
         }*/
         //create permutation vector First
         //
-#ifdef CPP_17
+#ifdef RACE_HAVE_CPP_17
         sortPerm_parallel(distFromRoot, perm, targetRangeLo, targetRangeHi);
 #else
         sortPerm(distFromRoot, perm, targetRangeLo, targetRangeHi);

@@ -13,7 +13,7 @@ include(${PROJECT_SOURCE_DIR}/cmake/OptimizeForArchitecture.cmake)
 
 set(RACE_VERBOSITY 1 CACHE STRING "Level of verbosity information. Valid values: 0 (be totally silent), 1 (print warnings, errors and further important information)")
 set(RACE_PRINT_ONLYFIRST 1 CACHE BOOL "Print all errors, warnings and info only once for each occurence")
-
+set(RACE_HAVE_CPP_17 1 CACHE BOOL "Use C++17 features. This will parallelize sort routine and enable faster pre-processing time. If your compiler doesn't support this please disable this feature. TBB should also be avilable for this.")
 if (NOT BUILD_SHARED_LIBS)
     message(STATUS "No library type specified. Setting it to shared.")
     set(BUILD_SHARED_LIBS ON CACHE BOOL "Set to ON/OFF for shared/static library build.")
@@ -159,7 +159,12 @@ OptimizeForArchitecture()
 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -std=c99 -Wall -Wextra") # -Werror") # -pedantic")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -std=c++17 -Wall -Wextra") # -Werror")# -pedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wall -Wextra") # -Werror")# -pedantic")
+if(RACE_HAVE_CPP_17)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17") # -Werror")# -pedantic")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") # -Werror")# -pedantic")
+endif()
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     set(CMAKE_INCLUDE_SYSTEM_FLAG_C "-isystem ") # Not present in Cmake 2.8.11.2
     set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ") # Not present in Cmake 2.8.11.2
@@ -222,7 +227,9 @@ configure_file(${PROJECT_SOURCE_DIR}/race-config.cmake.in ${PROJECT_BINARY_DIR}/
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_BINARY_DIR}/include)
-link_libraries(tbb)
+if(RACE_HAVE_CPP_17)
+    link_libraries(tbb)
+endif()
 add_library(RACE ${SOURCES})
 
 #get_filename_component(HWLOC_LIB_PATH ${LIBHWLOC} DIRECTORY)

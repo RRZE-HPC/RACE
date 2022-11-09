@@ -32,7 +32,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <cmath>
-#ifdef CPP_17
+#include "config.h"
+#ifdef RACE_HAVE_CPP_17
     #include <execution>
 #endif
 
@@ -55,7 +56,7 @@ template <typename T> inline void sortPerm(T *arr, int *perm, int range_lo, int 
     }
 }
 
-#ifdef CPP_17
+#ifdef RACE_HAVE_CPP_17
 template <typename T> inline void sortPerm_parallel(T *arr, int *perm, int range_lo, int range_hi, bool rev=false)
 {
     if(rev == false) {

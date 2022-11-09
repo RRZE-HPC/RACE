@@ -793,7 +793,17 @@ int sparsemat::colorAndPermute(dist distance, std::string colorType_, int nthrea
 
         ncolors = mc.ncolors_out;
         colorPtr = mc.colorPtr_out;
+/*
+        for(int color=0; color<ncolors+1; ++color)
+        {
+            printf("check colorPtr[%d] = %d\n", color, colorPtr[color]);
+        }
 
+        for(int row=0; row<nrows; ++row)
+        {
+            printf("check perm[%d] = %d\n", row, mc.perm_out[row]);
+        }
+*/
         permute(mc.perm_out, mc.invPerm_out);
 
         if(finalPerm)
