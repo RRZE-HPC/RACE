@@ -4,6 +4,8 @@
 #include <RACE/type.h>
 #include <vector>
 #include <getopt.h>
+#include <cstring>
+#include <cstdlib>
 
 using namespace RACE;
 
@@ -11,10 +13,10 @@ template <typename T>
 std::vector<T> splitString(char* string, char* split_char)
 {
     std::vector<T> val_vec;
-    char* token = strtok(string, split_char);
+    char* token = std::strtok(string, split_char);
     while(token != NULL)
     {
-        val_vec.push_back((T)atof(token));
+        val_vec.push_back((T)std::atof(token));
         token = strtok(NULL, split_char);
     }
     return val_vec;
