@@ -23,6 +23,7 @@
 
 #ifndef RACE_TRAVERSE_serial_H
 #define RACE_TRAVERSE_serial_H
+#include <string>
 #include <vector>
 #include <map>
 #include "type.h"
