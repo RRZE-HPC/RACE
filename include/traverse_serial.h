@@ -30,7 +30,7 @@
 #include "graph.h"
 #include "levelData.h"
 #include "macros.h"
-#include "string.h"
+#include <string>
 
 class RACE::Graph;
 
