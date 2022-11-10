@@ -89,6 +89,7 @@ if (RACE_USE_GAP)
         ExternalProject_Add(GAP
             PREFIX ${PROJECT_BINARY_DIR}/GAP
             URL https://github.com/sbeamer/gapbs/archive/refs/heads/master.zip
+            PATCH_COMMAND ${PROJECT_SOURCE_DIR}/GAP_patch.sh ${PROJECT_BINARY_DIR}/GAP/src/GAP
             CONFIGURE_COMMAND ""
             BUILD_COMMAND ""
             BUILD_IN_SOURCE 1
@@ -227,7 +228,7 @@ configure_file(${PROJECT_SOURCE_DIR}/race-config.cmake.in ${PROJECT_BINARY_DIR}/
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_BINARY_DIR}/include)
-if(RACE_HAVE_CPP_17)
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     link_libraries(tbb)
 endif()
 add_library(RACE ${SOURCES})
