@@ -4,7 +4,7 @@ include(ExternalProject)
 # project name
 project(RACE_example CXX C)
 
-set(CMAKE_CXX_STANDARD 11)
+#set(CMAKE_CXX_STANDARD 11)
 
 include(${PROJECT_SOURCE_DIR}/cmake/OptimizeForArchitecture.cmake)
 
@@ -33,16 +33,19 @@ set(CMAKE_PREFIX_PATH ${RACE_DIR})
 find_package(RACE REQUIRED CONFIG)
 message(STATUS "Found RACE")
 
-#likwid library
-link_directories($ENV{LIKWID_LIBDIR})
-link_libraries(liblikwid.so)
-include_directories($ENV{LIKWID_INCDIR})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DLIKWID_PERFMON -DLIKWID_MEASURE")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLIKWID_PERFMON -DLIKWID_MEASURE")
+set(USE_LIKWID 0 CACHE BOOL "Use LIKWID for performance counter measurement")
 
+#likwid library
+if(USE_LIKWID)
+    link_directories($ENV{LIKWID_LIBDIR})
+    link_libraries(liblikwid.so)
+    include_directories($ENV{LIKWID_INCDIR})
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DLIKWID_PERFMON -DLIKWID_MEASURE")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLIKWID_PERFMON -DLIKWID_MEASURE")
+endif()
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${RACE_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} ${RACE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RACE_CXX_FLAGS}")
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     if (TARGET_ARCHITECTURE MATCHES "amd")
@@ -208,7 +211,7 @@ configure_file (
 
 #include_directories(${RACE_INCLUDE_DIR})
 link_libraries(${RACE_LIBRARIES})
-set(CXX_STANDARD 11)
+#set(CXX_STANDARD 11)
 Set(CXX_STANDARD_REQUIRED On)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${RACE_INCLUDE_DIRS})
