@@ -22,8 +22,8 @@ RACE provides examples to illustrate the usage and easiness of using the RACE li
 
   | Name | Values | Default | Recomendation | Purpose | Example
   | :---   | :--- | :--- | :--- | :--- | :--- |
-  | `RACE_EFFICIENCY` | [40, 100] | 40 | If you are unsure set 80 for first few stages  | Controls recursion. It sets the load imbalance tolerance &epsilon;<sub>s</sub> at each recursive stage s | Example `RACE_EFFICIENCY=50,80` implies &epsilon;<sub>0</sub>=0.5 and &epsilon;<sub>1</sub>=0.8.
-  | `RACE_THREADS` | [1, c], where c is the total number of cores. | auto | If you are unsure don't specify this variable. | Assign n number of threads at a particular recusion stage. This overrides the internal heuristic to determine number of threads at each stage.| Example `RACE_THREADS=2,3` implies 2 threads in stage 0 and 3 in stage 1 of recursion.
+  | `RACE_EFFICIENCY` | [40, 100] | 40 | If you are unsure set 80 for first few stages  | Controls recursion. It sets the load imbalance tolerance &epsilon;<sub>s</sub> at each recursive stage s | `RACE_EFFICIENCY=50,80` implies &epsilon;<sub>0</sub>=0.5 and &epsilon;<sub>1</sub>=0.8.
+  | `RACE_THREADS` | [1, c], where c is the total number of cores. | auto | If you are unsure don't specify this variable. | Assign n number of threads at a particular recusion stage. This overrides the internal heuristic to determine number of threads at each stage.| `RACE_THREADS=2,3` implies 2 threads in stage 0 and 3 in stage 1 of recursion.
   
 ### Running temporal blocking examples ###
 
@@ -38,6 +38,6 @@ RACE provides examples to illustrate the usage and easiness of using the RACE li
 
   | Name | Values | Default | Recomendation | Purpose | Example
   | :---   | :--- | :--- | :--- | :--- | :--- |
-  | `RACE_CACHE_VIOLATION_CUTOFF` | [1,inf] | specified by `RACE_CACHE_VIOLATION_CUTOFF_DEFAULT` | If you are unsure, set 1 for first few stages  | Controls recursion. It sets the safety factor of cache at different recursion stage. Higher the value less the probablity of going for further recursion. | Example `RACE_CACHE_VIOLATION_CUTOFF=1,2` implies safety factor of 1 at stage 0 and 2 at stage 1.
-  | `RACE_CACHE_VIOLATION_CUTOFF_DEFAULT` | [1, inf] | 50 |If you are unsure don't specify this variable. | Sets the default safety factor value of all stages. | Example `RACE_CACHE_VIOLATION_CUTOFF_DEFAULT=2` implies safety factor is 2 by default on all stages. 
-  | `RACE_MAX_RECURSION_STAGES` | [1, inf] | auto |If you are unsure don't specify this variable. | Sets the maximum number of recursion stages. | Example `RACE_MAX_RECURSION_STAGES=1` implies only 1 recursion stage is allowed.
+  | `RACE_CACHE_VIOLATION_CUTOFF` | [1,inf] | see next | If you are unsure, set 1 for first few stages  | Controls recursion. It sets the safety factor of cache at different recursion stage. Higher the value less the probablity of going for further recursion. | `RACE_CACHE_VIOLATION_CUTOFF=1,2` implies safety factor of 1 at stage 0 and 2 at stage 1.
+  | `RACE_CACHE_VIOLATION_CUTOFF_DEFAULT` | [1, inf] | 50 |If you are unsure don't specify this variable. | Sets the default safety factor value of all stages. | `RACE_CACHE_VIOLATION_CUTOFF_DEFAULT=2` implies safety factor is 2 by default on all stages. 
+  | `RACE_MAX_RECURSION_STAGES` | [1, inf] | auto |If you are unsure don't specify this variable. | Sets the maximum number of recursion stages. | `RACE_MAX_RECURSION_STAGES=1` implies only 1 recursion stage is allowed.
