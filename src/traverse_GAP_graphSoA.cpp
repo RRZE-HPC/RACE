@@ -27,8 +27,8 @@
 #include <omp.h>
 #include "timing.h"
 
-std::map<int, LevelData> Traverse::cachedData;
-Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_, int numRoots_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_, std::string mtxType_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_), numRoots(numRoots_), graphSize(graph_->NROW),distFromRoot(NULL),perm(NULL),invPerm(NULL), boundaryRange(boundaryRange_), boundary_bm(NULL), queue(graphSize), levelData(NULL), mtxType(mtxType_)
+std::map<int, LevelData> RACE::Traverse::cachedData;
+RACE::Traverse::Traverse(RACE::Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_, int numRoots_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_, std::string mtxType_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_), numRoots(numRoots_), graphSize(graph_->NROW),distFromRoot(NULL),perm(NULL),invPerm(NULL), boundaryRange(boundaryRange_), boundary_bm(NULL), queue(graphSize), levelData(NULL), mtxType(mtxType_)
 {
     if( (mtxType != "N") && ( (mtxType != "L" && mtxType != "U") ) )
     {
@@ -87,7 +87,7 @@ Traverse::Traverse(Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, 
     UNUSED(parentIdx);
 }
 
-Traverse::~Traverse()
+RACE::Traverse::~Traverse()
 {
     if(distFromRoot) {
         delete[] distFromRoot;
@@ -126,7 +126,7 @@ Traverse::~Traverse()
     }
 }
 
-void Traverse::TDStep(int currLvl)
+void RACE::Traverse::TDStep(int currLvl)
 {
     int localCtr=0;
     int localColRangeLo = colRangeLo;
@@ -218,8 +218,10 @@ void Counter::reset()
     val = 0;
 }
 
-void Traverse::calculateDistance()
+void RACE::Traverse::calculateDistance()
 {
+
+    //START_TIME(bfs_main);
     if(mtxType == "N")
     {
         //traverse only if level has not been cached
@@ -306,15 +308,24 @@ void Traverse::calculateDistance()
         }
         levelData->totalLevel = graph->NROW;
     }
+    //STOP_TIME(bfs_main);
+    //PRINT_TIME(bfs_main);
 
     printf("Total Level = %d\n",levelData->totalLevel);
+    //START_TIME(bfs_createLevel);
     createLevelData();
-    printf("created Level Data\n");
+    //printf("created Level Data\n");
+    //STOP_TIME(bfs_createLevel);
+    //PRINT_TIME(bfs_createLevel);
+
+    //START_TIME(bfs_permute);
     permuteGraph();
-    printf("permuted graph\n");
+    //printf("permuted graph\n");
+    //STOP_TIME(bfs_permute);
+    //PRINT_TIME(bfs_permute);
 }
 
-RACE_error Traverse::findLevelData(int lower_nrows, int upper_nrows, int totalLevel, LevelData* curLevelData)
+RACE_error RACE::Traverse::findLevelData(int lower_nrows, int upper_nrows, int totalLevel, LevelData* curLevelData)
 {
     curLevelData->totalLevel = totalLevel;
     int* levelRow_ = new int[totalLevel];
@@ -324,25 +335,45 @@ RACE_error Traverse::findLevelData(int lower_nrows, int upper_nrows, int totalLe
         levelNnz_[i] = 0;
     }
 
-    for(int i=lower_nrows; i<upper_nrows; ++i)
-    {
-        int curr_dist = distFromRoot[i];
-        if(curr_dist == -1)
-        {
-            ERROR_PRINT("There are orphan nodes; I thought this wouldn't happen");
-            return RACE_ERR_GRAPH_TRAVERSAL;
+    RACE_error status_flag = RACE_SUCCESS;
 
+#pragma omp parallel
+    {
+        int* loc_levelRow_ = new int[totalLevel];
+        int* loc_levelNnz_ = new int[totalLevel];
+        for(int i=0; i<totalLevel; ++i) {
+            loc_levelRow_[i] = 0;
+            loc_levelNnz_[i] = 0;
         }
 
-        levelRow_[curr_dist]+=1;
+#pragma omp for schedule(static)
+        for(int i=lower_nrows; i<upper_nrows; ++i)
+        {
+            int curr_dist = distFromRoot[i];
+            if(curr_dist == -1)
+            {
+                ERROR_PRINT("There are orphan nodes; I thought this wouldn't happen");
+                status_flag = RACE_ERR_GRAPH_TRAVERSAL;
+
+            }
+
+            loc_levelRow_[curr_dist]+=1;
 #ifdef RACE_PERMUTE_ON_FLY
-        levelNnz_[curr_dist] += graph->childrenSize[graph->totalPerm[i]];
+            loc_levelNnz_[curr_dist] += graph->childrenSize[graph->totalPerm[i]];
 #else
-        levelNnz_[curr_dist] += graph->childrenSize[i];
+            loc_levelNnz_[curr_dist] += graph->childrenSize[i];
 #endif
 
+        }
+#pragma omp critical
+        {
+            for(int i=0; i<totalLevel; ++i)
+            {
+                levelRow_[i] += loc_levelRow_[i];
+                levelNnz_[i] += loc_levelNnz_[i];
+            }
+        }
     }
-
     curLevelData->levelRow = levelRow_;
     curLevelData->levelNnz = levelNnz_;
 
@@ -355,12 +386,12 @@ RACE_error Traverse::findLevelData(int lower_nrows, int upper_nrows, int totalLe
         curLevelData->nnz += levelNnz_[i];
         //printf("levelRow[%d] = %d\n", i, levelRow_[i]);
     }
-    return RACE_SUCCESS;
+    return status_flag;
 }
 
-RACE_error Traverse::createLevelData()
+RACE_error RACE::Traverse::createLevelData()
 {
-    RACE_error err_flag = RACE_SUCCESS;
+    RACE_error status_flag = RACE_SUCCESS;
     bool untouchedBoundaryNodes = false;
     //handle bondary levels in case its power calculation
     if(dist == RACE::POWER)
@@ -385,24 +416,24 @@ RACE_error Traverse::createLevelData()
         }
         EXEC_BOUNDARY_STRUCTURE(boundaryLevelData,
                 _val_ = new LevelData;
-                err_flag = RACE_SUCCESS;
+                status_flag = RACE_SUCCESS;
                 Range curRange = boundaryRange[_workingRadius_][_radius_][_region_];
-                err_flag = findLevelData(curRange.lo, curRange.hi, levelData->totalLevel, _val_);
-                if(err_flag != RACE_SUCCESS)
+                status_flag = findLevelData(curRange.lo, curRange.hi, levelData->totalLevel, _val_);
+                if(status_flag != RACE_SUCCESS)
                 {
                     ERROR_PRINT("Something went wrong in levelData calculation for boundaries");
-                    return err_flag;
+                    return status_flag;
                 }
                 boundaryLevelData[_workingRadius_][_radius_][_region_] = _val_;
             );
     }
 
     //levelData for main body (region)
-    err_flag = findLevelData(rangeLo, rangeHi, levelData->totalLevel, levelData);
-    if(err_flag != RACE_SUCCESS)
+    status_flag = findLevelData(rangeLo, rangeHi, levelData->totalLevel, levelData);
+    if(status_flag != RACE_SUCCESS)
     {
         ERROR_PRINT("Something went wrong in levelData calculation");
-        return err_flag;
+        return status_flag;
     }
 
 
@@ -410,10 +441,10 @@ RACE_error Traverse::createLevelData()
     //Don't cache this won't happen in 
     //the current strategy
     //cachedData[parentIdx] = (*levelData);
-    return err_flag;
+    return status_flag;
 }
 
-void Traverse::permuteGraph()
+void RACE::Traverse::permuteGraph()
 {
     int numRegions = 1;
     std::vector<int> regionRange;
@@ -421,7 +452,7 @@ void Traverse::permuteGraph()
     regionRange.push_back(rangeHi);
 
 #ifndef RACE_PERMUTE_ON_FLY
-    Graph permutedGraph(*(graph));
+    RACE::Graph permutedGraph(*(graph));
 #endif
 
     if(dist==RACE::POWER)
@@ -440,7 +471,12 @@ void Traverse::permuteGraph()
             printf("distFromRoot[%d] = %d, perm[%d] = %d\n", i, distFromRoot[i], i, perm[i]);
         }*/
         //create permutation vector First
+        //
+#ifdef RACE_HAVE_CPP_17
+        sortPerm_parallel(distFromRoot, perm, targetRangeLo, targetRangeHi);
+#else
         sortPerm(distFromRoot, perm, targetRangeLo, targetRangeHi);
+#endif
        //create invPerm
 #pragma omp parallel for schedule(static)
         for(int i=targetRangeLo; i<targetRangeHi; ++i) {
@@ -546,7 +582,7 @@ void Traverse::permuteGraph()
 }
 
 //Getter functions
-void Traverse::getPerm(int **perm_, int *len)
+void RACE::Traverse::getPerm(int **perm_, int *len)
 {
 #ifndef RACE_PERMUTE_ON_FLY
     (*perm_) = perm;
@@ -558,7 +594,7 @@ void Traverse::getPerm(int **perm_, int *len)
     (*len) = graph->NROW;
 }
 
-void Traverse::getInvPerm(int **invPerm_, int *len)
+void RACE::Traverse::getInvPerm(int **invPerm_, int *len)
 {
 #ifndef RACE_PERMUTE_ON_FLY
     (*invPerm_) = invPerm;
@@ -570,14 +606,14 @@ void Traverse::getInvPerm(int **invPerm_, int *len)
     (*len) = graph->NROW;
 }
 
-LevelData* Traverse::getLevelData()
+LevelData* RACE::Traverse::getLevelData()
 {
     LevelData* levelData_ = levelData;
     levelData = NULL;
     return levelData_;
 }
 
-std::vector<std::map<int, std::vector<LevelData*>>> Traverse::getBoundaryLevelData()
+std::vector<std::map<int, std::vector<LevelData*>>> RACE::Traverse::getBoundaryLevelData()
 {
     std::vector<std::map<int, std::vector<LevelData*>>> retBoundaryLevelData = boundaryLevelData;
     EXEC_BOUNDARY_STRUCTURE(boundaryLevelData,

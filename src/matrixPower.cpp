@@ -34,7 +34,7 @@
 //nodeId tells which node is responsible for the current leaf
 //-1(default): all,
 //else the node number
-mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_, int nodeId_, int numRootNodes_, std::string mtxType):graph(graph_), cacheLevelGroup(NULL), startRow(startRow_), endRow(endRow_), levelData(NULL), boundaryRange(boundaryRange_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), cache_violation_cutoff(cache_violation_cutoff_), nodeId(nodeId_), numRootNodes(numRootNodes_)
+mtxPower::mtxPower(RACE::Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_, int nodeId_, int numRootNodes_, std::string mtxType):graph(graph_), cacheLevelGroup(NULL), startRow(startRow_), endRow(endRow_), levelData(NULL), boundaryRange(boundaryRange_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), cache_violation_cutoff(cache_violation_cutoff_), nodeId(nodeId_), numRootNodes(numRootNodes_)
 {
 
 #if RACE_VERBOSITY > 1
@@ -46,7 +46,7 @@ mtxPower::mtxPower(Graph* graph_, int highestPower_, int numSharedCache_, double
 
     if( (mtxType == "N") || ( (mtxType == "L" || mtxType == "U") ) )
     {
-        traverser = new Traverse(graph, RACE::POWER, startRow, endRow, 0, 1, boundaryRange, mtxType);
+        traverser = new RACE::Traverse(graph, RACE::POWER, startRow, endRow, 0, 1, boundaryRange, mtxType);
     }
     else
     {

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <string>
 #include "parse.h"
 
 my_option::my_option(const char* name_, int has_arg_, int* flag_, int val_, char*desc_): desc(desc_)
@@ -46,6 +47,20 @@ parser::~parser()
     delete[] gnuOptions;
 }
 
+bool containsString(char *string, char *delim)
+{
+    std::string cpp_string(string);
+    std::string cpp_delim(delim);
+    if(cpp_string.find(cpp_delim) != std::string::npos)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 bool parser::parse_arg(int argc, char **argv)
 {
     prgname = argv[0];
@@ -71,7 +86,16 @@ bool parser::parse_arg(int argc, char **argv)
                 }
             case 'i':
                 {
-                    iter = atoi(optarg);
+                    if(containsString(optarg, ","))
+                    {
+                        iter_vec = splitString<int>(optarg, ",");
+                        iter = iter_vec[0]; //for backward compatibility
+                    }
+                    else
+                    {
+                        iter = atoi(optarg);
+                        iter_vec = {iter};
+                    }
                     break;
                 }
             case 'c':
@@ -92,7 +116,17 @@ bool parser::parse_arg(int argc, char **argv)
                 }
             case 's':
                 {
-                    cache_size = atof(optarg);
+                    if(containsString(optarg, ","))
+                    {
+                        cache_size_vec = splitString<double>(optarg, ",");
+                        cache_size = cache_size_vec[0]; //for backward compatibility
+                    }
+                    else
+                    {
+                        cache_size = atof(optarg);
+                        cache_size_vec = {cache_size};
+                    }
+
                     break;
                 }
             case 'p':

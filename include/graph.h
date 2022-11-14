@@ -35,4 +35,10 @@
     #include "graph_AoS.h"
 #endif
 
+namespace RACE
+{
+//helper function for all the graph routines
+RACE_error makeSymmetricGraph(int NROW, int NCOL, int* rowPtr, int* col, int **outRowPtr, int **outCol);
+}
+
 #endif

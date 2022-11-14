@@ -2,6 +2,7 @@
 #define RACE_DENSEMAT_H
 
 #include <functional>
+#include <stdio.h>
 
 struct densemat
 {

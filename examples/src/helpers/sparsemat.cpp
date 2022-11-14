@@ -15,7 +15,7 @@
 #include "densemat.h"
 #include "multicoloring.h"
 
-sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), diagFirst(false), colorType("RACE"), colorBlockSize(64), colorDist(-1), ncolors(-1), colorPtr(NULL), partPtr(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), finalPerm(NULL), finalInvPerm(NULL)
+sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), diagFirst(false), colorType("RACE"), colorBlockSize(64), colorDist(-1), ncolors(-1), colorPtr(NULL), partPtr(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), finalPerm(NULL), finalInvPerm(NULL), symm_hint(false)
 {
 }
 
@@ -29,6 +29,30 @@ void sparsemat::initCover(int nrows_, int nnz_, double *val_, int *rowPtr_, int 
     rowPtr=rowPtr_;
     col=col_;
 }
+
+//performs deep copy of basic data structure
+void sparsemat::basicDeepCopy(sparsemat *otherMat)
+{
+    nrows=otherMat->nrows;
+    nnz=otherMat->nnz;
+
+    rowPtr = new int[nrows+1];
+    col = new int[nnz];
+    val = new double[nnz];
+
+    rowPtr[0] = otherMat->rowPtr[0];
+#pragma omp parallel for schedule(static)
+    for(int row=0; row<nrows; ++row)
+    {
+        rowPtr[row+1] = otherMat->rowPtr[row+1];
+        for(int idx=otherMat->rowPtr[row]; idx<otherMat->rowPtr[row+1]; ++idx)
+        {
+            val[idx] = otherMat->val[idx];
+            col[idx] = otherMat->col[idx];
+        }
+    }
+}
+
 
 sparsemat::~sparsemat()
 {
@@ -140,6 +164,7 @@ bool sparsemat::readFile(char* filename)
     if(symm_flag)
     {
         printf("Creating a general matrix out of a symmetric one\n");
+        symm_hint = true;
 
         int ctr = 0;
 
@@ -675,11 +700,12 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
     //rcmInvPerm = NULL;
     INIT_TIMER(pre_process_kernel);
     START_TIMER(pre_process_kernel);
-    ce = new Interface(nrows, nthreads, RACE::POWER, rowPtr, col, smt, pinMethod, rcmPerm, rcmInvPerm);
+    ce = new Interface(nrows, nthreads, RACE::POWER, rowPtr, col, symm_hint, smt, pinMethod, rcmPerm, rcmInvPerm);
     //ce->RACEColor(highestPower, numSharedCache, cacheSize);
-    ce->RACEColor(highestPower, numSharedCache, cacheSize, 2, mtxType);
+    ce->RACEColor(highestPower, numSharedCache, cacheSize*1024*1024, 2, mtxType);
+    //ce->RACEColor(highestPower, numSharedCache, cacheSize*1024*1024, 2, mtxType, 3);
     STOP_TIMER(pre_process_kernel);
-    printf("RACE pre-processing time = %fs\n", GET_TIMER(pre_process_kernel));
+    printf("Pre-processing time: cache size = %f, power = %d, RACE pre-processing time = %fs\n", cacheSize, highestPower, GET_TIMER(pre_process_kernel));
 
     int *perm, *invPerm, permLen;
     ce->getPerm(&perm, &permLen);
@@ -709,10 +735,11 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
 
 int sparsemat::colorAndPermute(dist distance, std::string colorType_, int nthreads, int smt, PinMethod pinMethod)
 {
+
     colorType = colorType_;
     if(colorType == "RACE")
     {
-        ce = new Interface(nrows, nthreads, distance, rowPtr, col, smt, pinMethod, rcmPerm, rcmInvPerm);
+        ce = new Interface(nrows, nthreads, distance, rowPtr, col, symm_hint, smt, pinMethod, rcmPerm, rcmInvPerm);
         RACE_error ret = ce->RACEColor();
 
         if(ret != RACE_SUCCESS)
@@ -766,7 +793,17 @@ int sparsemat::colorAndPermute(dist distance, std::string colorType_, int nthrea
 
         ncolors = mc.ncolors_out;
         colorPtr = mc.colorPtr_out;
+/*
+        for(int color=0; color<ncolors+1; ++color)
+        {
+            printf("check colorPtr[%d] = %d\n", color, colorPtr[color]);
+        }
 
+        for(int row=0; row<nrows; ++row)
+        {
+            printf("check perm[%d] = %d\n", row, mc.perm_out[row]);
+        }
+*/
         permute(mc.perm_out, mc.invPerm_out);
 
         if(finalPerm)
@@ -1128,15 +1165,32 @@ inline void MAT_NUM_VEC_ACCESSES(int start, int end, int pow, int numa_domain, v
     }
 }
 
+inline void MAT_NUM_VEC_ACCESSES_w_subPower(int start, int end, int pow, int subPow, int numa_domain, void* args)
+{
+    DECODE_FROM_VOID(args);
+
+    int nrows=mat->nrows;
+    for(int row=start; row<end; ++row)
+    {
+        x->val[row]++;
+        if(x->val[row] != (pow-1)*3+subPow)
+        {
+            ERROR_PRINT("Oh oh we have duplicate computations, error at pow=%d, subPow=%d, for row=%d. Value I got at x is %f, expected %d. Level start =%d, Level end=%d", pow, subPow, row, x->val[row], (pow-1)*3+subPow, start, end);
+        }
+    }
+}
+
 void sparsemat::checkNumVecAccesses(int power)
 {
     densemat* x = new densemat(this->nrows);
     ENCODE_TO_VOID(this, NULL, x);
     int race_power_id = ce->registerFunction(&MAT_NUM_VEC_ACCESSES, voidArg, power);
+    //int race_power_id = ce->registerFunction(&MAT_NUM_VEC_ACCESSES_w_subPower, voidArg, power, 3);
     {
         ce->executeFunction(race_power_id);
     }
     DELETE_ARG();
+    delete x;
 }
 
 

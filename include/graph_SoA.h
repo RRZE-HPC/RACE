@@ -27,14 +27,24 @@
 #include "print.h"
 #include "error.h"
 #include <vector>
+#include "type.h"
+
+/**
+ * @brief RACE namespace.
+ */
+ namespace RACE
+{
+    class Graph;
+}
 
 
-class Graph{
+class RACE::Graph{
     private:
        /**
          * @brief Graph of the matrix.
          */
         int* graphData;
+        bool manageGraphData;
         int* tmpGraphData;
         int* childrenStart;
         int* childrenSize;
@@ -73,7 +83,7 @@ class Graph{
         int NNZ;
         int NNZ_serial;
         std::vector<int> serialPart;
-        Graph(int nrow, int ncol, int *row_ptr, int *col, int *initPerm=NULL, int *initInvPerm=NULL);//constructor
+        Graph(int nrow, int ncol, int *row_ptr, int *col, RACE::dist distance, bool symm_hint=false, int *initPerm=NULL, int *initInvPerm=NULL);//constructor
         Graph(const Graph &srcGraph);//copy constructor
         ~Graph();
         void writePattern(char *name);

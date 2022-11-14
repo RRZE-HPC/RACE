@@ -66,7 +66,7 @@ int main(const int argc, char * argv[])
     INFO_PRINT("Nrows = %d, NNZ = %d, NNZR = %f\n", NROWS, mat->nnz, mat->nnz/((double)NROWS));
 
     densemat *xTRAD;
-    xTRAD=new densemat(NROWS,power+1);
+    xTRAD=new densemat(NROWS,2);
     densemat* xTRAD_0 = xTRAD->view(0,0);
 
     double initVal = 1/(double)NROWS;
@@ -79,16 +79,18 @@ int main(const int argc, char * argv[])
     {
         for(int pow=0; pow<power; ++pow)
         {
-            mkl_spmv(mat, xTRAD);
+            plain_spmv_only_highest(mat, xTRAD, pow+1);
         }
     }
     STOP_TIMER(matPower_init);
     double initTime = GET_TIMER(matPower_init);
-    int iterations = (int) (1.2*10/initTime);
+    int iterations = std::max(1, (int) (1.2*10/initTime));
     //int iterations = 1; //for correctness checking
     printf("Num iterations =  %d\n", iterations);
 
 
+    //sleep before going to benchmark
+    sleep(1);
     xTRAD_0->setVal(initVal);
     //xTRAD->setRand();
 
@@ -97,24 +99,28 @@ int main(const int argc, char * argv[])
 #ifdef LIKWID_PERFMON
 #pragma omp parallel
         {
-            LIKWID_MARKER_START("MKL_power");
+            LIKWID_MARKER_START("Trad_power");
         }
 #endif
  
     START_TIMER(spmv);
     for(int iter=0; iter<iterations; ++iter)
     {
+        PAUSE_TIMER(spmv);
+        xTRAD_0->setVal(initVal);
+        START_TIMER(spmv);
+
         for(int pow=0; pow<power; ++pow)
         {
-            densemat *x = xTRAD->view(pow,pow);
-            mkl_spmv(mat,x);
+            //densemat *x = xTRAD->view(pow,pow);
+            plain_spmv_only_highest(mat,xTRAD, pow+1);
         }
     }
     STOP_TIMER(spmv);
 #ifdef LIKWID_PERFMON
 #pragma omp parallel
         {
-            LIKWID_MARKER_STOP("MKL_power");
+            LIKWID_MARKER_STOP("Trad_power");
         }
 #endif
  

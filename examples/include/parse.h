@@ -4,8 +4,23 @@
 #include <RACE/type.h>
 #include <vector>
 #include <getopt.h>
+#include <cstring>
+#include <cstdlib>
 
 using namespace RACE;
+
+template <typename T>
+std::vector<T> splitString(char* string, char* split_char)
+{
+    std::vector<T> val_vec;
+    char* token = std::strtok(string, split_char);
+    while(token != NULL)
+    {
+        val_vec.push_back((T)std::atof(token));
+        token = strtok(NULL, split_char);
+    }
+    return val_vec;
+}
 
 struct my_option
 {
@@ -19,10 +34,12 @@ struct parser
 {
         char *mat_file;
         int iter;
+        std::vector<int> iter_vec;
         int cores;
         int smt;
         int nodes;
         double cache_size;
+        std::vector<double> cache_size_vec;
         PinMethod pin;
         bool validate;
         double tol;

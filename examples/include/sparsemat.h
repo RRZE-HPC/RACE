@@ -34,6 +34,7 @@ struct sparsemat
     int *rcmPerm, *rcmInvPerm;
     int *finalPerm, *finalInvPerm;
     bool readFile(char* filename);
+    bool symm_hint;
     bool convertToBCSR(int b_r);
     bool writeFile(char* filename);
     void makeDiagFirst();
@@ -69,6 +70,7 @@ struct sparsemat
     ~sparsemat();
 
     void initCover(int nrows_, int nnz_, double *val_, int *rowPtr_, int *col_);
+    void basicDeepCopy(sparsemat *mat);
     densemat* permute_densemat(densemat *vec);
 
     void checkNumVecAccesses(int power);

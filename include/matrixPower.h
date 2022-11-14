@@ -35,7 +35,7 @@
 //this is per stage
 class mtxPower
 {
-    Graph* graph;
+    RACE::Graph* graph;
     std::vector<int> nodePtr;
     std::vector<int> unlockRow;//for p2p sync
     std::vector<int> dangerRow;// for p2p sync
@@ -59,7 +59,7 @@ class mtxPower
     std::vector<std::map<int, std::vector<std::vector<int>>>> boundaryDangerRow;
     std::vector<std::map<int, std::vector<std::vector<int>>>> boundaryUnlockCtr;
 
-    Traverse* traverser;
+    RACE::Traverse* traverser;
     int totalLevel;
     int highestPower;
     int numSharedCache;
@@ -81,7 +81,7 @@ class mtxPower
     //N: Normal
     //L: Lower traiangle
     //U: Upper triangle
-    mtxPower(Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<std::map<int, std::vector<Range>>> boundaryRange={}, int nodeId_=-1, int numRootNodes_=-1, std::string mtxType="N");
+    mtxPower(RACE::Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<std::map<int, std::vector<Range>>> boundaryRange={}, int nodeId_=-1, int numRootNodes_=-1, std::string mtxType="N");
     ~mtxPower();
     void findPartition();
     void splitSharedCacheDomain();

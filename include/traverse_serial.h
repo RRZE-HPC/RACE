@@ -23,6 +23,7 @@
 
 #ifndef RACE_TRAVERSE_serial_H
 #define RACE_TRAVERSE_serial_H
+#include <string>
 #include <vector>
 #include <map>
 #include "type.h"
@@ -30,13 +31,21 @@
 #include "graph.h"
 #include "levelData.h"
 #include "macros.h"
-#include "string.h"
+#include <string>
 
-class Graph;
+class RACE::Graph;
 
-class Traverse{
+/**
+ * @brief RACE namespace.
+ */
+ namespace RACE
+{
+    class Traverse;
+}
+
+class RACE::Traverse{
     private:
-        Graph *graph;
+        RACE::Graph *graph;
         static std::map<int, LevelData> cachedData;
         RACE::dist dist;
         int rangeLo;
@@ -68,7 +77,7 @@ class Traverse{
         void permuteGraph();
     public:
         //constructor
-        Traverse(Graph *graph_, RACE::dist dist, int rangeLo_=0, int rangeHi_=-1, int parentIdx=0, int numRoots=1, std::vector<std::map<int, std::vector<Range>>> boundaryRange_={}, std::string mtxType_="N");
+        Traverse(RACE::Graph *graph_, RACE::dist dist, int rangeLo_=0, int rangeHi_=-1, int parentIdx=0, int numRoots=1, std::vector<std::map<int, std::vector<Range>>> boundaryRange_={}, std::string mtxType_="N");
         ~Traverse();
         void calculateDistance();
 

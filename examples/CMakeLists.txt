@@ -4,7 +4,7 @@ include(ExternalProject)
 # project name
 project(RACE_example CXX C)
 
-set(CMAKE_CXX_STANDARD 11)
+#set(CMAKE_CXX_STANDARD 11)
 
 include(${PROJECT_SOURCE_DIR}/cmake/OptimizeForArchitecture.cmake)
 
@@ -33,22 +33,30 @@ set(CMAKE_PREFIX_PATH ${RACE_DIR})
 find_package(RACE REQUIRED CONFIG)
 message(STATUS "Found RACE")
 
-#likwid library
-link_directories($ENV{LIKWID_LIBDIR})
-link_libraries(liblikwid.so)
-include_directories($ENV{LIKWID_INCDIR})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DLIKWID_PERFMON -DLIKWID_MEASURE")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLIKWID_PERFMON -DLIKWID_MEASURE")
+set(USE_LIKWID 0 CACHE BOOL "Use LIKWID for performance counter measurement")
 
+#likwid library
+if(USE_LIKWID)
+    link_directories($ENV{LIKWID_LIBDIR})
+    link_libraries(liblikwid.so)
+    include_directories($ENV{LIKWID_INCDIR})
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DLIKWID_PERFMON -DLIKWID_MEASURE")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLIKWID_PERFMON -DLIKWID_MEASURE")
+endif()
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${RACE_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} ${RACE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RACE_CXX_FLAGS}")
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -xHOST -save-temps -fsource-asm")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -xHOST -save-temps -fsource-asm")
-    #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -xCORE-AVX2  -save-temps -fsource-asm")
-    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -xCORE-AVX2  -save-temps -fsource-asm")
+    if (TARGET_ARCHITECTURE MATCHES "amd")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=core-avx2 -mtune=core-avx2 -save-temps -fsource-asm")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=core-avx2 -mtune=core-avx2 -save-temps -fsource-asm")
+    else ()
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -xHOST -save-temps -fsource-asm") #CORE-AVX2
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -xHOST -save-temps -fsource-asm")
+        #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -xCORE-AVX2  -save-temps -fsource-asm")
+        #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -xCORE-AVX2  -save-temps -fsource-asm")
+    endif()
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Ofast -mtune=native -Wno-write-strings")# -fsanitize=address -fno-omit-frame-pointer")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast -mtune=native -Wno-write-strings")# -fsanitize=address -fno-omit-frame-pointer")
@@ -71,7 +79,8 @@ if (RACE_USE_SPMP)
         if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
             ExternalProject_Add(SpMP
                 PREFIX ${PROJECT_BINARY_DIR}/SpMP
-                URL https://github.com/IntelLabs/SpMP/archive/master.zip
+                URL https://github.com/christiealappatt/SpMP/archive/master.zip
+                #URL https://github.com/IntelLabs/SpMP/archive/master.zip
                 CONFIGURE_COMMAND ""
                 BUILD_COMMAND make 
                 BUILD_IN_SOURCE 1
@@ -80,7 +89,8 @@ if (RACE_USE_SPMP)
         else() # GNU or Clang: Set CUSTOM_CXX variable in SpMP make
             ExternalProject_Add(SpMP
                 PREFIX ${PROJECT_BINARY_DIR}/SpMP
-                URL https://github.com/IntelLabs/SpMP/archive/master.zip
+                URL https://github.com/christiealappatt/SpMP/archive/master.zip
+                #URL https://github.com/IntelLabs/SpMP/archive/master.zip
                 CONFIGURE_COMMAND ""
                 BUILD_COMMAND make CUSTOM_CXX=${CMAKE_CXX_COMPILER} 
                 BUILD_IN_SOURCE 1
@@ -201,7 +211,7 @@ configure_file (
 
 #include_directories(${RACE_INCLUDE_DIR})
 link_libraries(${RACE_LIBRARIES})
-set(CXX_STANDARD 11)
+#set(CXX_STANDARD 11)
 Set(CXX_STANDARD_REQUIRED On)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${RACE_INCLUDE_DIRS})
@@ -210,12 +220,15 @@ include_directories(${PROJECT_BINARY_DIR}/include)
 file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/helpers/*.cpp)
 add_executable(coloring ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/coloring.cpp)
 add_executable(mtxPower ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/matrixPower.cpp)
+add_executable(mtxPower_scan ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/matrixPower_scan.cpp)
 add_executable(mtxPowerSplitting ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/matrixPowerSplitting.cpp)
 add_executable(mtxPower_highestPower ${SOURCES} ${PROJECT_SOURCE_DIR}/src/matrixPower_highestPower.cpp)
 add_executable(mtxPowerNuma ${SOURCES} ${PROJECT_SOURCE_DIR}/src/matrixPowerNuma.cpp)
 add_executable(param_study ${SOURCES} ${PROJECT_SOURCE_DIR}/src/param_study.cpp)
 add_executable(spmv ${SOURCES}  ${PROJECT_SOURCE_DIR}/src/spmv.cpp)
 add_executable(tradPower ${SOURCES} ${PROJECT_SOURCE_DIR}/src/tradPower.cpp)
+add_executable(tradPower_highestPower ${SOURCES} ${PROJECT_SOURCE_DIR}/src/tradPower_highestPower.cpp)
+add_executable(tradPower_scan ${SOURCES} ${PROJECT_SOURCE_DIR}/src/tradPower_scan.cpp)
 add_executable(mklPower ${SOURCES} ${PROJECT_SOURCE_DIR}/src/mklPower.cpp)
 add_executable(mklIEPower ${SOURCES} ${PROJECT_SOURCE_DIR}/src/mklIEPower.cpp)
 add_executable(tradPowerNuma ${SOURCES} ${PROJECT_SOURCE_DIR}/src/tradPowerNuma.cpp)
@@ -243,12 +256,15 @@ endif()
 
 target_link_libraries(coloring "${EXT_LIBRARIES}")
 target_link_libraries(mtxPower "${EXT_LIBRARIES}")
+target_link_libraries(mtxPower_scan "${EXT_LIBRARIES}")
 target_link_libraries(mtxPowerSplitting "${EXT_LIBRARIES}")
 target_link_libraries(mtxPower_highestPower "${EXT_LIBRARIES}")
 target_link_libraries(mtxPowerNuma "${EXT_LIBRARIES}")
 target_link_libraries(param_study "${EXT_LIBRARIES}")
 target_link_libraries(spmv "${EXT_LIBRARIES}")
 target_link_libraries(tradPower "${EXT_LIBRARIES}")
+target_link_libraries(tradPower_highestPower "${EXT_LIBRARIES}")
+target_link_libraries(tradPower_scan "${EXT_LIBRARIES}")
 target_link_libraries(mklPower "${EXT_LIBRARIES}")
 target_link_libraries(mklIEPower "${EXT_LIBRARIES}")
 target_link_libraries(tradPowerNuma "${EXT_LIBRARIES}")
@@ -262,12 +278,15 @@ if(RACE_USE_SPMP)
     include_directories(SYSTEM ${PROJECT_BINARY_DIR}/SpMP/src)
     add_dependencies(coloring SpMP)
     add_dependencies(mtxPower SpMP)
+    add_dependencies(mtxPower_scan SpMP)
     add_dependencies(mtxPowerSplitting SpMP)
     add_dependencies(mtxPower_highestPower SpMP)
     add_dependencies(mtxPowerNuma SpMP)
     add_dependencies(param_study SpMP)
     add_dependencies(spmv SpMP)
     add_dependencies(tradPower SpMP)
+    add_dependencies(tradPower_highestPower SpMP)
+    add_dependencies(tradPower_scan SpMP)
     add_dependencies(mklPower SpMP)
     add_dependencies(mklIEPower SpMP)
     add_dependencies(tradPowerNuma SpMP)

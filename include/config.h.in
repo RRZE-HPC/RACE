@@ -28,6 +28,9 @@
 #cmakedefine RACE_KERNEL_THREAD_OMP
 #cmakedefine RACE_USE_GAP
 #cmakedefine RACE_PERMUTE_ON_FLY
-#cmakedefine RACE_USE_SOA_GRAPH
+#ifdef RACE_USE_GAP
+    #cmakedefine RACE_USE_SOA_GRAPH
+#endif
+#cmakedefine RACE_HAVE_CPP_17
 
 #endif

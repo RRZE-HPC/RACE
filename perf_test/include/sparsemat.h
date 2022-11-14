@@ -26,6 +26,7 @@ struct sparsemat
     int *rowPtr, *col;
 
     bool readFile(char* filename);
+    bool symm_hint;
     bool writeFile(char* filename);
     void makeDiagFirst();
     void doRCM();
@@ -42,6 +43,7 @@ struct sparsemat
     int *rowPtr_symm, *col_symm;
     double *val_symm;
     bool computeSymmData();
+
 
     int *rcmPerm, *rcmInvPerm;
     sparsemat();

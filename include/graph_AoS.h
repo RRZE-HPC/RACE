@@ -27,6 +27,7 @@
 #include "print.h"
 #include "error.h"
 #include <vector>
+#include "type.h"
 
 typedef std::vector<int>::iterator intIter;
 
@@ -37,7 +38,15 @@ struct Node{
 };
 
 
-class Graph{
+/**
+ * @brief RACE namespace.
+ */
+ namespace RACE
+{
+    class Graph;
+}
+
+class RACE::Graph{
     private:
        /**
          * @brief Graph of the matrix.
@@ -77,7 +86,7 @@ class Graph{
         int NNZ_serial;
         std::vector<int> serialPart;
 
-        Graph(int nrow, int ncol, int *row_ptr, int *col, int *initPerm=NULL, int *initInvPerm=NULL);//constructor
+        Graph(int nrow, int ncol, int *row_ptr, int *col, RACE::dist distance, bool symm_hint=false, int *initPerm=NULL, int *initInvPerm=NULL);//constructor
         Graph(const Graph &srcGraph);//copy constructor
         ~Graph();
         void writePattern(char *name);

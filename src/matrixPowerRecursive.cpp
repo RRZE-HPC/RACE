@@ -34,7 +34,7 @@
     }\
 }\
 
-mtxPowerRecursive::mtxPowerRecursive(Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, std::string mtxType_):graph(graph_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), perm(NULL), invPerm(NULL), mtxType(mtxType_)
+mtxPowerRecursive::mtxPowerRecursive(RACE::Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, std::string mtxType_):graph(graph_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), perm(NULL), invPerm(NULL), mtxType(mtxType_)
 {
     std::vector<int> default_cutoff;
     getEnv("RACE_CACHE_VIOLATION_CUTOFF_DEFAULT", default_cutoff);
@@ -45,6 +45,20 @@ mtxPowerRecursive::mtxPowerRecursive(Graph* graph_, int highestPower_, int numSh
     cache_violation_cutoff.clear();
     cache_violation_cutoff.push_back(default_cutoff[0]); //default
     getEnv("RACE_CACHE_VIOLATION_CUTOFF", cache_violation_cutoff);
+
+    maxRecStages = 0; //0 => no recursion
+    std::vector<int> maxRecStagesVec;
+    getEnv("RACE_MAX_RECURSION_STAGES", maxRecStagesVec);
+    if(!maxRecStagesVec.empty())
+    {
+        maxRecStages = maxRecStagesVec[0];
+    }
+    else
+    {
+        //one specified by RACE_CACHE_VIOLATION_CUTOFF
+        maxRecStages = std::max(0, (int)(cache_violation_cutoff.size()-1+1)); //+1 because cache violation is specified for current stage and depending on the value one more recursion stage can be done
+    }
+
     totalRows = graph->NROW;
 #ifndef RACE_PERMUTE_ON_FLY
     perm =  new int[totalRows];
@@ -74,13 +88,21 @@ mtxPowerRecursive::~mtxPowerRecursive()
 int mtxPowerRecursive::get_cache_violation_cutoff(int stage)
 {
     int cache_cutoff = 50;
-    if(stage < (int)(cache_violation_cutoff.size()-1))
+
+    if(stage >= maxRecStages)
     {
-        cache_cutoff = cache_violation_cutoff[stage+1]; //Stage numbering starts with 0, therefore stage+1
+        cache_cutoff = std::numeric_limits<int>::max(); //disable further recursion
     }
     else
     {
-        cache_cutoff = cache_violation_cutoff[0];
+        if(stage < (int)(cache_violation_cutoff.size()-1))
+        {
+            cache_cutoff = cache_violation_cutoff[stage+1]; //Stage numbering starts with 0, therefore stage+1
+        }
+        else
+        {
+            cache_cutoff = cache_violation_cutoff[0];
+        }
     }
 
     return cache_cutoff;

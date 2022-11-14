@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <omp.h>
 #include "mmio.h"
@@ -14,7 +13,7 @@
 #include "timer.h"
 #include <iostream>
 
-#define VALIDATE_wo_PERM
+//#define VALIDATE_wo_PERM
 
 void capitalize(char* beg)
 {
@@ -178,7 +177,7 @@ int main(const int argc, char * argv[])
     {
         mat->doRCM();
     }
-    mat->prepareForPower(power, param.nodes, param.cache_size*1024*1024, param.cores, param.smt, param.pin);
+    mat->prepareForPower(power, param.nodes, param.cache_size, param.cores, param.smt, param.pin);
     STOP_TIMER(pre_process);
     /*printf("perm = \n");
     for(int i=0; i<NROWS; ++i)
@@ -289,6 +288,8 @@ int main(const int argc, char * argv[])
 #ifdef VALIDATE_wo_PERM
         delete xTRAD_perf;
 #endif
+        //sleep before going to benchmark
+        sleep(1);
     }
 
     xRACE->setVal(0);
@@ -367,6 +368,8 @@ int main(const int argc, char * argv[])
             printf("\n");
         }*/
 
+
+        findMaxDeviations(xTRAD_permuted, xRACE_permuted);
         bool flag = checkEqual(xTRAD_permuted, xRACE_permuted, param.tol);
         if(!flag)
         {
@@ -378,6 +381,7 @@ int main(const int argc, char * argv[])
         }
 #ifdef VALIDATE_wo_PERM
         delete xTRAD_permuted;
+        delete xRACE_permuted;
 #endif
         delete xTRAD;
     }

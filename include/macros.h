@@ -189,7 +189,7 @@
     int _wbl_ = (int)_var_.size();\
     for(int _workingRadius_=0; _workingRadius_<_wbl_; ++_workingRadius_)\
     {\
-        if((_pow_ > _workingRadius_) && ( _pow_ < (power-(_workingRadius_+1)) ))\
+        if((_pow_ > _workingRadius_) && ( _pow_ < (totPower-(_workingRadius_+1)) ))\
         {\
             for(auto _mapIter_ = _var_[_workingRadius_].begin(); _mapIter_ != _var_[_workingRadius_].end(); ++_mapIter_)\
             {\
@@ -211,13 +211,13 @@
     int _wbl_ = (int)_var_.size();\
     for(int _workingRadius_=0; _workingRadius_<_wbl_; ++_workingRadius_)\
     {\
-        if((_pow_ > _workingRadius_) && ( _pow_ < (power-(_workingRadius_+1)) ))\
+        if((_pow_ > _workingRadius_) && ( _pow_ < (totPower-(_workingRadius_+1)) ))\
         {\
             for(auto _mapIter_ = _var_[_workingRadius_].begin(); _mapIter_ != _var_[_workingRadius_].end(); ++_mapIter_)\
             {\
                 int _radius_ = _mapIter_->first;\
                 int _absRadius_ = std::abs(_radius_);\
-                if( (_pow_ > (_absRadius_-1)) && (_pow_ < (power-(_absRadius_))) )\
+                if( (_pow_ > (_absRadius_-1)) && (_pow_ < (totPower-(_absRadius_))) )\
                 {\
                     auto* _entity_ = &(_mapIter_->second);\
                     int _numBoundaries_ = (int)_entity_->size();\

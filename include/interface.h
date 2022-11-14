@@ -53,7 +53,7 @@
  */
 class RACE::Interface{
     private:
-        Graph* graph;
+        RACE::Graph* graph;
         int nrow;
         RACE::dist distance;
         RACE::d2Method d2Type;
@@ -121,7 +121,7 @@ class RACE::Interface{
          * <TR><TD>Rows</TD><TD>RACE::ROW </TD></TR>
          * <TR><TD>Non-zeros</TD><TD>RACE::NNZ (default)</TD></TR>
          */
-        Interface(int nrow_, int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, int SMT_=1, RACE::PinMethod method_=RACE::SCATTER, int *initPerm_=NULL, int *initInvPerm_=NULL, RACE::d2Method d2Type_=RACE::TWO_BLOCK, RACE::LBTarget lbTarget_=RACE::NNZ);
+        Interface(int nrow_, int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, bool symm_hint=false, int SMT_=1, RACE::PinMethod method_=RACE::SCATTER, int *initPerm_=NULL, int *initInvPerm_=NULL, RACE::d2Method d2Type_=RACE::TWO_BLOCK, RACE::LBTarget lbTarget_=RACE::NNZ);
         ~Interface();
         //Pre-processing
         RACE_error RACEColor(int highestPower, int numSharedCache, double cacheSize, double safetyFactor=2, std::string mtxType="N", int highestSubPower=1);

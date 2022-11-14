@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.8)
 project (RACE)
 
 set(RACE_VERSION_MAJOR 0)
@@ -13,7 +13,7 @@ include(${PROJECT_SOURCE_DIR}/cmake/OptimizeForArchitecture.cmake)
 
 set(RACE_VERBOSITY 1 CACHE STRING "Level of verbosity information. Valid values: 0 (be totally silent), 1 (print warnings, errors and further important information)")
 set(RACE_PRINT_ONLYFIRST 1 CACHE BOOL "Print all errors, warnings and info only once for each occurence")
-
+set(RACE_HAVE_CPP_17 1 CACHE BOOL "Use C++17 features. This will parallelize sort routine and enable faster pre-processing time. If your compiler doesn't support this please disable this feature. TBB should also be avilable for this.")
 if (NOT BUILD_SHARED_LIBS)
     message(STATUS "No library type specified. Setting it to shared.")
     set(BUILD_SHARED_LIBS ON CACHE BOOL "Set to ON/OFF for shared/static library build.")
@@ -50,7 +50,7 @@ set (HEADERS
     include/traverse_serial.h
     include/lb.h
     include/error.h
-    # include/config.h
+    #include/config.h
     include/print.h
     include/type.h
     include/utility.h
@@ -89,6 +89,7 @@ if (RACE_USE_GAP)
         ExternalProject_Add(GAP
             PREFIX ${PROJECT_BINARY_DIR}/GAP
             URL https://github.com/sbeamer/gapbs/archive/refs/heads/master.zip
+            PATCH_COMMAND ${PROJECT_SOURCE_DIR}/GAP_patch.sh ${PROJECT_BINARY_DIR}/GAP/src/GAP
             CONFIGURE_COMMAND ""
             BUILD_COMMAND ""
             BUILD_IN_SOURCE 1
@@ -154,8 +155,17 @@ set(HWLOC_LIBRARIES ${LIBHWLOC})
 
 set(RACE_THREAD_METHOD OpenMP CACHE STRING "Which threading method should be used for the kernel: options are OpenMP or PThread")
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -std=c99 -Wall -Wextra -Werror") # -pedantic")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -std=c++0x -Wall -Wextra -Werror")# -pedantic")
+#AutodetectHostArchitecture()
+OptimizeForArchitecture()
+
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -std=c99 -Wall -Wextra") # -Werror") # -pedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wall -Wextra") # -Werror")# -pedantic")
+if(RACE_HAVE_CPP_17)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17") # -Werror")# -pedantic")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") # -Werror")# -pedantic")
+endif()
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     set(CMAKE_INCLUDE_SYSTEM_FLAG_C "-isystem ") # Not present in Cmake 2.8.11.2
     set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ") # Not present in Cmake 2.8.11.2
@@ -164,6 +174,10 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-alias")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-alias")
+    endif()
+    if (TARGET_ARCHITECTURE MATCHES "amd")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=core-avx2 -mtune=core-avx2") #add generic vectorization flags
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=core-avx2 -mtune=core-avx2") #add generic vectorization flags
     endif()
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unknown-pragmas")
@@ -214,6 +228,9 @@ configure_file(${PROJECT_SOURCE_DIR}/race-config.cmake.in ${PROJECT_BINARY_DIR}/
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_BINARY_DIR}/include)
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+    link_libraries(tbb)
+endif()
 add_library(RACE ${SOURCES})
 
 #get_filename_component(HWLOC_LIB_PATH ${LIBHWLOC} DIRECTORY)
@@ -232,6 +249,7 @@ if(BUILTIN_HWLOC)
 endif()
 
 install(FILES ${HEADERS} DESTINATION include/RACE/)
+install(FILES ${PROJECT_BINARY_DIR}/include/config.h DESTINATION include/RACE/)
 install(FILES ${HEADERS_GAP} DESTINATION include/RACE/)
 
 #install(FILES ${PROJECT_BINARY_DIR}/RACE_LFlags.sh DESTINATION lib/RACE PERMISSIONS OWNER_READ OWNER_EXECUTE)
@@ -245,9 +263,6 @@ endif()
 
 
 ## BUILD perf_tests ##
-
-#AutodetectHostArchitecture()
-OptimizeForArchitecture()
 
 #Set Vector length
 if(USE_AVX512F)
@@ -270,7 +285,8 @@ if (PERF_TEST_USE_SPMP)
         if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
             ExternalProject_Add(SpMP
                 PREFIX ${PROJECT_BINARY_DIR}/SpMP
-                URL https://github.com/IntelLabs/SpMP/archive/master.zip
+                URL https://github.com/christiealappatt/SpMP/archive/master.zip
+                #URL https://github.com/IntelLabs/SpMP/archive/master.zip
                 CONFIGURE_COMMAND ""
                 BUILD_COMMAND make 
                 BUILD_IN_SOURCE 1
@@ -279,7 +295,8 @@ if (PERF_TEST_USE_SPMP)
         else() # GNU or Clang: Set CUSTOM_CXX variable in SpMP make
             ExternalProject_Add(SpMP
                 PREFIX ${PROJECT_BINARY_DIR}/SpMP
-                URL https://github.com/IntelLabs/SpMP/archive/master.zip
+                URL https://github.com/christiealappatt/SpMP/archive/master.zip
+                #URL https://github.com/IntelLabs/SpMP/archive/master.zip
                 CONFIGURE_COMMAND ""
                 BUILD_COMMAND make CUSTOM_CXX=${CMAKE_CXX_COMPILER} 
                 BUILD_IN_SOURCE 1
@@ -302,10 +319,10 @@ include_directories(${PROJECT_BINARY_DIR}/perf_test/include)
 
 file(GLOB PERF_SOURCES ${PROJECT_SOURCE_DIR}/perf_test/src/helpers/*.cpp)
 
-add_executable(race ${PERF_SOURCES}  ${PROJECT_SOURCE_DIR}/perf_test/src/race.cpp)
-add_executable(mtxPower ${PERF_SOURCES}  ${PROJECT_SOURCE_DIR}/perf_test/src/matrixPower.cpp)
+add_executable(coloring ${PERF_SOURCES} ${PROJECT_SOURCE_DIR}/perf_test/src/coloring.cpp)
+add_executable(mtxPower ${PERF_SOURCES} ${PROJECT_SOURCE_DIR}/perf_test/src/matrixPower.cpp)
 
-set_target_properties(race PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/perf_test")
+set_target_properties(coloring PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/perf_test")
 set_target_properties(mtxPower PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/perf_test")
 
 if(PERF_TEST_USE_SPMP)
@@ -319,20 +336,20 @@ endif()
 
 
 if(BUILTIN_HWLOC)
-    target_link_libraries(race "${EXT_LIBRARIES}" RACE)
+    target_link_libraries(coloring "${EXT_LIBRARIES}" RACE)
     target_link_libraries(mtxPower "${EXT_LIBRARIES}" RACE )
-    add_dependencies(race hwloc)
+    add_dependencies(coloring hwloc)
     add_dependencies(mtxPower hwloc)
 else()
-    target_link_libraries(race "${EXT_LIBRARIES}" RACE hwloc)
+    target_link_libraries(coloring "${EXT_LIBRARIES}" RACE hwloc)
     target_link_libraries(mtxPower "${EXT_LIBRARIES}" RACE hwloc)
 endif()
 
-add_dependencies(race RACE)
+add_dependencies(coloring RACE)
 add_dependencies(mtxPower RACE)
 if(PERF_TEST_USE_SPMP)
     include_directories(SYSTEM ${PROJECT_BINARY_DIR}/SpMP/src)
-    add_dependencies(race SpMP)
+    add_dependencies(coloring SpMP)
     add_dependencies(mtxPower SpMP)
 endif()
 

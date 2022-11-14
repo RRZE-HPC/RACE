@@ -12,7 +12,7 @@
 #endif
 
 
-sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), rcmPerm(NULL), rcmInvPerm(NULL)
+sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), symm_hint(false), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), rcmPerm(NULL), rcmInvPerm(NULL)
 {
 }
 
@@ -111,7 +111,7 @@ bool sparsemat::readFile(char* filename)
     if(symm_flag)
     {
         printf("Creating a general matrix out of a symmetric one\n");
-
+        symm_hint=true;
         int ctr = 0;
 
         //this is needed since diagonals might be missing in some cases
@@ -418,7 +418,7 @@ void sparsemat::doRCM()
 
 int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cacheSize, int nthreads, int smt, PinMethod pinMethod)
 {
-    ce = new Interface(nrows, nthreads, RACE::POWER, rowPtr, col, smt, pinMethod, rcmPerm, rcmInvPerm);
+    ce = new Interface(nrows, nthreads, RACE::POWER, rowPtr, col, symm_hint, smt, pinMethod, rcmPerm, rcmInvPerm);
     ce->RACEColor(highestPower, numSharedCache, cacheSize);
 
     int *perm, *invPerm, permLen;
@@ -431,7 +431,7 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
 
 int sparsemat::colorAndPermute(dist distance, int nthreads, int smt, PinMethod pinMethod)
 {
-    ce = new Interface(nrows, nthreads, distance, rowPtr, col, smt, pinMethod, rcmPerm, rcmInvPerm);
+    ce = new Interface(nrows, nthreads, distance, rowPtr, col, symm_hint, smt, pinMethod, rcmPerm, rcmInvPerm);
     RACE_error ret = ce->RACEColor();
 
     if(ret != RACE_SUCCESS)
