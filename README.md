@@ -2,13 +2,16 @@
 
 RACE-Recursive Algebraic Coloring Engine is a graph library serving two main functionalities:
 
-* coloring
-* temporal blocking
 
-The coloring part of the library finds its use in parallelization of sparse matrix kernels having distance-k (k>=1) dependencies. For example kernels like Gauss-Seidel, SpMTV, SymmSpMV and Kaczmarz can be parallelized using RACE.
-The temporal blocking part allows for cache blocking of multiple calls of a sparse kernel. For example the matrix power kernel (MPK) where multiple SpMVs are used.
-RACE works on the graph of the matrix and is an algebraic approach.
-Several optimizations have been implemented in RACE to boost the runtime performance of the kernels on modern CPUs.
+| Coloring | Temporal blocking |
+| :---: | :--- |
+| Parallelization of sparse matrix kernels having distance-k (k>=1) dependencies. | Allows for cache blocking of multiple calls of a sparse kernel. |
+| For example kernels like Gauss-Seidel, SpMTV, SymmSpMV and Kaczmarz. | For example the matrix power kernel (MPK) where multiple SpMVs are used. |
+
+RACE works on the graph of the matrix and is an algebraic approach. 
+Several techniques have been implemented in RACE to boost the runtime performance of the kernels on modern CPUs.
+The input to RACE is the graph (matrix), the targetted optimization (coloring or temporal blocking) and paramters related to targetted optimization.
+
 
 ### FEATURES ###
 
