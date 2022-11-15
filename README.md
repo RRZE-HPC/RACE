@@ -33,7 +33,7 @@ The input to RACE is the graph (matrix), the targetted optimization (coloring or
 
 ### Want to try RACE? ###
 RACE provides examples to illustrate the usage and easiness of using the RACE library. 
-Please see the [example folder](https://bitbucket.org/essex/race/src/master/examples/).
+Please see the [example folder](examples/).
 
 ### Working of RACE coloring ###
 ![Screenshot](animations/domain_anim.gif)
