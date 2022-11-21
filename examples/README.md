@@ -9,7 +9,7 @@ RACE provides examples to illustrate the usage and easiness of using the RACE li
   permutation.
 * `make`
 
-Note that as some examples depend on sparse BLAS library, linking with BLAS is necessary. The CMake tries to automatically detect BLAS library through environment flags, for example MKLROOT of Intel MKL. However, if RACE couldn't find a BLAS library please link it manually by specifying the include directory using `-DCBLAS_INCLUDE_DIR=<path to BLAS include directory>
+Note that as some examples depend on sparse BLAS library, linking with BLAS is necessary. The CMake tries to automatically detect BLAS library through environment flags, for example MKLROOT of Intel MKL. However, if RACE couldn't find a BLAS library please link it manually by specifying the include directory using `-DCBLAS_INCLUDE_DIR=<path to BLAS include directory>`.
 
 ### Running coloring examples ###
 
