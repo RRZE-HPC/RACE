@@ -1,8 +1,8 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.8)
 project (RACE)
 
 set(RACE_VERSION_MAJOR 0)
-set(RACE_VERSION_MINOR 3)
+set(RACE_VERSION_MINOR 5)
 set(RACE_VERSION_REVISION 0)
 set(RACE_VERSION_BUILD 0)
 set(RACE_VERSION_IDENTIFIER)
@@ -89,6 +89,7 @@ if (RACE_USE_GAP)
         ExternalProject_Add(GAP
             PREFIX ${PROJECT_BINARY_DIR}/GAP
             URL https://github.com/sbeamer/gapbs/archive/refs/heads/master.zip
+            PATCH_COMMAND ${PROJECT_SOURCE_DIR}/GAP_patch.sh ${PROJECT_BINARY_DIR}/GAP/src/GAP
             CONFIGURE_COMMAND ""
             BUILD_COMMAND ""
             BUILD_IN_SOURCE 1
@@ -227,7 +228,7 @@ configure_file(${PROJECT_SOURCE_DIR}/race-config.cmake.in ${PROJECT_BINARY_DIR}/
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_BINARY_DIR}/include)
-if(RACE_HAVE_CPP_17)
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     link_libraries(tbb)
 endif()
 add_library(RACE ${SOURCES})
@@ -318,10 +319,10 @@ include_directories(${PROJECT_BINARY_DIR}/perf_test/include)
 
 file(GLOB PERF_SOURCES ${PROJECT_SOURCE_DIR}/perf_test/src/helpers/*.cpp)
 
-add_executable(race_ ${PERF_SOURCES}  ${PROJECT_SOURCE_DIR}/perf_test/src/race.cpp)
-add_executable(mtxPower ${PERF_SOURCES}  ${PROJECT_SOURCE_DIR}/perf_test/src/matrixPower.cpp)
+add_executable(coloring ${PERF_SOURCES} ${PROJECT_SOURCE_DIR}/perf_test/src/coloring.cpp)
+add_executable(mtxPower ${PERF_SOURCES} ${PROJECT_SOURCE_DIR}/perf_test/src/matrixPower.cpp)
 
-set_target_properties(race_ PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/perf_test")
+set_target_properties(coloring PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/perf_test")
 set_target_properties(mtxPower PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/perf_test")
 
 if(PERF_TEST_USE_SPMP)
@@ -335,20 +336,20 @@ endif()
 
 
 if(BUILTIN_HWLOC)
-    target_link_libraries(race_ "${EXT_LIBRARIES}" RACE)
+    target_link_libraries(coloring "${EXT_LIBRARIES}" RACE)
     target_link_libraries(mtxPower "${EXT_LIBRARIES}" RACE )
-    add_dependencies(race_ hwloc)
+    add_dependencies(coloring hwloc)
     add_dependencies(mtxPower hwloc)
 else()
-    target_link_libraries(race_ "${EXT_LIBRARIES}" RACE hwloc)
+    target_link_libraries(coloring "${EXT_LIBRARIES}" RACE hwloc)
     target_link_libraries(mtxPower "${EXT_LIBRARIES}" RACE hwloc)
 endif()
 
-add_dependencies(race_ RACE)
+add_dependencies(coloring RACE)
 add_dependencies(mtxPower RACE)
 if(PERF_TEST_USE_SPMP)
     include_directories(SYSTEM ${PROJECT_BINARY_DIR}/SpMP/src)
-    add_dependencies(race_ SpMP)
+    add_dependencies(coloring SpMP)
     add_dependencies(mtxPower SpMP)
 endif()
 

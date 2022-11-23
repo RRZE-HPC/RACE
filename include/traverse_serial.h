@@ -23,6 +23,7 @@
 
 #ifndef RACE_TRAVERSE_serial_H
 #define RACE_TRAVERSE_serial_H
+#include <string>
 #include <vector>
 #include <map>
 #include "type.h"
@@ -30,7 +31,7 @@
 #include "graph.h"
 #include "levelData.h"
 #include "macros.h"
-#include "string.h"
+#include <string>
 
 class RACE::Graph;
 
