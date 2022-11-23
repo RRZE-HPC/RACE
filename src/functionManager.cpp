@@ -1054,6 +1054,7 @@ void FuncManager::recursivePowerCallSerial(int parent)
             nodeEndSlope = -1;
         }
 
+        //TODO: in MPI case, pre-computation at MPI-boundary
         while(unitCtr < endNode)
         {
             int startSlope=-1, endSlope=-1;
@@ -1103,6 +1104,7 @@ void FuncManager::recursivePowerCallSerial(int parent)
             //printf("unitCtr = %d, endNode= %d\n", unitCtr, endNode);
         }
 
+
         //treat NUMA-interfaces
         if(numNodes > 1)
         {
@@ -1111,6 +1113,7 @@ void FuncManager::recursivePowerCallSerial(int parent)
             //printf("tid = %d: node reminder finished\n", tid);
         }
 
+        //TODO: in MPI case, post-computation at MPI-boundary
         //NODE_BARRIER_RESET(nodeGroup, localTid)
 
     } //parallel

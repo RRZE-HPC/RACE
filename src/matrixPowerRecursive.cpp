@@ -343,11 +343,26 @@ void mtxPowerRecursive::findPartition(int rangeLo, int rangeHi)
     curLeaf.parent = -1;
     curLeaf.nodeId = -1;
     curLeaf.range.lo = rangeLo;
-    curLeaf.range.hi = (rangeHi == -1) ? graph->NROW : rangeHi; 
+    curLeaf.range.hi = (rangeHi == -1) ? graph->NROW : rangeHi;
     curLeaf.stage = 0;
-
+    curLeaf.boundaryRange = {};
+#ifdef RACE_HAVE_MPI
+    int wbl = workingBoundaryLength_base(highestPower);
+    curLeaf.boundaryRange.resize(wbl);
+    for(int r=-wbl; r<0; ++r) //only -ve since only input dependencies
+    {
+        Range curRange;
+        curRange.lo = ;//TODO: start of distance-r boundary
+        curRange.hi = ;//TODO: end of distance-r boundary
+        //push only if it is non empty
+        if(curRange.hi > curRange.lo)
+        {
+            curLeaf.boundaryRange[std::abs(r)-1][r].push_back(curRange);//push direct boudary
+        }
+    }
+#endif
     //partition for first stage
-    mtxPower curStage(graph, highestPower, numSharedCache, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range.lo, curLeaf.range.hi, {}, -1, -1, mtxType);
+    mtxPower curStage(graph, highestPower, numSharedCache, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range.lo, curLeaf.range.hi, curLeaf.boundaryRange, -1, -1, mtxType);
     curStage.findPartition();
     hopelessNodePtr = curStage.getHopelessNodePtr();
     int* perm_curStage;
