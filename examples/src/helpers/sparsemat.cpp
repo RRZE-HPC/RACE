@@ -693,7 +693,7 @@ void sparsemat::doRCMPermute()
     rcmInvPerm = NULL;
 }
 
-int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cacheSize, int nthreads, int smt, PinMethod pinMethod, std::string mtxType)
+int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cacheSize, int nthreads, int smt, PinMethod pinMethod, int globalStartRow, int globalEndRow, std::string mtxType)
 {
     //permute(rcmInvPerm, rcmPerm);
     //rcmPerm = NULL;
@@ -704,6 +704,8 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
     //ce->RACEColor(highestPower, numSharedCache, cacheSize);
     ce->RACEColor(highestPower, numSharedCache, cacheSize*1024*1024, 2, mtxType);
     //ce->RACEColor(highestPower, numSharedCache, cacheSize*1024*1024, 2, mtxType, 3);
+    if ((globalStartRow != -1) && (globalEndRow != -1))
+        ce->passGlobalRows(globalStartRow, globalEndRow);
     STOP_TIMER(pre_process_kernel);
     printf("Pre-processing time: cache size = %f, power = %d, RACE pre-processing time = %fs\n", cacheSize, highestPower, GET_TIMER(pre_process_kernel));
 

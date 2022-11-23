@@ -134,6 +134,10 @@ class RACE::Interface{
         void getInvPerm(int **invPerm_, int *len_);
         int getNumThreads();
 
+        // D-RACE additions
+        void passGlobalRows(int globalStartRow, int globalEndRow);
+        void compressColIdx();
+
         //sleep all threads
         void sleep();
 

@@ -35,6 +35,11 @@
 #include <sstream>
 #include <map>
 #include <limits>
+
+// These two needed for collection of boundary nodes
+#include "traverse_GAP.h"
+#include "levelData.h"
+
 #include "utility.h"
 #include "config.h"
 #include "type.h"
@@ -42,6 +47,7 @@
 //TODO no need to put only diagonal elements in Graph
 RACE_error RACE::Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *initInvPerm)
 {
+    // printf("I'm in Graph::createGraphFromCRS\n");
     /*if(NROW != NCOL) {
         ERROR_PRINT("NROW!=NCOL : Currently Graph BMC supports only undirected Graph");
         return RACE_ERR_MATRIX_SYMM;
@@ -195,8 +201,68 @@ RACE_error RACE::Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm,
         totalInvPerm[totalPerm[i]] = i;
     }*/
 
-
     return RACE_SUCCESS;
+}
+
+std::vector<int> RACE::Graph::collectBoundaryNodes(int powerMax){
+
+    // These are assumes to already be "compressed" column indices
+    // int localColLimitLo = 0; // lowest row, therefore, left wall of local cols
+    // int localColLimitHi = NROW; // highest row, therefore, right wall of local cols
+
+    int currentCol;
+
+    // int *sizePtr[POWER] = {0};
+    // bool isRemote; //, colInBoundaryNodes, rowInBoundaryNodes;
+
+    // Only collects distance-1 nodes from halo elements
+    for(int row = 0; row < NROW; ++row){
+        for(int nzIdx=childrenStart[row]; nzIdx<childrenStart[row+1]; ++nzIdx) {
+            currentCol = graphData[nzIdx]; // Extract column of this particular element 
+
+            // isRemote = ((currentCol < localColLimitLo) || (currentCol >= localColLimitHi)); // Possibly leave in as sanity check
+            // colInBoundaryNodes = std::find(collectedBoundaryNodes.begin(), collectedBoundaryNodes.end(), currentCol) != collectedBoundaryNodes.end();
+            // rowInBoundaryNodes = std::find(collectedBoundaryNodes.begin(), collectedBoundaryNodes.end(), row) != collectedBoundaryNodes.end();
+            // if(( isRemote || colInBoundaryNodes) && !rowInBoundaryNodes ){
+
+            if(currentCol >= NROW) {
+                boundaryNodes.push_back(row); //TODO: change to insert when unordered set
+                break; // move to the next row
+            }
+        }
+        
+    }
+
+    // TODO: VERIFY THESE ARGS!
+    int startRow = 0;
+    int endRow = NROW;
+    int parentIdx=0;
+    int numRoots=1; // should be collectedBoundaryNodes.size()?
+    std::vector<std::map<int, std::vector<Range>>> boundaryRange = {};
+    std::string mtxType="N";
+
+    RACE::Traverse *traverser = new RACE::Traverse(this, RACE::POWER, startRow, endRow, parentIdx, numRoots, boundaryRange, mtxType);
+    traverser->calculateDistance(powerMax - 2, boundaryNodes, true);  
+    LevelData* curLevelData = traverser->getLevelData();
+
+    int totalLevel = powerMax;
+
+    std::vector<int> distFromRemotePtr(totalLevel+1);
+    distFromRemotePtr[0] = 0; //TODO: verify?
+
+    // Takes the size of the "chunks" of how matrix is partitioned, and cumsums them
+    for(int level=0; level<totalLevel; ++level)
+    {
+        distFromRemotePtr[level+1] = distFromRemotePtr[level] + curLevelData->levelRow[level];
+    }
+
+    // std::cout << "Printing distFromRemotePtr:" << std::endl;
+    // for(int level=0; level<totalLevel; ++level)
+    // {
+    //     std::cout << distFromRemotePtr[level] << std::endl;
+    // }
+
+    return distFromRemotePtr;
 }
 
 //only for debugging puposes
@@ -290,6 +356,8 @@ bool RACE::Graph::getStatistics()
 
 void RACE::Graph::permuteAndRemoveSerialPart()
 {
+    // printf("I'm in Graph::permuteAndRemoveSerialPart\n");
+
     updatePerm(&totalPerm, serialPerm, NROW, NROW);
 #pragma omp parallel for schedule(static)
     for(int i=0; i<NROW; ++i) {
@@ -346,6 +414,8 @@ RACE::Graph::Graph(int nrow, int ncol, int *rowPtr, int *col, RACE::dist distanc
     NNZ = rowPtr[NROW];
     int *outRowPtr=NULL;
     int *outCol=NULL;
+
+    // printf("I'm in Graph::Graph, constructor\n");
 
     //check if a rec stage is there when performing MPK
     //if not then we can avoid creating a symmetric matrix

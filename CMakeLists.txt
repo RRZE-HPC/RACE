@@ -318,10 +318,10 @@ include_directories(${PROJECT_BINARY_DIR}/perf_test/include)
 
 file(GLOB PERF_SOURCES ${PROJECT_SOURCE_DIR}/perf_test/src/helpers/*.cpp)
 
-add_executable(race ${PERF_SOURCES}  ${PROJECT_SOURCE_DIR}/perf_test/src/race.cpp)
+add_executable(race_ ${PERF_SOURCES}  ${PROJECT_SOURCE_DIR}/perf_test/src/race.cpp)
 add_executable(mtxPower ${PERF_SOURCES}  ${PROJECT_SOURCE_DIR}/perf_test/src/matrixPower.cpp)
 
-set_target_properties(race PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/perf_test")
+set_target_properties(race_ PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/perf_test")
 set_target_properties(mtxPower PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/perf_test")
 
 if(PERF_TEST_USE_SPMP)
@@ -335,20 +335,20 @@ endif()
 
 
 if(BUILTIN_HWLOC)
-    target_link_libraries(race "${EXT_LIBRARIES}" RACE)
+    target_link_libraries(race_ "${EXT_LIBRARIES}" RACE)
     target_link_libraries(mtxPower "${EXT_LIBRARIES}" RACE )
-    add_dependencies(race hwloc)
+    add_dependencies(race_ hwloc)
     add_dependencies(mtxPower hwloc)
 else()
-    target_link_libraries(race "${EXT_LIBRARIES}" RACE hwloc)
+    target_link_libraries(race_ "${EXT_LIBRARIES}" RACE hwloc)
     target_link_libraries(mtxPower "${EXT_LIBRARIES}" RACE hwloc)
 endif()
 
-add_dependencies(race RACE)
+add_dependencies(race_ RACE)
 add_dependencies(mtxPower RACE)
 if(PERF_TEST_USE_SPMP)
     include_directories(SYSTEM ${PROJECT_BINARY_DIR}/SpMP/src)
-    add_dependencies(race SpMP)
+    add_dependencies(race_ SpMP)
     add_dependencies(mtxPower SpMP)
 endif()
 

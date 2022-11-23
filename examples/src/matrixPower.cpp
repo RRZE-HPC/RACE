@@ -177,7 +177,16 @@ int main(const int argc, char * argv[])
     {
         mat->doRCM();
     }
-    mat->prepareForPower(power, param.nodes, param.cache_size, param.cores, param.smt, param.pin);
+    bool useMPI = true; // TODO: define macro
+    if(useMPI == true) {        
+        int globalStartRow = 0;
+        int globalEndRow = NROWS;
+        // Pass global rows to interface object
+        mat->prepareForPower(power, param.nodes, param.cache_size, param.cores, param.smt, param.pin, globalStartRow, globalEndRow);
+    }
+    else{
+        mat->prepareForPower(power, param.nodes, param.cache_size, param.cores, param.smt, param.pin);
+    }
     STOP_TIMER(pre_process);
     /*printf("perm = \n");
     for(int i=0; i<NROWS; ++i)

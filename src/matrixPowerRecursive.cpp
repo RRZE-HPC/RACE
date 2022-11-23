@@ -337,14 +337,15 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
     }
 }
 
-void mtxPowerRecursive::findPartition()
+void mtxPowerRecursive::findPartition(int rangeLo, int rangeHi)
 {
     MPLeaf curLeaf;
     curLeaf.parent = -1;
     curLeaf.nodeId = -1;
-    curLeaf.range.lo = 0;
-    curLeaf.range.hi = graph->NROW;
+    curLeaf.range.lo = rangeLo;
+    curLeaf.range.hi = (rangeHi == -1) ? graph->NROW : rangeHi; 
     curLeaf.stage = 0;
+
     //partition for first stage
     mtxPower curStage(graph, highestPower, numSharedCache, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range.lo, curLeaf.range.hi, {}, -1, -1, mtxType);
     curStage.findPartition();

@@ -82,7 +82,14 @@ class RACE::Graph{
         int NROW_serial;
         int NNZ;
         int NNZ_serial;
+
+        // TODO: might need to template/implement as long?
+        int globalStartRow;
+        int globalEndRow;
+        
         std::vector<int> serialPart;
+        std::vector<int> boundaryNodes;
+
         Graph(int nrow, int ncol, int *row_ptr, int *col, RACE::dist distance, bool symm_hint=false, int *initPerm=NULL, int *initInvPerm=NULL);//constructor
         Graph(const Graph &srcGraph);//copy constructor
         ~Graph();
@@ -96,6 +103,10 @@ class RACE::Graph{
         void getInvPerm(int **invPerm_, int *len);
         int getChildrenSize(int row);
         int* getChildren(int row);
+
+        // Collect distance-1 "nodes", only activated when MPI is used
+        // Actually returns the distFromRemotePtr
+        std::vector<int> collectBoundaryNodes(int powerMax); // TODO: change to unordered set to improve std::find performance
 
         RACE_error swap(Graph& other);
         /**

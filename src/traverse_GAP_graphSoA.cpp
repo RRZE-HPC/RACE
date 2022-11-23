@@ -30,6 +30,7 @@
 std::map<int, LevelData> RACE::Traverse::cachedData;
 RACE::Traverse::Traverse(RACE::Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_, int numRoots_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_, std::string mtxType_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_), numRoots(numRoots_), graphSize(graph_->NROW),distFromRoot(NULL),perm(NULL),invPerm(NULL), boundaryRange(boundaryRange_), boundary_bm(NULL), queue(graphSize), levelData(NULL), mtxType(mtxType_)
 {
+    // printf("I'm in Traverse::Traverse\n");
     if( (mtxType != "N") && ( (mtxType != "L" && mtxType != "U") ) )
     {
 
@@ -128,6 +129,7 @@ RACE::Traverse::~Traverse()
 
 void RACE::Traverse::TDStep(int currLvl)
 {
+    // printf("I'm in Traverse::TDStep\n");
     int localCtr=0;
     int localColRangeLo = colRangeLo;
     int localColRangeHi = colRangeHi;
@@ -218,8 +220,10 @@ void Counter::reset()
     val = 0;
 }
 
-void RACE::Traverse::calculateDistance()
+// If MPI preprocessing, no island detection. TODO: Check (?)
+void RACE::Traverse::calculateDistance(int maxLvl, std::vector<int> rootsVec, bool mpiBoundaryDetection) //TODO: modify
 {
+
 
     //START_TIME(bfs_main);
     if(mtxType == "N")
@@ -232,29 +236,34 @@ void RACE::Traverse::calculateDistance()
               }
               else*/
         //bool marked_all = false;
-        int root = rangeLo;
+        // std::vector<int> rootsVec = collectedBoundaryNodes;
+        // int root;
         colRangeLo = rangeLo;
         colRangeHi = rangeHi;
 
         Counter::reset();
 
         int currLvl = 0;
-        for(int i=0; i<numRoots; ++i)
+        for(const auto & root: rootsVec) // Default vector <0>
         {
-            queue.push_back(root+i);
-            distFromRoot[root+i] = currLvl;
-            parent[root+i] = 0;
+            queue.push_back(root);
+            distFromRoot[root] = currLvl; //[-1, -1, -1, ..., 0, -1, -1, 0]
+            parent[root] = 0;
             Counter::add();
         }
         queue.slide_window();
         int prevIslandStop = rangeLo;
 
-        while(!queue.empty())
+        bool islandDetectionActive = !mpiBoundaryDetection;
+
+
+        while(!queue.empty() || currLvl < maxLvl)
         {
             currLvl += 1;
             TDStep(currLvl);
             queue.slide_window();
             //island detection
+            if (islandDetectionActive)
             {
                 if( queue.empty() && (Counter::val != (rangeHi-rangeLo)) ) {
                     //now process islands
@@ -311,6 +320,12 @@ void RACE::Traverse::calculateDistance()
     //STOP_TIME(bfs_main);
     //PRINT_TIME(bfs_main);
 
+    // Increment all distances
+    if (mpiBoundaryDetection){
+        for(int i = 0; i < graph->NROW; ++i){
+            ++distFromRoot[i];
+        }
+    }
     printf("Total Level = %d\n",levelData->totalLevel);
     //START_TIME(bfs_createLevel);
     createLevelData();

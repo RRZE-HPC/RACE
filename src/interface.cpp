@@ -58,8 +58,151 @@ RACE::Interface::~Interface()
     }
 }
 
+void RACE::Interface::passGlobalRows(int globalStartRow, int globalEndRow){
+    // TODO: Affix these to Graph object 
+    printf("I'm inside interface!\n");
+    graph->globalStartRow = globalStartRow;
+    graph->globalEndRow = globalEndRow;
+}
+
+// TODO
+void RACE::Interface::compressColIdx(){
+    // template <typename VT, typename IT>
+// void collect_local_needed_heri(
+//     std::vector<std::vector<IT>> *communication_recv_idxs,
+//     std::vector<IT> *recv_counts_cumsum,
+//     ScsData<VT, IT> *local_scs,
+//     const IT *work_sharing_arr,
+//     int my_rank,
+//     int comm_size)
+// {
+    // int from_proc, to_proc, elem_col;
+    // int needed_heri_count = 0;
+    // int amnt_lhs_halo_elems = 0;
+
+    // // To remember which columns have already been accounted for
+    // std::unordered_set<int> remote_elem_col_bk;
+
+    // std::vector<int> remote_elem_idxs;
+    // std::vector<int> original_col_idxs(local_scs->col_idxs.data(), local_scs->col_idxs.data() + local_scs->n_elements);
+
+    // // TODO: these sizes are too large. Should be my_rank and comm_size - my_rank
+    // int lhs_needed_heri_counts[comm_size] = {0};
+    // int rhs_needed_heri_counts[comm_size] = {0};
+    // // int lhs_needed_heri_counts[my_rank] = {0};
+    // // int rhs_needed_heri_counts[comm_size - my_rank] = {0};
+
+    // // COUNTING LOOP / PROC
+    // for (IT i = 0; i < local_scs->n_elements; ++i)
+    // {
+    //     // If true, this is a remote element, and needs to be added to vector
+    //     elem_col = local_scs->col_idxs[i];
+
+    //     // TODO: still need to verify what is happening with padded elements
+    //     // if this column corresponds to a padded element, continue to next nnz
+    //     // if(elem_col == 0 && local_scs->values[i] == 0) {continue;}
+
+    //     if (elem_col < graph->globalStartRow)
+    //     {
+    //         remote_elem_idxs.push_back(i);
+    //         if(remote_elem_col_bk.find(elem_col) == remote_elem_col_bk.end()){
+    //             // if this column has not yet been seen
+    //             for (IT j = 0; j < comm_size; ++j) //TODO: change to only go until my_rank
+    //             {
+    //                 if (elem_col >= work_sharing_arr[j] && elem_col < work_sharing_arr[j + 1])
+    //                 {
+    //                     // Remember column corresponding to remote element
+    //                     // remote_elem_col_bk.push_back(remote_elem_col);
+    //                     remote_elem_col_bk.insert(elem_col);
+
+    //                     ++lhs_needed_heri_counts[j]; // This array describes how many remote elements
+
+    //                     break;
+    //                 }
+    //             }
+    //             //if nothing found, error
+    //         }
+    //     }
+    //     else if (elem_col > graph->globalEndRow - 1)
+    //     { // i.e. if RHS remote element
+    //         remote_elem_idxs.push_back(i);
+    //         if(remote_elem_col_bk.find(elem_col) == remote_elem_col_bk.end()){
+    //             for (IT j = 0; j < comm_size; ++j) // TODO: change to start at my_rank
+    //             {
+    //                 if (elem_col >= work_sharing_arr[j] && elem_col < work_sharing_arr[j + 1])
+    //                 {
+    //                     // Remember column corresponding to remote element
+    //                     remote_elem_col_bk.insert(elem_col);
+
+    //                     ++rhs_needed_heri_counts[j];
+    //                     break;
+    //                 }
+    //             }
+
+    //         }
+    //     }
+    //     else
+    //     { // i.e. local element
+    //         local_scs->col_idxs[i] -= work_sharing_arr[my_rank];
+    //     }
+    // }
+
+    // IT local_elem_offset = work_sharing_arr[my_rank + 1] - graph->globalStartRow;
+
+    // int lhs_heri_ctr[comm_size] = {0}; //TODO: change to only have size my_rank
+    // int rhs_heri_ctr[comm_size] = {0}; //TODO: change to have size comm_size - my_rank
+
+    // std::map<int, int> remote_cols;
+
+    // // ASSIGNMENT LOOP
+    // for (auto remote_elem_idx : remote_elem_idxs)
+    // {
+    //     elem_col = original_col_idxs[remote_elem_idx];
+
+    //     // if this column corresponds to a padded element, continue to next nnz
+    //     // if(elem_col == 0 && local_scs->values[i] == 0) {continue;}
+
+    //     if (elem_col < graph->globalStartRow)
+    //     { 
+    //         for (IT j = 0; j < comm_size; ++j)//TODO: change to only go until my_rank
+    //         {
+    //             if (elem_col >= work_sharing_arr[j] && elem_col < work_sharing_arr[j + 1])
+    //             {
+    //                 // So, on the current process, I will know from which process this 
+    //                 // new col_idx for lhs halo element
+                    
+    //                 if(remote_cols.find(elem_col) == remote_cols.end()){
+    //                     remote_cols[elem_col] = local_elem_offset + lhs_cumsum_heri_counts[j] + lhs_heri_ctr[j];
+    //                     ++lhs_heri_ctr[j];
+    //                 }
+
+    //                 local_scs->col_idxs[remote_elem_idx] = remote_cols[elem_col];
+    //             }
+    //         }
+
+    //     }
+    //     else if (elem_col > graph->globalEndRow - 1)
+    //     { // i.e. if RHS remote element
+    //         // The rank of where this needed element resides is deduced from the work sharing array.
+    //         for (IT j = 0; j < comm_size; ++j)// TODO: change to start at my_rank
+    //         {
+    //             if (elem_col >= work_sharing_arr[j] && elem_col < work_sharing_arr[j + 1])
+    //             {
+    //                 if(remote_cols.find(elem_col) == remote_cols.end()){
+    //                     remote_cols[elem_col] = local_elem_offset + lhs_cumsum_heri_counts[my_rank] + rhs_cumsum_heri_counts[j] + rhs_heri_ctr[j];
+    //                     ++rhs_heri_ctr[j];
+    //                 }
+    //                 local_scs->col_idxs[remote_elem_idx] = remote_cols[elem_col];
+    //             }
+    //         }
+    //     }
+    // }
+
+}
+
+// For matrix power kernel
 RACE_error RACE::Interface::RACEColor(int highestPower_, int numSharedCache, double cacheSize, double safetyFactor, std::string mtxType, int highestSubPower_)
-{
+{    
     highestPower = highestPower_;
     highestSubPower = highestSubPower_;
     if(highestSubPower < 1)
@@ -74,6 +217,16 @@ RACE_error RACE::Interface::RACEColor(int highestPower_, int numSharedCache, dou
     }
     else
     {
+        std::vector<int> distFromRemotePtr;
+        bool useMPI = true; 
+        
+        // TODO: define this is config.h.in
+        // #ifdef MPI_INCLUDED
+        //     printf("MPI IS DEFINED\n");
+        // #endif
+        if(useMPI == true){
+            distFromRemotePtr = graph->collectBoundaryNodes(highestPower*highestSubPower);
+        }
         powerCalculator = new mtxPowerRecursive(graph, highestPower*highestSubPower, numSharedCache, cacheSize, safetyFactor, mtxType);
         //sanity check
         if(requestedThreads%numSharedCache)
@@ -82,6 +235,11 @@ RACE_error RACE::Interface::RACEColor(int highestPower_, int numSharedCache, dou
             exit(-1);
         }
         powerCalculator->findPartition();
+
+        if(useMPI){
+            // NOTE: not inclusive end
+            powerCalculator->findPartition(distFromRemotePtr[0], distFromRemotePtr[1]);
+        }
         int len;
         powerCalculator->getPerm(&perm, &len);
         powerCalculator->getInvPerm(&invPerm, &len);

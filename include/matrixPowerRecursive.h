@@ -104,7 +104,7 @@ class mtxPowerRecursive
 
 
     void recursivePartition(int parentIdx);
-    void findPartition();
+    void findPartition(int startMainPart = 0, int endMainPart = -1);
     //these are final values
     void getPerm(int **perm, int *len);
     void getInvPerm(int **invPerm, int *len);

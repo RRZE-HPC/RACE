@@ -88,7 +88,7 @@ class RACE::Traverse{
         //constructor
         Traverse(RACE::Graph *graph_, RACE::dist dist, int rangeLo_=0, int rangeHi_=-1, int parentIdx=0, int numRoots=1, std::vector<std::map<int, std::vector<Range>>> boundaryRange_={}, std::string mtxType_="N");
         ~Traverse();
-        void calculateDistance();
+        void calculateDistance(int maxLvl = -1,  std::vector<int> rootsVec = std::vector<int> (1, 0), bool mpiBoundaryDetection = false); // Defaults: In order to maintain compatability with single root
 
         //deletion of array's after get calling get fns is user's responsibility
         void getPerm(int  **perm_, int *len);

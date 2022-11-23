@@ -40,7 +40,7 @@ struct sparsemat
     void makeDiagFirst();
     void doRCM();
     void doRCMPermute();
-    int prepareForPower(int highestPower, int numSharedCache, double cacheSize, int nthreads, int smt=1, PinMethod pinMethod=FILL, std::string mtxType="N");
+    int prepareForPower(int highestPower, int numSharedCache, double cacheSize, int nthreads, int smt=1, PinMethod pinMethod=FILL, int globalStartRow = -1, int globalEndRow = -1, std::string mtxType="N");
     //colorType: RACE, MC, ABMC
     int colorAndPermute(dist d, std::string colorType_, int nthreads, int smt=1, PinMethod pinMethod=FILL);
     double colorEff();

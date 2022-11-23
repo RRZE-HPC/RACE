@@ -34,11 +34,11 @@ find_package(RACE REQUIRED CONFIG)
 message(STATUS "Found RACE")
 
 #likwid library
-link_directories($ENV{LIKWID_LIBDIR})
-link_libraries(liblikwid.so)
-include_directories($ENV{LIKWID_INCDIR})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DLIKWID_PERFMON -DLIKWID_MEASURE")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLIKWID_PERFMON -DLIKWID_MEASURE")
+# link_directories($ENV{LIKWID_LIBDIR})
+# link_libraries(liblikwid.so)
+# include_directories($ENV{LIKWID_INCDIR})
+# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DLIKWID_PERFMON -DLIKWID_MEASURE")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLIKWID_PERFMON -DLIKWID_MEASURE")
 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${RACE_C_FLAGS}")
