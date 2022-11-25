@@ -28,7 +28,7 @@
 #include "timing.h"
 
 std::map<int, LevelData> RACE::Traverse::cachedData;
-RACE::Traverse::Traverse(RACE::Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_, int numRoots_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_, std::string mtxType_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_), numRoots(numRoots_), graphSize(graph_->NROW),distFromRoot(NULL),perm(NULL),invPerm(NULL), boundaryRange(boundaryRange_), boundary_bm(NULL), queue(graphSize), levelData(NULL), mtxType(mtxType_)
+RACE::Traverse::Traverse(RACE::Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_, std::vector<int> roots_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_, std::string mtxType_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_), roots(roots_), graphSize(graph_->NROW),distFromRoot(NULL),perm(NULL),invPerm(NULL), boundaryRange(boundaryRange_), boundary_bm(NULL), queue(graphSize), levelData(NULL), mtxType(mtxType_)
 {
     // printf("I'm in Traverse::Traverse\n");
     if( (mtxType != "N") && ( (mtxType != "L" && mtxType != "U") ) )
@@ -221,7 +221,7 @@ void Counter::reset()
 }
 
 // If MPI preprocessing, no island detection. TODO: Check (?)
-void RACE::Traverse::calculateDistance(int maxLvl, std::vector<int> rootsVec, bool mpiBoundaryDetection) //TODO: modify
+void RACE::Traverse::calculateDistance(int maxLvl, bool mpiBoundaryDetection) //TODO: modify
 {
 
 
@@ -244,10 +244,10 @@ void RACE::Traverse::calculateDistance(int maxLvl, std::vector<int> rootsVec, bo
         Counter::reset();
 
         int currLvl = 0;
-        for(const auto & root: rootsVec) // Default vector <0>
+        for(const auto & root: roots) // NOTE: Default vector <0>
         {
             queue.push_back(root);
-            distFromRoot[root] = currLvl; //[-1, -1, -1, ..., 0, -1, -1, 0]
+            distFromRoot[root] = currLvl; // e.g. [-1, -1, -1, ..., 0, -1, -1, 0]
             parent[root] = 0;
             Counter::add();
         }
@@ -323,7 +323,8 @@ void RACE::Traverse::calculateDistance(int maxLvl, std::vector<int> rootsVec, bo
     // Increment all distances
     if (mpiBoundaryDetection){
         for(int i = 0; i < graph->NROW; ++i){
-            ++distFromRoot[i];
+            if(distFromRoot[i] == -1)
+                distFromRoot[i] = maxLvl + 2; // Just needs to be largest value in array, for sorting ( +1 or +2 ?)
         }
     }
     printf("Total Level = %d\n",levelData->totalLevel);

@@ -237,12 +237,11 @@ std::vector<int> RACE::Graph::collectBoundaryNodes(int powerMax){
     int startRow = 0;
     int endRow = NROW;
     int parentIdx=0;
-    int numRoots=1; // should be collectedBoundaryNodes.size()?
     std::vector<std::map<int, std::vector<Range>>> boundaryRange = {};
     std::string mtxType="N";
 
-    RACE::Traverse *traverser = new RACE::Traverse(this, RACE::POWER, startRow, endRow, parentIdx, numRoots, boundaryRange, mtxType);
-    traverser->calculateDistance(powerMax - 2, boundaryNodes, true);  
+    RACE::Traverse *traverser = new RACE::Traverse(this, RACE::POWER, startRow, endRow, parentIdx, boundaryNodes, boundaryRange, mtxType);
+    traverser->calculateDistance(powerMax - 2, true);  
     LevelData* curLevelData = traverser->getLevelData();
 
     int totalLevel = powerMax;
@@ -251,16 +250,12 @@ std::vector<int> RACE::Graph::collectBoundaryNodes(int powerMax){
     distFromRemotePtr[0] = 0; //TODO: verify?
 
     // Takes the size of the "chunks" of how matrix is partitioned, and cumsums them
+    // levelRow : # nodes in each corresponding ring
+    // distFromRemotePtr -> cumsum of levelRows
     for(int level=0; level<totalLevel; ++level)
     {
         distFromRemotePtr[level+1] = distFromRemotePtr[level] + curLevelData->levelRow[level];
     }
-
-    // std::cout << "Printing distFromRemotePtr:" << std::endl;
-    // for(int level=0; level<totalLevel; ++level)
-    // {
-    //     std::cout << distFromRemotePtr[level] << std::endl;
-    // }
 
     return distFromRemotePtr;
 }

@@ -58,14 +58,15 @@ RACE::Interface::~Interface()
     }
 }
 
+// TODO: needed when?
 void RACE::Interface::passGlobalRows(int globalStartRow, int globalEndRow){
     // TODO: Affix these to Graph object 
-    printf("I'm inside interface!\n");
-    graph->globalStartRow = globalStartRow;
-    graph->globalEndRow = globalEndRow;
+    // printf("I'm inside interface!\n");
+    // graph->globalStartRow = globalStartRow;
+    // graph->globalEndRow = globalEndRow;
 }
 
-// TODO
+// TODO: needed when?
 void RACE::Interface::compressColIdx(){
     // template <typename VT, typename IT>
 // void collect_local_needed_heri(
@@ -238,7 +239,7 @@ RACE_error RACE::Interface::RACEColor(int highestPower_, int numSharedCache, dou
 
         if(useMPI){
             // NOTE: not inclusive end
-            powerCalculator->findPartition(distFromRemotePtr[0], distFromRemotePtr[1]);
+            powerCalculator->findPartition(distFromRemotePtr);
         }
         int len;
         powerCalculator->getPerm(&perm, &len);

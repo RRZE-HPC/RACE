@@ -337,30 +337,47 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
     }
 }
 
-void mtxPowerRecursive::findPartition(int rangeLo, int rangeHi)
+void mtxPowerRecursive::findPartition(std::vector<int> distFromRemotePtr)
 {
     MPLeaf curLeaf;
+
+    
+    int numChunks = (distFromRemotePtr.size() == 0) ? 0 : (distFromRemotePtr.size() - 1);
+    int mainRowsBegin = (distFromRemotePtr.size() == 0) ? 0 : distFromRemotePtr[numChunks - 1];
+    int mainRowsEnd = (distFromRemotePtr.size() == 0) ? -1 : distFromRemotePtr[numChunks];
+
+    // printf("distFromRemotePtr.size() = %i\n", distFromRemotePtr.size());
+    // printf("mainRowsBegin = %i\n", mainRowsBegin);
+    // printf("mainRowsEnd = %i\n", mainRowsEnd);
+
     curLeaf.parent = -1;
     curLeaf.nodeId = -1;
-    curLeaf.range.lo = rangeLo;
-    curLeaf.range.hi = (rangeHi == -1) ? graph->NROW : rangeHi;
+    curLeaf.range.lo = mainRowsBegin;
+    curLeaf.range.hi = (mainRowsEnd == -1) ? graph->NROW : mainRowsEnd;
     curLeaf.stage = 0;
     curLeaf.boundaryRange = {};
-#ifdef RACE_HAVE_MPI
+// TODO: include in config.h.in
+// #ifdef RACE_HAVE_MPI 
+    bool useMPI = true; 
+    if(useMPI == true){
     int wbl = workingBoundaryLength_base(highestPower);
     curLeaf.boundaryRange.resize(wbl);
     for(int r=-wbl; r<0; ++r) //only -ve since only input dependencies
     {
         Range curRange;
-        curRange.lo = ;//TODO: start of distance-r boundary
-        curRange.hi = ;//TODO: end of distance-r boundary
+        curRange.lo = distFromRemotePtr[numChunks - 1 + r];
+        curRange.hi = distFromRemotePtr[numChunks + r];
+        // printf("curRange.lo = %i\n", curRange.lo);
+        // printf("curRange.hi = %i\n", curRange.hi);
+    
         //push only if it is non empty
         if(curRange.hi > curRange.lo)
         {
             curLeaf.boundaryRange[std::abs(r)-1][r].push_back(curRange);//push direct boudary
         }
     }
-#endif
+    }
+// #endif
     //partition for first stage
     mtxPower curStage(graph, highestPower, numSharedCache, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range.lo, curLeaf.range.hi, curLeaf.boundaryRange, -1, -1, mtxType);
     curStage.findPartition();

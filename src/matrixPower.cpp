@@ -46,7 +46,9 @@ mtxPower::mtxPower(RACE::Graph* graph_, int highestPower_, int numSharedCache_, 
 
     if( (mtxType == "N") || ( (mtxType == "L" || mtxType == "U") ) )
     {
-        traverser = new RACE::Traverse(graph, RACE::POWER, startRow, endRow, 0, 1, boundaryRange, mtxType);
+        // NOTE: Dane changed rootVec to reflect new arguement type, 25.11.22
+        traverser = new RACE::Traverse(graph, RACE::POWER, startRow, endRow, 0, std::vector<int> (1, 0), boundaryRange, mtxType);
+
     }
     else
     {
