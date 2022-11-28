@@ -322,11 +322,29 @@ void RACE::Traverse::calculateDistance(int maxLvl, bool mpiBoundaryDetection) //
 
     // Increment all distances
     if (mpiBoundaryDetection){
+        bool printCheck = !true;
+        if(printCheck){
+            printf("\n--------------- distFromRoot check -------------\n");
+            printf("distFromRoot = [");
+        }
         for(int i = 0; i < graph->NROW; ++i){
-            if(distFromRoot[i] == -1)
-                distFromRoot[i] = maxLvl + 2; // Just needs to be largest value in array, for sorting ( +1 or +2 ?)
+            if(distFromRoot[i] == -1){
+                distFromRoot[i] = maxLvl + 1; // Just needs to be largest value in array, for sorting
+            }
+            if(printCheck){
+                if(i == (graph->NROW - 1)){
+                    printf("%i", distFromRoot[i]);
+                    break;
+                }
+                printf("%i, ", distFromRoot[i]);
+            }
+        }
+        if(printCheck){
+            printf("]\n");
+            printf("------------------------------------------------\n\n");
         }
     }
+
     printf("Total Level = %d\n",levelData->totalLevel);
     //START_TIME(bfs_createLevel);
     createLevelData();

@@ -346,24 +346,26 @@ void mtxPowerRecursive::findPartition(std::vector<int> distFromRemotePtr)
     int mainRowsBegin = (distFromRemotePtr.size() == 0) ? 0 : distFromRemotePtr[numChunks - 1];
     int mainRowsEnd = (distFromRemotePtr.size() == 0) ? -1 : distFromRemotePtr[numChunks];
 
-    printf("----------------------------\n");
-    printf("distFromRemotePtr.size() = %i\n", distFromRemotePtr.size());
-    if(distFromRemotePtr.size() != 0) {
-        printf("distFromRemotePtr = [");
-        for(int i = 0; i < distFromRemotePtr.size(); ++i){
-            if(i == (distFromRemotePtr.size() - 1)){
-                printf("%i", distFromRemotePtr[i]);
-                break;
+    bool printCheck = !true;
+    if(printCheck){
+        printf("\n-------------- distFromRemotePtr check --------------\n");
+        printf("distFromRemotePtr.size() = %i\n", distFromRemotePtr.size());
+        if(distFromRemotePtr.size() != 0) {
+            printf("distFromRemotePtr = [");
+            for(int i = 0; i < distFromRemotePtr.size(); ++i){
+                if(i == (distFromRemotePtr.size() - 1)){
+                    printf("%i", distFromRemotePtr[i]);
+                    break;
+                }
+                printf("%i, ", distFromRemotePtr[i]);
             }
-            printf("%i, ", distFromRemotePtr[i]);
+            printf("]\n");
         }
-        printf("]\n");
+        printf("numChunks = %i\n", numChunks);
+        printf("mainRowsBegin = %i\n", mainRowsBegin);
+        printf("mainRowsEnd = %i\n", mainRowsEnd);
+        printf("-----------------------------------------------------\n\n");
     }
-    printf("numChunks = %i\n", numChunks);
-    printf("mainRowsBegin = %i\n", mainRowsBegin);
-    printf("mainRowsEnd = %i\n", mainRowsEnd);
-    printf("----------------------------\n");
-
     curLeaf.parent = -1;
     curLeaf.nodeId = -1;
     curLeaf.range.lo = mainRowsBegin;
@@ -372,7 +374,7 @@ void mtxPowerRecursive::findPartition(std::vector<int> distFromRemotePtr)
     curLeaf.boundaryRange = {};
 // TODO: include in config.h.in
 // #ifdef RACE_HAVE_MPI 
-    bool useMPI = !true; 
+    bool useMPI = true; 
     if(useMPI == true){
         int wbl = workingBoundaryLength_base(highestPower);
         curLeaf.boundaryRange.resize(wbl);

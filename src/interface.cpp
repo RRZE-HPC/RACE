@@ -219,7 +219,7 @@ RACE_error RACE::Interface::RACEColor(int highestPower_, int numSharedCache, dou
     else
     {
         std::vector<int> distFromRemotePtr;
-        bool useMPI = !true; 
+        bool useMPI = true; 
         
         // TODO: define this is config.h.in
         // #ifdef MPI_INCLUDED
