@@ -177,7 +177,7 @@ int main(const int argc, char * argv[])
     {
         mat->doRCM();
     }
-    bool useMPI = true; // TODO: define macro
+    bool useMPI = !true; // TODO: define macro
     if(useMPI == true) {        
         int globalStartRow = 0;
         int globalEndRow = NROWS;

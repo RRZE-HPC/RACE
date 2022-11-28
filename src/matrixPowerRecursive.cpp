@@ -342,13 +342,27 @@ void mtxPowerRecursive::findPartition(std::vector<int> distFromRemotePtr)
     MPLeaf curLeaf;
 
     
-    int numChunks = (distFromRemotePtr.size() == 0) ? 0 : (distFromRemotePtr.size() - 1);
+    int numChunks = (distFromRemotePtr.size() == 0) ? 1 : (distFromRemotePtr.size() - 1);
     int mainRowsBegin = (distFromRemotePtr.size() == 0) ? 0 : distFromRemotePtr[numChunks - 1];
     int mainRowsEnd = (distFromRemotePtr.size() == 0) ? -1 : distFromRemotePtr[numChunks];
 
-    // printf("distFromRemotePtr.size() = %i\n", distFromRemotePtr.size());
-    // printf("mainRowsBegin = %i\n", mainRowsBegin);
-    // printf("mainRowsEnd = %i\n", mainRowsEnd);
+    printf("----------------------------\n");
+    printf("distFromRemotePtr.size() = %i\n", distFromRemotePtr.size());
+    if(distFromRemotePtr.size() != 0) {
+        printf("distFromRemotePtr = [");
+        for(int i = 0; i < distFromRemotePtr.size(); ++i){
+            if(i == (distFromRemotePtr.size() - 1)){
+                printf("%i", distFromRemotePtr[i]);
+                break;
+            }
+            printf("%i, ", distFromRemotePtr[i]);
+        }
+        printf("]\n");
+    }
+    printf("numChunks = %i\n", numChunks);
+    printf("mainRowsBegin = %i\n", mainRowsBegin);
+    printf("mainRowsEnd = %i\n", mainRowsEnd);
+    printf("----------------------------\n");
 
     curLeaf.parent = -1;
     curLeaf.nodeId = -1;
@@ -358,24 +372,26 @@ void mtxPowerRecursive::findPartition(std::vector<int> distFromRemotePtr)
     curLeaf.boundaryRange = {};
 // TODO: include in config.h.in
 // #ifdef RACE_HAVE_MPI 
-    bool useMPI = true; 
+    bool useMPI = !true; 
     if(useMPI == true){
-    int wbl = workingBoundaryLength_base(highestPower);
-    curLeaf.boundaryRange.resize(wbl);
-    for(int r=-wbl; r<0; ++r) //only -ve since only input dependencies
-    {
-        Range curRange;
-        curRange.lo = distFromRemotePtr[numChunks - 1 + r];
-        curRange.hi = distFromRemotePtr[numChunks + r];
-        // printf("curRange.lo = %i\n", curRange.lo);
-        // printf("curRange.hi = %i\n", curRange.hi);
-    
-        //push only if it is non empty
-        if(curRange.hi > curRange.lo)
+        int wbl = workingBoundaryLength_base(highestPower);
+        curLeaf.boundaryRange.resize(wbl);
+        for(int r=-wbl; r<0; ++r) //only -ve since only input dependencies
         {
-            curLeaf.boundaryRange[std::abs(r)-1][r].push_back(curRange);//push direct boudary
+            Range curRange;
+            curRange.lo = distFromRemotePtr[numChunks - 1 + r];
+            curRange.hi = distFromRemotePtr[numChunks + r];
+            printf("----------------------------\n");
+            printf("curRange.lo = %i\n", curRange.lo);
+            printf("curRange.hi = %i\n", curRange.hi);
+            printf("----------------------------\n");
+        
+            //push only if it is non empty
+            if(curRange.hi > curRange.lo)
+            {
+                curLeaf.boundaryRange[std::abs(r)-1][r].push_back(curRange);//push direct boudary
+            }
         }
-    }
     }
 // #endif
     //partition for first stage

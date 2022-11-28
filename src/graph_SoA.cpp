@@ -233,7 +233,6 @@ std::vector<int> RACE::Graph::collectBoundaryNodes(int powerMax){
         
     }
 
-    // TODO: VERIFY THESE ARGS!
     int startRow = 0;
     int endRow = NROW;
     int parentIdx=0;
