@@ -341,12 +341,12 @@ void mtxPowerRecursive::findPartition(std::vector<int> distFromRemotePtr)
 {
     MPLeaf curLeaf;
 
-    
+
     int numChunks = (distFromRemotePtr.size() == 0) ? 1 : (distFromRemotePtr.size() - 1);
     int mainRowsBegin = (distFromRemotePtr.size() == 0) ? 0 : distFromRemotePtr[numChunks - 1];
     int mainRowsEnd = (distFromRemotePtr.size() == 0) ? -1 : distFromRemotePtr[numChunks];
 
-    bool printCheck = !true;
+    bool printCheck = true;
     if(printCheck){
         printf("\n-------------- distFromRemotePtr check --------------\n");
         printf("distFromRemotePtr.size() = %i\n", distFromRemotePtr.size());
@@ -387,7 +387,7 @@ void mtxPowerRecursive::findPartition(std::vector<int> distFromRemotePtr)
             printf("curRange.lo = %i\n", curRange.lo);
             printf("curRange.hi = %i\n", curRange.hi);
             printf("----------------------------\n");
-        
+
             //push only if it is non empty
             if(curRange.hi > curRange.lo)
             {

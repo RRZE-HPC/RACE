@@ -86,9 +86,10 @@ class RACE::Traverse{
         void permuteGraph();
     public:
         //constructor
-        Traverse(RACE::Graph *graph_, RACE::dist dist, int rangeLo_=0, int rangeHi_=-1, int parentIdx=0, std::vector<int> roots_ = std::vector<int> (1, 0), std::vector<std::map<int, std::vector<Range>>> boundaryRange_={}, std::string mtxType_="N");
+        Traverse(RACE::Graph *graph_, RACE::dist dist, int rangeLo_=0, int rangeHi_=-1, int parentIdx=0, std::vector<int> roots_ = {}, std::vector<std::map<int, std::vector<Range>>> boundaryRange_={}, std::string mtxType_="N");
         ~Traverse();
-        void calculateDistance(int maxLvl = -1, bool mpiBoundaryDetection = false); // Defaults: In order to maintain compatability with single root
+        //default value of maxLvl set to big number so it doesn't reach the maxLvl condition
+        void calculateDistance(int maxLvl = std::numeric_limits<int>::max(), bool mpiBoundaryDetection = false); // Defaults: In order to maintain compatability with single root
 
         //deletion of array's after get calling get fns is user's responsibility
         void getPerm(int  **perm_, int *len);

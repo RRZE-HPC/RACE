@@ -214,6 +214,7 @@ std::vector<int> RACE::Graph::collectBoundaryNodes(int powerMax){
 
     // int *sizePtr[POWER] = {0};
     // bool isRemote; //, colInBoundaryNodes, rowInBoundaryNodes;
+//
 
     // Only collects distance-1 nodes from halo elements
     for(int row = 0; row < NROW; ++row){
@@ -230,8 +231,10 @@ std::vector<int> RACE::Graph::collectBoundaryNodes(int powerMax){
                 break; // move to the next row
             }
         }
-        
-    }
+
+        }
+    //for testing
+    //boundaryNodes = {217916, 217917};
 
     int startRow = 0;
     int endRow = NROW;
@@ -240,20 +243,30 @@ std::vector<int> RACE::Graph::collectBoundaryNodes(int powerMax){
     std::string mtxType="N";
 
     RACE::Traverse *traverser = new RACE::Traverse(this, RACE::POWER, startRow, endRow, parentIdx, boundaryNodes, boundaryRange, mtxType);
-    traverser->calculateDistance(powerMax - 2, true);  
-    LevelData* curLevelData = traverser->getLevelData();
 
+    int totalLevelsToTraverse = powerMax - 2;
     int totalLevel = powerMax;
-
-    std::vector<int> distFromRemotePtr(totalLevel+1);
-    distFromRemotePtr[0] = 0; //TODO: verify?
-
-    // Takes the size of the "chunks" of how matrix is partitioned, and cumsums them
-    // levelRow : # nodes in each corresponding ring
-    // distFromRemotePtr -> cumsum of levelRows
-    for(int level=0; level<totalLevel; ++level)
+    std::vector<int> distFromRemotePtr(totalLevel+1, 0);
+    if(totalLevelsToTraverse >= 0 && !(boundaryNodes.empty()))
     {
-        distFromRemotePtr[level+1] = distFromRemotePtr[level] + curLevelData->levelRow[level];
+        traverser->calculateDistance(totalLevelsToTraverse, true);
+        LevelData* curLevelData = traverser->getLevelData();
+
+
+        distFromRemotePtr[0] = 0; //TODO: verify?
+
+        // Takes the size of the "chunks" of how matrix is partitioned, and cumsums them
+        // levelRow : # nodes in each corresponding ring
+        // distFromRemotePtr -> cumsum of levelRows
+        for(int level=0; level<totalLevel; ++level)
+        {
+            distFromRemotePtr[level+1] = distFromRemotePtr[level] + curLevelData->levelRow[level];
+        }
+    }
+    else //power=1 ==> distFromRoot will only contain the main part
+    {
+        distFromRemotePtr[totalLevel-1] = 0;
+        distFromRemotePtr[totalLevel] = NROW;
     }
 
     return distFromRemotePtr;

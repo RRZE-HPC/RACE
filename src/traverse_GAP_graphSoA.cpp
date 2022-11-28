@@ -30,6 +30,10 @@
 std::map<int, LevelData> RACE::Traverse::cachedData;
 RACE::Traverse::Traverse(RACE::Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_, std::vector<int> roots_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_, std::string mtxType_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_), roots(roots_), graphSize(graph_->NROW),distFromRoot(NULL),perm(NULL),invPerm(NULL), boundaryRange(boundaryRange_), boundary_bm(NULL), queue(graphSize), levelData(NULL), mtxType(mtxType_)
 {
+    if(roots.empty())
+    {
+        roots = {rangeLo}; //push a default root, if no root is provided
+    }
     // printf("I'm in Traverse::Traverse\n");
     if( (mtxType != "N") && ( (mtxType != "L" && mtxType != "U") ) )
     {
@@ -224,7 +228,6 @@ void Counter::reset()
 void RACE::Traverse::calculateDistance(int maxLvl, bool mpiBoundaryDetection) //TODO: modify
 {
 
-
     //START_TIME(bfs_main);
     if(mtxType == "N")
     {
@@ -244,6 +247,7 @@ void RACE::Traverse::calculateDistance(int maxLvl, bool mpiBoundaryDetection) //
         Counter::reset();
 
         int currLvl = 0;
+
         for(const auto & root: roots) // NOTE: Default vector <0>
         {
             queue.push_back(root);
@@ -256,8 +260,7 @@ void RACE::Traverse::calculateDistance(int maxLvl, bool mpiBoundaryDetection) //
 
         bool islandDetectionActive = !mpiBoundaryDetection;
 
-
-        while(!queue.empty() || currLvl < maxLvl)
+        while(!queue.empty() && currLvl < maxLvl)
         {
             currLvl += 1;
             TDStep(currLvl);
@@ -295,6 +298,10 @@ void RACE::Traverse::calculateDistance(int maxLvl, bool mpiBoundaryDetection) //
             }
         }
 
+        if(currLvl == maxLvl) //stopped due to maxLvl, so one count less for currLvl.
+        {
+            currLvl += 1;
+        }
         levelData->totalLevel = currLvl;
     }
     else
@@ -322,14 +329,17 @@ void RACE::Traverse::calculateDistance(int maxLvl, bool mpiBoundaryDetection) //
 
     // Increment all distances
     if (mpiBoundaryDetection){
+
         bool printCheck = !true;
         if(printCheck){
             printf("\n--------------- distFromRoot check -------------\n");
             printf("distFromRoot = [");
         }
+        bool isThereUnmarkedRegion = false;
         for(int i = 0; i < graph->NROW; ++i){
             if(distFromRoot[i] == -1){
                 distFromRoot[i] = maxLvl + 1; // Just needs to be largest value in array, for sorting
+                isThereUnmarkedRegion = true;
             }
             if(printCheck){
                 if(i == (graph->NROW - 1)){
@@ -338,6 +348,11 @@ void RACE::Traverse::calculateDistance(int maxLvl, bool mpiBoundaryDetection) //
                 }
                 printf("%i, ", distFromRoot[i]);
             }
+        }
+
+        if(isThereUnmarkedRegion)
+        {
+            levelData->totalLevel += 1;
         }
         if(printCheck){
             printf("]\n");
