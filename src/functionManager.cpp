@@ -1029,7 +1029,11 @@ void FuncManager::recursivePowerCallSerial(int parent)
 
         int numaLocalArg = (numaSplit)?nodeGroup:0;
         int offset = 0;
-        offset = levelPtrRoot->at(nodePtrRoot->at(numaLocalArg));
+        //TODO: offset disabled since it might not be the lowest value for the
+        //current NUMA domain if MPI boundary is present
+        //This means currently only one NUMA domain will work
+        //which is fine as we will support MPI
+        //offset = levelPtrRoot->at(nodePtrRoot->at(numaLocalArg));
 
         int numNodes = 1;
         int nodePos = 0;

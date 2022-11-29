@@ -203,7 +203,12 @@ void RACE::Interface::compressColIdx(){
 
 // For matrix power kernel
 RACE_error RACE::Interface::RACEColor(int highestPower_, int numSharedCache, double cacheSize, double safetyFactor, std::string mtxType, int highestSubPower_)
-{    
+{
+    if(numSharedCache != 1)
+    {
+        ERROR_PRINT("RACE currently does not support greater than one shared cache or NUMA domain. Please use one MPI per NUMA domain configuration");
+        return RACE_ERR_INVALID_ARG;
+    }
     highestPower = highestPower_;
     highestSubPower = highestSubPower_;
     if(highestSubPower < 1)
