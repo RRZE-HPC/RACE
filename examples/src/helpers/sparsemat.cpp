@@ -1162,7 +1162,14 @@ inline void MAT_NUM_VEC_ACCESSES(int start, int end, int pow, int numa_domain, v
         x->val[row]++;
         if(x->val[row] != pow)
         {
-            ERROR_PRINT("Oh oh we have duplicate computations, error at pow=%d, for row=%d. Value I got at x is %f, expected %d. Level start =%d, Level end=%d", pow, row, x->val[row], pow, start, end);
+            if(x->val[row] > pow)
+            {
+                ERROR_PRINT("Oh oh we have duplicate computations, error at pow=%d, for row=%d. Value I got at x is %f, expected %d. Level start =%d, Level end=%d", pow, row, x->val[row], pow, start, end);
+            }
+            else
+            {
+                ERROR_PRINT("Oh oh have some missing computations, error at pow=%d, for row=%d. Value I got at x is %f, expected %d. Level start =%d, Level end=%d", pow, row, x->val[row], pow, start, end);
+            }
         }
     }
 }
