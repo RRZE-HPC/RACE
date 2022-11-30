@@ -383,11 +383,12 @@ void mtxPowerRecursive::findPartition(std::vector<int> distFromRemotePtr)
             Range curRange;
             curRange.lo = distFromRemotePtr[numChunks - 1 + r];
             curRange.hi = distFromRemotePtr[numChunks + r];
-            printf("----------------------------\n");
-            printf("curRange.lo = %i\n", curRange.lo);
-            printf("curRange.hi = %i\n", curRange.hi);
-            printf("----------------------------\n");
-
+            if(printCheck){
+                printf("----------------------------\n");
+                printf("curRange.lo = %i\n", curRange.lo);
+                printf("curRange.hi = %i\n", curRange.hi);
+                printf("----------------------------\n");
+            }
             //push only if it is non empty
             if(curRange.hi > curRange.lo)
             {

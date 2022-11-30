@@ -1055,6 +1055,9 @@ void FuncManager::recursivePowerCallSerial(int parent)
         }
 
         //TODO: in MPI case, pre-computation at MPI-boundary
+        //TODO modify args
+        // powerCallHopelessRightReminder(hopelessEnd, levelPtr, boundaryLevelPtr, unlockRow, unlockCtr, dangerRow, numaLocalArg, offset, parent);
+
         while(unitCtr < endNode)
         {
             int startSlope=-1, endSlope=-1;
@@ -1114,6 +1117,10 @@ void FuncManager::recursivePowerCallSerial(int parent)
         }
 
         //TODO: in MPI case, post-computation at MPI-boundary
+        //look at picture!
+        // comm, comp diagonal, comm, ...
+
+
         //NODE_BARRIER_RESET(nodeGroup, localTid)
 
     } //parallel

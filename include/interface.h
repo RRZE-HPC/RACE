@@ -192,6 +192,8 @@ class RACE::Interface{
         //NUMA with actual splitting
         void getNumaSplitting(int **split, int *splitLen);
         int getHighestPower();
+
+        void testFuncRACE();
 };
 
 namespace RACE

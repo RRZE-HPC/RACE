@@ -965,3 +965,8 @@ int RACE::Interface::getHighestPower()
 {
     return highestPower;
 }
+
+void RACE::Interface::testFuncRACE()
+{
+    printf("Inside RACE\n");
+}
