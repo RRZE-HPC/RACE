@@ -47,7 +47,7 @@ mtxPower::mtxPower(RACE::Graph* graph_, int highestPower_, int numSharedCache_, 
     if( (mtxType == "N") || ( (mtxType == "L" || mtxType == "U") ) )
     {
         // NOTE: Dane changed rootVec to reflect new arguement type, 25.11.22
-        traverser = new RACE::Traverse(graph, RACE::POWER, startRow, endRow, 0, std::vector<int> (1, 0), boundaryRange, mtxType);
+        traverser = new RACE::Traverse(graph, RACE::POWER, startRow, endRow, 0, std::vector<int> (1, startRow), boundaryRange, mtxType);
 
     }
     else
@@ -97,7 +97,6 @@ std::vector<int> mtxPower::findLevelPtr(int startNode, LevelData* curLevelData)
 {
     std::vector<int> curLevelPtr(totalLevel+1);
     curLevelPtr[0] = startNode;
-
     for(int level=0; level<totalLevel; ++level)
     {
         curLevelPtr[level+1] = curLevelPtr[level] + curLevelData->levelRow[level];

@@ -268,7 +268,8 @@ void RACE::Traverse::calculateDistance(int maxLvl, bool mpiBoundaryDetection) //
             //island detection
             if (islandDetectionActive)
             {
-                if( queue.empty() && (Counter::val != (rangeHi-rangeLo)) ) {
+                if( queue.empty() && (Counter::val != (rangeHi-rangeLo)) )
+                {
                     //now process islands
                     for(int i=prevIslandStop; i<rangeHi; ++i) {
                         if(distFromRoot[i] == -1) {

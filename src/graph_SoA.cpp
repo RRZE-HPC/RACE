@@ -224,17 +224,14 @@ std::vector<int> RACE::Graph::collectBoundaryNodes(int powerMax){
             // isRemote = ((currentCol < localColLimitLo) || (currentCol >= localColLimitHi)); // Possibly leave in as sanity check
             // colInBoundaryNodes = std::find(collectedBoundaryNodes.begin(), collectedBoundaryNodes.end(), currentCol) != collectedBoundaryNodes.end();
             // rowInBoundaryNodes = std::find(collectedBoundaryNodes.begin(), collectedBoundaryNodes.end(), row) != collectedBoundaryNodes.end();
-            // if(( isRemote || colInBoundaryNodes) && !rowInBoundaryNodes ){
+            // if(( isRemote || colInBoundaryNodes) && !rowInBoundaryNodes )
 
             if(currentCol >= NROW) {
                 boundaryNodes.push_back(row); //TODO: change to insert when unordered set
                 break; // move to the next row
             }
         }
-
-        }
-    //for testing
-    //boundaryNodes = {217916, 217917};
+    }
 
     int startRow = 0;
     int endRow = NROW;
