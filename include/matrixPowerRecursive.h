@@ -68,7 +68,7 @@ struct MPLeaf
 
 class mtxPowerRecursive
 {
-    RACE::Graph* graph;
+    // RACE::Graph* graph;
 
     //final values; all this via tree
 /*    int* levelPtr;
@@ -95,6 +95,7 @@ class mtxPowerRecursive
     int maxRecStages; //0 => no recursion
 
     public:
+    RACE::Graph* graph;
     mtxPowerRecursive(RACE::Graph* graph_, int highestPower_, int numSharedCache, double cacheSize_, double safetyFactor_, std::string mtxType_="N");
     ~mtxPowerRecursive();
 

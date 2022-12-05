@@ -231,7 +231,9 @@ RACE_error RACE::Interface::RACEColor(int highestPower_, int numSharedCache, dou
         //     printf("MPI IS DEFINED\n");
         // #endif
         if(useMPI == true){
+            // TODO: misnomer, this function does more than collect only mpi boundary nodes. Change name
             distFromRemotePtr = graph->collectBoundaryNodes(highestPower*highestSubPower);
+            graph->distFromRemotePtr = distFromRemotePtr;
         }
         powerCalculator = new mtxPowerRecursive(graph, highestPower*highestSubPower, numSharedCache, cacheSize, safetyFactor, mtxType);
         //sanity check

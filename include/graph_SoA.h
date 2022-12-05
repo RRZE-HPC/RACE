@@ -89,6 +89,7 @@ class RACE::Graph{
         
         std::vector<int> serialPart;
         std::vector<int> boundaryNodes;
+        std::vector<int> distFromRemotePtr;
 
         Graph(int nrow, int ncol, int *row_ptr, int *col, RACE::dist distance, bool symm_hint=false, int *initPerm=NULL, int *initInvPerm=NULL);//constructor
         Graph(const Graph &srcGraph);//copy constructor
