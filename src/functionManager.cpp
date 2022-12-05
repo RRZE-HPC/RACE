@@ -924,6 +924,43 @@ inline void FuncManager::powerCallHopelessLeftReminder(int rightmostLevel, const
     }
 }
 
+//MPI pre-computation similar to right-reminder
+//distFromRemotePtr stores first most distant nodes from main then next distant
+//and so on
+inline void FuncManager::mpiPreComputation(const std::vector<int> *distFromRemotePtr, int numaLocalArg, int offset)
+{
+    int tid = omp_get_thread_num();
+    int localTid = tid % threadPerNode;
+
+    //rename so macros work
+    const std::vector<int> *levelPtr = distFromRemotePtr;
+    int totPow = 1;
+    for(int outerRing=1; outerRing<totPower; ++outerRing)
+    {
+        int curLevel = (totPower-1)-outerRing;
+        for(int p=0; p<totPow; ++p)
+        {
+            int curMainPow = static_cast<int>(p/subPower);
+            int curSubPow = static_cast<int>(p%subPower);
+
+            int powLevel = curLevel-p;
+            SPLIT_LEVEL_PER_THREAD(powLevel);
+            powerFunc(startRow_tid, endRow_tid, curMainPow+1, curSubPow+1, numaLocalArg, args);
+
+            /* using barrier to synchronize for now, if costly will look
+             * alternatives*/
+#pragma omp barrier
+        }
+
+        //repeat the same totPower for 2 iterations
+        if((outerRing&1) != 0) //equivalent to (l%2 != 0)
+        {
+            totPow+=1;
+        }
+    }
+}
+
+
 //release locks at boundaries for reminder region
 inline void FuncManager::powerCallReleaseHopelessRegionLocks(int hopelessStartLevel, int parent)
 {
@@ -1019,6 +1056,7 @@ void FuncManager::recursivePowerCallSerial(int parent)
         std::vector<int>* unitPtr = &(tree->at(parent).unitPtr);
         std::vector<int>* unitNodePtr = &(tree->at(parent).unitNodePtr);
         std::vector<int>* childrenNodeStart = &(tree->at(parent).childrenNodeStart);
+        std::vector<int>* distFromRemotePtr = matPower->getDistFromRemotePtr();
 
         //all delete after putting reminder with general
         //int totPower = totPower;
@@ -1060,7 +1098,10 @@ void FuncManager::recursivePowerCallSerial(int parent)
 
         //TODO: in MPI case, pre-computation at MPI-boundary
         //TODO modify args
-        // powerCallHopelessRightReminder(hopelessEnd, levelPtr, boundaryLevelPtr, unlockRow, unlockCtr, dangerRow, numaLocalArg, offset, parent);
+#ifdef RACE_DEBUG
+        std::cout << "begin MPI pre-computation" << std::endl;
+#endif
+        mpiPreComputation(distFromRemotePtr, numaLocalArg, offset);
 
         while(unitCtr < endNode)
         {
@@ -1120,14 +1161,14 @@ void FuncManager::recursivePowerCallSerial(int parent)
             //printf("tid = %d: node reminder finished\n", tid);
         }
 
-        std::cout << "begin post-computations" << std::endl;
+        std::cout << "begin MPI post-computations" << std::endl;
 
+        //put into a member function
         // int numChunksRemote = (distFromRemotePtr.size() == 0) ? 1 : (distFromRemotePtr.size() - 1);
         int mpiBdLevelStart;
         int mpiBdLevelEnd;
         int curMainPow;
         int curSubPow;
-        std::vector<int> distFromRemotePtr = matPower->graph->distFromRemotePtr;
 
         if(totPower > 1){ // <- this may already be satisfied somewhere?
             // TODO: parallelize.
@@ -1150,8 +1191,8 @@ void FuncManager::recursivePowerCallSerial(int parent)
 
                 for(int mpiRingIdx = 0; mpiRingIdx < (totPower-p); ++mpiRingIdx){
 
-                    mpiBdLevelStart = distFromRemotePtr[mpiRingIdx];
-                    mpiBdLevelEnd = distFromRemotePtr[mpiRingIdx + 1];
+                    mpiBdLevelStart = distFromRemotePtr->at(mpiRingIdx);
+                    mpiBdLevelEnd = distFromRemotePtr->at(mpiRingIdx + 1);
 
                     std::cout << "promoting ring: " << mpiRingIdx << " from row: " << mpiBdLevelStart << " to row " << 
                         mpiBdLevelEnd << " to power: " << curMainPow+mpiRingIdx << std::endl;
