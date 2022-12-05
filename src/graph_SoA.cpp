@@ -204,7 +204,7 @@ RACE_error RACE::Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm,
     return RACE_SUCCESS;
 }
 
-std::vector<int> RACE::Graph::collectBoundaryNodes(int powerMax){
+void RACE::Graph::collectBoundaryNodes(int powerMax){
 
     // These are assumes to already be "compressed" column indices
     // int localColLimitLo = 0; // lowest row, therefore, left wall of local cols
@@ -243,7 +243,7 @@ std::vector<int> RACE::Graph::collectBoundaryNodes(int powerMax){
 
     int totalLevelsToTraverse = powerMax - 2;
     int totalLevel = powerMax;
-    std::vector<int> distFromRemotePtr(totalLevel+1, 0);
+    distFromRemotePtr = std::vector<int>(totalLevel+1, 0);
     if(totalLevelsToTraverse >= 0 && !(boundaryNodes.empty()))
     {
         traverser->calculateDistance(totalLevelsToTraverse, true);
@@ -265,8 +265,6 @@ std::vector<int> RACE::Graph::collectBoundaryNodes(int powerMax){
         distFromRemotePtr[totalLevel-1] = 0;
         distFromRemotePtr[totalLevel] = NROW;
     }
-
-    return distFromRemotePtr;
 }
 
 //only for debugging puposes

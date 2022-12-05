@@ -542,3 +542,8 @@ void mtxPowerRecursive::getInvPerm(int **invPerm_, int *len)
     invPerm = NULL; //hand-over responsibility
     (*len) = totalRows;
 }
+
+std::vector<int>* mtxPowerRecursive::getDistFromRemotePtr()
+{
+    return &(graph->distFromRemotePtr);
+}

@@ -86,7 +86,7 @@ class RACE::Graph{
         // TODO: might need to template/implement as long?
         int globalStartRow;
         int globalEndRow;
-        
+
         std::vector<int> serialPart;
         std::vector<int> boundaryNodes;
         std::vector<int> distFromRemotePtr;
@@ -107,7 +107,7 @@ class RACE::Graph{
 
         // Collect distance-1 "nodes", only activated when MPI is used
         // Actually returns the distFromRemotePtr
-        std::vector<int> collectBoundaryNodes(int powerMax); // TODO: change to unordered set to improve std::find performance
+        void collectBoundaryNodes(int powerMax); // TODO: change to unordered set to improve std::find performance
 
         RACE_error swap(Graph& other);
         /**
