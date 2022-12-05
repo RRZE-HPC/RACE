@@ -223,7 +223,7 @@ RACE_error RACE::Interface::RACEColor(int highestPower_, int numSharedCache, dou
     }
     else
     {
-        std::vector<int> distFromRemotePtr;
+        //std::vector<int> distFromRemotePtr;
         bool useMPI = true;
 
         // TODO: define this is config.h.in
@@ -241,12 +241,12 @@ RACE_error RACE::Interface::RACEColor(int highestPower_, int numSharedCache, dou
             ERROR_PRINT("Threads (=%d) not a multiple of requested nodes (=%d)\n", requestedThreads, numSharedCache);
             exit(-1);
         }
-        if(useMPI){
+        /*if(useMPI){
             // NOTE: not inclusive end
             // Q: I need to call this function agian? why?
             powerCalculator->findPartition(distFromRemotePtr);
         }
-        else
+        else*/
         {
             powerCalculator->findPartition();
         }

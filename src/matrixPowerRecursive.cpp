@@ -337,27 +337,29 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
     }
 }
 
-void mtxPowerRecursive::findPartition(std::vector<int> distFromRemotePtr)
+void mtxPowerRecursive::findPartition()
 {
     MPLeaf curLeaf;
 
+    std::vector<int> *distFromRemotePtr = getDistFromRemotePtr();
 
-    int numChunks = (distFromRemotePtr.size() == 0) ? 1 : (distFromRemotePtr.size() - 1);
-    int mainRowsBegin = (distFromRemotePtr.size() == 0) ? 0 : distFromRemotePtr[numChunks - 1];
-    int mainRowsEnd = (distFromRemotePtr.size() == 0) ? -1 : distFromRemotePtr[numChunks];
+    int numChunks = (distFromRemotePtr->size() == 0) ? 1 : (distFromRemotePtr->size() - 1);
+    int mainRowsBegin = (distFromRemotePtr->size() == 0) ? 0 : distFromRemotePtr->at(numChunks - 1);
+    int mainRowsEnd = (distFromRemotePtr->size() == 0) ? -1 : distFromRemotePtr->at(numChunks);
+    bool haveMPI = !distFromRemotePtr->empty();
 
     bool printCheck = true;
-    if(printCheck){
+    if(printCheck && haveMPI){
         printf("\n-------------- distFromRemotePtr check --------------\n");
-        printf("distFromRemotePtr.size() = %i\n", distFromRemotePtr.size());
-        if(distFromRemotePtr.size() != 0) {
+        printf("distFromRemotePtr->size() = %i\n", distFromRemotePtr->size());
+        if(distFromRemotePtr->size() != 0) {
             printf("distFromRemotePtr = [");
-            for(int i = 0; i < distFromRemotePtr.size(); ++i){
-                if(i == (distFromRemotePtr.size() - 1)){
-                    printf("%i", distFromRemotePtr[i]);
+            for(int i = 0; i < distFromRemotePtr->size(); ++i){
+                if(i == (distFromRemotePtr->size() - 1)){
+                    printf("%i", distFromRemotePtr->at(i));
                     break;
                 }
-                printf("%i, ", distFromRemotePtr[i]);
+                printf("%i, ", distFromRemotePtr->at(i));
             }
             printf("]\n");
         }
@@ -374,15 +376,14 @@ void mtxPowerRecursive::findPartition(std::vector<int> distFromRemotePtr)
     curLeaf.boundaryRange = {};
 // TODO: include in config.h.in
 // #ifdef RACE_HAVE_MPI 
-    bool useMPI = true; 
-    if(useMPI == true){
+    if(haveMPI){
         int wbl = workingBoundaryLength_base(highestPower);
         curLeaf.boundaryRange.resize(wbl);
         for(int r=-wbl; r<0; ++r) //only -ve since only input dependencies
         {
             Range curRange;
-            curRange.lo = distFromRemotePtr[numChunks - 1 + r];
-            curRange.hi = distFromRemotePtr[numChunks + r];
+            curRange.lo = distFromRemotePtr->at(numChunks - 1 + r);
+            curRange.hi = distFromRemotePtr->at(numChunks + r);
             if(printCheck){
                 printf("----------------------------\n");
                 printf("curRange.lo = %i\n", curRange.lo);

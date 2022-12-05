@@ -104,7 +104,7 @@ class mtxPowerRecursive
 
 
     void recursivePartition(int parentIdx);
-    void findPartition(std::vector<int> distFromRemotePtr = {});
+    void findPartition();
     //these are final values
     void getPerm(int **perm, int *len);
     void getInvPerm(int **invPerm, int *len);
