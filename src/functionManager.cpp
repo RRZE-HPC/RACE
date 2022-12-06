@@ -935,18 +935,18 @@ inline void FuncManager::mpiPreComputation(const std::vector<int> *distFromRemot
     //rename so macros work
     const std::vector<int> *levelPtr = distFromRemotePtr;
     int totPow = 1;
-    for(int outerRing=1; outerRing<totPower; ++outerRing)
+    for(int mpiRingIdx=1; mpiRingIdx<totPower; ++mpiRingIdx)
     {
-        int curLevel = (totPower-1)-outerRing;
+        int curLevel = (totPower-1)-mpiRingIdx;
         for(int p=0; p<totPow; ++p)
         {
             int curMainPow = static_cast<int>(p/subPower);
             int curSubPow = static_cast<int>(p%subPower);
 
-            int powLevel = curLevel-p;
+            int powLevel = curLevel+p;
             SPLIT_LEVEL_PER_THREAD(powLevel);
 
-#if 1 //RACE_DEBUG
+#ifdef RACE_DEBUG
             printf("MPI pre. tid = %d, rowPerThread = %d, doing boundary [%d, %d] with pow = %d, powLevel = %d\n", omp_get_thread_num(), _RowPerThread_, startRow_tid, endRow_tid, p, powLevel);
 #endif
             powerFunc(startRow_tid, endRow_tid, curMainPow+1, curSubPow+1, numaLocalArg, args);
@@ -957,13 +957,56 @@ inline void FuncManager::mpiPreComputation(const std::vector<int> *distFromRemot
         }
 
         //repeat the same totPower for 2 iterations
-        if((outerRing&1) != 0) //equivalent to (l%2 != 0)
+        if( ((mpiRingIdx-1)&1) != 0) //equivalent to (l%2 != 0)
         {
             totPow+=1;
         }
     }
 }
 
+//MPI post-computation
+//distFromRemotePtr stores first most distant nodes from main then next distant
+//and so on
+inline void FuncManager::mpiPostComputation(const std::vector<int> *distFromRemotePtr, int numaLocalArg, int offset)
+{
+    int tid = omp_get_thread_num();
+    int localTid = tid % threadPerNode;
+
+    if(totPower > 1){ // <- this may already be satisfied somewhere?
+        //rename so macros work
+        const std::vector<int> *levelPtr = distFromRemotePtr;
+
+        // TODO: parallelize.
+        for(int p=1; p < totPower; ++p){ // TODO: how to handle when power is two or less? 
+
+            // commFunc(commArgs); //synchronize across mpi procs here
+
+            for(int mpiRingIdx = 0; mpiRingIdx < (totPower-p); ++mpiRingIdx){
+
+                int curMainPow = static_cast<int>((p+mpiRingIdx)/subPower); // NOTE: not sure about these two, just copied from example
+                int curSubPow = static_cast<int>((p+mpiRingIdx)%subPower);
+
+#ifdef RACE_DEBUG
+                int mpiBdLevelStart = distFromRemotePtr->at(mpiRingIdx);
+                int mpiBdLevelEnd = distFromRemotePtr->at(mpiRingIdx + 1);
+
+                std::cout << "promoting ring: " << mpiRingIdx << " from row: " << mpiBdLevelStart << " to row " << 
+                    mpiBdLevelEnd << " to power: " << curMainPow+1 << std::endl;
+
+#endif
+                SPLIT_LEVEL_PER_THREAD(mpiRingIdx);
+
+#ifdef RACE_DEBUG
+                printf("MPI pre. tid = %d, rowPerThread = %d, doing boundary [%d, %d] with pow = %d, powLevel = %d\n", omp_get_thread_num(), _RowPerThread_, startRow_tid, endRow_tid, p, powLevel);
+#endif
+                powerFunc(startRow_tid, endRow_tid, curMainPow+1, curSubPow+1, numaLocalArg, args);
+#pragma omp barrier
+
+            }
+        }
+
+    }
+}
 
 //release locks at boundaries for reminder region
 inline void FuncManager::powerCallReleaseHopelessRegionLocks(int hopelessStartLevel, int parent)
@@ -1102,13 +1145,16 @@ void FuncManager::recursivePowerCallSerial(int parent)
 
         //TODO: in MPI case, pre-computation at MPI-boundary
         //TODO modify args
+        if(parent == 0)
+        {
 #ifdef RACE_DEBUG
-        std::cout << "begin MPI pre-computation" << std::endl;
+            std::cout << "begin MPI pre-computation" << std::endl;
 #endif
-    // Christie TODO
-  //      if(parent == 0)
-   //         mpiPreComputation(distFromRemotePtr, numaLocalArg, offset);
-
+            mpiPreComputation(distFromRemotePtr, numaLocalArg, offset);
+#ifdef RACE_DEBUG
+            std::cout << "finished MPI pre-computation" << std::endl;
+#endif
+        }
         while(unitCtr < endNode)
         {
             int startSlope=-1, endSlope=-1;
@@ -1167,37 +1213,17 @@ void FuncManager::recursivePowerCallSerial(int parent)
             //printf("tid = %d: node reminder finished\n", tid);
         }
 
-        if(parent == 0){
-            std::cout << "begin MPI post-computations" << std::endl;
-
-            int mpiBdLevelStart;
-            int mpiBdLevelEnd;
-            int curMainPow;
-            int curSubPow;
-
-            if(totPower > 1){ // <- this may already be satisfied somewhere?
-                // TODO: parallelize.
-                for(int p=1; p < totPower; ++p){ // TODO: how to handle when power is two or less? 
-
-                    // commFunc(commArgs); //synchronize across mpi procs here
-
-                    for(int mpiRingIdx = 0; mpiRingIdx < (totPower-p); ++mpiRingIdx){
-
-                        curMainPow = static_cast<int>((p+mpiRingIdx)/subPower); // NOTE: not sure about these two, just copied from example
-                        curSubPow = static_cast<int>((p+mpiRingIdx)%subPower);
-
-                        mpiBdLevelStart = distFromRemotePtr->at(mpiRingIdx);
-                        mpiBdLevelEnd = distFromRemotePtr->at(mpiRingIdx + 1);
-
-                        std::cout << "promoting ring: " << mpiRingIdx << " from row: " << mpiBdLevelStart << " to row " << 
-                            mpiBdLevelEnd << " to power: " << curMainPow+1 << std::endl;
-
-                        // powerFunc(mpiBdLevelStart, mpiBdLevelEnd, curMainPow+1, curSubPow+1, numaLocalArg, args);
-                    }
-                }
-                std::cout << "post-computations finished" << std::endl;
-            }
+        if(parent == 0)
+        {
+#ifdef RACE_DEBUG
+            std::cout << "begin MPI post-computation" << std::endl;
+#endif
+            mpiPostComputation(distFromRemotePtr, numaLocalArg, offset);
+#ifdef RACE_DEBUG
+            std::cout << "finished MPI post-computation" << std::endl;
+#endif
         }
+
         //NODE_BARRIER_RESET(nodeGroup, localTid)
     } //parallel
 }

@@ -85,6 +85,7 @@ class FuncManager
         inline void powerCallHopelessRightReminder(int leftmostLevel, const std::vector<int> *levelPtr, const std::vector<std::map<int, std::vector<std::vector<int>>>>* boundaryLevelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent);
         inline void powerCallHopelessLeftReminder(int rightmostLevel, const std::vector<int> *levelPtr, const std::vector<std::map<int, std::vector<std::vector<int>>>>* boundaryLevelPtr, const std::vector<int> *unlockRow, const std::vector<int> *unlockCtr, const std::vector<int> *dangerRow, int numaLocalArg, int offset, int parent);
         inline void mpiPreComputation(const std::vector<int> *distFromRemotePtr, int numaLocalArg, int offset);
+        inline void mpiPostComputation(const std::vector<int> *distFromRemotePtr, int numaLocalArg, int offset);
         inline void powerCallReleaseHopelessRegionLocks(int hopelessStartLevel, int parent);
         std::function<void(int)> recursivePowerFun;
 
