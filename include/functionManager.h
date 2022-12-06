@@ -102,6 +102,7 @@ class FuncManager
         FuncManager(const FuncManager &obj);
         ~FuncManager();
 
+        void registerCommFunc(commFuncType commFunc_, void* commArgs_);
         void SerialPartRun();
         void initPowerRun(int parent);
         void NUMAInitPower();
@@ -114,6 +115,7 @@ class FuncManager
         void setSerial();
         void unsetSerial();
         bool isNumaSplit();
+        bool isCommRegistered();
         //void RunOMP();
         //	double barrierTime;
 };

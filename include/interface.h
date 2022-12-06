@@ -155,8 +155,13 @@ class RACE::Interface{
         //simple register function for matrix power, with subPower=1
         int registerFunction(std::function<void(int,int,int,int,void *)> f, void* args, int power=1, int numaSplit=false);
         int registerFunction(void (*f) (int,int,int,int,void *), void* args, int power=1, int numaSplit=false);
+        //attach communication handle to an existing function handle
+        //Currently available only for RACE::POWER.
+        //This allows to do MPI communication for MPK-like kernels
+        int attachCommunicationToFunction(int funcId, std::function<void (void*)> f, void* args);
+        int attachCommunicationToFunction(int funcId, void (*f) (void*), void* args);
 
-        void executeFunction(int funcId, bool rev=false);
+        int executeFunction(int funcId, bool rev=false);
         void setPower(int funcId, int pow);
         void setSubPower(int funcId, int subPow);
         int getPower(int funcId);

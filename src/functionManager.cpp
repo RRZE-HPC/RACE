@@ -59,7 +59,7 @@ void FuncManager::initFuncColor()
 }
 */
 
-FuncManager::FuncManager(funcType f_, void *args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),power_fn(false), numaSplit(false), func(f_),args(args_),zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_), nodeBarrier(NULL), barrierCount(NULL)
+FuncManager::FuncManager(funcType f_, void *args_, ZoneTree *zoneTree_, LevelPool* pool_, std::vector<int> serialPart_):rev(false),power_fn(false), numaSplit(false), func(f_),args(args_),commArgs(NULL), zoneTree(zoneTree_), pool(pool_), serialPart(serialPart_), nodeBarrier(NULL), barrierCount(NULL)
 {
     initFuncColor();
 }
@@ -114,7 +114,7 @@ void FuncManager::initFuncPower()
 }
 */
 
-FuncManager::FuncManager(powerFuncType f_, void *args_, int power_, int subPower_, mtxPowerRecursive *matPower_, bool numaSplit_):power_fn(true), numaSplit(numaSplit_), powerFunc(f_), args(args_), power(power_), subPower(subPower_), matPower(matPower_), nodeBarrier(NULL), barrierCount(NULL)
+FuncManager::FuncManager(powerFuncType f_, void *args_, int power_, int subPower_, mtxPowerRecursive *matPower_, bool numaSplit_):power_fn(true), numaSplit(numaSplit_), powerFunc(f_), args(args_), commArgs(NULL), power(power_), subPower(subPower_), matPower(matPower_), nodeBarrier(NULL), barrierCount(NULL)
 {
     initFuncPower();
 }
@@ -127,6 +127,8 @@ FuncManager::FuncManager(const FuncManager &obj)
     func = obj.func;
     powerFunc = obj.powerFunc;
     args = obj.args;
+    commFunc = obj.commFunc;
+    commArgs = obj.commArgs;
     totPower = obj.totPower;
     power = obj.power;
     subPower = obj.subPower;
@@ -187,6 +189,12 @@ FuncManager::~FuncManager()
     }
 }
 
+
+void FuncManager::registerCommFunc(commFuncType commFunc_, void* commArgs_)
+{
+    commFunc = commFunc_;
+    commArgs = commArgs_;
+}
 
 #ifdef RACE_KERNEL_THREAD_OMP
 //OMP version nested pinning not working
@@ -1143,9 +1151,24 @@ void FuncManager::recursivePowerCallSerial(int parent)
             nodeEndSlope = -1;
         }
 
+        bool haveMPI = false;
+
+        if(!distFromRemotePtr->empty())
+        {
+            int totRemoteElems = distFromRemotePtr->at(totPower-1);
+            if(totRemoteElems > 0)
+            {
+                haveMPI = true;
+            }
+        }
+
+        if(haveMPI && (commFunc == nullptr))
+        {
+            WARNING_PRINT("It seems you haven't register MPI communication call with RACE. Although you have remote boundaries. Except numerical errors.");
+        }
         //TODO: in MPI case, pre-computation at MPI-boundary
         //TODO modify args
-        if(parent == 0)
+        if(haveMPI && (parent == 0))
         {
 #ifdef RACE_DEBUG
             std::cout << "begin MPI pre-computation" << std::endl;
@@ -1213,7 +1236,7 @@ void FuncManager::recursivePowerCallSerial(int parent)
             //printf("tid = %d: node reminder finished\n", tid);
         }
 
-        if(parent == 0)
+        if(haveMPI && (parent == 0))
         {
 #ifdef RACE_DEBUG
             std::cout << "begin MPI post-computation" << std::endl;
@@ -1479,4 +1502,9 @@ void FuncManager::unsetSerial()
 bool FuncManager::isNumaSplit()
 {
     return numaSplit;
+}
+
+bool FuncManager::isCommRegistered()
+{
+    return (commFunc != nullptr);
 }

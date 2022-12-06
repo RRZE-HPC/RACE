@@ -433,7 +433,7 @@ int RACE::Interface::registerFunction(void (*f) (int,int,int,int,int,void *), vo
 
 int RACE::Interface::registerFunction(std::function<void (int,int,int,int,int,void *)> f, void *args, int power, int subPower, int numaSplit)
 {
-if(distance != RACE::POWER)
+    if(distance != RACE::POWER)
     {
         ERROR_PRINT("To parallel execution of dependent kernels callback  function prototype is void (*f) (int,int,void *)");
         return RACE_ERR_INVALID_ARG;
@@ -478,12 +478,55 @@ int RACE::Interface::registerFunction(std::function<void (int,int,int,int,void *
     }
 }
 
-
-
-void RACE::Interface::executeFunction(int funcId, bool rev)
+int RACE::Interface::attachCommunicationToFunction(int funcId, std::function<void (void *)> f, void* args)
 {
+    if(distance != RACE::POWER)
+    {
+        ERROR_PRINT("Communication currently supported only for RACE::POWER");
+        return RACE_ERR_NOT_IMPLEMENTED;
+    }
+    else
+    {
+        funMan[funcId]->registerCommFunc(f, args);
+        return RACE_SUCCESS;
+    }
+}
+
+int RACE::Interface::attachCommunicationToFunction(int funcId, void (*f) (void*), void* args)
+{
+    std::function<void (void *)> comm_function = f;
+    return attachCommunicationToFunction(funcId, comm_function, args);
+}
+
+int RACE::Interface::executeFunction(int funcId, bool rev)
+{
+    RACE_error status = RACE_SUCCESS;
+    if(distance == RACE::POWER)
+    {
+        //check if communication(if required)  is set properly
+        bool haveMPI=false;
+        if(!graph->distFromRemotePtr.empty())
+        {
+            int totPower = highestPower*highestSubPower;
+            int totRemoteElems = graph->distFromRemotePtr[totPower-1];
+
+            if(totRemoteElems > 0)
+            {
+                haveMPI=true;
+            }
+        }
+        if(haveMPI)
+        {
+            if(!funMan[funcId]->isCommRegistered())
+            {
+                ERROR_PRINT("You haven't registered any communication function to function with id=%d. Although it seems you have MPI partitioning. Please attach communication handle using the function attachCommunicationToFunction", funcId);
+                status = RACE_ERR_INVALID_ARG;
+            }
+        }
+    }
     funMan[funcId]->Run(rev);
     //  funMan->Run();
+    return status;
 }
 
 void RACE::Interface::setPower(int funcId, int pow)
