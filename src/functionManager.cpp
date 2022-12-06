@@ -945,6 +945,10 @@ inline void FuncManager::mpiPreComputation(const std::vector<int> *distFromRemot
 
             int powLevel = curLevel-p;
             SPLIT_LEVEL_PER_THREAD(powLevel);
+
+#if 1 //RACE_DEBUG
+            printf("MPI pre. tid = %d, rowPerThread = %d, doing boundary [%d, %d] with pow = %d, powLevel = %d\n", omp_get_thread_num(), _RowPerThread_, startRow_tid, endRow_tid, p, powLevel);
+#endif
             powerFunc(startRow_tid, endRow_tid, curMainPow+1, curSubPow+1, numaLocalArg, args);
 
             /* using barrier to synchronize for now, if costly will look
@@ -1101,7 +1105,9 @@ void FuncManager::recursivePowerCallSerial(int parent)
 #ifdef RACE_DEBUG
         std::cout << "begin MPI pre-computation" << std::endl;
 #endif
-        mpiPreComputation(distFromRemotePtr, numaLocalArg, offset);
+    // Christie TODO
+  //      if(parent == 0)
+   //         mpiPreComputation(distFromRemotePtr, numaLocalArg, offset);
 
         while(unitCtr < endNode)
         {
@@ -1161,52 +1167,38 @@ void FuncManager::recursivePowerCallSerial(int parent)
             //printf("tid = %d: node reminder finished\n", tid);
         }
 
-        std::cout << "begin MPI post-computations" << std::endl;
+        if(parent == 0){
+            std::cout << "begin MPI post-computations" << std::endl;
 
-        //put into a member function
-        // int numChunksRemote = (distFromRemotePtr.size() == 0) ? 1 : (distFromRemotePtr.size() - 1);
-        int mpiBdLevelStart;
-        int mpiBdLevelEnd;
-        int curMainPow;
-        int curSubPow;
+            int mpiBdLevelStart;
+            int mpiBdLevelEnd;
+            int curMainPow;
+            int curSubPow;
 
-        if(totPower > 1){ // <- this may already be satisfied somewhere?
-            // TODO: parallelize.
-            for(int p=1; p < totPower; ++p){ // TODO: how to handle when power is two or less? 
+            if(totPower > 1){ // <- this may already be satisfied somewhere?
+                // TODO: parallelize.
+                for(int p=1; p < totPower; ++p){ // TODO: how to handle when power is two or less? 
 
-                // TODO: complete communication routine callback
-                // ---------------------
-                // comm_routine(*args); //synchronize across mpi procs here
-                // ---------------------
+                    // commFunc(commArgs); //synchronize across mpi procs here
 
-                curMainPow = static_cast<int>((p+1)/subPower); // NOTE: not sure about these two, just copied from example
-                curSubPow = static_cast<int>((p+1)%subPower);
+                    for(int mpiRingIdx = 0; mpiRingIdx < (totPower-p); ++mpiRingIdx){
 
-                // TODO: delete after discussing
-                // ---------------------
-                // for(int mpiBoundaryLevelIdx = lastLevelNumber; mpiBoundaryLevelIdx > lastLevelNumber - (totPower-1); --mpiBoundaryLevelIdx){
-                // ^ while I would like to traverse the levels from outer to inner, this is already encoded in distFromRemotePtr for rings, 
-                // so I can traverse this array consecutively forwards and it accomplishes the same thing
-                // ---------------------
+                        curMainPow = static_cast<int>((p+mpiRingIdx)/subPower); // NOTE: not sure about these two, just copied from example
+                        curSubPow = static_cast<int>((p+mpiRingIdx)%subPower);
 
-                for(int mpiRingIdx = 0; mpiRingIdx < (totPower-p); ++mpiRingIdx){
+                        mpiBdLevelStart = distFromRemotePtr->at(mpiRingIdx);
+                        mpiBdLevelEnd = distFromRemotePtr->at(mpiRingIdx + 1);
 
-                    mpiBdLevelStart = distFromRemotePtr->at(mpiRingIdx);
-                    mpiBdLevelEnd = distFromRemotePtr->at(mpiRingIdx + 1);
+                        std::cout << "promoting ring: " << mpiRingIdx << " from row: " << mpiBdLevelStart << " to row " << 
+                            mpiBdLevelEnd << " to power: " << curMainPow+1 << std::endl;
 
-                    std::cout << "promoting ring: " << mpiRingIdx << " from row: " << mpiBdLevelStart << " to row " << 
-                        mpiBdLevelEnd << " to power: " << curMainPow+mpiRingIdx << std::endl;
-
-                    // TODO: uncomment after discussion
-                    // ---------------------
-                    // powerFunc(mpiBdLevelStart, mpiBdLevelEnd, curMainPow+mpiRingIdx, curSubPow+mpiRingIdx, numaLocalArg, args);
-                    // ---------------------
+                        // powerFunc(mpiBdLevelStart, mpiBdLevelEnd, curMainPow+1, curSubPow+1, numaLocalArg, args);
+                    }
                 }
+                std::cout << "post-computations finished" << std::endl;
             }
-            std::cout << "post-computations finished" << std::endl;
         }
         //NODE_BARRIER_RESET(nodeGroup, localTid)
-
     } //parallel
 }
 

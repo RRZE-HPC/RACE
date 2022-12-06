@@ -44,11 +44,14 @@ class FuncManager
         bool rev;
         typedef std::function< void(int,int,void *) > funcType;
         typedef std::function< void(int,int,int,int,int,void *) > powerFuncType;
+        typedef std::function< void(void *) > commFuncType;
         bool power_fn;
         bool numaSplit;
         funcType func;
         powerFuncType powerFunc;
+        commFuncType commFunc;
         void* args;
+        void* commArgs;
         //totPower = power*subPower
         int totPower;
         int power;
