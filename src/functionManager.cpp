@@ -80,6 +80,8 @@ void FuncManager::initFuncPower()
     }
     origthreads = activethreads;
 
+    std::cout << "at tree 0, size: " << matPower->tree[0].nodePtr.size() << std::endl;
+
     totalNodes = matPower->tree[0].nodePtr.size()-1;
     threadPerNode = activethreads/totalNodes;
     CL_pad = 256;
@@ -985,9 +987,9 @@ inline void FuncManager::mpiPostComputation(const std::vector<int> *distFromRemo
         const std::vector<int> *levelPtr = distFromRemotePtr;
 
         // TODO: parallelize.
-        for(int p=1; p < totPower; ++p){ // TODO: how to handle when power is two or less? 
+        for(int p=1; p < totPower; ++p){ 
 
-            // commFunc(commArgs); //synchronize across mpi procs here
+            commFunc(commArgs); //synchronize across mpi procs here
 
             for(int mpiRingIdx = 0; mpiRingIdx < (totPower-p); ++mpiRingIdx){
 
