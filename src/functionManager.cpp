@@ -79,9 +79,6 @@ void FuncManager::initFuncPower()
         activethreads = omp_get_num_threads();
     }
     origthreads = activethreads;
-
-    std::cout << "at tree 0, size: " << matPower->tree[0].nodePtr.size() << std::endl;
-
     totalNodes = matPower->tree[0].nodePtr.size()-1;
     threadPerNode = activethreads/totalNodes;
     CL_pad = 256;
@@ -676,6 +673,8 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
                     //if(startRow_tid < currUnlockRow)
                     {
                         //unlock
+                        // std::cout << "powLevel - 1 = " << powLevel - 1 << std::endl;
+                        // std::cout << "pow + 1 = " << pow + 1 << std::endl; 
                         UNLOCK((powLevel-1), (pow+1));
 #ifdef RACE_DEBUG
                         printf("tid = %d, Unlocking Level = %d, pow = %d\n", omp_get_thread_num(), powLevel-1, pow+1);
@@ -750,6 +749,8 @@ inline void FuncManager::powerCallGeneral(int startLevel, int endLevel, int boun
                     printf("1. call tid = %d, [%d, %d], pow = %d, level = %d\n", omp_get_thread_num(), startRow_tid, currUnlockRow, pow, powLevel);
 #endif
                     //unlock
+                    // std::cout << "powLevel - 1 = " << powLevel - 1 << std::endl;
+                    // std::cout << "pow + 1 = " << pow + 1 << std::endl; 
                     UNLOCK((powLevel-1), (pow+1));
 #ifdef RACE_DEBUG
                     printf("tid = %d, Unlocking Level = %d, pow = %d\n", omp_get_thread_num(), powLevel-1, pow+1);
@@ -986,9 +987,9 @@ inline void FuncManager::mpiPostComputation(const std::vector<int> *distFromRemo
         //rename so macros work
         const std::vector<int> *levelPtr = distFromRemotePtr;
 
-        // TODO: parallelize.
         for(int p=1; p < totPower; ++p){ 
 
+            std::cout << "comm: " << p << std::endl;
             commFunc(commArgs); //synchronize across mpi procs here
 
             for(int mpiRingIdx = 0; mpiRingIdx < (totPower-p); ++mpiRingIdx){

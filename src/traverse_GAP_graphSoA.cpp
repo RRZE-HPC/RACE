@@ -149,60 +149,67 @@ void RACE::Traverse::TDStep(int currLvl)
 #ifdef RACE_PERMUTE_ON_FLY
             perm_u = graph->totalPerm[u];
 #endif
+            printf("perm_u = %d, u = %d\n", perm_u, u);
             int numChildren = graph->childrenSize[perm_u];
             int* children = &(graph->graphData[graph->childrenStart[perm_u]]);
+            
             for(auto child_idx=0; child_idx < numChildren; ++child_idx)
             {
+
                 int child = children[child_idx];
 #ifdef RACE_PERMUTE_ON_FLY
                 child = graph->totalInvPerm[child];
 #endif
+                //Guard against remote indicies 21.12.22
+                if(child < graphSize){
+                    //actually not needed in case of dist ONE, because you dont need
+                    //to worry about boundary. But doesn't hurt
+                    localColRangeLo = std::min(localColRangeLo, child);
+                    localColRangeHi = std::max(localColRangeHi, child);
 
-                //actually not needed in case of dist ONE, because you dont need
-                //to worry about boundary. But doesn't hurt
-                localColRangeLo = std::min(localColRangeLo, child);
-                localColRangeHi = std::max(localColRangeHi, child);
-
-                //printf("local Col Range = %d, %d\n", localColRangeLo, localColRangeHi);
-                int curr_val = parent[child];
-                if(curr_val == -1)
-                {
-                    if( (child>=rangeLo) && (child<rangeHi) )
+                    // printf("local Col Range = %d, %d\n", localColRangeLo, localColRangeHi);
+                    // printf("child = %d\n", child);
+                    int curr_val = parent[child];
+                    if(curr_val == -1)
                     {
-                        if(compare_and_swap(parent[child], curr_val, u))
-                        {
-                            lqueue.push_back(child);
-                            distFromRoot[child] = currLvl;
-                            localCtr++;
-                        }
-                    }
-                    else if((dist==RACE::POWER) && boundary_bm)
-                    {
-                        if((child >= minBoundary) && (child <= maxBoundary))
-                        {
-                            if( boundary_bm->get_bit(static_cast<size_t>(child-minBoundary)) )
-                            {
-                                if(compare_and_swap(parent[child], curr_val, u))
-                                {
-                                    lqueue.push_back(child);
-                                    distFromRoot[child] = currLvl;
-                                }
-                            }
-                        }
-                    }
-                    else if(dist==RACE::TWO)
-                    {
-                        //parent in range, then push to frontier
-                        if( (u>=rangeLo) && (u<rangeHi) )
+                        if( (child>=rangeLo) && (child<rangeHi) )
                         {
                             if(compare_and_swap(parent[child], curr_val, u))
                             {
                                 lqueue.push_back(child);
+                                distFromRoot[child] = currLvl;
+                                localCtr++;
                             }
                         }
+                        else if((dist==RACE::POWER) && boundary_bm)
+                        {
+                            if((child >= minBoundary) && (child <= maxBoundary))
+                            {
+                                if( boundary_bm->get_bit(static_cast<size_t>(child-minBoundary)) )
+                                {
+                                    if(compare_and_swap(parent[child], curr_val, u))
+                                    {
+                                        lqueue.push_back(child);
+                                        distFromRoot[child] = currLvl;
+                                    }
+                                }
+                            }
+                        }
+                        else if(dist==RACE::TWO)
+                        {
+                            //parent in range, then push to frontier
+                            if( (u>=rangeLo) && (u<rangeHi) )
+                            {
+                                if(compare_and_swap(parent[child], curr_val, u))
+                                {
+                                    lqueue.push_back(child);
+                                }
+                            }
+                        }
+
                     }
 
-                }
+                } // <-?
             }
         }
         lqueue.flush();

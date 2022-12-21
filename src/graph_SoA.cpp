@@ -88,9 +88,21 @@ RACE_error RACE::Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm,
     {
         //upperNnz[row]=0;
         int column = graphData[rowPtr[row]];
+
+        // printf("\n");
         int numChildren = rowPtr[row+1] - rowPtr[row];
         childrenSize[row] = numChildren;
         childrenStart[row] = rowPtr[row];
+
+
+        // int* children = &(graphData[childrenStart[row]]);
+        // for(auto child_idx=0; child_idx < numChildren; ++child_idx)
+        // {
+        //     if(children[child_idx] < 0){
+        //         printf("child = %d, child_idx = %d", children[child_idx], child_idx);
+        //     }
+        // }
+
         if((numChildren == 1) && column == row)
         {
 #pragma omp critical
@@ -209,61 +221,64 @@ void RACE::Graph::collectBoundaryNodes(int powerMax){
     // These are assumes to already be "compressed" column indices
     // int localColLimitLo = 0; // lowest row, therefore, left wall of local cols
     // int localColLimitHi = NROW; // highest row, therefore, right wall of local cols
+    
+    if(powerMax >= 2){
 
-    int currentCol;
+        int currentCol;
 
-    // int *sizePtr[POWER] = {0};
-    // bool isRemote; //, colInBoundaryNodes, rowInBoundaryNodes;
-//
+        // int *sizePtr[POWER] = {0};
+        // bool isRemote; //, colInBoundaryNodes, rowInBoundaryNodes;
+    //
 
-    // Only collects distance-1 nodes from halo elements
-    for(int row = 0; row < NROW; ++row){
-        for(int nzIdx=childrenStart[row]; nzIdx<childrenStart[row+1]; ++nzIdx) {
-            currentCol = graphData[nzIdx]; // Extract column of this particular element 
+        // Only collects distance-1 nodes from halo elements
+        for(int row = 0; row < NROW; ++row){
+            for(int nzIdx=childrenStart[row]; nzIdx<childrenStart[row+1]; ++nzIdx) {
+                currentCol = graphData[nzIdx]; // Extract column of this particular element 
 
-            // isRemote = ((currentCol < localColLimitLo) || (currentCol >= localColLimitHi)); // Possibly leave in as sanity check
-            // colInBoundaryNodes = std::find(collectedBoundaryNodes.begin(), collectedBoundaryNodes.end(), currentCol) != collectedBoundaryNodes.end();
-            // rowInBoundaryNodes = std::find(collectedBoundaryNodes.begin(), collectedBoundaryNodes.end(), row) != collectedBoundaryNodes.end();
-            // if(( isRemote || colInBoundaryNodes) && !rowInBoundaryNodes )
+                // isRemote = ((currentCol < localColLimitLo) || (currentCol >= localColLimitHi)); // Possibly leave in as sanity check
+                // colInBoundaryNodes = std::find(collectedBoundaryNodes.begin(), collectedBoundaryNodes.end(), currentCol) != collectedBoundaryNodes.end();
+                // rowInBoundaryNodes = std::find(collectedBoundaryNodes.begin(), collectedBoundaryNodes.end(), row) != collectedBoundaryNodes.end();
+                // if(( isRemote || colInBoundaryNodes) && !rowInBoundaryNodes )
 
-            if(currentCol >= NROW) {
-                boundaryNodes.push_back(row); //TODO: change to insert when unordered set
-                break; // move to the next row
+                if(currentCol >= NROW) {
+                    boundaryNodes.push_back(row); //TODO: change to insert when unordered set
+                    break; // move to the next row
+                }
             }
         }
-    }
 
-    int startRow = 0;
-    int endRow = NROW;
-    int parentIdx=0;
-    std::vector<std::map<int, std::vector<Range>>> boundaryRange = {};
-    std::string mtxType="N";
+        int startRow = 0;
+        int endRow = NROW;
+        int parentIdx=0;
+        std::vector<std::map<int, std::vector<Range>>> boundaryRange = {};
+        std::string mtxType="N";
 
-    RACE::Traverse *traverser = new RACE::Traverse(this, RACE::POWER, startRow, endRow, parentIdx, boundaryNodes, boundaryRange, mtxType);
+        RACE::Traverse *traverser = new RACE::Traverse(this, RACE::POWER, startRow, endRow, parentIdx, boundaryNodes, boundaryRange, mtxType);
 
-    int totalLevelsToTraverse = powerMax - 2;
-    int totalLevel = powerMax;
-    distFromRemotePtr = std::vector<int>(totalLevel+1, 0);
-    if(totalLevelsToTraverse >= 0 && !(boundaryNodes.empty()))
-    {
-        traverser->calculateDistance(totalLevelsToTraverse, true);
-        LevelData* curLevelData = traverser->getLevelData();
-
-
-        distFromRemotePtr[0] = 0; //TODO: verify?
-
-        // Takes the size of the "chunks" of how matrix is partitioned, and cumsums them
-        // levelRow : # nodes in each corresponding ring
-        // distFromRemotePtr -> cumsum of levelRows
-        for(int level=0; level<totalLevel; ++level)
+        int totalLevel = powerMax;
+        int totalLevelsToTraverse = powerMax - 2;
+        distFromRemotePtr = std::vector<int>(totalLevel+1, 0);
+        if(totalLevelsToTraverse >= 0 && !(boundaryNodes.empty()))
         {
-            distFromRemotePtr[level+1] = distFromRemotePtr[level] + curLevelData->levelRow[level];
+            traverser->calculateDistance(totalLevelsToTraverse, true);
+            LevelData* curLevelData = traverser->getLevelData();
+
+
+            distFromRemotePtr[0] = 0; //TODO: verify?
+
+            // Takes the size of the "chunks" of how matrix is partitioned, and cumsums them
+            // levelRow : # nodes in each corresponding ring
+            // distFromRemotePtr -> cumsum of levelRows
+            for(int level=0; level<totalLevel; ++level)
+            {
+                distFromRemotePtr[level+1] = distFromRemotePtr[level] + curLevelData->levelRow[level];
+            }
         }
-    }
-    else //power=1 ==> distFromRoot will only contain the main part
-    {
-        distFromRemotePtr[totalLevel-1] = 0;
-        distFromRemotePtr[totalLevel] = NROW;
+        else //power=1 ==> distFromRoot will only contain the main part
+        {
+            distFromRemotePtr[totalLevel-1] = 0;
+            distFromRemotePtr[totalLevel] = NROW;
+        }
     }
 }
 

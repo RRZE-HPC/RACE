@@ -211,6 +211,7 @@ RACE_error RACE::Interface::RACEColor(int highestPower_, int numSharedCache, dou
     }
     highestPower = highestPower_;
     highestSubPower = highestSubPower_;
+    printf("%d\n", highestPower_);
     if(highestSubPower < 1)
     {
         ERROR_PRINT("Highest sub power is less than one. Expected a value greater than one");
