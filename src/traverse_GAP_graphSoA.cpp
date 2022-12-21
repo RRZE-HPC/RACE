@@ -152,16 +152,17 @@ void RACE::Traverse::TDStep(int currLvl)
             printf("perm_u = %d, u = %d\n", perm_u, u);
             int numChildren = graph->childrenSize[perm_u];
             int* children = &(graph->graphData[graph->childrenStart[perm_u]]);
-            
+
             for(auto child_idx=0; child_idx < numChildren; ++child_idx)
             {
 
                 int child = children[child_idx];
-#ifdef RACE_PERMUTE_ON_FLY
-                child = graph->totalInvPerm[child];
-#endif
                 //Guard against remote indicies 21.12.22
                 if(child < graphSize){
+
+#ifdef RACE_PERMUTE_ON_FLY
+                    child = graph->totalInvPerm[child];
+#endif
                     //actually not needed in case of dist ONE, because you dont need
                     //to worry about boundary. But doesn't hurt
                     localColRangeLo = std::min(localColRangeLo, child);
