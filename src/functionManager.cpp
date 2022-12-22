@@ -943,6 +943,12 @@ inline void FuncManager::mpiPreComputation(const std::vector<int> *distFromRemot
     int tid = omp_get_thread_num();
     int localTid = tid % threadPerNode;
 
+    // Initial communication of x-vector values
+#pragma omp master
+    commFunc(commArgs);
+#pragma omp barrier
+    
+
     //rename so macros work
     const std::vector<int> *levelPtr = distFromRemotePtr;
     int totPow = 1;
@@ -990,8 +996,9 @@ inline void FuncManager::mpiPostComputation(const std::vector<int> *distFromRemo
         for(int p=1; p < totPower; ++p){ 
 
             std::cout << "comm: " << p << std::endl;
-            commFunc(commArgs); //synchronize across mpi procs here
-
+#pragma omp master
+            commFunc(commArgs); // <- synchronize across mpi procs here
+#pragma omp barrier
             for(int mpiRingIdx = 0; mpiRingIdx < (totPower-p); ++mpiRingIdx){
 
                 int curMainPow = static_cast<int>((p+mpiRingIdx)/subPower); // NOTE: not sure about these two, just copied from example

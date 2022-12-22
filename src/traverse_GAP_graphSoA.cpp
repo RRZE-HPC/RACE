@@ -149,7 +149,7 @@ void RACE::Traverse::TDStep(int currLvl)
 #ifdef RACE_PERMUTE_ON_FLY
             perm_u = graph->totalPerm[u];
 #endif
-            printf("perm_u = %d, u = %d\n", perm_u, u);
+            // printf("perm_u = %d, u = %d\n", perm_u, u);
             int numChildren = graph->childrenSize[perm_u];
             int* children = &(graph->graphData[graph->childrenStart[perm_u]]);
 
