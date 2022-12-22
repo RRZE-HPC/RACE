@@ -158,8 +158,11 @@ class RACE::Interface{
         //attach communication handle to an existing function handle
         //Currently available only for RACE::POWER.
         //This allows to do MPI communication for MPK-like kernels
-        int attachCommunicationToFunction(int funcId, std::function<void (void*)> f, void* args);
-        int attachCommunicationToFunction(int funcId, void (*f) (void*), void* args);
+        int attachCommunicationToFunction(int funcId, std::function<void (int, int, void*)> f, void* args);
+        int attachCommunicationToFunction(int funcId, void (*f) (int, int, void*), void* args);
+        //simple function for communication, with subPower=1
+        int attachCommunicationToFunction(int funcId, std::function<void (int, void*)> f, void* args);
+        int attachCommunicationToFunction(int funcId, void (*f) (int, void*), void* args);
 
         int executeFunction(int funcId, bool rev=false);
         void setPower(int funcId, int pow);
@@ -204,6 +207,7 @@ class RACE::Interface{
 namespace RACE
 {
     void wrappedPowerFunc(std::function<void(int,int,int,int,void *)>, int start, int end, int pow, int subPow, int numaLocal, void* args);
+    void wrappedCommFunc(std::function<void(int,void *)>, int pow, int subPow, void* args);
     void powerInitRowPtrFunc(int start, int end, int pow, int subPow, int numa_domain, void* arg);
     void powerInitMtxVecFunc(int start, int end, int pow, int subPow, int numa_domain, void* arg);
     void powerInitRowPtrNumaLocalFunc(int start, int end, int pow, int subPow, int numa_domain, void* arg);

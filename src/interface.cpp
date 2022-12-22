@@ -457,13 +457,6 @@ void RACE::wrappedPowerFunc(std::function<void(int,int,int,int,void *)> f, int s
     UNUSED(subPow);
 }
 
-
-int RACE::Interface::registerFunction(void (*f) (int,int,int,int,void *), void *args, int power, int numaSplit)
-{
-    std::function<void (int,int,int,int,void *)> f_function = f;
-    return registerFunction(f_function, args, power, numaSplit);
-}
-
 int RACE::Interface::registerFunction(std::function<void (int,int,int,int,void *)> f, void *args, int power, int numaSplit)
 {
     if(highestSubPower == 1)
@@ -475,16 +468,23 @@ int RACE::Interface::registerFunction(std::function<void (int,int,int,int,void *
     else
     {
         ERROR_PRINT("Sub power value is higher than one. This means you have to supply a kernel that takes subPow into account. The funtion prototype is (*f) (int,int,int,int,void *)");
-        return RACE_ERR_INVALID_ARG;
+        return RACE_ERR_INCOMPATIBILITY;
     }
 }
 
-int RACE::Interface::attachCommunicationToFunction(int funcId, std::function<void (void *)> f, void* args)
+int RACE::Interface::registerFunction(void (*f) (int,int,int,int,void *), void *args, int power, int numaSplit)
+{
+    std::function<void (int,int,int,int,void *)> f_function = f;
+    return registerFunction(f_function, args, power, numaSplit);
+}
+
+int RACE::Interface::attachCommunicationToFunction(int funcId, std::function<void (int, int, void *)> f, void* args)
 {
     if(distance != RACE::POWER)
     {
         ERROR_PRINT("Communication currently supported only for RACE::POWER");
         return RACE_ERR_NOT_IMPLEMENTED;
+
     }
     else
     {
@@ -493,9 +493,36 @@ int RACE::Interface::attachCommunicationToFunction(int funcId, std::function<voi
     }
 }
 
-int RACE::Interface::attachCommunicationToFunction(int funcId, void (*f) (void*), void* args)
+int RACE::Interface::attachCommunicationToFunction(int funcId, void (*f) (int, int, void*), void* args)
 {
-    std::function<void (void *)> comm_function = f;
+    std::function<void (int, int, void *)> comm_function = f;
+    return attachCommunicationToFunction(funcId, comm_function, args);
+}
+
+void RACE::wrappedCommFunc(std::function<void (int, void *)> f, int pow, int subPow, void *args)
+{
+    f(pow, args);
+    UNUSED(subPow);
+}
+
+int RACE::Interface::attachCommunicationToFunction(int funcId, std::function<void (int, void *)> f, void* args)
+{
+    if(highestSubPower == 1)
+    {
+        using namespace std::placeholders;
+        std::function<void (int, int, void *)> bindedFunc = std::bind(RACE::wrappedCommFunc, f, _1, _2, _3);
+        return attachCommunicationToFunction(funcId, bindedFunc, args);
+    }
+    else
+    {
+        ERROR_PRINT("Sub power value is higher than one. This means you have to supply a communication kernel that takes subPow into account. The funtion prototype is (*f) (int,int,void *)");
+        return RACE_ERR_INCOMPATIBILITY;
+    }
+}
+
+int RACE::Interface::attachCommunicationToFunction(int funcId, void (*f) (int, void*), void* args)
+{
+    std::function<void (int, void *)> comm_function = f;
     return attachCommunicationToFunction(funcId, comm_function, args);
 }
 
