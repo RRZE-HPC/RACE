@@ -232,7 +232,7 @@ void RACE::Graph::collectBoundaryNodes(int powerMax){
 
         // Only collects distance-1 nodes from halo elements
         for(int row = 0; row < NROW; ++row){
-            for(int nzIdx=childrenStart[row]; nzIdx<childrenStart[row+1]; ++nzIdx) {
+            for(int nzIdx=childrenStart[row]; nzIdx<childrenStart[row]+childrenSize[row]; ++nzIdx) {
                 currentCol = graphData[nzIdx]; // Extract column of this particular element 
 
                 // isRemote = ((currentCol < localColLimitLo) || (currentCol >= localColLimitHi)); // Possibly leave in as sanity check

@@ -948,7 +948,12 @@ inline void FuncManager::mpiPreComputation(const std::vector<int> *distFromRemot
     // Note we expect remote elements of x vector when computing with pow=1 and
     // subPow=1
 #pragma omp master
+{
+#ifdef RACE_DEBUG
+    printf("mpiPreComputation -> Communicating Power: %d halos.\n", 0);
+#endif
     commFunc(1, 1, commArgs);
+}
 #pragma omp barrier
 
 
@@ -968,6 +973,7 @@ inline void FuncManager::mpiPreComputation(const std::vector<int> *distFromRemot
 
 #ifdef RACE_DEBUG
             printf("MPI pre. tid = %d, rowPerThread = %d, doing boundary [%d, %d] with pow = %d, powLevel = %d\n", omp_get_thread_num(), _RowPerThread_, startRow_tid, endRow_tid, p, powLevel);
+            printf("mpiPreComputation -> Computing Power: %d for Level ring: %d.\n", curMainPow+1, powLevel); // powLevel just ring index
 #endif
             powerFunc(startRow_tid, endRow_tid, curMainPow+1, curSubPow+1, numaLocalArg, args);
 
@@ -991,19 +997,22 @@ inline void FuncManager::mpiPostComputation(const std::vector<int> *distFromRemo
 {
     int tid = omp_get_thread_num();
     int localTid = tid % threadPerNode;
-
     if(totPower > 1){ // <- this may already be satisfied somewhere?
         //rename so macros work
         const std::vector<int> *levelPtr = distFromRemotePtr;
 
         for(int p=1; p < totPower; ++p){
 
-            std::cout << "comm: " << p << std::endl;
 
             int remoteMainPow = static_cast<int>((p)/subPower); // NOTE: not sure about these two, just copied from example
             int remoteSubPow = static_cast<int>((p)%subPower);
 #pragma omp master
+        {
+#ifdef RACE_DEBUG
+            printf("mpiPostComputation -> Communicating Power: %d halos\n", remoteMainPow);
+#endif
             commFunc(remoteMainPow+1, remoteSubPow+1, commArgs); // <- synchronize across mpi procs here
+        }
 #pragma omp barrier
             for(int mpiRingIdx = 0; mpiRingIdx < (totPower-p); ++mpiRingIdx){
 
@@ -1023,6 +1032,7 @@ inline void FuncManager::mpiPostComputation(const std::vector<int> *distFromRemo
 #ifdef RACE_DEBUG
                 printf("MPI pre. tid = %d, rowPerThread = %d, doing boundary [%d, %d] with pow = %d, powLevel = %d\n", omp_get_thread_num(), _RowPerThread_, startRow_tid, endRow_tid, p, powLevel);
 #endif
+                printf("mpiPostComputation -> Computing Power: %d for Level ring: %d.\n", curMainPow+1, mpiRingIdx);// <- I dont know!
                 powerFunc(startRow_tid, endRow_tid, curMainPow+1, curSubPow+1, numaLocalArg, args);
 #pragma omp barrier
 
@@ -1183,8 +1193,10 @@ void FuncManager::recursivePowerCallSerial(int parent)
             WARNING_PRINT("It seems you haven't register MPI communication call with RACE. Although you have remote boundaries. Except numerical errors.");
         }
         //TODO: in MPI case, pre-computation at MPI-boundary
-        //TODO modify args
-        if(haveMPI && (parent == 0))
+        //TODO: modify args
+        // std::cout << "parent = " << parent << std::endl;
+        // if(haveMPI && (parent == 0))
+        if(parent == 0) // Need some other kind of flag for detecting MPI for this...
         {
 #ifdef RACE_DEBUG
             std::cout << "begin MPI pre-computation" << std::endl;
@@ -1213,10 +1225,19 @@ void FuncManager::recursivePowerCallSerial(int parent)
             int endLevel = unitPtr->at(unitCtr+1);
             //printf("tid = %d: threadPerNode = %d, unitCtr = %d, startSlope = %d, endSlope = %d, startLevel = %d, endLevel = %d, startRow = %d, endRow = %d\n", tid, threadPerNode, unitCtr, startSlope, endSlope, startLevel, endLevel, levelPtr->at(startLevel), levelPtr->at(endLevel));
             //main-body
+#ifdef RACE_DEBUG
+            printf("RACE local Phase start --------------------------------\n");
+#endif
             powerCallGeneral(startLevel, endLevel, startLevel, endLevel, startSlope, endSlope, levelPtr, boundaryLevelPtr, unlockRow, boundaryUnlockRow, unlockCtr, dangerRow, boundaryDangerRow, numaLocalArg, offset, parent);
+#ifdef RACE_DEBUG
+            printf("RACE local Phase end --------------------------------\n");
+#endif
             //printf("tid = %d: main finished\n", tid);
             int hopelessEnd = unitPtr->at(unitCtr+2);
             //printf("unitCtr = %d, hopelessEnd = %d\n", unitCtr, hopelessEnd);
+#ifdef RACE_DEBUG
+            printf("RACE clean-up Phase start --------------------------------\n");
+#endif
             if(hopelessEnd > endLevel)
             {
                 int childrenStart = childrenNodeStart->at(nodePos);
@@ -1251,6 +1272,10 @@ void FuncManager::recursivePowerCallSerial(int parent)
             powerCallNodeReminder(nodeStartSlope, nodeEndSlope, levelPtr, nodePtr, numaLocalArg, offset);
             //printf("tid = %d: node reminder finished\n", tid);
         }
+#ifdef RACE_DEBUG
+        printf("RACE clean-up Phase end --------------------------------\n");
+#endif
+
 
         if(haveMPI && (parent == 0))
         {
