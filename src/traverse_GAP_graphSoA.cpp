@@ -34,7 +34,6 @@ RACE::Traverse::Traverse(RACE::Graph *graph_, RACE::dist dist_, int rangeLo_, in
     {
         roots = {rangeLo}; //push a default root, if no root is provided
     }
-    // printf("I'm in Traverse::Traverse\n");
     if( (mtxType != "N") && ( (mtxType != "L" && mtxType != "U") ) )
     {
 
@@ -133,7 +132,6 @@ RACE::Traverse::~Traverse()
 
 void RACE::Traverse::TDStep(int currLvl)
 {
-    // printf("I'm in Traverse::TDStep\n");
     int localCtr=0;
     int localColRangeLo = colRangeLo;
     int localColRangeHi = colRangeHi;
@@ -339,34 +337,33 @@ void RACE::Traverse::calculateDistance(int maxLvl, bool mpiBoundaryDetection) //
     // Increment all distances
     if (mpiBoundaryDetection){
 
-        bool printCheck = !true;
-        if(printCheck){
+#ifdef RACE_DEBUG
             printf("\n--------------- distFromRoot check -------------\n");
             printf("distFromRoot = [");
-        }
+#endif
         bool isThereUnmarkedRegion = false;
         for(int i = 0; i < graph->NROW; ++i){
             if(distFromRoot[i] == -1){
                 distFromRoot[i] = maxLvl + 1; // Just needs to be largest value in array, for sorting
                 isThereUnmarkedRegion = true;
             }
-            if(printCheck){
+#ifdef RACE_DEBUG
                 if(i == (graph->NROW - 1)){
                     printf("%i", distFromRoot[i]);
                     break;
                 }
                 printf("%i, ", distFromRoot[i]);
-            }
+#endif
         }
 
         if(isThereUnmarkedRegion)
         {
             levelData->totalLevel += 1;
         }
-        if(printCheck){
+#ifdef RACE_DEBUG
             printf("]\n");
             printf("------------------------------------------------\n\n");
-        }
+#endif
     }
 
     printf("Total Level = %d\n",levelData->totalLevel);

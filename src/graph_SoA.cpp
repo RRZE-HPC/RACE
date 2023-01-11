@@ -47,7 +47,6 @@
 //TODO no need to put only diagonal elements in Graph
 RACE_error RACE::Graph::createGraphFromCRS(int *rowPtr, int *col, int *initPerm, int *initInvPerm)
 {
-    // printf("I'm in Graph::createGraphFromCRS\n");
     /*if(NROW != NCOL) {
         ERROR_PRINT("NROW!=NCOL : Currently Graph BMC supports only undirected Graph");
         return RACE_ERR_MATRIX_SYMM;
@@ -373,8 +372,6 @@ bool RACE::Graph::getStatistics()
 
 void RACE::Graph::permuteAndRemoveSerialPart()
 {
-    // printf("I'm in Graph::permuteAndRemoveSerialPart\n");
-
     updatePerm(&totalPerm, serialPerm, NROW, NROW);
 #pragma omp parallel for schedule(static)
     for(int i=0; i<NROW; ++i) {
@@ -431,8 +428,6 @@ RACE::Graph::Graph(int nrow, int ncol, int *rowPtr, int *col, RACE::dist distanc
     NNZ = rowPtr[NROW];
     int *outRowPtr=NULL;
     int *outCol=NULL;
-
-    // printf("I'm in Graph::Graph, constructor\n");
 
     //check if a rec stage is there when performing MPK
     //if not then we can avoid creating a symmetric matrix
