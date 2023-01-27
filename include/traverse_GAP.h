@@ -33,6 +33,7 @@
 #include "bitmap.h"
 #include "sliding_queue.h"
 #include <string>
+#include <limits>
 
 //class RACE::Graph;
 
