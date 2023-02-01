@@ -25,6 +25,7 @@
 #include "utility.h"
 #include <cmath>
 #include "macros.h"
+//#define RACE_DEBUG
 
 LB::LB(int nThreads_, double efficiency_, LevelData* levelData_, RACE::dist dist_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):levelPtr(NULL),subZonePtr(NULL),numBlocks(NULL),zonePtr(NULL),levelData(levelData_), dist(dist_), d2Type(d2Type_), maxThreads(-1), nThreads(nThreads_), efficiency(efficiency_), lbTarget(lbTarget_)
 {
@@ -198,6 +199,8 @@ void LB::splitZones()
         nThreads = maxThreads;
     }
 */
+
+    scale.resize(0); //reset scale
     calcEffectiveRatio();
 
     minGap = getMinGap(dist, d2Type);
@@ -323,52 +326,56 @@ void LB::splitZones()
         threadCtr+=scale[i];
     }
 
-    if(threadCtr != nThreads)
+
+    if(!scale.empty()) //if empty it means no levels
     {
-        WARNING_PRINT("This message will be switched off: Diff. in Initial estimate spawned threads = %d, required = %d",threadCtr,nThreads );
-        int diff = nThreads - threadCtr;
-        //adjust this difference; this might 
-        //have occured due to rounding
-        if(std::abs(diff)==1)
+        if(threadCtr != nThreads)
         {
-            if(diff==1)
+            WARNING_PRINT("This message will be switched off: Diff. in Initial estimate spawned threads = %d, required = %d",threadCtr,nThreads );
+            int diff = nThreads - threadCtr;
+            //adjust this difference; this might 
+            //have occured due to rounding
+            if(std::abs(diff)==1)
             {
-                scale[scale.size()-1] += 1;
-            }
-            else
-            {
-                if(scale[scale.size()-1] == 1)
+                if(diff==1)
                 {
-                    scale.pop_back();
-                    initialLvlPtr.pop_back();
-                    initialLvlPtr[initialLvlPtr.size()-1] = totalLevel;
+                    scale[scale.size()-1] += 1;
                 }
                 else
                 {
-                    scale[scale.size()-1] -= 1;
+                    if(scale[scale.size()-1] == 1)
+                    {
+                        scale.pop_back();
+                        initialLvlPtr.pop_back();
+                        initialLvlPtr[initialLvlPtr.size()-1] = totalLevel;
+                    }
+                    else
+                    {
+                        scale[scale.size()-1] -= 1;
+                    }
                 }
             }
+            else
+            {
+                WARNING_PRINT("Given number of threads would not be spawned; please reduce efficiency if more threads are needed");
+            }
         }
-        else
-        {
-            WARNING_PRINT("Given number of threads would not be spawned; please reduce efficiency if more threads are needed");
-        }
-    }
 
-    currLvlThreads = scale.size();
+        currLvlThreads = scale.size();
 
 #ifdef RACE_DEBUG
-    //DEBUG
-       for(int i=0; i<currLvlThreads; ++i)
-       {
-       printf("scale[%d] = %d\n", i, scale[i]);
-       }
+        //DEBUG
+        for(int i=0; i<currLvlThreads; ++i)
+        {
+            printf("scale[%d] = %d\n", i, scale[i]);
+        }
 
-       for(int i=0; i<currLvlThreads+1; ++i)
-       {
-       printf("initLvlPtr[%d] = %d\n", i, initialLvlPtr[i]);
-       }
+        for(int i=0; i<currLvlThreads+1; ++i)
+        {
+            printf("initLvlPtr[%d] = %d\n", i, initialLvlPtr[i]);
+        }
 #endif
+    }
 
     totalBlocks = blockPerThread*currLvlThreads;
     int levelPtrSize = totalBlocks+1;
@@ -398,116 +405,91 @@ void LB::splitZones()
     bool exitFlag = false;
     int *oldLevelPtr = new int[totalBlocks+1];
 
-    while(!exitFlag)
+    if(!scale.empty())
     {
-        calcChunkSum(chunkSum);
+        while(!exitFlag)
+        {
+            calcChunkSum(chunkSum);
 #ifdef RACE_DEBUG
-        for(int i=0; i<totalBlocks; ++i)
-        {
-            printf("ChunkSum[%d] = %d\n", i,chunkSum[i]);
-        }
-#endif
-        Stat meanVar(chunkSum, totalBlocks, blockPerThread, scale);
-        double var = 0;
-        for(int i=0; i<meanVar.numPartitions; ++i)
-        {
-            var += meanVar.var[i];
-        }
-        double newVar = var;
-
-        int *rankPerm = new int[totalBlocks];
-        for(int i=0; i<totalBlocks; ++i)
-        {
-            rankPerm[i] = i;
-        }
-
-        sortPerm(meanVar.weight, rankPerm, 0, totalBlocks, true);
-        int currRank = 0;
-
-        for(int i=0; i<totalBlocks+1; ++i)
-        {
-            oldLevelPtr[i] = levelPtr[i];
-        }
-
-        while(newVar>=var)
-        {
-            int rankIdx = rankPerm[currRank];
-#ifdef RACE_DEBUG
-            printf("rankIdx = %d\n", rankIdx);
-#endif
-            for(int i=0; i<totalBlocks+1; ++i)
-            {
-                levelPtr[i] = oldLevelPtr[i];
-            }
-            //determine the mean of the rank: TODO: for 3 block case
-            double myMean = meanVar.mean[rankIdx%blockPerThread];
-            bool fail = false;
-
-            //maybe moving one step does nothing due to 0 elements in levels
-            //for example Spin-26 and subBlock, therefore in this case move more
-            //step till a change happens
-            bool movePossible = true;
-            //double currVar = newVar;
-
-#ifdef RACE_DEBUG
-            printf("start\n");
-            for(int i=0; i<levelPtrSize; ++i)
-            {
-                printf("levelPtr[%d] = %d\n",i,levelPtr[i]);
-            }
-            int *testChunkSum = new int[totalBlocks];
-            calcChunkSum(testChunkSum);
             for(int i=0; i<totalBlocks; ++i)
             {
-                printf("ChunkSum[%d] = %d\n", i,testChunkSum[i]);
+                printf("ChunkSum[%d] = %d\n", i,chunkSum[i]);
             }
 #endif
-
-            bool first=true;
-            while((first==true) || (movePossible && fabs(var-newVar)<1e-5))
+            Stat meanVar(chunkSum, totalBlocks, blockPerThread, scale);
+            double var = 0;
+            for(int i=0; i<meanVar.numPartitions; ++i)
             {
-                first = false;
-                //If I am less than mean
-                if((chunkSum[rankIdx]/(double)scale[rankIdx/blockPerThread]) < myMean)
+                var += meanVar.var[i];
+            }
+            double newVar = var;
+
+            int *rankPerm = new int[totalBlocks];
+            for(int i=0; i<totalBlocks; ++i)
+            {
+                rankPerm[i] = i;
+            }
+
+            sortPerm(meanVar.weight, rankPerm, 0, totalBlocks, true);
+            int currRank = 0;
+
+            for(int i=0; i<totalBlocks+1; ++i)
+            {
+                oldLevelPtr[i] = levelPtr[i];
+            }
+
+            while(newVar>=var)
+            {
+                int rankIdx = rankPerm[currRank];
+#ifdef RACE_DEBUG
+                printf("rankIdx = %d\n", rankIdx);
+#endif
+                for(int i=0; i<totalBlocks+1; ++i)
                 {
-                    //try to acquire from my neighbours
-                    int acquireIdx = findNeighbour(meanVar, acquire);
-                    if(acquireIdx==-1 || (acquireIdx==rankIdx))
-                    {
-                        fail = true;
-                        movePossible = false;
-                    }
-                    moveOneStep(rankIdx, acquireIdx);
+                    levelPtr[i] = oldLevelPtr[i];
+                }
+                //determine the mean of the rank: TODO: for 3 block case
+                double myMean = meanVar.mean[rankIdx%blockPerThread];
+                bool fail = false;
+
+                //maybe moving one step does nothing due to 0 elements in levels
+                //for example Spin-26 and subBlock, therefore in this case move more
+                //step till a change happens
+                bool movePossible = true;
+                //double currVar = newVar;
 
 #ifdef RACE_DEBUG
-                    printf("%d less than mean acquiring from %d\n", rankIdx, acquireIdx);
-                    for(int i=0; i<levelPtrSize; ++i)
-                    {
-                        printf("levelPtr[%d] = %d\n",i,levelPtr[i]);
-                    }
-                    calcChunkSum(testChunkSum);
-                    for(int i=0; i<totalBlocks; ++i)
-                    {
-                        printf("ChunkSum[%d] = %d\n", i,testChunkSum[i]);
-                    }
+                printf("start\n");
+                for(int i=0; i<levelPtrSize; ++i)
+                {
+                    printf("levelPtr[%d] = %d\n",i,levelPtr[i]);
+                }
+                int *testChunkSum = new int[totalBlocks];
+                calcChunkSum(testChunkSum);
+                for(int i=0; i<totalBlocks; ++i)
+                {
+                    printf("ChunkSum[%d] = %d\n", i,testChunkSum[i]);
+                }
 #endif
 
-               }
-                // If I am greater than mean
-                else
+                bool first=true;
+                while((first==true) || (movePossible && fabs(var-newVar)<1e-5))
                 {
-                    if( (levelPtr[rankIdx+1] - levelPtr[rankIdx]) > minGap)
+                    first = false;
+                    //If I am less than mean
+                    if((chunkSum[rankIdx]/(double)scale[rankIdx/blockPerThread]) < myMean)
                     {
-                        //try to give to my neighbours
-                        int giveIdx = findNeighbour(meanVar, give);
-                        if(giveIdx==-1 || (rankIdx==giveIdx))
+                        //try to acquire from my neighbours
+                        int acquireIdx = findNeighbour(meanVar, acquire);
+                        if(acquireIdx==-1 || (acquireIdx==rankIdx))
                         {
-                            movePossible = false;
                             fail = true;
+                            movePossible = false;
                         }
-                        moveOneStep(giveIdx, rankIdx);
+                        moveOneStep(rankIdx, acquireIdx);
+
 #ifdef RACE_DEBUG
-                        printf("%d greater than mean giving to %d\n", rankIdx, giveIdx);
+                        printf("%d less than mean acquiring from %d\n", rankIdx, acquireIdx);
                         for(int i=0; i<levelPtrSize; ++i)
                         {
                             printf("levelPtr[%d] = %d\n",i,levelPtr[i]);
@@ -520,39 +502,67 @@ void LB::splitZones()
 #endif
 
                     }
+                    // If I am greater than mean
                     else
                     {
-                        movePossible = false;
-                    }
-                }
-
-                if(!fail)
-                {
-                    calcChunkSum(newChunkSum);
-                    Stat newMeanVar(newChunkSum, totalBlocks, blockPerThread, scale);
-                    //newMeanVar.calculate();
-
-                    newVar = 0;
-                    for(int i=0; i<newMeanVar.numPartitions; ++i)
-                    {
-                        newVar += newMeanVar.var[i];
-                    }
-                }
-            }
-
-            if( (currRank == (totalBlocks-1)) && (newVar>=var) )
-            {
-                exitFlag = true;
-                delete[] levelPtr;
-                levelPtr = oldLevelPtr;
-                break;
-            }
-            currRank += 1;
+                        if( (levelPtr[rankIdx+1] - levelPtr[rankIdx]) > minGap)
+                        {
+                            //try to give to my neighbours
+                            int giveIdx = findNeighbour(meanVar, give);
+                            if(giveIdx==-1 || (rankIdx==giveIdx))
+                            {
+                                movePossible = false;
+                                fail = true;
+                            }
+                            moveOneStep(giveIdx, rankIdx);
 #ifdef RACE_DEBUG
-            delete[] testChunkSum;
+                            printf("%d greater than mean giving to %d\n", rankIdx, giveIdx);
+                            for(int i=0; i<levelPtrSize; ++i)
+                            {
+                                printf("levelPtr[%d] = %d\n",i,levelPtr[i]);
+                            }
+                            calcChunkSum(testChunkSum);
+                            for(int i=0; i<totalBlocks; ++i)
+                            {
+                                printf("ChunkSum[%d] = %d\n", i,testChunkSum[i]);
+                            }
 #endif
+
+                        }
+                        else
+                        {
+                            movePossible = false;
+                        }
+                    }
+
+                    if(!fail)
+                    {
+                        calcChunkSum(newChunkSum);
+                        Stat newMeanVar(newChunkSum, totalBlocks, blockPerThread, scale);
+                        //newMeanVar.calculate();
+
+                        newVar = 0;
+                        for(int i=0; i<newMeanVar.numPartitions; ++i)
+                        {
+                            newVar += newMeanVar.var[i];
+                        }
+                    }
+                }
+
+                if( (currRank == (totalBlocks-1)) && (newVar>=var) )
+                {
+                    exitFlag = true;
+                    delete[] levelPtr;
+                    levelPtr = oldLevelPtr;
+                    break;
+                }
+                currRank += 1;
+#ifdef RACE_DEBUG
+                delete[] testChunkSum;
+#endif
+            }
+            delete[] rankPerm;
         }
-        delete[] rankPerm;
     }
     delete[] chunkSum;
     delete[] newChunkSum;
