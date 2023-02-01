@@ -1030,7 +1030,7 @@ inline void FuncManager::mpiPostComputation(const std::vector<int> *distFromRemo
                 SPLIT_LEVEL_PER_THREAD(mpiRingIdx);
 
 #ifdef RACE_DEBUG
-                printf("MPI pre. tid = %d, rowPerThread = %d, doing boundary [%d, %d] with pow = %d, powLevel = %d\n", omp_get_thread_num(), _RowPerThread_, startRow_tid, endRow_tid, p, powLevel);
+                printf("MPI pre. tid = %d, rowPerThread = %d, doing boundary [%d, %d] with pow = %d, powLevel = %d\n", omp_get_thread_num(), _RowPerThread_, startRow_tid, endRow_tid, p, mpiRingIdx);
                 printf("mpiPostComputation -> Computing Power: %d for Level ring: %d.\n", curMainPow+1, mpiRingIdx);// <- I dont know!
 #endif
                 powerFunc(startRow_tid, endRow_tid, curMainPow+1, curSubPow+1, numaLocalArg, args);
