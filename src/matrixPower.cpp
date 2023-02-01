@@ -37,6 +37,11 @@
 mtxPower::mtxPower(RACE::Graph* graph_, int highestPower_, int numSharedCache_, double cacheSize_, double safetyFactor_, int cache_violation_cutoff_, int startRow_, int endRow_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_, int nodeId_, int numRootNodes_, std::string mtxType):graph(graph_), cacheLevelGroup(NULL), startRow(startRow_), endRow(endRow_), levelData(NULL), boundaryRange(boundaryRange_), highestPower(highestPower_), numSharedCache(numSharedCache_), cacheSize(cacheSize_), safetyFactor(safetyFactor_), cache_violation_cutoff(cache_violation_cutoff_), nodeId(nodeId_), numRootNodes(numRootNodes_)
 {
 
+    if(numSharedCache > 1)
+    {
+        WARNING_PRINT("No support for more than 1 NUMA domain with OpenMP. Please use MPI on each NUMA domain with RACE. Setting to 1 NUMA domain");
+        numSharedCache=1;
+    }
 #if RACE_VERBOSITY > 1
     EXEC_BOUNDARY_STRUCTURE(boundaryRange,
             printf("####### check working rad %d, rad %d, range [%d, %d]\n", _workingRadius_, _radius_, boundaryRange[_workingRadius_][_radius_][_region_].lo, boundaryRange[_workingRadius_][_radius_][_region_].hi);
@@ -47,7 +52,7 @@ mtxPower::mtxPower(RACE::Graph* graph_, int highestPower_, int numSharedCache_, 
     if( (mtxType == "N") || ( (mtxType == "L" || mtxType == "U") ) )
     {
         // NOTE: Dane changed rootVec to reflect new arguement type, 25.11.22
-        traverser = new RACE::Traverse(graph, RACE::POWER, startRow, endRow, 0, std::vector<int> (1, startRow), boundaryRange, mtxType);
+        traverser = new RACE::Traverse(graph, RACE::POWER, startRow, endRow, 0, {}, boundaryRange, mtxType);
 
     }
     else
@@ -128,7 +133,7 @@ void mtxPower::createLevelPtr()
 
 double mtxPower::getBytePerNNZ()
 {
-    double nnzr = levelData->nnz/(double)levelData->nrow;
+    double nnzr = graph->NNZ/(double)graph->NROW;
     //(1+power/nnzr) -> includes mtx values, lhs and rhs vector values
     //(1+1/nnzr) -> includes col and rowPtr
     return (double)(((1+highestPower/nnzr)*sizeof(double)+(1+1/nnzr)*sizeof(int)));
@@ -511,16 +516,20 @@ void mtxPower::findPartition()
 
     totalLevel = levelData->totalLevel;
     createLevelPtr();
-    double nnzr = levelData->nnz/(double)levelData->nrow;
+    double nnzr = graph->NNZ/(double)graph->NROW;
     //convert cache Size to elements,
     //i.e. nnz for this matrix that cache can hold
     double bytePerNNZ = getBytePerNNZ();
     double cacheElem = cacheSize/bytePerNNZ;
-    printf("cacheElem = %f\n", cacheElem);
-    printf("nrows = %d\n", levelData->nrow);
-    printf("nnz = %d\n", levelData->nnz);
-    printf("nnzr = %f\n", nnzr);
 
+#if RACE_VERBOSITY > 1
+    printf("cacheElem = %f\n", cacheElem);
+    printf("nrows = %d\n", graph->NROW);
+    printf("nnz = %d\n", graph->NNZ);
+    printf("nnzr = %f\n", nnzr);
+    printf("nrows in main = %d\n", levelData->nrow);
+    printf("nnz in main = %d\n", levelData->nnz);
+#endif
     std::vector<int> cacheViolatedLevel;
     std::vector<int> cacheViolatedFactor;
     //check if there is a level where nnz violates cache
@@ -565,7 +574,14 @@ void mtxPower::findPartition()
     //PRINT_TIME(levelCollection);
 
     //START_TIME(split_cache);
-    splitSharedCacheDomain();
+    //Disabled support for more than 1 NUMA domain, because now MPI is there for
+    //that
+    //splitSharedCacheDomain();
+    cacheLevelGroup = new int[2];
+    cacheLevelGroup[0] = startRow;
+    cacheLevelGroup[1] = endRow;
+    nodePtr = std::vector<int>(2, 0);
+    nodePtr[1] = totalLevel;
     //STOP_TIME(split_cache);
     //PRINT_TIME(split_cache);
 
@@ -624,7 +640,7 @@ void mtxPower::splitSharedCacheDomain()
 #if RACE_VERBOSITY > 1
     for(int i=0; i<len; ++i)
     {
-        printf("nodePtr = %d\n", nodePtr[i]);
+        printf("nodePtr = %d, cacheLevelGroup = %d\n", nodePtr[i], cacheLevelGroup[i]);
     }
 #endif
 
@@ -678,6 +694,7 @@ void mtxPower::consolidatePartition()
     INIT_BOUNDARY_STRUCTURE(boundaryRange, newBoundaryLevelPtr, {boundaryLevelPtr[_workingRadius_][_radius_][_region_][0]});
 
     int consolidated_ctr = 0; //startRow;
+
     unlockRow[0] = levelPtr[1];
     //boundary unlock row
     INIT_BOUNDARY_STRUCTURE(boundaryRange, boundaryUnlockRow, {boundaryLevelPtr[_workingRadius_][_radius_][_region_][1]});
@@ -868,7 +885,6 @@ void mtxPower::consolidatePartition()
         newLevelPtr.push_back(levelPtr[lastLevel]);
 
         EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr, newBoundaryLevelPtr[_workingRadius_][_radius_][_region_].push_back(_val_.back()););
-
         dangerRow[consolidated_ctr] = levelPtr[lastLevel-1];
         EXEC_BOUNDARY_STRUCTURE(boundaryLevelPtr,boundaryDangerRow[_workingRadius_][_radius_][_region_].push_back(_val_[lastLevel-1]);
                 );
