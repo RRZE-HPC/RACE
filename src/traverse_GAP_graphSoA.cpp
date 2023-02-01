@@ -32,7 +32,10 @@ RACE::Traverse::Traverse(RACE::Graph *graph_, RACE::dist dist_, int rangeLo_, in
 {
     if(roots.empty())
     {
-        roots = {rangeLo}; //push a default root, if no root is provided
+        if(rangeLo < rangeHi)
+        {
+            roots = {rangeLo}; //push a default root, if no root is provided
+        }
     }
     if( (mtxType != "N") && ( (mtxType != "L" && mtxType != "U") ) )
     {
@@ -469,6 +472,8 @@ RACE_error RACE::Traverse::createLevelData()
         {
             levelData->totalLevel += 1;
         }
+
+        levelData->totalLevel = std::max(1, levelData->totalLevel); //even if 0 levels make at least 1 dummy level
         EXEC_BOUNDARY_STRUCTURE(boundaryLevelData,
                 _val_ = new LevelData;
                 status_flag = RACE_SUCCESS;
