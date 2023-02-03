@@ -134,7 +134,7 @@ class RACE::Interface{
         void getInvPerm(int **invPerm_, int *len_);
         int getNumThreads();
 
-        // D-RACE additions
+        // MPI additions, potentially needed for future work
         void passGlobalRows(int globalStartRow, int globalEndRow);
         void compressColIdx();
 

@@ -307,9 +307,21 @@ RACE_error RACE::Interface::RACEColor()
 
 double RACE::Interface::getEfficiency()
 {
-    double effThreads = ((double)nrow/(double)zoneTree->at(0).effRowZ);
-    double eff = effThreads/requestedThreads;
-    return eff;
+    if(distance == RACE::POWER){
+        // MPK 
+        // TODO: Expose/use all ring data for relevant statistics
+        int powerMax = graph->distFromRemotePtr.size() - 1;
+        int mainRows = graph->distFromRemotePtr[powerMax] - graph->distFromRemotePtr[powerMax - 1];
+        // printf("%d - %d main rows\n", graph->distFromRemotePtr[powerMax], graph->distFromRemotePtr[powerMax - 1]);
+        double eff = (double)mainRows / (double)nrow;
+        return eff;
+    }
+    else{
+        // Coloring
+        double effThreads = ((double)nrow/(double)zoneTree->at(0).effRowZ);
+        double eff = effThreads/requestedThreads;
+        return eff;
+    }
 }
 
 int RACE::Interface::getMaxStageDepth()
