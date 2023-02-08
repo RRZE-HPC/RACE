@@ -921,7 +921,8 @@ void mtxPower::consolidatePartition()
     }
 
     boundaryLevelPtr = newBoundaryLevelPtr;
-    std::vector<int> newNodePtr = findMacroLevelPtr(cacheLevelGroup);
+    //std::vector<int> newNodePtr = findMacroLevelPtr(cacheLevelGroup); //TODO:removed since we stick with 1 NUMA node now, other with MPI
+    std::vector<int> newNodePtr = {0, totalLevel};
     if((int)nodePtr.size() != numSharedCache+1)
     {
         ERROR_PRINT("nodePtr dimensions do not match");

@@ -200,6 +200,8 @@ class RACE::Interface{
         //NUMA with actual splitting
         void getNumaSplitting(int **split, int *splitLen);
         int getHighestPower();
+
+        void checkPowerCoverage();
 };
 
 namespace RACE
@@ -237,6 +239,9 @@ struct matValArg
     int* col = nonVoidArg_->col;\
     double* val = nonVoidArg_->val;\
     double* x = nonVoidArg_->x;\
+
+#define DELETE_ARG()\
+    delete newArg_;
 
 struct matValNumaLocalArg
 {

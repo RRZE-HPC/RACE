@@ -524,6 +524,12 @@ int RACE::Interface::attachCommunicationToFunction(int funcId, void (*f) (int, v
     return attachCommunicationToFunction(funcId, comm_function, args);
 }
 
+inline void dummyComm(int power, void* args)
+{
+    UNUSED(power);
+    UNUSED(args);
+}
+
 int RACE::Interface::executeFunction(int funcId, bool rev)
 {
     RACE_error status = RACE_SUCCESS;
@@ -545,8 +551,8 @@ int RACE::Interface::executeFunction(int funcId, bool rev)
         {
             if(!funMan[funcId]->isCommRegistered())
             {
-                ERROR_PRINT("You haven't registered any communication function to function with id=%d. Although it seems you have MPI partitioning. Please attach communication handle using the function attachCommunicationToFunction", funcId);
-                status = RACE_ERR_INVALID_ARG;
+                attachCommunicationToFunction(funcId, dummyComm, NULL);
+                WARNING_PRINT("You haven't registered any communication function to function with id=%d. Although it seems you have MPI partitioning. We are attaching a dummy communication function", funcId);
             }
         }
     }
@@ -1039,4 +1045,41 @@ void RACE::Interface::getNumaSplitting(int **split, int *splitLen)
 int RACE::Interface::getHighestPower()
 {
     return highestPower;
+}
+
+inline void MAT_NUM_VEC_ACCESSES(int start, int end, int pow, int numa_domain, void* args)
+{
+    DECODE_ARG(args);
+
+    for(int row=start; row<end; ++row)
+    {
+        x[row]++;
+        if(x[row] != pow)
+        {
+            if(x[row] > pow)
+            {
+                ERROR_PRINT("Oh oh we have duplicate computations, error at pow=%d, for row=%d. Value I got at x is %f, expected %d. Level start =%d, Level end=%d", pow, row, x[row], pow, start, end);
+            }
+            else
+            {
+                ERROR_PRINT("Oh oh have some missing computations, error at pow=%d, for row=%d. Value I got at x is %f, expected %d. Level start =%d, Level end=%d", pow, row, x[row], pow, start, end);
+            }
+        }
+    }
+}
+
+void RACE::Interface::checkPowerCoverage()
+{
+    double* x = new double[nrow];
+    for(int row=0; row<nrow; ++row)
+    {
+        x[row] = 0;
+    }
+    ENCODE_ARG(nrow, NULL, NULL, NULL, x);
+    int race_power_id = registerFunction(&MAT_NUM_VEC_ACCESSES, voidArg, getHighestPower());
+    {
+        executeFunction(race_power_id);
+    }
+    DELETE_ARG();
+    delete[] x;
 }
