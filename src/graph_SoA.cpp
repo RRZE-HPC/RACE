@@ -265,12 +265,20 @@ void RACE::Graph::collectBoundaryNodes(int powerMax){
 
             distFromRemotePtr[0] = 0; //TODO: verify?
 
+            // get levels that RACE find
+            int numLevelsDetected = curLevelData->totalLevel;
+
             // Takes the size of the "chunks" of how matrix is partitioned, and cumsums them
             // levelRow : # nodes in each corresponding ring
             // distFromRemotePtr -> cumsum of levelRows
             for(int level=0; level<totalLevel; ++level)
             {
-                distFromRemotePtr[level+1] = distFromRemotePtr[level] + curLevelData->levelRow[level];
+                if(level >= numLevelsDetected){
+                    distFromRemotePtr[level+1] = distFromRemotePtr[level];
+                }
+                else{
+                    distFromRemotePtr[level+1] = distFromRemotePtr[level] + curLevelData->levelRow[level];
+                }
             }
         }
         else //power=1 ==> distFromRoot will only contain the main part
