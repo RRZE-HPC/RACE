@@ -963,12 +963,14 @@ inline void FuncManager::mpiPreComputation(const std::vector<int> *distFromRemot
     for(int mpiRingIdx=1; mpiRingIdx<totPower; ++mpiRingIdx)
     {
         int curLevel = (totPower-1)-mpiRingIdx;
+        // int curLevel = mpiRingIdx - 1; // In case of reversed traversal 10.02.23
         for(int p=0; p<totPow; ++p)
         {
             int curMainPow = static_cast<int>(p/subPower);
             int curSubPow = static_cast<int>(p%subPower);
 
             int powLevel = curLevel+p;
+            // int powLevel = curLevel-p; // In case of reversed traversal 10.02.23
             SPLIT_LEVEL_PER_THREAD(powLevel);
 
 #ifdef RACE_DEBUG

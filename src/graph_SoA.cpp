@@ -261,7 +261,7 @@ void RACE::Graph::collectBoundaryNodes(int powerMax){
         {
             traverser->calculateDistance(totalLevelsToTraverse, true);
             LevelData* curLevelData = traverser->getLevelData();
-
+            
 
             distFromRemotePtr[0] = 0; //TODO: verify?
 
@@ -286,6 +286,9 @@ void RACE::Graph::collectBoundaryNodes(int powerMax){
             distFromRemotePtr[totalLevel-1] = 0;
             distFromRemotePtr[totalLevel] = NROW;
         }
+
+        // Protection from edge case, where island is not detected
+        distFromRemotePtr[totalLevel] = NROW;
     }
 }
 
