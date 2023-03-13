@@ -38,12 +38,13 @@ void capitalize(char* beg)
 #define PERF_RUN(kernel, flopPerNnz, ...)\
 {\
     std::vector<double> time; /*(num_trials, 0);*/\
-    double nnz_update = ((double)mat->nnz)*iterations*1e-9;\
     INIT_TIMER(kernel);\
     bool converged = false;\
     actualIter = 0;\
     for(int trial=0; trial<num_trials; ++trial)\
     {\
+        actualIter = 0;\
+        x->setVal(0); /*restart*/\
         START_TIMER(kernel);\
         INIT_TIMER(convCheck);\
         for(int iter=0; iter<iterations; ++iter)\
@@ -64,10 +65,10 @@ void capitalize(char* beg)
             }\
             PAUSE_TIMER(convCheck);\
         }\
-        if(converged)\
+    /*    if(converged)\
         {\
             break;\
-        }\
+        }*/\
         STOP_TIMER(convCheck);\
         STOP_TIMER(kernel);\
         time.push_back(GET_TIMER(kernel)-GET_TIMER(convCheck));\
@@ -78,6 +79,7 @@ void capitalize(char* beg)
     capitalize(capsKernel);\
     /*printf("Obtained Perf of %s : %8.4f GFlop/s ; Time = %8.5f s\n", capsKernel, flopPerNnz*nnz_update/(time), time);*/\
     printf("Obtained Perf of %s : ", capsKernel);\
+    double nnz_update = ((double)mat->nnz)*actualIter*1e-9;\
     Quantile_print(time_quantiles, flopPerNnz*nnz_update, true);\
     printf(" GFlop/s; Time : ");\
     Quantile_print(time_quantiles);\

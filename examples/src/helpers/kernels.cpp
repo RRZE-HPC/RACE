@@ -195,6 +195,15 @@ inline void GS_KERNEL(int start, int end, void* args)
 }
 
 //Solve for x : A*x=b
+void gs_serial(densemat* b, sparsemat* mat, densemat* x)
+{
+    for(int row=0; row<mat->nrows; ++row)
+    {
+        GS_KERNEL_BODY();
+    }
+}
+
+//Solve for x : A*x=b
 void gs(densemat* b, sparsemat* mat, densemat* x)
 {
     if(mat->colorType == "RACE")
@@ -269,6 +278,14 @@ inline void KACZ_KERNEL(int start, int end, void* args)
     }
 }
 
+//Solve for x : A*x=b
+void kacz_serial(densemat* b, sparsemat* mat, densemat* x)
+{
+    for(int row=0; row<mat->nrows; ++row)
+    {
+        KACZ_KERNEL_BODY();
+    }
+}
 
 //Solve for x : A*x=b
 void kacz(densemat* b, sparsemat* mat, densemat* x)

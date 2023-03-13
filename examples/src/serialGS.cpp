@@ -43,7 +43,7 @@ void capitalize(char* beg)
     actualIter = 0;\
     for(int trial=0; trial<num_trials; ++trial)\
     {\
-        actualIter = 0;\
+        actualIter=0;\
         x->setVal(0); /*restart*/\
         START_TIMER(kernel);\
         INIT_TIMER(convCheck);\
@@ -65,10 +65,10 @@ void capitalize(char* beg)
             }\
             PAUSE_TIMER(convCheck);\
         }\
-        /*if(converged)\
+        if(converged)\
         {\
             break;\
-        }*/\
+        }\
         STOP_TIMER(convCheck);\
         STOP_TIMER(kernel);\
         time.push_back(GET_TIMER(kernel)-GET_TIMER(convCheck));\
@@ -90,7 +90,7 @@ void capitalize(char* beg)
 
 int main(const int argc, char * argv[])
 {
-
+    omp_set_num_threads(1);
     parser param;
     if(!param.parse_arg(argc, argv))
     {
@@ -108,14 +108,13 @@ int main(const int argc, char * argv[])
     START_TIMER(pre_process);
     if(param.RCM_flag)
     {
-        mat->doRCM();
+        mat->doRCMPermute(); //Permute();
     }
-
-    dist distance=ONE;
+    /*dist distance=ONE;
     printf("Coloring matrix\n");
     mat->colorAndPermute(distance, std::string(param.colorType), param.cores, param.smt, param.pin);
     printf("Finished coloring\n\n");
-
+    */
     STOP_TIMER(pre_process);
     double pre_process_time = GET_TIMER(pre_process);
     printf("Total pre-processing time = %f s\n", pre_process_time);
@@ -157,7 +156,7 @@ int main(const int argc, char * argv[])
     {
         iterations = param.iter;
     }
-    int num_trials=10;
+    int num_trials=1;
     printf("Num iterations =  %d\n", iterations);
 
     b->setVal(0);
@@ -175,7 +174,7 @@ int main(const int argc, char * argv[])
     int actualIter = 0;
     //This macro times and reports performance by running the solver multiple
     //times
-    PERF_RUN(color_gs, 2, gs(b, mat, x););
+    PERF_RUN(serial_gs, 2, gs_serial(b, mat, x););
 
     double resNorm;
     double errNorm;
