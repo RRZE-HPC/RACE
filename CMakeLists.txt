@@ -79,8 +79,24 @@ set (HEADERS
 
 set(RACE_PERMUTE_ON_FLY 1 CACHE BOOL "Experimental. Do permutation on fly wthou actually permuting intermediate graph. It speeds up the pre-processing time.")
 set(RACE_USE_SOA_GRAPH 1 CACHE BOOL "Experimental. Use SoA graph instead of AoS. It speeds up the pre-processing time.")
-
+set(RACE_ENABLE_MPI_MPK 0 CACHE BOOL "Enable support for distributed MPI-style MPKs")
 set(RACE_USE_GAP 1 CACHE BOOL "Use a modified version of GAP for doing BFS")
+
+if(RACE_ENABLE_MPI_MPK)
+    if(NOT RACE_USE_SOA_GRAPH)
+        message(WARNING "AoS graph data structure is deprecated and not supported with MPI. Enabling SoA graph structure, i.e., setting RACE_USE_SOA_GRAPH to 1.")
+        set(RACE_USE_SOA_GRAPH 1)
+    endif()
+endif()
+
+if(RACE_USE_SOA_GRAPH)
+    if(NOT RACE_USE_GAP)
+        message(WARNING "SoA graph data structure uses GAP for using a parallelized version of BFS. Enabling GAP, i.e., setting RACE_USE_GAP to 1. This requires internet connection so that GAP framework can be
+        downloaded.")
+        set(RACE_USE_SOA_GRAPH 1)
+    endif()
+endif()
+
 if (RACE_USE_GAP)
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
         set(RACE_USE_GAP 1)
