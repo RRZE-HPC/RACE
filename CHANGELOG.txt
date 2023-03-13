@@ -1,0 +1,3 @@
+* Added MPI support
+* Discontinued more than 1 NUMA domain support with OMP (i.e., numSharedCache argument not used anymore)
+* Deprecate AoS graph structure support (reason: not performant and not required). This means SoA struture used internally for Graph with GAP support
