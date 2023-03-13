@@ -91,9 +91,8 @@ endif()
 
 if(RACE_USE_SOA_GRAPH)
     if(NOT RACE_USE_GAP)
-        message(WARNING "SoA graph data structure uses GAP for using a parallelized version of BFS. Enabling GAP, i.e., setting RACE_USE_GAP to 1. This requires internet connection so that GAP framework can be
-        downloaded.")
-        set(RACE_USE_SOA_GRAPH 1)
+        message(WARNING "SoA graph data structure uses GAP for using a parallelized version of BFS. Enabling GAP, i.e., setting RACE_USE_GAP to 1. This requires internet connection so that GAP framework can be downloaded.")
+        set(RACE_USE_GAP 1)
     endif()
 endif()
 
