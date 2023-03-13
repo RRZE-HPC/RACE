@@ -19,7 +19,7 @@ parser::parser():mat_file(NULL), iter(-1), cores(1), smt(1), cache_size(2), pin(
     long_options = new my_option[numOptions+1];
 
     long_options[0] = {"matrix",  required_argument, 0,  'm', "Matrix File in MatrixMarket Format"};
-    long_options[1] = {"iter",    required_argument, 0,  'i', "Iterations to be carried out" };
+    long_options[1] = {"iter",    required_argument, 0,  'i', "Iterations to be carried out in the case of coloring. In case of MPK the power value." };
     long_options[2] = {"cores",   required_argument, 0,  'c', "Number of cores to be used" };
     long_options[3] = {"smt",     required_argument, 0,  't', "Number of threads per core to be used (recommended 1)" };
     long_options[4] = {"cache_size",     required_argument, 0,  's', "Size of cache for blocking (in MB)" };
@@ -194,7 +194,7 @@ void parser::help()
 {
     printf("Usage: %s [OPTION]...\n",prgname);
     printf("Valid options are:\n\n");
-    char* HLINE = "────────────────────────────────────────────────────────────────────────────────────────────";
+    char* HLINE = "────────────────────────────────────────────────────────────────────────────────────────────────────────────────";
     printf("%s\n",HLINE);
     printf("\t%s\t\t\t%s\n", "options", "description");
     printf("%s\n",HLINE);
@@ -202,7 +202,7 @@ void parser::help()
     {
         char* long_opt;
         asprintf(&long_opt,"--%s", long_options[i].gnu_opt.name);
-        printf("-%c or  %-12s |\t %-65s |\n", ((char) long_options[i].gnu_opt.val), long_opt, long_options[i].desc);
+        printf("-%c or  %-12s |\t %-85s |\n", ((char) long_options[i].gnu_opt.val), long_opt, long_options[i].desc);
         free(long_opt);
     }
 

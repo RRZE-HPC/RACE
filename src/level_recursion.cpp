@@ -322,7 +322,7 @@ void LevelRecursion::levelBalancing()
 
     //Step 2: Construct level 1
     //Traverse
-    RACE::Traverse traverse(graph, dist);
+    RACE::Traverse traverse(graph, dist, 0, graph->NROW);
     traverse.calculateDistance();
 #ifndef RACE_PERMUTE_ON_FLY
     int *levelPerm = NULL;

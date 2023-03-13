@@ -44,7 +44,6 @@ RACE::Traverse::Traverse(RACE::Graph *graph_, RACE::dist dist_, int rangeLo_, in
         return;
     }
 
-
     colRangeLo = rangeLo;
     colRangeHi = rangeHi;
 
