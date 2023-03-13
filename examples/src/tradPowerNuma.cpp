@@ -50,7 +50,7 @@ int main(const int argc, char * argv[])
         mat->doRCMPermute(); //Permute();
     }
     //mat->writeFile("after_RCM.mtx");
-    //mat->prepareForPower(power, param.nodes, param.cache_size, param.cores, param.smt, param.pin);
+    //mat->prepareForPower(power, param.cache_size, param.cores, param.smt, param.pin);
     //mat->numaInit();
 
     int totalNodes = param.nodes;

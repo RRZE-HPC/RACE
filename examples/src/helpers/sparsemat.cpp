@@ -693,7 +693,7 @@ void sparsemat::doRCMPermute()
     rcmInvPerm = NULL;
 }
 
-int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cacheSize, int nthreads, int smt, PinMethod pinMethod, int globalStartRow, int globalEndRow, std::string mtxType)
+int sparsemat::prepareForPower(int highestPower, double cacheSize, int nthreads, int smt, PinMethod pinMethod, int globalStartRow, int globalEndRow, std::string mtxType)
 {
     //permute(rcmInvPerm, rcmPerm);
     //rcmPerm = NULL;
@@ -701,9 +701,9 @@ int sparsemat::prepareForPower(int highestPower, int numSharedCache, double cach
     INIT_TIMER(pre_process_kernel);
     START_TIMER(pre_process_kernel);
     ce = new Interface(nrows, nthreads, RACE::POWER, rowPtr, col, symm_hint, smt, pinMethod, rcmPerm, rcmInvPerm);
-    //ce->RACEColor(highestPower, numSharedCache, cacheSize);
-    ce->RACEColor(highestPower, numSharedCache, cacheSize*1024*1024, 2, mtxType);
-    //ce->RACEColor(highestPower, numSharedCache, cacheSize*1024*1024, 2, mtxType, 3);
+    //ce->RACEColor(highestPower, cacheSize);
+    ce->RACEColor(highestPower, cacheSize*1024*1024, 2, mtxType);
+    //ce->RACEColor(highestPower, cacheSize*1024*1024, 2, mtxType, 3);
     if ((globalStartRow != -1) && (globalEndRow != -1))
         ce->passGlobalRows(globalStartRow, globalEndRow);
     STOP_TIMER(pre_process_kernel);

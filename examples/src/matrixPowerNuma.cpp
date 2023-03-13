@@ -1,3 +1,5 @@
+/* this example is not valid anymore, as the support for multiple NUMA domain
+ * with OMP is dis continued*/
 
 #include <stdio.h>
 #include <omp.h>
@@ -136,7 +138,7 @@ int main(const int argc, char * argv[])
     {
         mat->doRCM();
     }
-    mat->prepareForPower(power, param.nodes, param.cache_size, param.cores, param.smt, param.pin);
+    mat->prepareForPower(power, param.cache_size, param.cores, param.smt, param.pin);
 /*#ifdef LIKWID_PERFMON
 #pragma omp parallel
     {

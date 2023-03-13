@@ -177,15 +177,17 @@ int main(const int argc, char * argv[])
     {
         mat->doRCM();
     }
-    bool useMPI = true; // TODO: define macro
-    if(useMPI == true) {        
+/*    bool useMPI = true; // TODO: define macro
+    if(useMPI == true)
+    {
         int globalStartRow = 0;
         int globalEndRow = NROWS;
         // Pass global rows to interface object
-        mat->prepareForPower(power, param.nodes, param.cache_size, param.cores, param.smt, param.pin, globalStartRow, globalEndRow);
+        mat->prepareForPower(power, param.cache_size, param.cores, param.smt, param.pin, globalStartRow, globalEndRow);
     }
-    else{
-        mat->prepareForPower(power, param.nodes, param.cache_size, param.cores, param.smt, param.pin);
+    else*/
+    {
+        mat->prepareForPower(power, param.cache_size, param.cores, param.smt, param.pin);
     }
     STOP_TIMER(pre_process);
     /*printf("perm = \n");
@@ -216,8 +218,6 @@ int main(const int argc, char * argv[])
     INFO_PRINT("Matrix statistics");
     INFO_PRINT("Nrows = %d, NNZ = %d, NNZR = %f\n", mat->nrows, mat->nnz, mat->nnz/((double)mat->nrows));
 
-
-    densemat *x, *xExact;
 
     //x stores value in the form
     //   x[0],   x[1], ....,   x[nrows-1]

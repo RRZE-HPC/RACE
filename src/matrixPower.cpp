@@ -39,7 +39,7 @@ mtxPower::mtxPower(RACE::Graph* graph_, int highestPower_, int numSharedCache_, 
 
     if(numSharedCache > 1)
     {
-        WARNING_PRINT("No support for more than 1 NUMA domain with OpenMP. Please use MPI on each NUMA domain with RACE. Setting to 1 NUMA domain");
+        WARNING_PRINT("No support for more than 1 NUMA domain with OpenMP. Please configure 'RACE_ENABLE_MPI_MPK' to 'ON' and use MPI on each NUMA domain with RACE. Currently setting to 1 NUMA domain");
         numSharedCache=1;
     }
 #if RACE_VERBOSITY > 1

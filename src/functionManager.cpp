@@ -21,6 +21,7 @@
  * =======================================================================================
  */
 
+#include "config.h"
 #include "functionManager.h"
 #include "test.h"
 #include <iostream>
@@ -1177,7 +1178,9 @@ void FuncManager::recursivePowerCallSerial(int parent)
             nodeEndSlope = -1;
         }
 
+
         bool haveMPI = false;
+#ifdef RACE_ENABLE_MPI_MPK
 
         if(!distFromRemotePtr->empty())
         {
@@ -1187,16 +1190,21 @@ void FuncManager::recursivePowerCallSerial(int parent)
                 haveMPI = true;
             }
         }
-
-        if(haveMPI && (commFunc == nullptr))
+        if(commFunc == nullptr)
         {
-            WARNING_PRINT("It seems you haven't register MPI communication call with RACE. Although you have remote boundaries. Except numerical errors.");
+            if(haveMPI)
+            {
+                WARNING_PRINT("It seems you haven't register MPI communication call with RACE. Although you have remote boundaries. Except numerical errors.");
+            }
         }
+#endif
         //TODO: in MPI case, pre-computation at MPI-boundary
         //TODO: modify args
         // std::cout << "parent = " << parent << std::endl;
-        // if(haveMPI && (parent == 0))
-        if(parent == 0) // Need some other kind of flag for detecting MPI for this...
+        // if(haveMPI && (parent == 0)) Need some other kind of flag for detecting MPI for this, because totalRemoteElems in rings can be zero. However, we need the communication to take place. As elements might need to be send from the current process.
+        //
+#ifdef RACE_ENABLE_MPI_MPK
+        if(parent == 0)
         {
 #ifdef RACE_DEBUG
             std::cout << "begin MPI pre-computation" << std::endl;
@@ -1206,6 +1214,7 @@ void FuncManager::recursivePowerCallSerial(int parent)
             std::cout << "finished MPI pre-computation" << std::endl;
 #endif
         }
+#endif
         while(unitCtr < endNode)
         {
             int startSlope=-1, endSlope=-1;
@@ -1276,7 +1285,11 @@ void FuncManager::recursivePowerCallSerial(int parent)
         printf("RACE clean-up Phase end --------------------------------\n");
 #endif
 
-
+#ifdef RACE_ENABLE_MPI_MPK
+        //here haveMPI check is fine because all the elements have been  updated
+        //to the required power. It might be that two vector swap fails, because
+        //you might need an element in the inner ring which might have way
+        //higher power computed.
         if(haveMPI && (parent == 0))
         {
 #ifdef RACE_DEBUG
@@ -1287,7 +1300,7 @@ void FuncManager::recursivePowerCallSerial(int parent)
             std::cout << "finished MPI post-computation" << std::endl;
 #endif
         }
-
+#endif
         //NODE_BARRIER_RESET(nodeGroup, localTid)
     } //parallel
 }

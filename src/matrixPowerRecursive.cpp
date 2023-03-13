@@ -346,7 +346,11 @@ void mtxPowerRecursive::findPartition()
     int numChunks = (distFromRemotePtr->size() == 0) ? 1 : (distFromRemotePtr->size() - 1);
     int mainRowsBegin = (distFromRemotePtr->size() == 0) ? 0 : distFromRemotePtr->at(numChunks - 1);
     int mainRowsEnd = (distFromRemotePtr->size() == 0) ? -1 : distFromRemotePtr->at(numChunks);
-    bool haveMPI = !distFromRemotePtr->empty();
+    bool haveMPI = false;
+
+#ifdef RACE_ENABLE_MPI_MPK
+    haveMPI = !distFromRemotePtr->empty();
+#endif
 
     bool printCheck = true;
     if(printCheck && haveMPI){

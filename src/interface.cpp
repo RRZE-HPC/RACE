@@ -28,6 +28,7 @@
 #include "utility.h"
 #include "timing.h"
 #include <algorithm>
+#include "config.h"
 
 RACE::Interface::Interface(int nrow_,int nthreads_, RACE::dist dist_, int *rowPtr_, int *col_, bool symm_hint, int SMT_, RACE::PinMethod pinMethod_, int *initPerm_, int *initInvPerm_, RACE::d2Method d2Type_, RACE::LBTarget lbTarget_):graph(NULL),nrow(nrow_),distance(dist_),d2Type(d2Type_),lbTarget(lbTarget_),requestedThreads(nthreads_),availableThreads(-1),SMT(SMT_),pinMethod(pinMethod_),pool(NULL),initPerm(initPerm_),initInvPerm(initInvPerm_),rowPtr(rowPtr_),col(col_),zoneTree(NULL),powerCalculator(NULL), highestPower(1), highestSubPower(1)
 {
@@ -201,11 +202,12 @@ void RACE::Interface::compressColIdx(){
 }
 
 // For matrix power kernel
-RACE_error RACE::Interface::RACEColor(int highestPower_, int numSharedCache, double cacheSize, double safetyFactor, std::string mtxType, int highestSubPower_)
+RACE_error RACE::Interface::RACEColor(int highestPower_, double cacheSize, double safetyFactor, std::string mtxType, int highestSubPower_)
 {
+    int numSharedCache = 1; //always 1, greater than 1 NUMA domain deprecated for OMP support
     if(numSharedCache != 1)
     {
-        ERROR_PRINT("RACE currently does not support greater than one shared cache or NUMA domain. Please use one MPI per NUMA domain configuration");
+        ERROR_PRINT("RACE currently does not support greater than one shared cache or NUMA domain. Please configure 'RACE_ENABLE_MPI_MPK' to 'ON' and use one MPI per NUMA domain configuration");
         return RACE_ERR_INVALID_ARG;
     }
     highestPower = highestPower_;
@@ -224,13 +226,15 @@ RACE_error RACE::Interface::RACEColor(int highestPower_, int numSharedCache, dou
     {
         //std::vector<int> distFromRemotePtr;
         bool useMPI = true;
-
+#ifndef RACE_ENABLE_MPI_MPK
+        useMPI = false;
+#endif
         // TODO: define this is config.h.in
         // #ifdef MPI_INCLUDED
         //     printf("MPI IS DEFINED\n");
         // #endif
         if(useMPI == true){
-            // TODO: misnomer, this function does more than collect only mpi boundary nodes. Change name
+            // TODO: misnomer, this function does more than collect only mpi boundary nodes. It finds all the rings. Change name
             graph->collectBoundaryNodes(highestPower*highestSubPower);
         }
         powerCalculator = new mtxPowerRecursive(graph, highestPower*highestSubPower, numSharedCache, cacheSize, safetyFactor, mtxType);
@@ -240,15 +244,7 @@ RACE_error RACE::Interface::RACEColor(int highestPower_, int numSharedCache, dou
             ERROR_PRINT("Threads (=%d) not a multiple of requested nodes (=%d)\n", requestedThreads, numSharedCache);
             exit(-1);
         }
-        /*if(useMPI){
-            // NOTE: not inclusive end
-            // Q: I need to call this function agian? why?
-            powerCalculator->findPartition(distFromRemotePtr);
-        }
-        else*/
-        {
-            powerCalculator->findPartition();
-        }
+        powerCalculator->findPartition();
         int len;
         powerCalculator->getPerm(&perm, &len);
         powerCalculator->getInvPerm(&invPerm, &len);
@@ -549,6 +545,7 @@ int RACE::Interface::executeFunction(int funcId, bool rev)
     {
         //check if communication(if required)  is set properly
         bool haveMPI=false;
+#ifdef RACE_ENABLE_MPI_MPK
         if(!graph->distFromRemotePtr.empty())
         {
             int totPower = highestPower*highestSubPower;
@@ -559,6 +556,7 @@ int RACE::Interface::executeFunction(int funcId, bool rev)
                 haveMPI=true;
             }
         }
+#endif
         if(haveMPI)
         {
             if(!funMan[funcId]->isCommRegistered())

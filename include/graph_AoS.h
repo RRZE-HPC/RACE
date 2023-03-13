@@ -24,6 +24,7 @@
 #ifndef RACE_GRAPH_AOS_H
 #define RACE_GRAPH_AOS_H
 
+#pragma message ("AoS support to be deprecated. If you need MPI you need to use SoA.")
 #include "print.h"
 #include "error.h"
 #include <vector>

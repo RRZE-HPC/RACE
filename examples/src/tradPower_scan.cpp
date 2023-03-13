@@ -65,7 +65,7 @@ int main(const int argc, char * argv[])
         printf("Pre-processing time: power = %d, Total pre-processing time = %f s\n", power, pre_process_time);
 
         //mat->writeFile("after_RCM.mtx");
-        //mat->prepareForPower(power, param.nodes, param.cache_size, param.cores, param.smt, param.pin);
+        //mat->prepareForPower(power, param.cache_size, param.cores, param.smt, param.pin);
         //mat->numaInit();
 
         INFO_PRINT("Matrix statistics");
