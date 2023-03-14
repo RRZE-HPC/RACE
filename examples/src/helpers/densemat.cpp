@@ -1,6 +1,7 @@
 #include "densemat.h"
 #include <cmath>
 #include <stdio.h>
+#include <omp.h>
 
 //currently in column major order
 densemat::densemat(int nrows_, int ncols_, bool view_):nrows(nrows_), ncols(ncols_), viewMat(view_)
@@ -126,7 +127,20 @@ std::vector<double> densemat::dot(densemat* x)
 
 void densemat::setRand()
 {
-    setFn(rand);
+    //setFn(rand);
+    for(int j=0; j<ncols; ++j)
+    {
+#pragma omp parallel
+        {
+            unsigned int seed = omp_get_thread_num()*100;
+#pragma omp for
+            for(int i=0; i<nrows; ++i)
+            {
+                val[j*nrows+i] = rand_r(&seed);
+            }
+        }
+    }
+
 }
 
 //this stops once a deviation higher than tol found

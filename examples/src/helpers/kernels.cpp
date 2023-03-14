@@ -26,7 +26,7 @@ inline void SPMV_KERNEL(int start, int end, void* args)
 
 
 //b=A*x
-void spmv(densemat* b, sparsemat* mat, densemat* x)
+void color_spmv(densemat* b, sparsemat* mat, densemat* x)
 {
     if(mat->colorType == "RACE")
     {

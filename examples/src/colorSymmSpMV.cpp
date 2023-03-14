@@ -2,7 +2,6 @@
 #include <omp.h>
 #include "mmio.h"
 #include "time.h"
-
 #ifdef LIKWID_MEASURE
 #include <likwid.h>
 #endif
@@ -22,6 +21,52 @@ void capitalize(char* beg)
         ++i;
     }
 }
+
+#ifdef LIKWID_MEASURE
+
+#define PERF_RUN(kernel, flopPerNnz, ...)\
+{\
+    char* capsKernel;\
+    asprintf(&capsKernel, "%s", #kernel);\
+    capitalize(capsKernel);\
+/*_Pragma("omp parallel")\
+    {\
+        LIKWID_MARKER_REGISTER(capsKernel);\
+    }\*/\
+    int num_trials=10;\
+    std::vector<double> time(num_trials, 0);\
+    double nnz_update = ((double)mat->nnz)*iterations*1e-9;\
+    INIT_TIMER(kernel);\
+    _Pragma("omp parallel")\
+    {\
+        LIKWID_MARKER_START(capsKernel);\
+    }\
+    for(int trial=0; trial<num_trials; ++trial)\
+    {\
+        START_TIMER(kernel);\
+        for(int iter=0; iter<iterations; ++iter)\
+        {\
+            __VA_ARGS__;\
+            /*kernel(b, mat, x, symm);*/\
+        }\
+        STOP_TIMER(kernel);\
+        time[trial] = GET_TIMER(kernel);\
+    }\
+    _Pragma("omp parallel")\
+    {\
+        LIKWID_MARKER_STOP(capsKernel);\
+    }\
+    std::vector<double> time_quantiles = Quantile(time, {0, 0.25, 0.5, 0.75, 1});\
+   /*printf("Obtained Perf of %s : %8.4f GFlop/s ; Time = %8.5f s\n", capsKernel, flopPerNnz*nnz_update/(time), time);*/\
+    printf("Obtained Perf of %s : ", capsKernel);\
+    Quantile_print(time_quantiles, flopPerNnz*nnz_update, true);\
+    printf(" GFlop/s; Time : ");\
+    Quantile_print(time_quantiles);\
+    printf(" sec\n");\
+    free(capsKernel);\
+}\
+
+#else
 
 #define PERF_RUN(kernel, flopPerNnz, ...)\
 {\
@@ -53,9 +98,26 @@ void capitalize(char* beg)
     free(capsKernel);\
 }\
 
+#endif
 
 int main(const int argc, char * argv[])
 {
+    /*int nthreads=1;
+#pragma omp parallel
+    {
+        nthreads=omp_get_num_threads();
+    }
+    printf("Running with %d threads\n", nthreads);
+*/
+    int curPID = getpid();
+    printf("numerical PID = %d\n", curPID);
+    char *curPID_str;
+    asprintf(&curPID_str, "%d", curPID);
+    printf("Current PID = %s\n", curPID_str);
+    setenv("LIKWID_PERF_PID", curPID_str, 1);
+#ifdef LIKWID_MEASURE
+    LIKWID_MARKER_INIT;
+#endif
 
     int err;
     parser param;
@@ -99,7 +161,7 @@ int main(const int argc, char * argv[])
 
 
     int NROWS = mat->nrows;
-    int randInit = false;
+    int randInit = true;
     double initVal = 1/(double)NROWS;
 
     densemat *x, *b;
@@ -140,7 +202,7 @@ int main(const int argc, char * argv[])
     b->setVal(0);
     PERF_RUN(omp_spmv,2, plain_spmv(b, mat, x););
     b->setVal(0);
-    PERF_RUN(color_spmv,2, spmv(b, mat, x););
+    PERF_RUN(color_spmv,2, color_spmv(b, mat, x););
 
     mat->computeSymmData();
     PERF_RUN(color_symm_spmv,2, symm_spmv(b, mat, x););
@@ -170,20 +232,27 @@ int main(const int argc, char * argv[])
         plain_spmv(bSPMV, mat, x);
 
         b->setVal(0);
-        spmv(b, mat, x);
+        color_spmv(b, mat, x);
+        printf("Checking max deviation between SpMV and coloring run SpMV\n");
+        findMaxDeviations(bSPMV, b);
         bool spmv_flag = checkEqual(bSPMV, b, param.tol, relativeCheck);
         if(!spmv_flag)
         {
             printf("Color SPMV failed\n");
         }
+        printf("check done\n");
+
         b->setVal(0);
         mat->computeSymmData();
         symm_spmv(b, mat, x);
+        printf("Checking max deviation between SpMV and coloring run SymmSpMV\n");
+        findMaxDeviations(bSPMV, b);
         bool symm_spmv_flag = checkEqual(bSPMV, b, param.tol, relativeCheck);
         if(!symm_spmv_flag)
         {
             printf("Color SYMM SPMV failed\n");
         }
+        printf("check done\n");
 
         if(spmv_flag && symm_spmv_flag)
         {
@@ -198,6 +267,11 @@ int main(const int argc, char * argv[])
         }
         delete bSPMV;
    }
+
+#ifdef LIKWID_MEASURE
+    LIKWID_MARKER_CLOSE;
+#endif
+
 
     delete mat;
     delete x;

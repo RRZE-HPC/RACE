@@ -25,6 +25,12 @@ void capitalize(char* beg)
 
 int main(const int argc, char * argv[])
 {
+    int curPID = getpid();
+    printf("numerical PID = %d\n", curPID);
+    char *curPID_str;
+    asprintf(&curPID_str, "%d", curPID);
+    printf("Current PID = %s\n", curPID_str);
+    setenv("LIKWID_PERF_PID", curPID_str, 1);
 #ifdef LIKWID_PERFMON
     LIKWID_MARKER_INIT;
 #endif
