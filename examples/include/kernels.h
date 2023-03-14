@@ -31,7 +31,7 @@ struct kernelArg_split
 
 
 void spmv(sparsemat* mat, densemat* x);
-void spmv(densemat* b, sparsemat* mat, densemat* x);
+void color_spmv(densemat* b, sparsemat* mat, densemat* x);
 void plain_spmv(densemat* b, sparsemat* mat, densemat* x);
 void spmtv(densemat* b, sparsemat* mat, densemat* x);
 void gs(densemat* b, sparsemat* mat, densemat* x);

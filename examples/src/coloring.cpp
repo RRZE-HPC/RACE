@@ -135,7 +135,7 @@ int main(const int argc, char * argv[])
 
     //This macro times and reports performance
     PERF_RUN(omp_spmv, plain_spmv,2);
-    PERF_RUN(color_spmv, spmv,2);
+    PERF_RUN(color_spmv, color_spmv,2);
     PERF_RUN(color_spmtv, spmtv,2);
     PERF_RUN(color_kacz, kacz,4);
     //diag entry first required for GS
@@ -171,22 +171,29 @@ int main(const int argc, char * argv[])
 
         b->setVal(0);
         spmtv(b, mat, x);
+        printf("Checking max deviation in SpMTV\n");
+        findMaxDeviations(bSPMV, b);
         bool spmtv_flag = checkEqual(bSPMV,b, param.tol, relativeCheck);
         if(!spmtv_flag)
         {
             printf("SPMTV failed\n");
         }
+        printf("check done\n");
 
         //check symmetric variant also
         //Do one SPMV and symmSPMV; compare results
         b->setVal(0);
         mat->computeSymmData();
         symm_spmv(b, mat, x);
+
+        printf("Checking max deviation in SymmSpMV\n");
+        findMaxDeviations(bSPMV, b);
         bool symm_spmv_flag = checkEqual(bSPMV,b, param.tol, relativeCheck);
         if(!symm_spmv_flag)
         {
             printf("SYMM SPMV failed\n");
         }
+        printf("check done\n");
 
         if(spmtv_flag &&  symm_spmv_flag)
         {
