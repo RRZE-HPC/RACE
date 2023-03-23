@@ -46,6 +46,7 @@ struct parser
         double convTol;
         bool RCM_flag;
         char *colorType;
+        char *convFile;
         char *prgname;
         int numOptions;
         my_option *long_options;

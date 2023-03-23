@@ -37,7 +37,9 @@ struct sparsemat
     bool symm_hint;
     bool convertToBCSR(int b_r);
     bool writeFile(char* filename);
+    bool isAnyDiagZero();
     void makeDiagFirst();
+    bool isSymmetric();
     void doRCM();
     void doRCMPermute();
     int prepareForPower(int highestPower, double cacheSize, int nthreads, int smt=1, PinMethod pinMethod=FILL, int globalStartRow = -1, int globalEndRow = -1, std::string mtxType="N");

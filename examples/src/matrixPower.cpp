@@ -3,7 +3,7 @@
 #include "mmio.h"
 #include "time.h"
 
-#ifdef LIKWID_MEASURE
+#ifdef LIKWID_PERFMON
 #include <likwid.h>
 #endif
 #include "parse.h"
@@ -107,6 +107,13 @@ int main(const int argc, char * argv[])
 {
 //    init_likwid();
 #ifdef LIKWID_PERFMON
+    /*
+    int curPID = getpid();
+    char *curPID_str;
+    asprintf(&curPID_str, "%d", curPID);
+    printf("Current PID = %s\n", curPID_str);
+    setenv("LIKWID_PERF_PID", curPID_str, 1);
+*/
     LIKWID_MARKER_INIT;
 #endif
     int err;

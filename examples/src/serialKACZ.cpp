@@ -65,10 +65,6 @@ void capitalize(char* beg)
             }\
             PAUSE_TIMER(convCheck);\
         }\
-        if(converged)\
-        {\
-            break;\
-        }\
         STOP_TIMER(convCheck);\
         STOP_TIMER(kernel);\
         time.push_back(GET_TIMER(kernel)-GET_TIMER(convCheck));\
@@ -180,7 +176,7 @@ int main(const int argc, char * argv[])
     double errNorm;
     ERR_CHECK;
 
-    printf("Convergence results: resNorm = %.8f, errNorm = %.8f, converged iter = %d\n", resNorm, errNorm, actualIter);
+    printf("Convergence results: resNorm = %e, errNorm = %e, converged iter = %d\n", resNorm, errNorm, actualIter);
     delete mat;
     delete x;
     delete b;

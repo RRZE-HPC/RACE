@@ -109,12 +109,12 @@ int main(const int argc, char * argv[])
     }
     printf("Running with %d threads\n", nthreads);
 */
-    int curPID = getpid();
-    printf("numerical PID = %d\n", curPID);
+    /*int curPID = getpid();
     char *curPID_str;
     asprintf(&curPID_str, "%d", curPID);
     printf("Current PID = %s\n", curPID_str);
     setenv("LIKWID_PERF_PID", curPID_str, 1);
+    */
 #ifdef LIKWID_MEASURE
     LIKWID_MARKER_INIT;
 #endif
@@ -161,7 +161,7 @@ int main(const int argc, char * argv[])
 
 
     int NROWS = mat->nrows;
-    int randInit = true;
+    int randInit = false;
     double initVal = 1/(double)NROWS;
 
     densemat *x, *b;

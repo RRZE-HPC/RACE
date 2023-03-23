@@ -13,7 +13,6 @@ static inline double Lerp(T v0, T v1, T t)
 
 void Quantile_print(const std::vector<double>& inData, double scale=1, bool inv=false)
 {
-
     printf("[");
     for(size_t i=0; i<inData.size()-1; ++i)
     {
@@ -33,7 +32,7 @@ void Quantile_print(const std::vector<double>& inData, double scale=1, bool inv=
 }
 
 template<typename T>
-static inline std::vector<T> Quantile(const std::vector<T>& inData, const std::vector<T>& probs)
+static inline std::vector<T> Quantile(std::vector<T>& inData, const std::vector<T>& probs)
 {
     if (inData.empty())
     {
@@ -44,7 +43,12 @@ static inline std::vector<T> Quantile(const std::vector<T>& inData, const std::v
     {
         return std::vector<T>(1, inData[0]);
     }
-
+    //duplicate elements, else it would seg fault
+    while(inData.size() < 5)
+    {
+        std::vector<T> dupData = inData;
+        inData.insert(inData.end(), dupData.begin(), dupData.end());
+    }
     std::vector<T> data = inData;
     std::sort(data.begin(), data.end());
     std::vector<T> quantiles;

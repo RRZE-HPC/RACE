@@ -59,5 +59,7 @@ int main(const int argc, char * argv[])
 
     printf("Nrows = %d\n", NROWS);
     printf("NNZ = %d\n", mat->nnz);
+    printf("Symmetric = %d\n", mat->isSymmetric());
+    printf("is any diag zero = %d\n", mat->isAnyDiagZero());
     delete mat;
 }
