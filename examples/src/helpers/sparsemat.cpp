@@ -395,6 +395,31 @@ bool sparsemat::convertToBCSR(int b_r)
     return success_flag;
 }
 
+bool sparsemat::isAnyDiagZero()
+{
+    //check whether a new allocation is necessary
+    int extra_nnz=0;
+    for(int row=0; row<nrows; ++row)
+    {
+        bool diagHit = false;
+        for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
+        {
+            if(col[idx] == row)
+            {
+                if(val[idx] != 0)
+                {
+                    diagHit = true;
+                }
+            }
+        }
+        if(!diagHit)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 //necessary for GS like kernels
 void sparsemat::makeDiagFirst()
 {
@@ -645,6 +670,17 @@ void sparsemat::splitMatrixToLU(sparsemat **L_ptr, sparsemat **U_ptr)
 
 }
 
+bool sparsemat::isSymmetric()
+{
+#ifdef RACE_USE_SPMP
+    SpMP::CSR *csr = NULL;
+    csr = new SpMP::CSR(nrows, nrows, rowPtr, col, val);
+    return csr->isSymmetric(true, true);
+#else
+    printf("Please link with SpMP library to check for symmetry.\n");
+    return -1:
+#endif
+}
 
 void sparsemat::doRCM()
 {
