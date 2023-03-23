@@ -26,6 +26,7 @@ colorTypes=$(cat ${configFile} | grep "colorTypes" | cut -d"=" -f2)
 race_efficiencies=$(cat ${configFile} | grep "race_efficiencies" | cut -d"=" -f2)
 race_dists=$(cat ${configFile} | grep "race_dists" | cut -d"=" -f2)
 execFolder=$(cat ${configFile} | grep "execFolder" | cut -d"=" -f2)
+printHead=$(cat ${configFile} | grep "printHead" | cut -d"=" -f2)
 ############ Don't change anything below ############################
 
 ./check-state.sh config.txt
@@ -42,7 +43,7 @@ matrix_name=
 while read -r i
 do
     matrix_name=$matrix_name" "$i
-done < <(find *)
+done < <(find *.mtx)
 
 echo $matrix_name
 
@@ -109,9 +110,11 @@ if [[ ${mkl} == "on" ]]; then
                 -m "${matrixFolder}/${matrix}" -c ${thread} -T 1e-4 ${rcmFlag} > ${tmpFile}
 
                 cat ${tmpFile} >> ${raw_file}
-                if [[ ${ctr} == 0 ]]; then
-                    columns=$(printHeader ${tmpFile})
-                    echo "Matrix,Thread,RCM,Iter,Preprocessing-time,${columns}" > ${res_file}
+                if [[ $printHead == "1" ]]; then
+                    if [[ ${ctr} == 0 ]]; then
+                        columns=$(printHeader ${tmpFile})
+                        echo "Matrix,Thread,RCM,Iter,Preprocessing-time,${columns}" > ${res_file}
+                    fi
                 fi
                 niter_w_space=$(cat ${tmpFile} | grep "Num iterations =" | cut -d"=" -f2)
                 niter=$(echo ${niter_w_space})
@@ -155,7 +158,7 @@ for colorType in ${colorTypes}; do
                     race_effs_parse=${race_efficiencies}
                     dists_parse=${race_dists}
                 fi
-                for eff in ${race_efficiencies}; do
+                for eff in ${race_effs_parse}; do
                     for dist in ${dists_parse}; do
                         tmpFile="${rawFolder}/${matrix}.tmp"
                         rcmFlag=""
@@ -165,7 +168,7 @@ for colorType in ${colorTypes}; do
 
                         if [[ ${colorType} == "RACE" ]]; then #pinning left to RACE
                             KMP_WARNINGS=0 MKL_NUM_THREADS=$thread \
-                                OMP_NUM_THREADS=${threads} OMP_SCHEDULE=static \
+                                OMP_NUM_THREADS=${thread} OMP_SCHEDULE=static \
                                 COLOR_DISTANCE=${dist} RACE_EFFICIENCY=${eff} \
                                 taskset -c 0-$((thread-1)) ${execFolder}/colorSymmSpMV \
                                 -m "${matrixFolder}/${matrix}" -c ${thread} -t 1  -v -p FILL \
@@ -182,12 +185,14 @@ for colorType in ${colorTypes}; do
 
                         cat ${tmpFile} >> ${raw_file}
 
-                        if [[ ${ctr} == 0 ]]; then
-                            columns=$(printHeader ${tmpFile})
-                            if [[ ${colorType} == "RACE" ]]; then
-                                echo "Matrix,Thread,RCM,RACE_efficiency,RACE_distance,Iter,Preprocessing-time,${columns}" > ${res_file}
-                            else
-                                echo "Matrix,Thread,RCM,Iter,Preprocessing-time,${columns}" > ${res_file}
+                        if [[ $printHead == "1" ]]; then
+                            if [[ ${ctr} == 0 ]]; then
+                                columns=$(printHeader ${tmpFile})
+                                if [[ ${colorType} == "RACE" ]]; then
+                                    echo "Matrix,Thread,RCM,RACE_efficiency,RACE_distance,Iter,Preprocessing-time,${columns}" > ${res_file}
+                                else
+                                    echo "Matrix,Thread,RCM,Iter,Preprocessing-time,${columns}" > ${res_file}
+                                fi
                             fi
                         fi
                         niter_w_space=$(cat ${tmpFile} | grep "Num iterations =" | cut -d"=" -f2)

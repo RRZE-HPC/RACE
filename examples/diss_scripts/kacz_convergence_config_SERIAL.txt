@@ -1,9 +1,7 @@
 matrixFolder=/home/hk-project-benchfau/hd0705/matrices_diss
-folder=gs_results
-threads=38
+folder=kacz_convergence_results
+threads="1"
 nodes=1
-RCMs=0 1
-colorTypes=RACE ABMC MC
-race_efficiencies=80,80 40
+colorType=SERIAL
 execFolder=/home/hk-project-benchfau/hd0705/MatrixPower/examples/build_intel22
 printHead=1

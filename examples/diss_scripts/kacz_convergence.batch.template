@@ -1,0 +1,20 @@
+#!/bin/bash -l
+#SBATCH --nodes=1 --partition=cpuonly
+#SBATCH --cpus-per-task=152
+#SBATCH --time=24:00:00
+
+export SEP="-------------------------------------------------------------"
+
+module load compiler/intel/2022.0.2
+module load numlib/mkl/2022.0.2
+module load mpi/impi/2021.5.1
+module load toolkit/oneAPI/tbb/2021.2.0
+module use /home/hk-project-benchfau/hd0705/modules/
+module load gnu
+
+
+likwid-setFrequencies -t 1
+likwid-setFrequencies -f 2.401 -t 1 --umin 2.5 --umax 2.5
+
+cd $SLURM_SUBMIT_DIR
+./kacz_convergence_study.sh kacz_convergence_config_@COL_TYPE@.txt

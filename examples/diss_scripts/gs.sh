@@ -24,6 +24,8 @@ mkl=$(cat ${configFile} | grep "mkl" | cut -d"=" -f2)
 colorTypes=$(cat ${configFile} | grep "colorTypes" | cut -d"=" -f2)
 race_efficiencies=$(cat ${configFile} | grep "race_efficiencies" | cut -d"=" -f2)
 execFolder=$(cat ${configFile} | grep "execFolder" | cut -d"=" -f2)
+printHead=$(cat ${configFile} | grep "printHead" | cut -d"=" -f2)
+startMatCtr=$(cat ${configFile} | grep "startMatCtr" | cut -d"=" -f2)
 ############ Don't change anything below ############################
 
 ./check-state.sh config.txt
@@ -40,7 +42,7 @@ matrix_name=
 while read -r i
 do
     matrix_name=$matrix_name" "$i
-done < <(find *)
+done < <(find *.mtx)
 
 echo $matrix_name
 
@@ -88,12 +90,17 @@ for colorType in ${colorTypes}; do
     #get machine env
     ./machine-state.sh > ${rawFolder}/machine-state.txt
 
-    ctr=0
+    ctr=${startMatCtr}
+    inCtr=0
     for matrix in $matrix_name; do
         raw_file="${rawFolder}/${matrix}.txt"
         for thread in $threads; do
             for RCM in $RCMs; do
-                for eff in ${race_efficiencies}; do
+                race_effs_parse="40"
+                if [[ ${colorType} == "RACE" ]]; then
+                    race_effs_parse=${race_efficiencies}
+                fi
+                for eff in ${race_effs_parse}; do
                     #not differentiating for any coloring methods the parameters,
                     #because we compare with RACE the other methods and
                     #$reordering in RACE can change the errNorm and/or iter
@@ -103,47 +110,55 @@ for colorType in ${colorTypes}; do
                         rcmFlag="-R"
                     fi
 
+                    SERIAL_file="${folder}/SERIAL.csv"
+                    line=$(head -n $((ctr+2)) ${SERIAL_file} | tail -n 1)
+                    SERIAL_matrix_w_space=$(echo ${line} | cut -d"," -f1)
+                    SERIAL_matrix=$(echo ${SERIAL_matrix_w_space})
+                    if [[ ${SERIAL_matrix} != ${matrix} ]]; then
+                        echo "Error: mismatch in SERIAL reference file and ${colorType} file. SERIAL file has matrix ${SERIAL_matrix}, while ${colorType} has file ${matrix}."
+                        exit
+                    fi
+                    SERIALiter_w_space=$(echo ${line} | cut -d"," -f7) #this is input iteration which will be multiplied by trials (10)
+                    SERIALiter=$(echo ${SERIALiter_w_space})
+                    iter=$(echo "${SERIALiter}*10" | bc -l) #scale by 10, to allow incase of 10x bad convergence
+                    SERIALerr_w_space=$(echo ${line} | cut -d"," -f6)
+                    SERIALerr=$(echo ${SERIALerr_w_space})
+
                     if [[ ${colorType} == "RACE" ]]; then
                         #pinning left to RACE
                         #iterations automatically decide
                         KMP_WARNINGS=0 MKL_NUM_THREADS=$thread \
-                            OMP_NUM_THREADS=${threads} OMP_SCHEDULE=static \
+                            OMP_NUM_THREADS=${thread} OMP_SCHEDULE=static \
                             COLOR_DISTANCE=1 RACE_EFFICIENCY=${eff} \
                             taskset -c 0-$((thread-1)) ${execFolder}/colorGS \
-                            -m "${matrixFolder}/${matrix}" -c ${thread} -t 1  -v -p FILL \
-                            -C ${colorType} ${rcmFlag} > ${tmpFile}
+                            -m "${matrixFolder}/${matrix}" -c ${thread} -t 1  -p FILL \
+                            -C ${colorType} ${rcmFlag} \
+                            -i ${iter} -e ${SERIALerr} > ${tmpFile}
                     else
-                        RACE_file="${folder}/RACE.csv"
-                        line=$(head -n $((ctr+1)) ${RACE_file} | tail -n 1)
-                        RACE_matrix_w_space=$(echo ${line} | cut -d"," -f1)
-                        RACE_matrix=$(echo ${RACE_matrix_w_space})
-                        if [[ ${RACE_matrix} != ${matrix} ]]; then
-                            echo "Error: mismatch in RACE reference file and ${colorType} file"
-                            exit
-                        fi
-                        RACEiter_w_space=$(echo ${line} | cut -d"," -f5) #this is input iteration which will be multiplied by trials (10)
-                        RACEiter=$(echo ${RACEiter_w_space})
-                        iter=$(echo "${RACEiter}*4" | bc -l) #scale by 4, to allow incase of 4x bad convergence
-                        RACEerr_w_space=$(echo ${line} | cut -d"," -f7)
-                        RACEerr=$(echo ${RACEerr_w_space})
-                        #here pinning via OMP
+                       #here pinning via OMP
                         #try to achieve the same error as RACE
                         #and give 2*iterations of RACE as max. iter
                         KMP_WARNINGS=0 MKL_NUM_THREADS=$thread \
-                            OMP_NUM_THREADS=${threads} OMP_SCHEDULE=static \
+                            OMP_NUM_THREADS=${thread} OMP_SCHEDULE=static \
                             OMP_PROC_BIND=close OMP_PLACES=cores \
                             COLOR_DISTANCE=1 RACE_EFFICIENCY=${eff} \
                             taskset -c 0-$((thread-1)) ${execFolder}/colorGS \
-                            -m "${matrixFolder}/${matrix}" -c ${thread} -t 1  -v -p FILL \
+                            -m "${matrixFolder}/${matrix}" -c ${thread} -t 1  -p FILL \
                             -C ${colorType} ${rcmFlag} \
-                            -i ${iter} -e ${RACEerr} > ${tmpFile}
+                            -i ${iter} -e ${SERIALerr} > ${tmpFile}
                     fi
 
                     cat ${tmpFile} >> ${raw_file}
 
-                    if [[ ${ctr} == 0 ]]; then
-                        columns=$(printHeader ${tmpFile})
-                        echo "Matrix,Thread,RCM,RACE_efficiency,Iter,ResNorm,ErrNorm,ActualIter,Preprocessing-time,${columns}" > ${res_file}
+                    if [[ $printHead == "1" ]]; then
+                        if [[ ${inCtr} == 0 ]]; then
+                            columns=$(printHeader ${tmpFile})
+                            if [[ ${colorType} == "RACE" ]]; then
+                                echo "Matrix,Thread,RCM,RACE_efficiency,Iter,ResNorm,ErrNorm,ActualIter,Preprocessing-time,${columns}" > ${res_file}
+                            else
+                                echo "Matrix,Thread,RCM,Iter,ResNorm,ErrNorm,ActualIter,Preprocessing-time,${columns}" > ${res_file}
+                            fi
+                        fi
                     fi
                     niter_w_space=$(cat ${tmpFile} | grep "Num iterations =" | cut -d"=" -f2)
                     niter=$(echo ${niter_w_space})
@@ -154,13 +169,20 @@ for colorType in ${colorTypes}; do
                     resNorm=$(grep "Convergence results:" ${tmpFile} | cut -d"=" -f2 | cut -d"," -f1)
                     errNorm=$(grep "Convergence results:" ${tmpFile} | cut -d"=" -f3 | cut -d"," -f1)
                     actualIter=$(grep "Convergence results:" ${tmpFile} | cut -d"=" -f4 | cut -d"," -f1)
-                    echo "${matrix},${thread},${RCM},${effPrintStr},${niter},${resNorm},${errNorm},${actualIter},${preTime},${perfRes}" >> ${res_file}
 
-                    let ctr=${ctr}+1
+                    if [[ ${colorType} == "RACE" ]]; then
+                        echo "${matrix},${thread},${RCM},${effPrintStr},${niter},${resNorm},${errNorm},${actualIter},${preTime},${perfRes}" >> ${res_file}
+                    else
+                        echo "${matrix},${thread},${RCM},${niter},${resNorm},${errNorm},${actualIter},${preTime},${perfRes}" >> ${res_file}
+                    fi
+
                     rm -rf ${tmpFile}
+
+                    let inCtr=${inCtr}+1
                 done
             done
         done
+        let ctr=${ctr}+1
     done
 
     #store aligned CSV file
