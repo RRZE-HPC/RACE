@@ -23,6 +23,11 @@ void capitalize(char* beg)
     }
 }
 
+double scaleFn(int i, double scale)
+{
+    return i*scale;
+}
+
 #define RES_CHECK\
     plain_spmv(Ax, mat, x);\
     res->axpby(b, Ax, 1, -1);\
@@ -57,6 +62,10 @@ void capitalize(char* beg)
             {\
                 double errNorm;\
                 ERR_CHECK;\
+                if(trial==0)\
+                {\
+                    convergence_history.push_back(std::pair<int, double>(actualIter, errNorm));\
+                }\
                 if(errNorm < param.convTol)\
                 {\
                     converged = true;\
@@ -132,7 +141,9 @@ int main(const int argc, char * argv[])
     }
     else
     {
-        xSoln->setVal(initVal);
+        //xSoln->setVal(initVal);
+        std::function<double(int)> initFn = std::bind(&scaleFn, std::placeholders::_1, initVal);
+        xSoln->setFn(initFn);
     }
 
     int iterations;
@@ -169,7 +180,37 @@ int main(const int argc, char * argv[])
     int actualIter = 0;
     //This macro times and reports performance by running the solver multiple
     //times
+    std::vector<std::pair<int, double>> convergence_history;
     PERF_RUN(serial_kacz, 4, kacz_serial(b, mat, x););
+
+    if(param.validate)
+    {
+        int lenIter = convergence_history.size();
+        if(param.convFile == NULL)
+        {
+            printf("Error history\n");
+            printf("#Iter, abs. error\n");
+
+            for(int i=0; i<lenIter; ++i)
+            {
+                printf("%d, %.16f\n", convergence_history[i].first, convergence_history[i].second);
+            }
+        }
+        else
+        {
+            FILE * fp;
+            fp = fopen (param.convFile, "w+");
+
+            fprintf(fp, "#Iter, abs. error\n");
+            for(int i=0; i<lenIter; ++i)
+            {
+                fprintf(fp, "%d, %.16f\n", convergence_history[i].first, convergence_history[i].second);
+            }
+            fclose(fp);
+
+        }
+    }
+
 
     double resNorm;
     RES_CHECK;

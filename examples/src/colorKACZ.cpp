@@ -23,6 +23,11 @@ void capitalize(char* beg)
     }
 }
 
+double scaleFn(int i, double scale)
+{
+    return i*scale;
+}
+
 #define RES_CHECK\
     plain_spmv(Ax, mat, x);\
     res->axpby(b, Ax, 1, -1);\
@@ -140,7 +145,9 @@ int main(const int argc, char * argv[])
     }
     else
     {
-        xSoln->setVal(initVal);
+        //xSoln->setVal(initVal);
+        std::function<double(int)> initFn = std::bind(&scaleFn, std::placeholders::_1, initVal);
+        xSoln->setFn(initFn);
     }
 
     int iterations;

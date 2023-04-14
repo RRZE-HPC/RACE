@@ -110,14 +110,37 @@ for colorType in ${colorTypes}; do
                         rcmFlag="-R"
                     fi
 
+                    #need to find proper baseline with or without RCM, because
+                    #iterations are really sensitive to permutation for GS case
                     SERIAL_file="${folder}/SERIAL.csv"
-                    line=$(head -n $((ctr+2)) ${SERIAL_file} | tail -n 1)
-                    SERIAL_matrix_w_space=$(echo ${line} | cut -d"," -f1)
+                    line_wo_RCM=$(head -n $((ctr+2)) ${SERIAL_file} | tail -n 1)
+                    line_w_RCM=$(head -n $((ctr+3)) ${SERIAL_file} | tail -n 1)
+                    SERIAL_matrix_w_space=$(echo ${line_wo_RCM} | cut -d"," -f1)
                     SERIAL_matrix=$(echo ${SERIAL_matrix_w_space})
                     if [[ ${SERIAL_matrix} != ${matrix} ]]; then
                         echo "Error: mismatch in SERIAL reference file and ${colorType} file. SERIAL file has matrix ${SERIAL_matrix}, while ${colorType} has file ${matrix}."
                         exit
+                        SERIAL_matrix_w_RCM_w_space=$(echo ${line_w_RCM} | cut -d"," -f1)
+                        SERIAL_matrix_w_RCM=$(echo ${SERIAL_matrix_w_RCM_w_space})
+                        if [[ ${SERIAL_matrix_w_RCM} != ${SERIAL_matrix} ]]; then
+                             "Error: mismatch in SERIAL reference file. Matrix with RCM is  ${SERIAL_matrix_w_RCM} and without is ${SERIAL_matrix}."
+                            exit
+
+                        fi
                     fi
+
+                    #select proper baseline
+                    SERIAL_err=${SERIAL_err_wo_RCM}
+                    line=${line_wo_RCM}
+                    SERIALerr_w_space=$(echo ${line_wo_RCM} | cut -d"," -f6)
+                    SERIALerr_wo_RCM=$(echo ${SERIALerr_w_space} | sed -e "s@e@E@g") #need E for exponential to work
+                    SERIALerr_w_space=$(echo ${line_w_RCM} | cut -d"," -f6)
+                    SERIALerr_w_RCM=$(echo ${SERIALerr_w_space} | sed -e "s@e@E@g")
+
+                    if (( $(echo "$SERIALerr_w_RCM < $SERIALerr_wo_RCM" |bc -l) )); then
+                        line=${line_w_RCM}
+                    fi
+
                     SERIALiter_w_space=$(echo ${line} | cut -d"," -f7) #this is input iteration which will be multiplied by trials (10)
                     SERIALiter=$(echo ${SERIALiter_w_space})
                     iter=$(echo "${SERIALiter}*10" | bc -l) #scale by 10, to allow incase of 10x bad convergence
@@ -182,7 +205,7 @@ for colorType in ${colorTypes}; do
                 done
             done
         done
-        let ctr=${ctr}+1
+        let ctr=${ctr}+2 #+2 since both with and without RCM is read
     done
 
     #store aligned CSV file

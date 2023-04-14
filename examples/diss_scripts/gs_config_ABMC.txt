@@ -1,4 +1,4 @@
-matrixFolder=/home/hk-project-benchfau/hd0705/matrices_diss/matrices_rest
+matrixFolder=/home/hk-project-benchfau/hd0705/matrices_diss/
 folder=gs_results
 threads=38
 nodes=1
@@ -6,5 +6,4 @@ RCMs=0 1
 colorTypes=ABMC
 race_efficiencies=40
 execFolder=/home/hk-project-benchfau/hd0705/MatrixPower/examples/build_intel22
-printHead=0
-startMatCtr=40
+printHead=1
