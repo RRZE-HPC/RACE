@@ -208,6 +208,7 @@ int main(const int argc, char * argv[])
 
     mat->computeSymmData();
 
+    b->setVal(0);
     printf("NROWS = %d, NNZ = %d, NNZR = %f, NNZ_symm = %d, NNZR_symm = %f\n", NROWS, NNZ, NNZ/((double)NROWS), mat->nnz_symm, mat->nnz_symm/((double)NROWS));
     PERF_RUN(color_symm_spmv,2, symm_spmv(b, mat, x););
 

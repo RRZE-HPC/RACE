@@ -30,7 +30,7 @@
 #include<malloc.h>
 #include <unistd.h>
 
-#define DEFAULT_RACE_BLOCKCTR 200000
+#define DEFAULT_RACE_BLOCKCTR 100
 
 #define DEBUG 0
 
