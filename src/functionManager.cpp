@@ -218,8 +218,14 @@ void recursiveCall(FuncManager* funMan, int parent)
 
         if(currNthreads <= 1)
         {
+            //START_TIME(func);
             std::vector<int> range = funMan->zoneTree->at(parent).valueZ;
             funMan->func(range[0],range[1],funMan->args);
+            //STOP_TIME(func);
+            //double time=GET_TIME(func);
+            //funMan->zoneTree->at(parent).time += time*1e6/((double)(range[1]-range[0]));
+
+            //funMan->zoneTree->at(parent).pinnedCore.push_back(sched_getcpu());
         }
         else
         {
@@ -237,9 +243,9 @@ void recursiveCall(FuncManager* funMan, int parent)
                 }
                 int tid = omp_get_thread_num();
                 //Pin in each call
-                //int pinOrder = zoneTree->at(children->at(2*subBlock)+2*tid).pinOrder;
+                int pinOrder =funMan->zoneTree->at(children->at(2*subBlock)+2*tid).pinOrder;
                 //printf("omp_proc_bind = %d\n", omp_get_proc_bind());
-                //pool->pin.pinThread(pinOrder);
+                funMan->pool->pin.pinThread(pinOrder);
                 for(int block=startBlock; block!=endBlock; block+=inc)
                 {
                     funMan->recursiveFun(children->at(2*subBlock)+blockPerThread*tid+block);
@@ -1447,17 +1453,20 @@ void FuncManager::Run(bool rev_)
                   */
         int root = 0;
 #ifdef RACE_KERNEL_THREAD_OMP
+        kmp_set_warnings_off(); //so that it doesnt complain on deprecated omp_set_nested(), which is required for Intel 2019 and lower
         int resetNestedState = omp_get_max_active_levels();
         int resetDynamicState = omp_get_dynamic();
+        int resetNested = omp_get_nested();
         //set nested parallelism
+        omp_set_nested(1);
         omp_set_max_active_levels(zoneTree->maxStages()+2);//+2 for safety
-        //omp_set_nested(1);
         omp_set_dynamic(0);
         recursiveFun(root);
 
         //reset states
         omp_set_max_active_levels(resetNestedState);
         omp_set_dynamic(resetDynamicState);
+        omp_set_nested(resetNested);
 #else
 
         // START_TIME(main_fn_call);

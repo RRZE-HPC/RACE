@@ -39,6 +39,7 @@ struct ZoneLeaf{
     int parentZ;
     int effRowZ;
     int pinOrder;
+    std::vector<int> pinnedCore;
     bool reachedLimit;
     int stage;
     double time;

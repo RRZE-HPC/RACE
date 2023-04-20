@@ -325,6 +325,16 @@ void ZoneTree::printTree()
         }
 
         printf("], Parent: %d, nthreads: %d, idealNThreads:%d, stage:%d, subBLocks:%d, effRow: %d, reachedLimit: %s, pinOrder = %d funTime = %f\n", currLeaf->parentZ, currLeaf->nthreadsZ, currLeaf->idealNthreadsZ, currLeaf->stage, currLeaf->totalSubBlocks, currLeaf->effRowZ, (currLeaf->reachedLimit)?"true":"false", currLeaf->pinOrder, currLeaf->time);
+
+        /*
+        printf(", Pinned Core:[");
+        for(unsigned j=0; j<currLeaf->pinnedCore.size(); ++j)
+        {
+            printf("%d, ",currLeaf->pinnedCore[j]);
+        }
+        printf("]\n");
+        */
+
     }
 }
 
