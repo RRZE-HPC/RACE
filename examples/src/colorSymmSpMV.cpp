@@ -161,6 +161,7 @@ int main(const int argc, char * argv[])
 
 
     int NROWS = mat->nrows;
+    int NNZ = mat->nnz;
     int randInit = false;
     double initVal = 1/(double)NROWS;
 
@@ -203,8 +204,11 @@ int main(const int argc, char * argv[])
     PERF_RUN(omp_spmv,2, plain_spmv(b, mat, x););
     b->setVal(0);
     PERF_RUN(color_spmv,2, color_spmv(b, mat, x););
+    //mat->printTree();
 
     mat->computeSymmData();
+
+    printf("NROWS = %d, NNZ = %d, NNZR = %f, NNZ_symm = %d, NNZR_symm = %f\n", NROWS, NNZ, NNZ/((double)NROWS), mat->nnz_symm, mat->nnz_symm/((double)NROWS));
     PERF_RUN(color_symm_spmv,2, symm_spmv(b, mat, x););
 
     if(param.validate)

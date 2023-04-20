@@ -12,6 +12,7 @@
 #include "kernels.h"
 #include "timer.h"
 #include "quantile.hpp"
+#include <math.h>
 
 void capitalize(char* beg)
 {
@@ -119,6 +120,11 @@ int main(const int argc, char * argv[])
     {
         mat->doRCMPermute(); //Permute();
     }
+
+    //required for GS kernel
+    //mat->makeDiagFirst(0.0, true);
+    mat->makeDiagFirst();
+
     /*dist distance=ONE;
     printf("Coloring matrix\n");
     mat->colorAndPermute(distance, std::string(param.colorType), param.cores, param.smt, param.pin);
@@ -179,14 +185,42 @@ int main(const int argc, char * argv[])
     densemat *res = new densemat(NROWS);
     densemat *err = new densemat(NROWS);
 
-    //required for GS kernel
-    mat->makeDiagFirst();
     x->setVal(0);
     int actualIter = 0;
     //This macro times and reports performance by running the solver multiple
     //times
     std::vector<std::pair<int, double>> convergence_history;
     PERF_RUN(serial_gs, 2, gs_serial(b, mat, x););
+
+    int lenIter = convergence_history.size();
+    bool isDiverging = false;
+    //check if convergence or divergence is happening
+    if(!isfinite(convergence_history[lenIter-1].second))
+    {
+        isDiverging=true;
+    }
+    if((lenIter > 1) && (convergence_history[lenIter-1].second > convergence_history[lenIter-2].second))
+    {
+        isDiverging=true;
+    }
+
+    //if diverging repeat with modified diagonals
+    if(isDiverging)
+    {
+        printf("Given system diverges. Running on a system with modified diagonal values.\n");
+        mat->makeDiagFirst(0.0, true);
+
+        b->setVal(0);
+        //set b once for LSE, with actual xSoln
+        plain_spmv(b, mat, xSoln);
+
+        x->setVal(0);
+        actualIter = 0;
+        //This macro times and reports performance by running the solver multiple
+        //times
+        convergence_history.clear();
+        PERF_RUN(serial_gs, 2, gs_serial(b, mat, x););
+    }
 
     if(param.validate)
     {

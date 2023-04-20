@@ -14,6 +14,9 @@
 #include "kernels.h"
 #include "densemat.h"
 #include "multicoloring.h"
+#ifdef RACE_HAVE_METIS
+    #include "metis.h"
+#endif
 
 sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), diagFirst(false), colorType("RACE"), colorBlockSize(64), colorDist(-1), ncolors(-1), colorPtr(NULL), partPtr(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), finalPerm(NULL), finalInvPerm(NULL), symm_hint(false)
 {
@@ -97,6 +100,11 @@ sparsemat::~sparsemat()
 
     if(val_bcsr)
         delete[] val_bcsr;*/
+}
+
+void sparsemat::printTree()
+{
+    ce->printZoneTree();
 }
 
 bool sparsemat::readFile(char* filename)
@@ -421,9 +429,10 @@ bool sparsemat::isAnyDiagZero()
 }
 
 //necessary for GS like kernels
-void sparsemat::makeDiagFirst()
+void sparsemat::makeDiagFirst(double missingDiag_value, bool rewriteAllDiag_with_maxRowSum)
 {
-    if(!diagFirst)
+    double maxRowSum=0.0;
+    if(!diagFirst || rewriteAllDiag_with_maxRowSum)
     {
         //check whether a new allocation is necessary
         int extra_nnz=0;
@@ -434,10 +443,12 @@ void sparsemat::makeDiagFirst()
         for(int row=0; row<nrows; ++row)
         {
             bool diagHit = false;
+            double rowSum=0;
             for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
             {
                 val_with_diag->push_back(val[idx]);
                 col_with_diag->push_back(col[idx]);
+                rowSum += val[idx];
 
                 if(col[idx] == row)
                 {
@@ -446,10 +457,12 @@ void sparsemat::makeDiagFirst()
             }
             if(!diagHit)
             {
-                val_with_diag->push_back(0.0);
+                val_with_diag->push_back(missingDiag_value);
                 col_with_diag->push_back(row);
                 ++extra_nnz;
+                rowSum += missingDiag_value;
             }
+            maxRowSum = std::max(maxRowSum, std::abs(rowSum));
             rowPtr_with_diag->at(row+1) = rowPtr_with_diag->at(row+1) + extra_nnz;
         }
 
@@ -495,7 +508,14 @@ void sparsemat::makeDiagFirst()
                 //shift all elements+1 until diag entry
                 if(col[idx] == row)
                 {
-                    newVal[0] = val[idx];
+                    if(rewriteAllDiag_with_maxRowSum)
+                    {
+                        newVal[0] = maxRowSum;
+                    }
+                    else
+                    {
+                        newVal[0] = val[idx];
+                    }
                     newCol[0] = col[idx];
                     diag_hit = true;
                 }
@@ -537,6 +557,16 @@ bool sparsemat::writeFile(char* filename)
         {
             row_1_based[idx]=i+1;
             col_1_based[idx]=col[idx]+1;
+
+            if(row_1_based[idx] < 1)
+            {
+                printf("row less than 1: value=%d at row=%d, idx=%d\n", i+1, i, idx);
+            }
+            if(col_1_based[idx] < 1)
+            {
+                printf("col less than 1: value=%d at row=%d,idx=%d\n", col[idx]+1, i, idx);
+            }
+
         }
     }
 
@@ -770,12 +800,31 @@ int sparsemat::prepareForPower(int highestPower, double cacheSize, int nthreads,
     return 1;
 }
 
+struct metis_block_arg
+{
+    int blockSize;
+    int* init_perm;
+    int* init_invPerm;
+    int* out_invPerm;
+    sparsemat* mat;
+};
+
+inline void METIS_BLOCKING_KERNEL(int start, int end, void *args)
+{
+    metis_block_arg* arg_decode = (metis_block_arg*) args;
+    if(start<end)
+    {
+        printf("start=%d, end=%d\n", start, end);
+        arg_decode->mat->doMETIS(arg_decode->blockSize, start, end, arg_decode->init_perm, arg_decode->init_invPerm, arg_decode->out_invPerm);
+    }
+}
 
 int sparsemat::colorAndPermute(dist distance, std::string colorType_, int nthreads, int smt, PinMethod pinMethod)
 {
 
+    //writeFile("before_perm.mtx");
     colorType = colorType_;
-    if(colorType == "RACE")
+    if((colorType == "RACE") || (colorType == "RACE_and_BLOCK"))
     {
         ce = new Interface(nrows, nthreads, distance, rowPtr, col, symm_hint, smt, pinMethod, rcmPerm, rcmInvPerm);
         RACE_error ret = ce->RACEColor();
@@ -791,9 +840,6 @@ int sparsemat::colorAndPermute(dist distance, std::string colorType_, int nthrea
         ce->getPerm(&perm, &permLen);
         ce->getInvPerm(&invPerm, &permLen);
 
-        //now permute the matrix according to the permutation vector
-        permute(perm, invPerm);
-
         if(finalPerm)
         {
             delete [] finalPerm;
@@ -803,8 +849,44 @@ int sparsemat::colorAndPermute(dist distance, std::string colorType_, int nthrea
         finalPerm = perm;
         finalInvPerm = invPerm;
 
+        if(colorType == "RACE_and_BLOCK")
+        {
+            int* metis_perm=new int[nrows];
+            int* metis_invPerm=new int[nrows];
+            int blockSize=128;
+
+            metis_block_arg* arg_encode = new metis_block_arg;
+            arg_encode->blockSize=blockSize;
+            arg_encode->init_perm=perm;
+            arg_encode->init_invPerm=invPerm;
+            arg_encode->out_invPerm=metis_invPerm;
+            arg_encode->mat=this;
+            void *voidArg = (void*) arg_encode;
+
+            int metis_block_kernel_id = ce->registerFunction(&METIS_BLOCKING_KERNEL, voidArg);
+            ce->executeFunction(metis_block_kernel_id);
+            for (int i=0; i<nrows; i++)
+            {
+                metis_perm[metis_invPerm[i]] = i;
+            }
+
+            if(finalPerm)
+            {
+                delete [] finalPerm;
+                delete [] finalInvPerm;
+            }
+
+            finalPerm = metis_perm;
+            finalInvPerm = metis_invPerm;
+        }
+
         //pin omp threads as in RACE for proper NUMA
-        pinOMP(nthreads);
+        //pinOMP(nthreads);
+
+        double parallel_efficiency = ce->getEfficiency();
+        printf("Parallel efficiency of RACE = %f\n", parallel_efficiency);
+
+
     }
     else
     {
@@ -842,7 +924,6 @@ int sparsemat::colorAndPermute(dist distance, std::string colorType_, int nthrea
             printf("check perm[%d] = %d\n", row, mc.perm_out[row]);
         }
 */
-        permute(mc.perm_out, mc.invPerm_out);
 
         if(finalPerm)
         {
@@ -853,6 +934,10 @@ int sparsemat::colorAndPermute(dist distance, std::string colorType_, int nthrea
         finalPerm = mc.perm_out;
         finalInvPerm = mc.invPerm_out;
     }
+
+    permute(finalPerm, finalInvPerm);
+
+    //writeFile("after_perm.mtx");
     return 1;
 }
 
@@ -1007,6 +1092,102 @@ void sparsemat::permute(int *_perm_, int*  _invPerm_, bool RACEalloc)
     val = newVal;
     rowPtr = newRowPtr;
     col = newCol;
+}
+
+//make sure all permutation are actuakly done before entring this routine,
+//because no initPerm is supported now
+//also outPerm and outInvPerm have to be allocated before entering this
+//routine
+bool sparsemat::doMETIS(int blocksize, int start_row, int end_row, int *initPerm, int *initInvPerm, int *outInvPerm)
+{
+#if (defined RACE_HAVE_METIS)
+    bool success_flag=true;
+    int* rptlocal = (int*) malloc(sizeof(int)*(nrows+1));
+    int* collocal = (int*) malloc(sizeof(int)*nnz);
+    rptlocal[0] = 0;
+    int local_nrows = end_row-start_row;
+    int local_nnz = 0;
+    int local_row=0;
+
+    for(int row=start_row; row<end_row; ++row, ++local_row)
+    {
+        int permRow = row;
+        if(initPerm)
+        {
+            permRow = initPerm[row];
+        }
+        for(int idx=rowPtr[permRow]; idx<rowPtr[permRow+1]; ++idx)
+        {
+            int permCol = col[idx];
+            if(initInvPerm)
+            {
+                permCol = initInvPerm[permCol];
+            }
+            //only local entries added to col
+            if((permCol>=start_row) && (permCol<end_row))
+            {
+                collocal[local_nnz] = permCol-start_row; //-start_row to convert to local index
+                ++local_nnz;
+            }
+        }
+        rptlocal[local_row+1] = local_nnz;
+    }
+
+    //partition using METIS
+    int ncon = 1;
+    int nparts = (int)(local_nrows/(double)blocksize);
+    int objval;
+    int *part = (int*) malloc(sizeof(int)*local_nrows);
+
+    printf("partitioning graph to %d parts\n", nparts);
+    int metis_ret = METIS_PartGraphKway(&local_nrows, &ncon, rptlocal, collocal, NULL, NULL, NULL, &nparts, NULL, NULL, NULL, &objval, part);
+    if(metis_ret == METIS_OK)
+    {
+        printf("successfully partitioned graph to nparts=%d\n", nparts);
+    }
+    else
+    {
+        success_flag=false;
+        printf("Error in METIS partitioning\n");
+    }
+
+    std::vector<std::vector<int>> partRow(nparts);
+    for (int i=0;i<local_nrows;i++) {
+        partRow[part[i]].push_back(i);
+    }
+/*    for(int i=start_row; i<end_row; ++i) {
+        outPerm[i]=-1;
+        outInvPerm[i]=-1;
+    }*/
+    int ctr=0;
+    for (int partIdx=0; partIdx<nparts; partIdx++)
+    {
+        int partSize = (int)partRow[partIdx].size(); //partPtr[partIdx+1]-partPtr[partIdx];
+        for(int rowIdx=0; rowIdx<partSize; ++rowIdx)
+        {
+            //find rows in parts
+            int local_currRow = partRow[partIdx][rowIdx];
+            int currRow = local_currRow + start_row;
+            int permCurrRow = currRow;
+            if(initPerm)
+            {
+                permCurrRow = initPerm[currRow];
+            }
+
+            outInvPerm[permCurrRow] = start_row+ctr;
+            ++ctr;
+        }
+    }
+/*
+    for (int i=start_row; i<end_row; i++)
+    {
+        outPerm[outInvPerm[i]] = i;
+    }
+*/
+    return success_flag;
+#else
+    return false;
+#endif
 }
 
 //here openMP threads are pinned according to

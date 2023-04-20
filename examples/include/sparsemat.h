@@ -38,10 +38,11 @@ struct sparsemat
     bool convertToBCSR(int b_r);
     bool writeFile(char* filename);
     bool isAnyDiagZero();
-    void makeDiagFirst();
+    void makeDiagFirst(double missingDiag_value=0.0, bool rewriteAllDiag_with_maxRowSum=false);
     bool isSymmetric();
     void doRCM();
     void doRCMPermute();
+    bool doMETIS(int blockSize, int start_row, int end_row, int *initPerm, int *initInvPerm, int *outInvPerm);
     int prepareForPower(int highestPower, double cacheSize, int nthreads, int smt=1, PinMethod pinMethod=FILL, int globalStartRow = -1, int globalEndRow = -1, std::string mtxType="N");
     //colorType: RACE, MC, ABMC
     int colorAndPermute(dist d, std::string colorType_, int nthreads, int smt=1, PinMethod pinMethod=FILL);
@@ -70,7 +71,7 @@ struct sparsemat
 
     sparsemat();
     ~sparsemat();
-
+    void printTree();
     void initCover(int nrows_, int nnz_, double *val_, int *rowPtr_, int *col_);
     void basicDeepCopy(sparsemat *mat);
     densemat* permute_densemat(densemat *vec);

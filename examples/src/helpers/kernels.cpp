@@ -28,7 +28,7 @@ inline void SPMV_KERNEL(int start, int end, void* args)
 //b=A*x
 void color_spmv(densemat* b, sparsemat* mat, densemat* x)
 {
-    if(mat->colorType == "RACE")
+    if((mat->colorType == "RACE") || (mat->colorType == "RACE_and_BLOCK"))
     {
         RACE::Interface *ce = mat->ce;
 
@@ -128,7 +128,7 @@ inline void SPMTV_KERNEL(int start, int end, void* args)
 //b=A'*x
 void spmtv(densemat* b, sparsemat* mat, densemat* x)
 {
-    if(mat->colorType == "RACE")
+    if((mat->colorType == "RACE") || (mat->colorType == "RACE_and_BLOCK"))
     {
         RACE::Interface *ce = mat->ce;
 
@@ -206,7 +206,7 @@ void gs_serial(densemat* b, sparsemat* mat, densemat* x)
 //Solve for x : A*x=b
 void gs(densemat* b, sparsemat* mat, densemat* x)
 {
-    if(mat->colorType == "RACE")
+    if((mat->colorType == "RACE") || (mat->colorType == "RACE_and_BLOCK"))
     {
         RACE::Interface *ce = mat->ce;
 
@@ -290,7 +290,7 @@ void kacz_serial(densemat* b, sparsemat* mat, densemat* x)
 //Solve for x : A*x=b
 void kacz(densemat* b, sparsemat* mat, densemat* x)
 {
-    if(mat->colorType == "RACE")
+    if((mat->colorType == "RACE") || (mat->colorType == "RACE_and_BLOCK"))
     {
         RACE::Interface *ce = mat->ce;
 
@@ -362,8 +362,7 @@ inline void SYMM_SPMV_KERNEL(int start, int end, void* args)
 //A*x=b; A is symmetric
 void symm_spmv(densemat* b, sparsemat* mat, densemat* x)
 {
-
-    if(mat->colorType == "RACE")
+    if((mat->colorType == "RACE") || (mat->colorType == "RACE_and_BLOCK"))
     {
         RACE::Interface *ce = mat->ce;
 
