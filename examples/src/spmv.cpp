@@ -23,6 +23,39 @@ void capitalize(char* beg)
     }
 }
 
+#ifdef LIKWID_MEASURE
+
+#define PERF_RUN(kernel, flopPerNnz)\
+{\
+    char* capsKernel;\
+    asprintf(&capsKernel, "%s", #kernel);\
+    capitalize(capsKernel);\
+    int iter = param.iter;\
+    double time = 0;\
+    double nnz_update = ((double)mat->nnz)*iterations*1e-9;\
+    sleep(1);\
+    INIT_TIMER(kernel);\
+    _Pragma("omp parallel")\
+    {\
+        LIKWID_MARKER_START(capsKernel);\
+    }\
+    START_TIMER(kernel);\
+    for(int iter=0; iter<iterations; ++iter)\
+    {\
+        kernel(b, mat, x);\
+    }\
+    STOP_TIMER(kernel);\
+    _Pragma("omp parallel")\
+    {\
+        LIKWID_MARKER_STOP(capsKernel);\
+    }\
+    time = GET_TIMER(kernel);\
+    printf("%10s : %8.4f GFlop/s ; Time = %8.5f s\n", capsKernel, flopPerNnz*nnz_update/(time), time);\
+    free(capsKernel);\
+}\
+
+#else
+
 #define PERF_RUN(kernel, flopPerNnz)\
 {\
     int iter = param.iter;\
@@ -44,8 +77,13 @@ void capitalize(char* beg)
     free(capsKernel);\
 }\
 
+#endif
+
 int main(const int argc, char * argv[])
 {
+#ifdef LIKWID_MEASURE
+    LIKWID_MARKER_INIT;
+#endif
 
     int err;
     parser param;
@@ -70,7 +108,9 @@ int main(const int argc, char * argv[])
     int NROWS = mat->nrows;
     int randInit = false;
     double initVal = 1/(double)NROWS;
-
+    int NNZ = mat->nnz;
+    int NNZ_symm = ((NNZ-NROWS)/2)+NROWS;
+    printf("Nrows = %d, NNZ = %d, NNZR = %f, NNZ_symm = %d, NNZR_symm = %f\n", NROWS, NNZ, NNZ/((double)NROWS), NNZ_symm, NNZ_symm/((double)NROWS));
     densemat *x, *b;
     x=new densemat(NROWS);
     b=new densemat(NROWS);
@@ -109,6 +149,10 @@ int main(const int argc, char * argv[])
 
     //This macro times and reports performance
     PERF_RUN(plain_spmv,2);
+
+#ifdef LIKWID_MEASURE
+    LIKWID_MARKER_CLOSE;
+#endif
 
     delete x;
     delete b;

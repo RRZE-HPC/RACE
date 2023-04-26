@@ -285,10 +285,10 @@ void recursiveCall(FuncManager* funMan, int parentIdx)
             //        int pinOrder = zoneTree->at(parentIdx).pinOrder;
             //        printf(" pinOrder = %d, cpu = %d\n",pinOrder,sched_getcpu());
             std::vector<int>* range = &funMan->zoneTree->at(parentIdx).valueZ;
-            START_TIME(func);
+            //START_TIME(func);
             funMan->func(range->front(),range->back(), funMan->args);
-            STOP_TIME(func);
-            funMan->zoneTree->at(parentIdx).time += GET_TIME(func);
+            //STOP_TIME(func);
+            //funMan->zoneTree->at(parentIdx).time += GET_TIME(func);
             //test(funMan->a,funMan->b,funMan->c,funMan->d,range->at(0), range->at(1),1);
             //  test(1);
             // sleep(1);
