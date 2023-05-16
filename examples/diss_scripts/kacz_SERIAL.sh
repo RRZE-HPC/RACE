@@ -18,7 +18,7 @@ configFile=$1
 matrixFolder=$(cat ${configFile} | grep "matrixFolder" | cut -d"=" -f2)
 folder=$(cat ${configFile} | grep "folder" | cut -d"=" -f2)
 nodes=$(cat ${configFile} | grep "nodes" | cut -d"=" -f2)
-RCM=$(cat ${configFile} | grep "RCM" | cut -d"=" -f2)
+RCMs=$(cat ${configFile} | grep "RCMs" | cut -d"=" -f2)
 race_efficiencies=$(cat ${configFile} | grep "race_efficiencies" | cut -d"=" -f2)
 execFolder=$(cat ${configFile} | grep "execFolder" | cut -d"=" -f2)
 printHead=$(cat ${configFile} | grep "printHead" | cut -d"=" -f2)
@@ -90,46 +90,46 @@ mkdir -p ${rawFolder}
 ctr=0
 for matrix in $matrix_name; do #only one err value per matrix, so no more loops
     raw_file="${rawFolder}/${matrix}.txt"
-    #for RCM in $RCMs; do
-            #not differentiating for any coloring methods the parameters,
-            #because we compare with RACE the other methods and
-            #$reordering in RACE can change the errNorm and/or iter
-            tmpFile="${rawFolder}/${matrix}.tmp"
-            rcmFlag=""
-            if [[ $RCM == "1" ]]; then
-                rcmFlag="-R"
+    for RCM in $RCMs; do
+        #not differentiating for any coloring methods the parameters,
+        #because we compare with RACE the other methods and
+        #$reordering in RACE can change the errNorm and/or iter
+        tmpFile="${rawFolder}/${matrix}.tmp"
+        rcmFlag=""
+        if [[ $RCM == "1" ]]; then
+            rcmFlag="-R"
+        fi
+
+        thread=1
+        iter=500 #will check error for 200 iterations
+        #iterations automatically decide
+        KMP_WARNINGS=0 MKL_NUM_THREADS=$thread \
+            OMP_NUM_THREADS=${thread} OMP_SCHEDULE=static \
+            COLOR_DISTANCE=2 RACE_EFFICIENCY=${eff} \
+            taskset -c 0-$((thread-1)) ${execFolder}/serialKACZ \
+            -m "${matrixFolder}/${matrix}" -c ${thread} -t 1  -v -p FILL \
+            ${rcmFlag} -i ${iter} > ${tmpFile}
+        cat ${tmpFile} >> ${raw_file}
+
+        if [[ $printHead == "1" ]]; then
+            if [[ ${ctr} == 0 ]]; then
+                columns=$(printHeader ${tmpFile})
+                echo "Matrix,Thread,RCM,Iter,ResNorm,ErrNorm,ActualIter,Preprocessing-time,${columns}" > ${res_file}
             fi
+        fi
+        niter_w_space=$(cat ${tmpFile} | grep "Num iterations =" | cut -d"=" -f2)
+        niter=$(echo ${niter_w_space})
+        preTime_w_space=$(cat ${tmpFile} | grep "Total pre-processing time =" | cut -d"=" -f2 | cut -d"s" -f1)
+        preTime=$(echo ${preTime_w_space})
+        perfRes=$(readResult "${tmpFile}")
+        resNorm=$(grep "Convergence results:" ${tmpFile} | cut -d"=" -f2 | cut -d"," -f1)
+        errNorm=$(grep "Convergence results:" ${tmpFile} | cut -d"=" -f3 | cut -d"," -f1)
+        actualIter=$(grep "Convergence results:" ${tmpFile} | cut -d"=" -f4 | cut -d"," -f1)
+        echo "${matrix},${thread},${RCM},${niter},${resNorm},${errNorm},${actualIter},${preTime},${perfRes}" >> ${res_file}
 
-            thread=1
-            iter=500 #will check error for 200 iterations
-            #iterations automatically decide
-            KMP_WARNINGS=0 MKL_NUM_THREADS=$thread \
-                OMP_NUM_THREADS=${thread} OMP_SCHEDULE=static \
-                COLOR_DISTANCE=2 RACE_EFFICIENCY=${eff} \
-                taskset -c 0-$((thread-1)) ${execFolder}/serialKACZ \
-                -m "${matrixFolder}/${matrix}" -c ${thread} -t 1  -v -p FILL \
-                ${rcmFlag} -i ${iter} > ${tmpFile}
-            cat ${tmpFile} >> ${raw_file}
-
-            if [[ $printHead == "1" ]]; then
-                if [[ ${ctr} == 0 ]]; then
-                    columns=$(printHeader ${tmpFile})
-                    echo "Matrix,Thread,RCM,Iter,ResNorm,ErrNorm,ActualIter,Preprocessing-time,${columns}" > ${res_file}
-                fi
-            fi
-            niter_w_space=$(cat ${tmpFile} | grep "Num iterations =" | cut -d"=" -f2)
-            niter=$(echo ${niter_w_space})
-            preTime_w_space=$(cat ${tmpFile} | grep "Total pre-processing time =" | cut -d"=" -f2 | cut -d"s" -f1)
-            preTime=$(echo ${preTime_w_space})
-            perfRes=$(readResult "${tmpFile}")
-            resNorm=$(grep "Convergence results:" ${tmpFile} | cut -d"=" -f2 | cut -d"," -f1)
-            errNorm=$(grep "Convergence results:" ${tmpFile} | cut -d"=" -f3 | cut -d"," -f1)
-            actualIter=$(grep "Convergence results:" ${tmpFile} | cut -d"=" -f4 | cut -d"," -f1)
-            echo "${matrix},${thread},${RCM},${niter},${resNorm},${errNorm},${actualIter},${preTime},${perfRes}" >> ${res_file}
-
-            let ctr=${ctr}+1
-            rm -rf ${tmpFile}
-    #done
+        let ctr=${ctr}+1
+        rm -rf ${tmpFile}
+    done
 done
 
 #store aligned CSV file
