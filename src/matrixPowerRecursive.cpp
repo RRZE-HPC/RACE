@@ -274,7 +274,7 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
                             }
                             else
                             {
-                                printf("omiting [%d, %d]  boundary\n", curRange.lo, curRange.hi);
+                                //printf("omiting [%d, %d]  boundary\n", curRange.lo, curRange.hi);
                             }
                         }
                     }
