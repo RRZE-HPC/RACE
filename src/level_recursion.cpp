@@ -277,34 +277,41 @@ void LevelRecursion::recursivePartition(int parentIdx, int parentSubIdx, int cur
         {
             for(unsigned j=0; j<range.size()-1; ++j)
             {
-                RACE::Traverse traverse(graph, dist, range[j], range[j+1], currIdx);
-                traverse.calculateDistance();
-#ifndef RACE_PERMUTE_ON_FLY
-                int *levelPerm = NULL;
-                int len;
-                traverse.getPerm(&levelPerm, &len);
-                updatePerm(&perm, levelPerm, len, len+graph->NROW_serial);
-                delete[] levelPerm;
-#endif
-                LevelData* levelData = traverse.getLevelData();
-                //Try to spawn all the threads required
-                bool locFlag = zoneTree->spawnChild(currIdx, j, currIdxNThreads, levelData, efficiency(currLevel));
-
-                delete levelData;
-
-                //if failed to obtain threads, try going down the tree recursively
-                if(!locFlag)
+                if(range[j+1]>range[j])
                 {
-                    //This might not be updated with blocking
-                    //int subAvailableNThreads = zoneTree->at(currIdx).nthreadsZ;
-                    int blockPerThread =  getBlockPerThread(dist, d2Type);
-                    int subAvailableNThreads = (zoneTree->at(currIdx).children[2*j+1]-zoneTree->at(currIdx).children[2*j])/blockPerThread;
-                    if(subAvailableNThreads == 1) {
-                        zoneTree->at(currIdx).reachedLimit = true;
+                    RACE::Traverse traverse(graph, dist, range[j], range[j+1], currIdx);
+                    traverse.calculateDistance();
+#ifndef RACE_PERMUTE_ON_FLY
+                    int *levelPerm = NULL;
+                    int len;
+                    traverse.getPerm(&levelPerm, &len);
+                    updatePerm(&perm, levelPerm, len, len+graph->NROW_serial);
+                    delete[] levelPerm;
+#endif
+                    LevelData* levelData = traverse.getLevelData();
+                    //Try to spawn all the threads required
+                    bool locFlag = zoneTree->spawnChild(currIdx, j, currIdxNThreads, levelData, efficiency(currLevel));
+
+                    delete levelData;
+
+                    //if failed to obtain threads, try going down the tree recursively
+                    if(!locFlag)
+                    {
+                        //This might not be updated with blocking
+                        //int subAvailableNThreads = zoneTree->at(currIdx).nthreadsZ;
+                        int blockPerThread =  getBlockPerThread(dist, d2Type);
+                        int subAvailableNThreads = (zoneTree->at(currIdx).children[2*j+1]-zoneTree->at(currIdx).children[2*j])/blockPerThread;
+                        if(subAvailableNThreads == 1) {
+                            zoneTree->at(currIdx).reachedLimit = true;
+                        }
+                        if(subAvailableNThreads > 1) {
+                            recursivePartition(currIdx, j, currLevel+1);
+                        }
                     }
-                    if(subAvailableNThreads > 1) {
-                        recursivePartition(currIdx, j, currLevel+1);
-                    }
+                }
+                else
+                {
+                    zoneTree->at(currIdx).reachedLimit = true;
                 }
             }
         }

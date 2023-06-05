@@ -821,6 +821,8 @@ inline void METIS_BLOCKING_KERNEL(int start, int end, void *args)
 
 int sparsemat::colorAndPermute(dist distance, std::string colorType_, int nthreads, int smt, PinMethod pinMethod)
 {
+    INIT_TIMER(pre_process_kernel);
+    START_TIMER(pre_process_kernel);
 
     //writeFile("before_perm.mtx");
     colorType = colorType_;
@@ -934,6 +936,9 @@ int sparsemat::colorAndPermute(dist distance, std::string colorType_, int nthrea
         finalPerm = mc.perm_out;
         finalInvPerm = mc.invPerm_out;
     }
+
+    STOP_TIMER(pre_process_kernel);
+    printf("RACE pre-processing time = %fs\n", GET_TIMER(pre_process_kernel));
 
     permute(finalPerm, finalInvPerm);
 

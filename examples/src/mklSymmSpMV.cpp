@@ -22,6 +22,52 @@ void capitalize(char* beg)
         ++i;
     }
 }
+#ifdef LIKWID_MEASURE
+
+#define PERF_RUN(kernel, flopPerNnz, ...)\
+{\
+    char* capsKernel;\
+    asprintf(&capsKernel, "%s", #kernel);\
+    capitalize(capsKernel);\
+    /*_Pragma("omp parallel")\
+      {\
+      LIKWID_MARKER_REGISTER(capsKernel);\
+      }\*/\
+    int num_trials=10;\
+    std::vector<double> time(num_trials, 0);\
+    double nnz_update = ((double)mat->nnz)*iterations*1e-9;\
+    INIT_TIMER(kernel);\
+    _Pragma("omp parallel")\
+    {\
+        LIKWID_MARKER_START(capsKernel);\
+    }\
+    for(int trial=0; trial<num_trials; ++trial)\
+    {\
+        START_TIMER(kernel);\
+        for(int iter=0; iter<iterations; ++iter)\
+        {\
+            __VA_ARGS__;\
+            /*kernel(b, mat, x, symm);*/\
+        }\
+        STOP_TIMER(kernel);\
+        time[trial] = GET_TIMER(kernel);\
+    }\
+    _Pragma("omp parallel")\
+    {\
+        LIKWID_MARKER_STOP(capsKernel);\
+    }\
+    std::vector<double> time_quantiles = Quantile(time, {0, 0.25, 0.5, 0.75, 1});\
+    /*printf("Obtained Perf of %s : %8.4f GFlop/s ; Time = %8.5f s\n", capsKernel, flopPerNnz*nnz_update/(time), time);*/\
+    printf("Obtained Perf of %s : ", capsKernel);\
+    Quantile_print(time_quantiles, flopPerNnz*nnz_update, true);\
+    printf(" GFlop/s; Time : ");\
+    Quantile_print(time_quantiles);\
+    printf(" sec\n");\
+    free(capsKernel);\
+}\
+
+#else
+
 
 #define PERF_RUN(kernel, flopPerNnz, ...)\
 {\
@@ -53,9 +99,13 @@ void capitalize(char* beg)
     free(capsKernel);\
 }\
 
+#endif
 
 int main(const int argc, char * argv[])
 {
+#ifdef LIKWID_MEASURE
+    LIKWID_MARKER_INIT;
+#endif
 
     int err;
     parser param;
@@ -84,6 +134,7 @@ int main(const int argc, char * argv[])
 
 
     int NROWS = mat->nrows;
+    int NNZ = mat->nnz;
     int randInit = false;
     double initVal = 1/(double)NROWS;
 
@@ -108,12 +159,14 @@ int main(const int argc, char * argv[])
     }
 
     b->setVal(0);
+
+    printf("NROWS = %d, NNZ = %d, NNZR = %f, NNZ_symm = %d, NNZR_symm = %f\n", NROWS, NNZ, NNZ/((double)NROWS), mat->nnz_symm, mat->nnz_symm/((double)NROWS));
     //determine iterations
     INIT_TIMER(init_iter);
     START_TIMER(init_iter);
     for(int iter=0; iter<10; ++iter)
     {
-       mkl_spmv(b, mat, x);
+        plain_spmv(b, mat, x);
     }
     STOP_TIMER(init_iter);
     double initTime = GET_TIMER(init_iter);
@@ -175,7 +228,7 @@ int main(const int argc, char * argv[])
             printf("SYMM SPMV IE failed\n");
         }
 
- 
+
         if(symm_spmv_flag && ie_symm_spmv_flag)
         {
             printf("Validated\n");
@@ -188,7 +241,11 @@ int main(const int argc, char * argv[])
             printf("3. Problems in problem setup\n\n");
         }
         delete bSPMV;
-   }
+    }
+
+#ifdef LIKWID_MEASURE
+    LIKWID_MARKER_CLOSE;
+#endif
 
     delete mat;
     delete x;
