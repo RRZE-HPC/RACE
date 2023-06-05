@@ -31,7 +31,7 @@ ZoneLeaf::ZoneLeaf():valueZ(2),nthreadsZ(-1),idealNthreadsZ(-1),totalSubBlocks(-
 {
 }
 
-ZoneLeaf::ZoneLeaf(int rangeLo_, int rangeHi_, int parent_):valueZ(2),nthreadsZ(1),idealNthreadsZ(1),totalSubBlocks(1), parentZ(parent_),  effRowZ(rangeHi_-rangeLo_),pinOrder(-1),reachedLimit(false), time(0)
+ZoneLeaf::ZoneLeaf(int rangeLo_, int rangeHi_, int parent_):valueZ(2),nthreadsZ(1),idealNthreadsZ(1),totalSubBlocks(1), parentZ(parent_),  effRowZ(rangeHi_-rangeLo_), pinOrder(-1),reachedLimit(false), stage(0), time(0)
 {
     valueZ[0] = rangeLo_;
     valueZ[1] = rangeHi_;
