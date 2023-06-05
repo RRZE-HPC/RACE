@@ -1,0 +1,9 @@
+matrixFolder=/home/vault/unrz/unrz002h/matrix/matrices_diss/bigMtx
+folder=symm_spmv_best_w_likwid_bigMtx_results
+threads=20
+paramFileRACE=symm_spmv_results/RACE_bigMtx_best.csv
+paramFileTRAD=symm_spmv_results/MKL-IE_bigMtx_best.csv
+mkl=on
+colorTypes=RACE
+execFolder=/home/hpc/unrz/unrz002h/MatrixPower_recursive/MatrixPower/examples/build_casclakesp2_intel2020.2
+printHead=1

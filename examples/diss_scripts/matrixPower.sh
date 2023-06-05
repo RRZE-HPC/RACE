@@ -9,7 +9,7 @@ tmpFile=$(cat ${configFile} | grep "tmpFile" | cut -d"=" -f2)
 powers=$(cat ${configFile} | grep "powers" | cut -d"=" -f2)
 cacheSizes=$(cat ${configFile} | grep "cacheSizes" | cut -d"=" -f2)
 stages=$(cat ${configFile} | grep "recStages" | cut -d"=" -f2)
-trad="on"
+trad="off"
 node=1
 
 ############ Don't change anything below ############################
