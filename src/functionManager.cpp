@@ -243,9 +243,9 @@ void recursiveCall(FuncManager* funMan, int parent)
                 }
                 int tid = omp_get_thread_num();
                 //Pin in each call
-                int pinOrder =funMan->zoneTree->at(children->at(2*subBlock)+2*tid).pinOrder;
+                //int pinOrder =funMan->zoneTree->at(children->at(2*subBlock)+2*tid).pinOrder;
                 //printf("omp_proc_bind = %d\n", omp_get_proc_bind());
-                funMan->pool->pin.pinThread(pinOrder);
+                //funMan->pool->pin.pinThread(pinOrder);
                 for(int block=startBlock; block!=endBlock; block+=inc)
                 {
                     funMan->recursiveFun(children->at(2*subBlock)+blockPerThread*tid+block);
