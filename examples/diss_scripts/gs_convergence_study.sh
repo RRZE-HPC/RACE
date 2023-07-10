@@ -50,7 +50,7 @@ mkdir -p ${alignFolder}
 function readResult
 {
     tmpFile=$1
-    columns=$(grep "Obtained Perf of" ${tmpFile} | sed "s/Obtained Perf of//g" | cut -d":" -f2 | cut -d"G" -f 1)
+    columns=$(grep "Obtained Perf of" ${tmpFile} | tail -n 1 | sed "s/Obtained Perf of//g" | cut -d":" -f2 | cut -d"G" -f 1)
     numColumns=$(echo $columns | grep -o "]" | wc -l)
 
     outStr=""
@@ -66,7 +66,7 @@ function readResult
 function printHeader
 {
     tmpFile=$1
-    columns=$(grep "Obtained Perf of" ${tmpFile} | sed "s/Obtained Perf of//g" | cut -d":" -f1)
+    columns=$(grep "Obtained Perf of" ${tmpFile} | tail -n 1 | sed "s/Obtained Perf of//g" | cut -d":" -f1)
     outStr=""
 
     quartiles="0 25 50 75 100"
@@ -90,8 +90,8 @@ mkdir -p ${rawFolder}
 
 inCtr=0
 
-PARAM_file="${folder}/kacz_best_parameters/${colorType}.csv"
-PARAM_SERIAL_file="${folder}/kacz_best_parameters/SERIAL.csv"
+PARAM_file="${folder}/symm_gs_best_parameters/${colorType}.csv"
+PARAM_SERIAL_file="${folder}/symm_gs_best_parameters/SERIAL.csv"
 #echo $PARAM_file
 #fileLen=$(wc -l ${PARAM_file} | cut -d" " -f1)
 #numMatrices=$(echo "${fileLen}-1" | bc -l)
@@ -140,11 +140,11 @@ for matrix in $matrices; do
         if [[ ${colorType} == "RACE" ]]; then
             #pinning left to RACE
             #iterations automatically decide
-            echo "KMP_WARNINGS=0 MKL_NUM_THREADS=$thread OMP_NUM_THREADS=${thread} OMP_SCHEDULE=static COLOR_DISTANCE=2 RACE_EFFICIENCY=${eff} taskset -c 0-$((thread-1)) ${execFolder}/colorKACZ -m ${matrixFolder}/${matrix} -c ${thread} -t 1  -p FILL -C ${colorType} ${rcmFlag} -i ${iter} -v -f ${convFolder}/${matrix}.txt"
+            echo "KMP_WARNINGS=0 MKL_NUM_THREADS=$thread OMP_NUM_THREADS=${thread} OMP_SCHEDULE=static COLOR_DISTANCE=1 RACE_EFFICIENCY=${eff} taskset -c 0-$((thread-1)) ${execFolder}/colorSymmGS -m ${matrixFolder}/${matrix} -c ${thread} -t 1  -p FILL -C ${colorType} ${rcmFlag} -i ${iter} -v -f ${convFolder}/${matrix}.txt"
             KMP_WARNINGS=0 MKL_NUM_THREADS=$thread \
                 OMP_NUM_THREADS=${thread} OMP_SCHEDULE=static \
-                COLOR_DISTANCE=2 RACE_EFFICIENCY=${eff} \
-                taskset -c 0-$((thread-1)) ${execFolder}/colorKACZ \
+                COLOR_DISTANCE=1 RACE_EFFICIENCY=${eff} \
+                taskset -c 0-$((thread-1)) ${execFolder}/colorSymmGS \
                 -m "${matrixFolder}/${matrix}" -c ${thread} -t 1  -p FILL \
                 -C ${colorType} ${rcmFlag} \
                 -i ${iter} \
@@ -155,8 +155,8 @@ for matrix in $matrices; do
             KMP_WARNINGS=0 MKL_NUM_THREADS=1 \
                 OMP_NUM_THREADS=1 OMP_SCHEDULE=static \
                 OMP_PROC_BIND=close OMP_PLACES=cores \
-                COLOR_DISTANCE=2 RACE_EFFICIENCY=${eff} \
-                taskset -c 0-$((thread-1)) ${execFolder}/serialKACZ \
+                COLOR_DISTANCE=1 RACE_EFFICIENCY=${eff} \
+                taskset -c 0-$((thread-1)) ${execFolder}/serialSymmGS \
                 -m "${matrixFolder}/${matrix}" -c ${thread} -t 1  -p FILL \
                 -C ${colorType} ${rcmFlag} \
                 -i ${iter} \
@@ -167,8 +167,8 @@ for matrix in $matrices; do
             KMP_WARNINGS=0 MKL_NUM_THREADS=$thread \
                 OMP_NUM_THREADS=${thread} OMP_SCHEDULE=static \
                 OMP_PROC_BIND=close OMP_PLACES=cores \
-                COLOR_DISTANCE=2 RACE_EFFICIENCY=${eff} \
-                taskset -c 0-$((thread-1)) ${execFolder}/colorKACZ \
+                COLOR_DISTANCE=1 RACE_EFFICIENCY=${eff} \
+                taskset -c 0-$((thread-1)) ${execFolder}/colorSymmGS \
                 -m "${matrixFolder}/${matrix}" -c ${thread} -t 1  -p FILL \
                 -C ${colorType} ${rcmFlag} \
                 -i ${iter} \

@@ -103,12 +103,13 @@ for matrix in $matrix_name; do #only one err value per matrix, so no more loops
         thread=1
         iter=500 #will check error for 200 iterations
         #iterations automatically decide
+        cutErr="1e-10" #cut-off when this error is reached
         KMP_WARNINGS=0 MKL_NUM_THREADS=$thread \
             OMP_NUM_THREADS=${thread} OMP_SCHEDULE=static \
             COLOR_DISTANCE=2 RACE_EFFICIENCY=${eff} \
-            taskset -c 0-$((thread-1)) ${execFolder}/serialKACZ \
-            -m "${matrixFolder}/${matrix}" -c ${thread} -t 1  -v -p FILL \
-            ${rcmFlag} -i ${iter} > ${tmpFile}
+            taskset -c 0-$((thread-1)) ${execFolder}/serialSymmKACZ \
+            -m "${matrixFolder}/${matrix}" -c ${thread} -t 1  -p FILL \
+            ${rcmFlag} -i ${iter} -e ${cutErr} > ${tmpFile}
         cat ${tmpFile} >> ${raw_file}
 
         if [[ $printHead == "1" ]]; then

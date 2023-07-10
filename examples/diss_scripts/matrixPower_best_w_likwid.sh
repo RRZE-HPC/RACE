@@ -85,14 +85,14 @@ if [[ ${trad} == "on" ]]; then
             preTime=$(cat tmp.txt | grep "Total pre-processing time =" | cut -d"=" -f2 | cut -d"s" -f1)
 
             selector=1 #which region
-            OMP_NUM_THREADS=$thread numactl -m 0 likwid-perfctr -m -g MEM -O --stats -C 0-$((thread-1)) ../tradPower \
+            OMP_NUM_THREADS=$thread numactl -m 0 likwid-perfctr -m -g MEM -O -V 3 --stats -C 0-$((thread-1)) ../tradPower \
                 -m ${matrixFolder}/${matrix} -c $thread -t 1 \
                 -i $power -v $rcmFlag > tmp.txt
             cat tmp.txt >> ${raw_file}
             mem_data_trad=$(readDataVol "Memory data volume \[GBytes\] STAT" tmp.txt ${selector})
             mem_bw_trad=$(readMetric "Memory bandwidth \[MBytes/s\] STAT" tmp.txt ${selector})
 
-            OMP_NUM_THREADS=$thread numactl -m 0 likwid-perfctr -m -g L3 -O --stats -C 0-$((thread-1)) ../tradPower \
+            OMP_NUM_THREADS=$thread numactl -m 0 likwid-perfctr -m -g L3 -O -V 3 --stats -C 0-$((thread-1)) ../tradPower \
                 -m ${matrixFolder}/${matrix} -c $thread -t 1 \
                 -i $power -v $rcmFlag > tmp.txt
             cat tmp.txt >> ${raw_file}
@@ -100,7 +100,7 @@ if [[ ${trad} == "on" ]]; then
             l3_bw_trad=$(readMetric "L3 bandwidth \[MBytes/s\] STAT" tmp.txt ${selector})
 
 
-            OMP_NUM_THREADS=$thread numactl -m 0 likwid-perfctr -m -g L2 -O --stats -C 0-$((thread-1)) ../tradPower \
+            OMP_NUM_THREADS=$thread numactl -m 0 likwid-perfctr -m -g L2 -O -V 3 --stats -C 0-$((thread-1)) ../tradPower \
                 -m ${matrixFolder}/${matrix} -c $thread -t 1 \
                 -i $power -v $rcmFlag > tmp.txt
             cat tmp.txt >> ${raw_file}
@@ -108,7 +108,7 @@ if [[ ${trad} == "on" ]]; then
             l2_bw_trad=$(readMetric "L2 bandwidth \[MBytes/s\] STAT" tmp.txt ${selector})
 
 
-            OMP_NUM_THREADS=$thread numactl -m 0 likwid-perfctr -m -g CLOCK -O --stats -C 0-$((thread-1)) ../tradPower \
+            OMP_NUM_THREADS=$thread numactl -m 0 likwid-perfctr -m -g CLOCK -O -V 3 --stats -C 0-$((thread-1)) ../tradPower \
                 -m ${matrixFolder}/${matrix} -c $thread -t 1 \
                 -i $power -v $rcmFlag > tmp.txt
             cat tmp.txt >> ${raw_file}
@@ -165,7 +165,7 @@ for matrix in $matrix_name; do
         preTime=$(cat tmp.txt | grep "Total pre-processing time =" | cut -d"=" -f2 | cut -d"s" -f1)
 
 
-        RACE_CACHE_VIOLATION_CUTOFF=${safetyFactor} OMP_NUM_THREADS=$thread numactl -m 0 likwid-perfctr -m -g MEM -O --stats -C 0-$((thread-1)) ../mtxPower \
+        RACE_CACHE_VIOLATION_CUTOFF=${safetyFactor} OMP_NUM_THREADS=$thread numactl -m 0 likwid-perfctr -m -g MEM -O -V 3 --stats -C 0-$((thread-1)) ../mtxPower \
             -m ${matrixFolder}/${matrix} -c $thread -t 1 \
             -i $power -n $node -s $cacheSizePerNode -v $rcmFlag > tmp.txt
         cat tmp.txt >> ${raw_file}
@@ -176,7 +176,7 @@ for matrix in $matrix_name; do
         mem_data_race=$(readDataVol "Memory data volume \[GBytes\] STAT" tmp.txt ${selector})
         mem_bw_race=$(readMetric "Memory bandwidth \[MBytes/s\] STAT" tmp.txt ${selector})
 
-        RACE_CACHE_VIOLATION_CUTOFF=${safetyFactor} OMP_NUM_THREADS=$thread numactl -m 0 likwid-perfctr -m -g L3 -O --stats -C 0-$((thread-1)) ../mtxPower \
+        RACE_CACHE_VIOLATION_CUTOFF=${safetyFactor} OMP_NUM_THREADS=$thread numactl -m 0 likwid-perfctr -m -g L3 -O -V 3 --stats -C 0-$((thread-1)) ../mtxPower \
             -m ${matrixFolder}/${matrix} -c $thread -t 1 \
             -i $power -n $node -s $cacheSizePerNode -v $rcmFlag > tmp.txt
         cat tmp.txt >> ${raw_file}
@@ -187,7 +187,7 @@ for matrix in $matrix_name; do
         l3_data_race=$(readDataVol "L3 data volume \[GBytes\] STAT" tmp.txt ${selector})
         l3_bw_race=$(readMetric "L3 bandwidth \[MBytes/s\] STAT" tmp.txt ${selector})
 
-        RACE_CACHE_VIOLATION_CUTOFF=${safetyFactor} OMP_NUM_THREADS=$thread numactl -m 0 likwid-perfctr -m -g L2 -O --stats -C 0-$((thread-1)) ../mtxPower \
+        RACE_CACHE_VIOLATION_CUTOFF=${safetyFactor} OMP_NUM_THREADS=$thread numactl -m 0 likwid-perfctr -m -g L2 -O -V 3 --stats -C 0-$((thread-1)) ../mtxPower \
             -m ${matrixFolder}/${matrix} -c $thread -t 1 \
             -i $power -n $node -s $cacheSizePerNode -v $rcmFlag > tmp.txt
         cat tmp.txt >> ${raw_file}
@@ -199,7 +199,7 @@ for matrix in $matrix_name; do
         l2_bw_race=$(readMetric "L2 bandwidth \[MBytes/s\] STAT" tmp.txt ${selector})
 
 
-        RACE_CACHE_VIOLATION_CUTOFF=${safetyFactor} OMP_NUM_THREADS=$thread numactl -m 0 likwid-perfctr -m -g CLOCK -O --stats -C 0-$((thread-1)) ../mtxPower \
+        RACE_CACHE_VIOLATION_CUTOFF=${safetyFactor} OMP_NUM_THREADS=$thread numactl -m 0 likwid-perfctr -m -g CLOCK -O -V 3 --stats -C 0-$((thread-1)) ../mtxPower \
             -m ${matrixFolder}/${matrix} -c $thread -t 1 \
             -i $power -n $node -s $cacheSizePerNode -v $rcmFlag > tmp.txt
         cat tmp.txt >> ${raw_file}
