@@ -113,7 +113,7 @@ int main(const int argc, char * argv[])
     asprintf(&curPID_str, "%d", curPID);
     printf("Current PID = %s\n", curPID_str);
     setenv("LIKWID_PERF_PID", curPID_str, 1);
-*/
+    */
     LIKWID_MARKER_INIT;
 #endif
     int err;

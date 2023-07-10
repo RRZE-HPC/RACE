@@ -66,6 +66,12 @@ double scaleFn(int i, double scale)
                 {\
                     convergence_history.push_back(std::pair<int, double>(actualIter, errNorm));\
                 }\
+                if(param.validate) /*Validate is used as verbose, here*/\
+                {\
+                    double resNorm = 0;\
+                    RES_CHECK;\
+                    resConvergence_history.push_back(resNorm);\
+                }\
                 if(errNorm < param.convTol)\
                 {\
                     converged = true;\
@@ -128,7 +134,7 @@ int main(const int argc, char * argv[])
 
     int NROWS = mat->nrows;
     int randInit = false;
-    double initVal = 1/(double)NROWS;
+    double initVal = 1; //1/(double)NROWS;
 
     densemat *x, *b;
     x=new densemat(NROWS);
@@ -141,9 +147,9 @@ int main(const int argc, char * argv[])
     }
     else
     {
-        //xSoln->setVal(initVal);
-        std::function<double(int)> initFn = std::bind(&scaleFn, std::placeholders::_1, initVal);
-        xSoln->setFn(initFn);
+        xSoln->setVal(initVal);
+        //std::function<double(int)> initFn = std::bind(&scaleFn, std::placeholders::_1, initVal);
+        //xSoln->setFn(initFn);
     }
 
     int iterations;
@@ -181,6 +187,8 @@ int main(const int argc, char * argv[])
     //This macro times and reports performance by running the solver multiple
     //times
     std::vector<std::pair<int, double>> convergence_history;
+    std::vector<double> resConvergence_history;
+
     PERF_RUN(serial_kacz, 4, kacz_serial(b, mat, x););
 
     if(param.validate)
@@ -189,11 +197,11 @@ int main(const int argc, char * argv[])
         if(param.convFile == NULL)
         {
             printf("Error history\n");
-            printf("#Iter, abs. error\n");
+            printf("#Iter, abs. error, res. error\n");
 
             for(int i=0; i<lenIter; ++i)
             {
-                printf("%d, %.16f\n", convergence_history[i].first, convergence_history[i].second);
+                printf("%d, %.16f, %.16f\n", convergence_history[i].first, convergence_history[i].second, resConvergence_history[i]);
             }
         }
         else
@@ -201,16 +209,14 @@ int main(const int argc, char * argv[])
             FILE * fp;
             fp = fopen (param.convFile, "w+");
 
-            fprintf(fp, "#Iter, abs. error\n");
+            fprintf(fp, "#Iter, abs. error, res. error\n");
             for(int i=0; i<lenIter; ++i)
             {
-                fprintf(fp, "%d, %.16f\n", convergence_history[i].first, convergence_history[i].second);
+                fprintf(fp, "%d, %.16f, %.16f\n", convergence_history[i].first, convergence_history[i].second, resConvergence_history[i]);
             }
             fclose(fp);
-
         }
     }
-
 
     double resNorm;
     RES_CHECK;
