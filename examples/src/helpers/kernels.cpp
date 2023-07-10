@@ -187,24 +187,38 @@ _Pragma("simd vectorlength(VECTOR_LENGTH) reduction(+:tmp)")\
 inline void GS_KERNEL(int start, int end, void* args)
 {
     DECODE_FROM_VOID(args);
-
-    for(int row=start; row<end; ++row)
+    int inc=1;
+    if(start>end)
+    {
+        inc=-1;//so it works for reverse kernel
+    }
+    for(int row=start; row!=end; row=row+inc)
     {
         GS_KERNEL_BODY();
     }
 }
 
 //Solve for x : A*x=b
-void gs_serial(densemat* b, sparsemat* mat, densemat* x)
+void gs_serial(densemat* b, sparsemat* mat, densemat* x, bool rev)
 {
-    for(int row=0; row<mat->nrows; ++row)
+    if(!rev)
     {
-        GS_KERNEL_BODY();
+        for(int row=0; row<mat->nrows; ++row)
+        {
+            GS_KERNEL_BODY();
+        }
+    }
+    else
+    {
+        for(int row=mat->nrows-1; row>=0; --row)
+        {
+            GS_KERNEL_BODY();
+        }
     }
 }
 
 //Solve for x : A*x=b
-void gs(densemat* b, sparsemat* mat, densemat* x)
+void gs(densemat* b, sparsemat* mat, densemat* x, bool rev)
 {
     if((mat->colorType == "RACE") || (mat->colorType == "RACE_and_BLOCK"))
     {
@@ -214,18 +228,29 @@ void gs(densemat* b, sparsemat* mat, densemat* x)
 
         int gsId = ce->registerFunction(&GS_KERNEL, voidArg);
 
-        ce->executeFunction(gsId);
+        ce->executeFunction(gsId, rev);
 
         DELETE_ARG();
     }
     else if(mat->colorType == "ABMC")
     {
-        for(int color=0; color<mat->ncolors; ++color)
+        int startColor=(!rev)?0:mat->ncolors-1;
+        int endColor=(!rev)?mat->ncolors:-1;
+        int incColor=(!rev)?1:-1;
+
+        for(int color=startColor; color!=endColor; color=color+incColor)
         {
+            int startPart=(!rev)?mat->colorPtr[color]:mat->colorPtr[color+1]-1;
+            int endPart=(!rev)?mat->colorPtr[color+1]:mat->colorPtr[color]-1;
+            int incPart=(!rev)?1:-1;
+
 #pragma omp parallel for schedule(static)
-            for(int part=mat->colorPtr[color]; part<mat->colorPtr[color+1]; ++part)
+            for(int part=startPart; part!=endPart; part=part+incPart)
             {
-                for(int row=mat->partPtr[part]; row<mat->partPtr[part+1]; ++row)
+                int startRow=(!rev)?mat->partPtr[part]:mat->partPtr[part+1]-1;
+                int endRow=(!rev)?mat->partPtr[part+1]:mat->partPtr[part]-1;
+                int incRow=(!rev)?1:-1;
+                for(int row=startRow; row!=endRow; row=row+incRow)
                 {
                     GS_KERNEL_BODY();
                 }
@@ -234,10 +259,18 @@ void gs(densemat* b, sparsemat* mat, densemat* x)
     }
     else if(mat->colorType == "MC")
     {
-        for(int color=0; color<mat->ncolors; ++color)
+        int startColor=(!rev)?0:mat->ncolors-1;
+        int endColor=(!rev)?mat->ncolors:-1;
+        int incColor=(!rev)?1:-1;
+
+        for(int color=startColor; color!=endColor; color=color+incColor)
         {
+            int startRow=(!rev)?mat->colorPtr[color]:mat->colorPtr[color+1]-1;
+            int endRow=(!rev)?mat->colorPtr[color+1]:mat->colorPtr[color]-1;
+            int incRow=(!rev)?1:-1;
+
 #pragma omp parallel for schedule(static)
-            for(int row=mat->colorPtr[color]; row<mat->colorPtr[color+1]; ++row)
+            for(int row=startRow; row!=endRow; row=row+incRow)
             {
                 GS_KERNEL_BODY();
             }
@@ -271,24 +304,38 @@ _Pragma("simd vectorlength(VECTOR_LENGTH)")\
 inline void KACZ_KERNEL(int start, int end, void* args)
 {
     DECODE_FROM_VOID(args);
-
-    for(int row=start; row<end; ++row)
+    int inc=1;
+    if(start>end)
+    {
+        inc=-1;//so it works for reverse kernel
+    }
+    for(int row=start; row!=end; row=row+inc)
     {
         KACZ_KERNEL_BODY();
     }
 }
 
 //Solve for x : A*x=b
-void kacz_serial(densemat* b, sparsemat* mat, densemat* x)
+void kacz_serial(densemat* b, sparsemat* mat, densemat* x, bool rev)
 {
-    for(int row=0; row<mat->nrows; ++row)
+    if(!rev)
     {
-        KACZ_KERNEL_BODY();
+        for(int row=0; row<mat->nrows; ++row)
+        {
+            KACZ_KERNEL_BODY();
+        }
+    }
+    else
+    {
+        for(int row=mat->nrows-1; row>=0; --row)
+        {
+            KACZ_KERNEL_BODY();
+        }
     }
 }
 
 //Solve for x : A*x=b
-void kacz(densemat* b, sparsemat* mat, densemat* x)
+void kacz(densemat* b, sparsemat* mat, densemat* x, bool rev)
 {
     if((mat->colorType == "RACE") || (mat->colorType == "RACE_and_BLOCK"))
     {
@@ -298,30 +345,50 @@ void kacz(densemat* b, sparsemat* mat, densemat* x)
 
         int kaczId = ce->registerFunction(&KACZ_KERNEL, voidArg);
 
-        ce->executeFunction(kaczId);
+        ce->executeFunction(kaczId, rev);
 
         DELETE_ARG();
     }
     else if(mat->colorType == "ABMC")
     {
-        for(int color=0; color<mat->ncolors; ++color)
+
+        int startColor=(!rev)?0:mat->ncolors-1;
+        int endColor=(!rev)?mat->ncolors:-1;
+        int incColor=(!rev)?1:-1;
+
+        for(int color=startColor; color!=endColor; color=color+incColor)
         {
+            int startPart=(!rev)?mat->colorPtr[color]:mat->colorPtr[color+1]-1;
+            int endPart=(!rev)?mat->colorPtr[color+1]:mat->colorPtr[color]-1;
+            int incPart=(!rev)?1:-1;
+
 #pragma omp parallel for schedule(static)
-            for(int part=mat->colorPtr[color]; part<mat->colorPtr[color+1]; ++part)
+            for(int part=startPart; part!=endPart; part=part+incPart)
             {
-                for(int row=mat->partPtr[part]; row<mat->partPtr[part+1]; ++row)
+                int startRow=(!rev)?mat->partPtr[part]:mat->partPtr[part+1]-1;
+                int endRow=(!rev)?mat->partPtr[part+1]:mat->partPtr[part]-1;
+                int incRow=(!rev)?1:-1;
+                for(int row=startRow; row!=endRow; row=row+incRow)
                 {
                     KACZ_KERNEL_BODY();
                 }
             }
         }
-    }
+   }
     else if(mat->colorType == "MC")
     {
-        for(int color=0; color<mat->ncolors; ++color)
+        int startColor=(!rev)?0:mat->ncolors-1;
+        int endColor=(!rev)?mat->ncolors:-1;
+        int incColor=(!rev)?1:-1;
+
+        for(int color=startColor; color!=endColor; color=color+incColor)
         {
+            int startRow=(!rev)?mat->colorPtr[color]:mat->colorPtr[color+1]-1;
+            int endRow=(!rev)?mat->colorPtr[color+1]:mat->colorPtr[color]-1;
+            int incRow=(!rev)?1:-1;
+
 #pragma omp parallel for schedule(static)
-            for(int row=mat->colorPtr[color]; row<mat->colorPtr[color+1]; ++row)
+            for(int row=startRow; row!=endRow; row=row+incRow)
             {
                 KACZ_KERNEL_BODY();
             }
