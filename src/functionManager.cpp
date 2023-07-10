@@ -220,7 +220,14 @@ void recursiveCall(FuncManager* funMan, int parent)
         {
             //START_TIME(func);
             std::vector<int> range = funMan->zoneTree->at(parent).valueZ;
-            funMan->func(range[0],range[1],funMan->args);
+            int start_row=range[0];
+            int end_row=range[1];
+            if(funMan->rev)
+            {
+                start_row=range[1]-1;
+                end_row=range[0]-1;
+            }
+            funMan->func(start_row,end_row,funMan->args);
             //STOP_TIME(func);
             //double time=GET_TIME(func);
             //funMan->zoneTree->at(parent).time += time*1e6/((double)(range[1]-range[0]));
@@ -286,7 +293,15 @@ void recursiveCall(FuncManager* funMan, int parentIdx)
             //        printf(" pinOrder = %d, cpu = %d\n",pinOrder,sched_getcpu());
             std::vector<int>* range = &funMan->zoneTree->at(parentIdx).valueZ;
             //START_TIME(func);
-            funMan->func(range->front(),range->back(), funMan->args);
+            int start_row=range[0];
+            int end_row=range[1];
+            if(funMan->rev)
+            {
+                start_row=range[1]-1;
+                end_row=range[0]-1;
+            }
+
+            funMan->func(start_row, end_row, funMan->args);
             //STOP_TIME(func);
             //funMan->zoneTree->at(parentIdx).time += GET_TIME(func);
             //test(funMan->a,funMan->b,funMan->c,funMan->d,range->at(0), range->at(1),1);
