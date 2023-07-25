@@ -25,6 +25,7 @@ colorTypes=$(cat ${configFile} | grep "colorTypes" | cut -d"=" -f2)
 race_efficiencies=$(cat ${configFile} | grep "race_efficiencies" | cut -d"=" -f2)
 execFolder=$(cat ${configFile} | grep "execFolder" | cut -d"=" -f2)
 printHead=$(cat ${configFile} | grep "printHead" | cut -d"=" -f2)
+serialFile=$(cat ${configFile} | grep "serialFile" | cut -d"=" -f2)
 startMatCtr=$(cat ${configFile} | grep "startMatCtr" | cut -d"=" -f2)
 ############ Don't change anything below ############################
 
@@ -35,24 +36,34 @@ mkdir -p $folder
 alignFolder="${folder}/align"
 mkdir -p ${alignFolder}
 
+#need to find proper baseline with or without RCM, because
+#iterations are really sensitive to permutation for GS case
+if [ -z ${serialFile} ]; then
+    SERIAL_file="${folder}/SERIAL.csv"
+else
+    SERIAL_file="${serialFile}"
+fi
+
 #get matrix names
-cd $matrixFolder
-matrix_name=
+#cd $matrixFolder
+#matrix_name=
 
-while read -r i
-do
-    matrix_name=$matrix_name" "$i
-done < <(find *.mtx)
+#while read -r i
+#do
+#    matrix_name=$matrix_name" "$i
+#done < <(find *.mtx)
 
+#echo $matrix_name
+
+#cd -
+
+matrix_name=$(cut -d"," -f1 ${SERIAL_file} | tail -n+2 |  uniq)
 echo $matrix_name
-
-cd -
-
 
 function readResult
 {
     tmpFile=$1
-    columns=$(grep "Obtained Perf of" ${tmpFile} | sed "s/Obtained Perf of//g" | cut -d":" -f2 | cut -d"G" -f 1)
+    columns=$(grep "Obtained Perf of" ${tmpFile} | tail -n 1 | sed "s/Obtained Perf of//g" | cut -d":" -f2 | cut -d"G" -f 1)
     numColumns=$(echo $columns | grep -o "]" | wc -l)
 
     outStr=""
@@ -68,7 +79,7 @@ function readResult
 function printHeader
 {
     tmpFile=$1
-    columns=$(grep "Obtained Perf of" ${tmpFile} | sed "s/Obtained Perf of//g" | cut -d":" -f1)
+    columns=$(grep "Obtained Perf of" ${tmpFile} | tail -n 1 | sed "s/Obtained Perf of//g" | cut -d":" -f1)
     outStr=""
 
     quartiles="0 25 50 75 100"
@@ -83,9 +94,15 @@ function printHeader
 }
 
 for colorType in ${colorTypes}; do
-    res_file="${folder}/${colorType}.csv"
 
-    rawFolder="${folder}/raw_${colorType}"
+    if [[ ${colorType} == "SERIAL" ]]; then
+        res_file="${folder}/${colorType}_post.csv"
+        rawFolder="${folder}/raw_${colorType}_post"
+    else
+        res_file="${folder}/${colorType}.csv"
+        rawFolder="${folder}/raw_${colorType}"
+    fi
+
     mkdir -p ${rawFolder}
     #get machine env
     ./machine-state.sh > ${rawFolder}/machine-state.txt
@@ -110,9 +127,6 @@ for colorType in ${colorTypes}; do
                         rcmFlag="-R"
                     fi
 
-                    #need to find proper baseline with or without RCM, because
-                    #iterations are really sensitive to permutation for GS case
-                    SERIAL_file="${folder}/SERIAL.csv"
                     line_wo_RCM=$(head -n $((ctr+2)) ${SERIAL_file} | tail -n 1)
                     line_w_RCM=$(head -n $((ctr+3)) ${SERIAL_file} | tail -n 1)
                     SERIAL_matrix_w_space=$(echo ${line_wo_RCM} | cut -d"," -f1)
@@ -123,21 +137,21 @@ for colorType in ${colorTypes}; do
                         SERIAL_matrix_w_RCM_w_space=$(echo ${line_w_RCM} | cut -d"," -f1)
                         SERIAL_matrix_w_RCM=$(echo ${SERIAL_matrix_w_RCM_w_space})
                         if [[ ${SERIAL_matrix_w_RCM} != ${SERIAL_matrix} ]]; then
-                             "Error: mismatch in SERIAL reference file. Matrix with RCM is  ${SERIAL_matrix_w_RCM} and without is ${SERIAL_matrix}."
+                            "Error: mismatch in SERIAL reference file. Matrix with RCM is  ${SERIAL_matrix_w_RCM} and without is ${SERIAL_matrix}."
                             exit
 
                         fi
                     fi
 
                     #select proper baseline
-                    SERIAL_err=${SERIAL_err_wo_RCM}
-                    line=${line_wo_RCM}
                     SERIALerr_w_space=$(echo ${line_wo_RCM} | cut -d"," -f6)
                     SERIALerr_wo_RCM=$(echo ${SERIALerr_w_space} | sed -e "s@e@E@g") #need E for exponential to work
                     SERIALerr_w_space=$(echo ${line_w_RCM} | cut -d"," -f6)
                     SERIALerr_w_RCM=$(echo ${SERIALerr_w_space} | sed -e "s@e@E@g")
+                    line=${line_wo_RCM}
 
-                    if (( $(echo "$SERIALerr_w_RCM < $SERIALerr_wo_RCM" |bc -l) )); then
+                    cmp=$(awk 'BEGIN{print ('$SERIALerr_w_RCM'<'$SERIALerr_wo_RCM')?1:0}')
+                    if [ "$cmp" -eq "1" ]; then
                         line=${line_w_RCM}
                     fi
 
@@ -153,21 +167,31 @@ for colorType in ${colorTypes}; do
                         KMP_WARNINGS=0 MKL_NUM_THREADS=$thread \
                             OMP_NUM_THREADS=${thread} OMP_SCHEDULE=static \
                             COLOR_DISTANCE=1 RACE_EFFICIENCY=${eff} \
-                            taskset -c 0-$((thread-1)) ${execFolder}/colorGS \
+                            taskset -c 0-$((thread-1)) ${execFolder}/colorSymmGS \
                             -m "${matrixFolder}/${matrix}" -c ${thread} -t 1  -p FILL \
                             -C ${colorType} ${rcmFlag} \
+                            -i ${iter} -e ${SERIALerr} > ${tmpFile}
+                    elif [[ ${colorType} == "SERIAL" ]]; then
+                        KMP_WARNINGS=0 MKL_NUM_THREADS=1 \
+                            OMP_NUM_THREADS=1 OMP_SCHEDULE=static \
+                            OMP_PROC_BIND=close OMP_PLACES=cores \
+                            COLOR_DISTANCE=1 RACE_EFFICIENCY=${eff} \
+                            taskset -c 0 ${execFolder}/serialSymmGS \
+                            -m "${matrixFolder}/${matrix}" -c 1 -t 1  -p FILL \
+                            -C ${colorType} ${rcmFlag} -v \
                             -i ${iter} -e ${SERIALerr} > ${tmpFile}
                     else
                        #here pinning via OMP
                         #try to achieve the same error as RACE
                         #and give 2*iterations of RACE as max. iter
+                        echo "KMP_WARNINGS=0 MKL_NUM_THREADS=$thread OMP_NUM_THREADS=${thread} OMP_SCHEDULE=static OMP_PROC_BIND=close OMP_PLACES=cores COLOR_DISTANCE=1 RACE_EFFICIENCY=${eff} taskset -c 0-$((thread-1)) ${execFolder}/colorSymmGS -m ${matrixFolder}/${matrix} -c ${thread} -t 1  -p FILL -C ${colorType} ${rcmFlag} -i ${iter} -e ${SERIALerr}" >> ${raw_file}
                         KMP_WARNINGS=0 MKL_NUM_THREADS=$thread \
                             OMP_NUM_THREADS=${thread} OMP_SCHEDULE=static \
                             OMP_PROC_BIND=close OMP_PLACES=cores \
                             COLOR_DISTANCE=1 RACE_EFFICIENCY=${eff} \
-                            taskset -c 0-$((thread-1)) ${execFolder}/colorGS \
+                            taskset -c 0-$((thread-1)) ${execFolder}/colorSymmGS \
                             -m "${matrixFolder}/${matrix}" -c ${thread} -t 1  -p FILL \
-                            -C ${colorType} ${rcmFlag} \
+                            -C ${colorType} ${rcmFlag} -v \
                             -i ${iter} -e ${SERIALerr} > ${tmpFile}
                     fi
 
@@ -208,13 +232,17 @@ for colorType in ${colorTypes}; do
         let ctr=${ctr}+2 #+2 since both with and without RCM is read
     done
 
+    pseudoColorType=${colorType}
+    if [[ ${colorType} == "SERIAL" ]]; then
+        pseudoColorType="SERIAL_post"
+    fi
     #store aligned CSV file
-    sed 's/,/:,/g' ${res_file} | column -t -s: | sed 's/ ,/,/g' > "${alignFolder}/${colorType}.csv"
+    sed 's/,/:,/g' ${res_file} | column -t -s: | sed 's/ ,/,/g' > "${alignFolder}/${pseudoColorType}.csv"
 
     #compress raw folder
     cd ${folder}
-    tar -cvzf raw_${colorType}.tar.gz raw_${colorType}
-    rm -rf raw_${colorType}
+    tar -cvzf raw_${pseudoColorType}.tar.gz raw_${pseudoColorType}
+    rm -rf raw_${pseudoColorType}
     cd -
 
 done

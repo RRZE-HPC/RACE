@@ -49,7 +49,7 @@ double scaleFn(int i, double scale)
     actualIter = 0;\
     for(int trial=0; trial<num_trials; ++trial)\
     {\
-        actualIter=0;\
+        actualIter = 0;\
         x->setVal(0); /*restart*/\
         START_TIMER(kernel);\
         INIT_TIMER(convCheck);\
@@ -61,7 +61,7 @@ double scaleFn(int i, double scale)
             START_TIMER(convCheck);\
             if((actualIter%10) == 0)\
             {\
-                double errNorm;\
+                double errNorm = 0;\
                 ERR_CHECK;\
                 if(trial==0)\
                 {\
@@ -106,7 +106,7 @@ double scaleFn(int i, double scale)
 
 int main(const int argc, char * argv[])
 {
-    omp_set_num_threads(1);
+
     parser param;
     if(!param.parse_arg(argc, argv))
     {
@@ -124,18 +124,19 @@ int main(const int argc, char * argv[])
     START_TIMER(pre_process);
     if(param.RCM_flag)
     {
-        mat->doRCMPermute(); //Permute();
+        mat->doRCM();
     }
+
+    dist distance=ONE;
+    printf("Coloring matrix\n");
+    mat->colorAndPermute(distance, std::string(param.colorType), param.cores, param.smt, param.pin);
+    printf("Finished coloring\n\n");
 
     //required for GS kernel
     //mat->makeDiagFirst(0.0, true);
     mat->makeDiagFirst();
 
-    /*dist distance=ONE;
-    printf("Coloring matrix\n");
-    mat->colorAndPermute(distance, std::string(param.colorType), param.cores, param.smt, param.pin);
-    printf("Finished coloring\n\n");
-    */
+
     STOP_TIMER(pre_process);
     double pre_process_time = GET_TIMER(pre_process);
     printf("Total pre-processing time = %f s\n", pre_process_time);
@@ -179,7 +180,7 @@ int main(const int argc, char * argv[])
     {
         iterations = param.iter;
     }
-    int num_trials=1;
+    int num_trials=10;
     printf("Num iterations =  %d\n", iterations);
 
     b->setVal(0);
@@ -198,7 +199,7 @@ int main(const int argc, char * argv[])
     std::vector<std::pair<int, double>> convergence_history;
     std::vector<double> resConvergence_history;
 
-    PERF_RUN(serial_gs, 2, gs_serial(b, mat, x););
+    PERF_RUN(color_gs, 4, gs(b, mat, x); gs(b, mat, x, true););
 
     int lenIter = convergence_history.size();
     bool isDiverging = false;
@@ -227,7 +228,7 @@ int main(const int argc, char * argv[])
         //This macro times and reports performance by running the solver multiple
         //times
         convergence_history.clear();
-        PERF_RUN(serial_gs, 2, gs_serial(b, mat, x););
+        PERF_RUN(color_gs, 4, gs(b, mat, x); gs(b, mat, x, true));
     }
 
     if(param.validate)

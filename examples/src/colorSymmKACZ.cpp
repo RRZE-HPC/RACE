@@ -12,7 +12,6 @@
 #include "kernels.h"
 #include "timer.h"
 #include "quantile.hpp"
-#include <math.h>
 
 void capitalize(char* beg)
 {
@@ -49,7 +48,7 @@ double scaleFn(int i, double scale)
     actualIter = 0;\
     for(int trial=0; trial<num_trials; ++trial)\
     {\
-        actualIter=0;\
+        actualIter = 0;\
         x->setVal(0); /*restart*/\
         START_TIMER(kernel);\
         INIT_TIMER(convCheck);\
@@ -106,7 +105,7 @@ double scaleFn(int i, double scale)
 
 int main(const int argc, char * argv[])
 {
-    omp_set_num_threads(1);
+
     parser param;
     if(!param.parse_arg(argc, argv))
     {
@@ -124,18 +123,14 @@ int main(const int argc, char * argv[])
     START_TIMER(pre_process);
     if(param.RCM_flag)
     {
-        mat->doRCMPermute(); //Permute();
+        mat->doRCM();
     }
 
-    //required for GS kernel
-    //mat->makeDiagFirst(0.0, true);
-    mat->makeDiagFirst();
-
-    /*dist distance=ONE;
+    dist distance=TWO;
     printf("Coloring matrix\n");
     mat->colorAndPermute(distance, std::string(param.colorType), param.cores, param.smt, param.pin);
     printf("Finished coloring\n\n");
-    */
+
     STOP_TIMER(pre_process);
     double pre_process_time = GET_TIMER(pre_process);
     printf("Total pre-processing time = %f s\n", pre_process_time);
@@ -179,7 +174,7 @@ int main(const int argc, char * argv[])
     {
         iterations = param.iter;
     }
-    int num_trials=1;
+    int num_trials=10;
     printf("Num iterations =  %d\n", iterations);
 
     b->setVal(0);
@@ -198,37 +193,8 @@ int main(const int argc, char * argv[])
     std::vector<std::pair<int, double>> convergence_history;
     std::vector<double> resConvergence_history;
 
-    PERF_RUN(serial_gs, 2, gs_serial(b, mat, x););
+    PERF_RUN(color_kacz, 8, kacz(b, mat, x, false); kacz(b, mat, x, true););
 
-    int lenIter = convergence_history.size();
-    bool isDiverging = false;
-    //check if convergence or divergence is happening
-    if(!isfinite(convergence_history[lenIter-1].second))
-    {
-        isDiverging=true;
-    }
-    if((lenIter > 1) && (convergence_history[lenIter-1].second > convergence_history[lenIter-2].second))
-    {
-        isDiverging=true;
-    }
-
-    //if diverging repeat with modified diagonals
-    if(isDiverging)
-    {
-        printf("Given system diverges. Running on a system with modified diagonal values.\n");
-        mat->makeDiagFirst(0.0, true);
-
-        b->setVal(0);
-        //set b once for LSE, with actual xSoln
-        plain_spmv(b, mat, xSoln);
-
-        x->setVal(0);
-        actualIter = 0;
-        //This macro times and reports performance by running the solver multiple
-        //times
-        convergence_history.clear();
-        PERF_RUN(serial_gs, 2, gs_serial(b, mat, x););
-    }
 
     if(param.validate)
     {
@@ -258,9 +224,8 @@ int main(const int argc, char * argv[])
     }
 
     double resNorm;
-    double errNorm;
-
     RES_CHECK;
+    double errNorm;
     ERR_CHECK;
 
     printf("Convergence results: resNorm = %e, errNorm = %e, converged iter = %d\n", resNorm, errNorm, actualIter);

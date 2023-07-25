@@ -48,7 +48,7 @@ cd -
 function readResult
 {
     tmpFile=$1
-    columns=$(grep "Obtained Perf of" ${tmpFile} | sed "s/Obtained Perf of//g" | cut -d":" -f2 | cut -d"G" -f 1)
+    columns=$(grep "Obtained Perf of" ${tmpFile} | tail -n 1 | sed "s/Obtained Perf of//g" | cut -d":" -f2 | cut -d"G" -f 1)
     numColumns=$(echo $columns | grep -o "]" | wc -l)
 
     outStr=""
@@ -64,7 +64,7 @@ function readResult
 function printHeader
 {
     tmpFile=$1
-    columns=$(grep "Obtained Perf of" ${tmpFile} | sed "s/Obtained Perf of//g" | cut -d":" -f1)
+    columns=$(grep "Obtained Perf of" ${tmpFile} | tail -n 1 | sed "s/Obtained Perf of//g" | cut -d":" -f1)
     outStr=""
 
     quartiles="50" #only one value here, since it is serial, so we run only once. Not interested in performance
@@ -81,7 +81,6 @@ function printHeader
 colorType="SERIAL"
 
 res_file="${folder}/${colorType}.csv"
-
 rawFolder="${folder}/raw_${colorType}"
 mkdir -p ${rawFolder}
 #get machine env
@@ -103,12 +102,13 @@ for matrix in $matrix_name; do #only one err value per matrix, so no more loops
         thread=1
         iter=500 #will check error for 200 iterations
         #iterations automatically decide
+        cutErr="1e-10" #cut-off when this error is reached
         KMP_WARNINGS=0 MKL_NUM_THREADS=$thread \
             OMP_NUM_THREADS=${thread} OMP_SCHEDULE=static \
             COLOR_DISTANCE=1 RACE_EFFICIENCY=${eff} \
-            taskset -c 0-$((thread-1)) ${execFolder}/serialGS \
-            -m "${matrixFolder}/${matrix}" -c ${thread} -t 1  -v -p FILL \
-            ${rcmFlag} -i ${iter} > ${tmpFile}
+            taskset -c 0-$((thread-1)) ${execFolder}/serialSymmGS \
+            -m "${matrixFolder}/${matrix}" -c ${thread} -t 1  -p FILL \
+            ${rcmFlag} -i ${iter} -e ${cutErr} > ${tmpFile}
         cat ${tmpFile} >> ${raw_file}
 
         if [[ $printHead == "1" ]]; then

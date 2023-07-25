@@ -198,7 +198,7 @@ int main(const int argc, char * argv[])
     std::vector<std::pair<int, double>> convergence_history;
     std::vector<double> resConvergence_history;
 
-    PERF_RUN(serial_gs, 2, gs_serial(b, mat, x););
+    PERF_RUN(serial_gs, 4, gs_serial(b, mat, x); gs_serial(b, mat, x, true););
 
     int lenIter = convergence_history.size();
     bool isDiverging = false;
@@ -227,7 +227,7 @@ int main(const int argc, char * argv[])
         //This macro times and reports performance by running the solver multiple
         //times
         convergence_history.clear();
-        PERF_RUN(serial_gs, 2, gs_serial(b, mat, x););
+        PERF_RUN(serial_gs, 4, gs_serial(b, mat, x); gs_serial(b, mat, x, true););
     }
 
     if(param.validate)
