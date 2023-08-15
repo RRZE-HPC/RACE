@@ -708,7 +708,7 @@ bool sparsemat::isSymmetric()
     return csr->isSymmetric(true, true);
 #else
     printf("Please link with SpMP library to check for symmetry.\n");
-    return -1:
+    return -1;
 #endif
 }
 
