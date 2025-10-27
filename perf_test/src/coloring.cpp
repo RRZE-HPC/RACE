@@ -1,5 +1,9 @@
 #include <stdio.h>
+#ifdef _OPENMP
 #include <omp.h>
+#else
+#include "omp_stubs.h"
+#endif
 #include "mmio.h"
 #include "time.h"
 

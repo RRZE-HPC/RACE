@@ -24,7 +24,11 @@
 #include "traverse.h"
 #include "utility.h"
 #include <set>
+#ifdef _OPENMP
 #include <omp.h>
+#else
+#include "omp_stubs.h"
+#endif
 #include "timing.h"
 
 std::map<int, LevelData> RACE::Traverse::cachedData;

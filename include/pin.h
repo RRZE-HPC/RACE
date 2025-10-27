@@ -28,7 +28,11 @@
 #include "error.h"
 #include "type.h"
 #include "thpool.h"
+#ifdef _OPENMP
 #include <omp.h>
+#else
+#include "omp_stubs.h"
+#endif
 
 class Pin{
     private:

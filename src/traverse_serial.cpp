@@ -24,7 +24,11 @@
 #include "traverse.h"
 #include "utility.h"
 #include <set>
+#ifdef _OPENMP
 #include <omp.h>
+#else
+#include "omp_stubs.h"
+#endif
 
 std::map<int, LevelData> RACE::Traverse::cachedData;
 RACE::Traverse::Traverse(RACE::Graph *graph_, RACE::dist dist_, int rangeLo_, int rangeHi_, int parentIdx_, int numRoots_, std::vector<std::map<int, std::vector<Range>>> boundaryRange_, std::string mtxType_):graph(graph_),dist(dist_), rangeLo(rangeLo_),rangeHi(rangeHi_),parentIdx(parentIdx_), numRoots(numRoots_), graphSize(graph_->graphData.size()),distFromRoot(NULL),perm(NULL),invPerm(NULL), boundaryRange(boundaryRange_), levelData(NULL), mtxType(mtxType_)

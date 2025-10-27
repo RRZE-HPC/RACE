@@ -25,7 +25,11 @@
 #include "utility.h"
 #include "macros.h"
 #include "lb.h"
-#include "omp.h"
+#ifdef _OPENMP
+#include <omp.h>
+#else
+#include "omp_stubs.h"
+#endif
 #include "config.h"
 #include "timing.h"
 

@@ -27,7 +27,11 @@
 #include <functional>
 #include "zone_tree.h"
 #include "level_recursion.h"
-#include "omp.h"
+#ifdef _OPENMP
+#include <omp.h>
+#else
+#include "omp_stubs.h"
+#endif
 #include "level_pool.h"
 #include "timing.h"
 #include "matrixPowerRecursive.h"

@@ -1,7 +1,11 @@
 #include "sparsemat.h"
 #include "mmio.h"
 #include "stdlib.h"
+#ifdef _OPENMP
 #include <omp.h>
+#else
+#include "omp_stubs.h"
+#endif
 #include <vector>
 #include <sys/mman.h>
 #include "config_eg.h"
