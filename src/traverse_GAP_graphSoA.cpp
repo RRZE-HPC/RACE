@@ -372,7 +372,9 @@ void RACE::Traverse::calculateDistance(int maxLvl, bool mpiBoundaryDetection) //
 #endif
     }
 
+#if RACE_VERBOSITY > 1
     printf("Total Level = %d\n",levelData->totalLevel);
+#endif
     //START_TIME(bfs_createLevel);
     createLevelData();
     //printf("created Level Data\n");
@@ -584,7 +586,9 @@ void RACE::Traverse::permuteGraph()
     {
         ERROR_PRINT("Error col range less than row range");
     }
+#if RACE_VERBOSITY > 1
     printf("Range = [%d,%d], colRange = [%d, %d]\n", rangeLo, rangeHi, colRangeLo, colRangeHi);
+#endif
 
 #ifndef RACE_PERMUTE_ON_FLY
     //Permute columns

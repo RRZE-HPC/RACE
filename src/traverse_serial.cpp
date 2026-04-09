@@ -292,7 +292,9 @@ void RACE::Traverse::calculateDistance()
             }
         }
 
+#if RACE_VERBOSITY > 1
         printf("Range = [%d, %d], ColRange = [%d, %d]\n", rangeLo, rangeHi, colRangeLo, colRangeHi);
+#endif
         levelData->totalLevel = currLvl;
     }
     else
@@ -318,12 +320,18 @@ void RACE::Traverse::calculateDistance()
 
 
 
+#if RACE_VERBOSITY > 1
     printf("Total Level = %d\n",levelData->totalLevel);
+#endif
 
     createLevelData();
+#if RACE_VERBOSITY > 1
     printf("created Level Data\n");
+#endif
     permuteGraph();
+#if RACE_VERBOSITY > 1
     printf("permuted graph\n");
+#endif
 }
 
 RACE_error RACE::Traverse::findLevelData(int lower_nrows, int upper_nrows, int totalLevel, LevelData* curLevelData)

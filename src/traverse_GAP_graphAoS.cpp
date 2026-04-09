@@ -310,11 +310,17 @@ void RACE::Traverse::calculateDistance()
     }
 
 
+#if RACE_VERBOSITY > 1
     printf("Total Level = %d\n",levelData->totalLevel);
+#endif
     createLevelData();
+#if RACE_VERBOSITY > 1
     printf("created Level Data\n");
+#endif
     permuteGraph();
+#if RACE_VERBOSITY > 1
     printf("permuted graph\n");
+#endif
 
 }
 
@@ -500,7 +506,9 @@ void RACE::Traverse::permuteGraph()
     {
         ERROR_PRINT("Error col range less than row range");
     }
+#if RACE_VERBOSITY > 1
     printf("Range = [%d,%d], colRange = [%d, %d]\n", rangeLo, rangeHi, colRangeLo, colRangeHi);
+#endif
 
 #ifndef RACE_PERMUTE_ON_FLY
     //Permute columns

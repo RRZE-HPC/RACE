@@ -905,10 +905,12 @@ void mtxPower::consolidatePartition()
 
     hopelessRegions = consolidated_hopelessRegions;
 
+#if RACE_VERBOSITY > 1
     for(int i=0; i<(int)consolidated_hopelessRegions.size(); ++i)
     {
         printf("consolidated_hopelessRegions[%d] = %d\n", i, consolidated_hopelessRegions[i]);
     }
+#endif
 
     //rewrite levelPtr with newLevelPtr
     totalLevel = (int)(newLevelPtr.size()-1);

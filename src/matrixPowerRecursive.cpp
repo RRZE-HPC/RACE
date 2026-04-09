@@ -134,7 +134,7 @@ int mtxPowerRecursive::get_cache_violation_cutoff(int stage)
         int levelNodeEnd = _nodePtr_[n+1];\
         for(int hn=_hopelessNodePtr_[n]; hn<_hopelessNodePtr_[n+1]; ++hn)\
         {\
-            printf("@@@@@@@@@ hopelessNodePtr[%d] = %d, hopelessNodePtr[%d] = %d\n", n, _hopelessNodePtr_[n], n+1, _hopelessNodePtr_[n+1]);\
+            if (RACE_VERBOSITY > 1) { printf("@@@@@@@@@ hopelessNodePtr[%d] = %d, hopelessNodePtr[%d] = %d\n", n, _hopelessNodePtr_[n], n+1, _hopelessNodePtr_[n+1]); }\
             _leaf_.unitPtr.push_back(_leaf_.hid[hn]); \
             _leaf_.unitPtr.push_back(_leaf_.hid[hn]+1); \
         }\
@@ -177,7 +177,9 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
         curLeaf.parent = parentIdx;
         curLeaf.stage = parentStage + 1;
         int hopelessStart = parentHopelessRegions[h];
+#if RACE_VERBOSITY > 1
         printf("@@@ hopless = %d,%d\n", hopelessStart, hopelessStart+1);
+#endif
         int push_nodeId = 0;
         if(parentStage>0)
         {
@@ -299,7 +301,9 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
             }
         }
 
+#if RACE_VERBOSITY > 1
         printf("@@@ range = %d,%d\n", curLeaf.range.lo, curLeaf.range.hi);
+#endif
         //TODO: mtxPower with boundaryRange
         mtxPower curStage(graph, highestPower, 1, cacheSize, safetyFactor, get_cache_violation_cutoff(curLeaf.stage), curLeaf.range.lo, curLeaf.range.hi, curLeaf.boundaryRange, curLeaf.nodeId, numSharedCache);
         curStage.findPartition();
@@ -325,7 +329,9 @@ void mtxPowerRecursive::recursivePartition(int parentIdx)
         }
         if(!curLeaf.hid.empty())
         {
+#if RACE_VERBOSITY > 1
             printf("recursively calling for parent = %d\n", curIdx);
+#endif
             recursivePartition(curIdx);
         }
     }
@@ -352,7 +358,7 @@ void mtxPowerRecursive::findPartition()
     haveMPI = !distFromRemotePtr->empty();
 #endif
 
-    bool printCheck = true;
+    bool printCheck = (RACE_VERBOSITY > 1);
     if(printCheck && haveMPI){
         printf("\n-------------- distFromRemotePtr check --------------\n");
         printf("distFromRemotePtr->size() = %i\n", distFromRemotePtr->size());
@@ -441,7 +447,10 @@ void mtxPowerRecursive::findPartition()
     COPY_TO_PLAIN_INT_PTR(curLeaf.dangerRow, dangerRow);
 */
 
+    // DL 2026.04.08 Causing significant overhead for high MPI ranks
+#if RACE_VERBOSITY > 1
     printTree();
+#endif
 }
 
 void mtxPowerRecursive::printTree()
