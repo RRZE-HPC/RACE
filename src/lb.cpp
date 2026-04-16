@@ -24,6 +24,7 @@
 #include "lb.h"
 #include "utility.h"
 #include <cmath>
+#include <limits>
 #include "macros.h"
 //#define RACE_DEBUG
 
