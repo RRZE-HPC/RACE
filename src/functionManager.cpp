@@ -1468,7 +1468,9 @@ void FuncManager::Run(bool rev_)
                   */
         int root = 0;
 #ifdef RACE_KERNEL_THREAD_OMP
+#ifdef _KMP_H_INCLUDED
         kmp_set_warnings_off(); //so that it doesnt complain on deprecated omp_set_nested(), which is required for Intel 2019 and lower
+#endif
         int resetNestedState = omp_get_max_active_levels();
         int resetDynamicState = omp_get_dynamic();
         int resetNested = omp_get_nested();
