@@ -98,7 +98,7 @@ if(RACE_USE_SOA_GRAPH)
 endif()
 
 if (RACE_USE_GAP)
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "IntelLLVM")
         set(RACE_USE_GAP 1)
         #set(SPMP_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
         set_property(DIRECTORY PROPERTY EP_STEP_TARGETS build)
@@ -182,7 +182,7 @@ if(RACE_HAVE_CPP_17)
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") # -Werror")# -pedantic")
 endif()
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "IntelLLVM")
     set(CMAKE_INCLUDE_SYSTEM_FLAG_C "-isystem ") # Not present in Cmake 2.8.11.2
     set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ") # Not present in Cmake 2.8.11.2
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunused-variable -save-temps -fsource-asm -w3 -wd981")
@@ -249,7 +249,7 @@ configure_file(${PROJECT_SOURCE_DIR}/race-config.cmake.in ${PROJECT_BINARY_DIR}/
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_BINARY_DIR}/include)
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "IntelLLVM")
     link_libraries(tbb)
 endif()
 add_library(RACE ${SOURCES})
@@ -307,11 +307,11 @@ endif()
 
 set(PERF_TEST_USE_SPMP 1 CACHE BOOL "Use RCM by SpMP for matrix preprocessing")
 if (PERF_TEST_USE_SPMP)
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "IntelLLVM")
         set(RACE_HAVE_SPMP 1)
         set(SPMP_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
         set_property(DIRECTORY PROPERTY EP_STEP_TARGETS build)
-        if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+        if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "IntelLLVM")
             ExternalProject_Add(SpMP
                 PREFIX ${PROJECT_BINARY_DIR}/SpMP
                 URL https://github.com/christiealappatt/SpMP/archive/master.zip
