@@ -222,8 +222,8 @@ inline void PLAIN_SPMV_POW_KERNEL(int start, int end, int pow, int numa_domain, 
             }*/
             double tmp = 0;
             const int offset = (pow-1)*mat->nrows;
-#pragma nounroll
 #pragma omp simd simdlen(VECTOR_LENGTH) reduction(+:tmp)
+#pragma nounroll
             for(int idx=mat->rowPtr[row]; idx<mat->rowPtr[row+1]; ++idx)
             {
                 tmp += mat->val[idx]*x->val[offset+mat->col[idx]];

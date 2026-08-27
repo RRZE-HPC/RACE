@@ -1016,7 +1016,7 @@ void mtxPower::findUnlockCtr()
                             SPLIT_LEVEL_PER_THREAD_BOUNDARY_w_UNLOCK_DANGER_NOREF(l);
                             if(currUnlockRow_b > startRow_tid_b)
                             {
-#pragma omp critical
+_Pragma ("omp critical" )
                             {
                             ++boundaryUnlockCtr[_workingRadius_][_radius_][_region_][l];
                             }
