@@ -54,6 +54,8 @@ void matPower(sparsemat* A, int power, densemat *x);
 void matPower_only_highest(sparsemat* A, int power, densemat *x);
 void matPowerNuma(NUMAmat* A, int power, densemat *x);
 void matPowerBCSR(sparsemat* A, int power, densemat *x);
+void matPowerBlock(sparsemat* A, int power, densemat *x);
+void plain_spmv_block(sparsemat* mat, densemat* x);
 
 struct splitHandle
 {
