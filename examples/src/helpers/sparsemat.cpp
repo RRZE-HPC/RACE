@@ -18,7 +18,7 @@
     #include "metis.h"
 #endif
 
-sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), diagFirst(false), colorType("RACE"), colorBlockSize(64), colorDist(-1), ncolors(-1), colorPtr(NULL), partPtr(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), finalPerm(NULL), finalInvPerm(NULL), symm_hint(false)
+sparsemat::sparsemat():nrows(0), nnz(0), ce(NULL), val(NULL), rowPtr(NULL), col(NULL), nnz_symm(0), rowPtr_symm(NULL), col_symm(NULL), val_symm(NULL), diagFirst(false), colorType("RACE"), colorBlockSize(64), colorDist(-1), ncolors(-1), colorPtr(NULL), partPtr(NULL), block_size(1), rcmInvPerm(NULL), rcmPerm(NULL), finalPerm(NULL), finalInvPerm(NULL), symm_hint(false), pointNnz(-1)
 {
 }
 
@@ -401,6 +401,117 @@ bool sparsemat::convertToBCSR(int b_r)
         //doRCM();
     }
     return success_flag;
+}
+
+//Converts point CRS to BCSR with node i = point rows b*i .. b*i+b-1 (input numbered node by node).
+//Block columns of a node row = union of col/b over its b rows, sorted; values row-major inside a block;
+//entries the node rows do not store become explicit zeros. Call before doRCM(); RCM then reorders the node graph.
+bool sparsemat::convertToBlockNodes(int b)
+{
+    //b <= 8: BLOCK_ROWS_generic keeps the b row sums in tmp[8]
+    if(b < 1 || b > 8 || nrows % b != 0)
+    {
+        printf("convertToBlockNodes: block size %d must be 1..8 and divide nrows = %d\n", b, nrows);
+        return false;
+    }
+    if(block_size != 1)
+    {
+        printf("convertToBlockNodes: matrix is already blocked (block size %d)\n", block_size);
+        return false;
+    }
+    if(rcmPerm || finalPerm || ce)
+    {
+        printf("convertToBlockNodes: call it before doRCM() and prepareForPower() (their permutations are per point row)\n");
+        return false;
+    }
+    int nnodes = nrows/b;
+    size_t bb = (size_t)b*b;
+    int *nodeRowPtr = new int[nnodes+1];
+    nodeRowPtr[0] = 0;
+
+    //sorted, distinct block columns of one node row
+    auto gatherBlockCols = [&](int node, std::vector<int> &cols)
+    {
+        cols.clear();
+        for(int row=b*node; row<b*(node+1); ++row)
+        {
+            for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
+            {
+                cols.push_back(col[idx]/b);
+            }
+        }
+        std::sort(cols.begin(), cols.end());
+        cols.erase(std::unique(cols.begin(), cols.end()), cols.end());
+    };
+
+    //pass 1: number of distinct block columns per node row
+#pragma omp parallel
+    {
+        std::vector<int> cols;
+#pragma omp for schedule(static)
+        for(int node=0; node<nnodes; ++node)
+        {
+            gatherBlockCols(node, cols);
+            nodeRowPtr[node+1] = (int)cols.size();
+        }
+    }
+    for(int node=0; node<nnodes; ++node)
+    {
+        nodeRowPtr[node+1] += nodeRowPtr[node];
+    }
+    int nblocks = nodeRowPtr[nnodes];
+
+    int *nodeCol = new int[nblocks];
+    double *nodeVal = new double[bb*nblocks];
+
+    //pass 2: block columns and values
+#pragma omp parallel
+    {
+        std::vector<int> cols;
+#pragma omp for schedule(static)
+        for(int node=0; node<nnodes; ++node)
+        {
+            gatherBlockCols(node, cols);
+            int start = nodeRowPtr[node];
+            for(size_t k=0; k<cols.size(); ++k)
+            {
+                nodeCol[start+k] = cols[k];
+            }
+            for(size_t k=bb*start; k<bb*nodeRowPtr[node+1]; ++k)
+            {
+                nodeVal[k] = 0.0;
+            }
+            for(int row=b*node; row<b*(node+1); ++row)
+            {
+                for(int idx=rowPtr[row]; idx<rowPtr[row+1]; ++idx)
+                {
+                    int blockCol = col[idx]/b;
+                    int k = (int)(std::lower_bound(cols.begin(), cols.end(), blockCol) - cols.begin());
+                    size_t pos = bb*(start+k) + (size_t)(row-b*node)*b + (col[idx]-b*blockCol);
+                    nodeVal[pos] += val[idx];
+                }
+            }
+        }
+    }
+
+    pointNnz = nnz;
+    double stored = (double)bb*nblocks;
+    double crsBytes = 12.0*pointNnz + 4.0*(nrows+1);
+    double bcsrBytes = 8.0*stored + 4.0*nblocks + 4.0*(nnodes+1);
+    printf("BCSR: block size = %d, node rows = %d, blocks = %d, point nnz = %lld, stored in blocks = %.0f, fill = %.4f, explicit zeros = %.0f (%.2f %%)\n", b, nnodes, nblocks, pointNnz, stored, stored/(double)pointNnz, stored-(double)pointNnz, 100.0*(stored-(double)pointNnz)/stored);
+    printf("BCSR: blocks per node row = %f, matrix bytes CRS = %.1f MB, BCSR = %.1f MB (ratio %.3f)\n", nblocks/(double)nnodes, crsBytes/1e6, bcsrBytes/1e6, bcsrBytes/crsBytes);
+
+    delete[] rowPtr;
+    delete[] col;
+    delete[] val;
+    rowPtr = nodeRowPtr;
+    col = nodeCol;
+    val = nodeVal;
+    nrows = nnodes;
+    ncols = nnodes;
+    nnz = nblocks;
+    block_size = b;
+    return true;
 }
 
 bool sparsemat::isAnyDiagZero()
@@ -986,10 +1097,38 @@ densemat* sparsemat::permute_densemat(densemat *vec)
     return newVec;
 }
 
+//first touch of a block matrix in RACE's thread distribution, as RACE::powerInitMtxVecFunc does for
+//block size 1 (which only knows nnz values per row range, not block_size^2 per entry)
+struct blockInitArg
+{
+    int *rowPtr;
+    int *col;
+    double *val;
+    size_t bs2;
+};
+
+inline void BLOCK_INIT_MTX_KERNEL(int start, int end, int pow, int numa_domain, void *args)
+{
+    blockInitArg *arg = (blockInitArg*) args;
+    for(int row=start; row<end; ++row)
+    {
+        for(int idx=arg->rowPtr[row]; idx<arg->rowPtr[row+1]; ++idx)
+        {
+            arg->col[idx] = 0;
+            for(size_t b=0; b<arg->bs2; ++b)
+            {
+                arg->val[arg->bs2*idx+b] = 0;
+            }
+        }
+    }
+}
+
 //symmetrically permute
 void sparsemat::permute(int *_perm_, int*  _invPerm_, bool RACEalloc)
 {
-    double* newVal = (double*)malloc(sizeof(double)*block_size*block_size*nnz);
+    //a block entry holds block_size^2 consecutive values (block_size = 1: plain CRS)
+    const size_t bs2 = (size_t)block_size*block_size;
+    double* newVal = (double*)malloc(sizeof(double)*bs2*nnz);
         //new double[block_size*block_size*nnz];
     int* newCol = (int*)malloc(sizeof(int)*nnz);
         //new int[nnz];
@@ -1047,7 +1186,16 @@ void sparsemat::permute(int *_perm_, int*  _invPerm_, bool RACEalloc)
     printf("Initing mtxVec\n");
     if(RACEalloc)
     {
-        ce->numaInitMtxVec(newRowPtr, newCol, newVal, NULL);
+        if(block_size == 1)
+        {
+            ce->numaInitMtxVec(newRowPtr, newCol, newVal, NULL);
+        }
+        else
+        {
+            blockInitArg initArg = {newRowPtr, newCol, newVal, bs2};
+            int initId = ce->registerFunction(&BLOCK_INIT_MTX_KERNEL, (void*)&initArg, 1);
+            ce->executeFunction(initId);
+        }
     }
 
     printf("Finished inting\n");
@@ -1064,9 +1212,9 @@ void sparsemat::permute(int *_perm_, int*  _invPerm_, bool RACEalloc)
                 //_perm_ute column-wise also
                 //newVal[_perm_Idx] = val[idx];
                 newCol[_perm_Idx] = _invPerm_[col[idx]];
-                for(int b=0; b<block_size*block_size; ++b)
+                for(size_t b=0; b<bs2; ++b)
                 {
-                    newVal[_perm_Idx+b] = val[idx+b];
+                    newVal[bs2*_perm_Idx+b] = val[bs2*idx+b];
                 }
             }
         }
@@ -1080,9 +1228,9 @@ void sparsemat::permute(int *_perm_, int*  _invPerm_, bool RACEalloc)
             {
                 //newVal[idx] = val[idx];
                 newCol[idx] = col[idx];
-                for(int b=0; b<block_size*block_size; ++b)
+                for(size_t b=0; b<bs2; ++b)
                 {
-                    newVal[idx+b] = val[idx+b];
+                    newVal[bs2*idx+b] = val[bs2*idx+b];
                 }
             }
         }

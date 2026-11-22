@@ -254,6 +254,12 @@ int main(const int argc, char * argv[])
     double initTime = GET_TIMER(matPower_init);
     int iterations = std::max(1, (int) (1.2*10/initTime));
     //int iterations = 1; //for correctness checking
+    //MTXPOWER_ITERS: fixed iteration count (same for every power and every copy), instead of ~1.2 s
+    const char* fixedIters = getenv("MTXPOWER_ITERS");
+    if(fixedIters && atoi(fixedIters) > 0)
+    {
+        iterations = atoi(fixedIters);
+    }
     printf("Num iterations =  %d\n", iterations);
 
     double flops = 2.0*power*iterations*(double)mat->nnz*1e-9;

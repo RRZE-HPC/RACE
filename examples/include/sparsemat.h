@@ -36,6 +36,9 @@ struct sparsemat
     bool readFile(char* filename);
     bool symm_hint;
     bool convertToBCSR(int b_r);
+    //point CRS -> BCSR, node i = point rows b*i .. b*i+b-1; call before doRCM()
+    bool convertToBlockNodes(int b);
+    long long pointNnz; //point entries before convertToBlockNodes
     bool writeFile(char* filename);
     bool isAnyDiagZero();
     void makeDiagFirst(double missingDiag_value=0.0, bool rewriteAllDiag_with_maxRowSum=false);
